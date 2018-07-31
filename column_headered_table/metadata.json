@@ -1,0 +1,28 @@
+{
+  "@context": {
+    "stanza": "http://togostanza.org/resource/stanza#"
+  },
+  "@id": "column_headered_table",
+  "stanza:label": "Column headered table",
+  "stanza:definition": "Column headered table",
+  "stanza:parameter": [
+    {
+      "stanza:key": "url",
+      "stanza:example": "https://togovar.biosciencedbc.jp/sparqlist/api/variant_transcripts?tgv_id=48208277",
+      "stanza:description": "an URL that returns json for table",
+      "stanza:required": true
+    }
+  ],
+  "stanza:usage": "<togostanza-column_headered_table url=\"https://togovar.biosciencedbc.jp/sparqlist/api/variant_transcripts?tgv_id=48208277\"></togostanza-column_headered_table>",
+  "stanza:type": "Stanza",
+  "stanza:context": "Variant",
+  "stanza:display": "",
+  "stanza:provider": "provider of this stanza",
+  "stanza:license": "",
+  "stanza:author": "Daisuke Satoh",
+  "stanza:address": "daisuke.satoh@lifematics.co.jp",
+  "stanza:contributor": [
+  ],
+  "stanza:created": "2018-03-27",
+  "stanza:updated": "2018-03-27"
+}

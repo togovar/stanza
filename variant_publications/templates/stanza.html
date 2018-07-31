@@ -1,0 +1,15 @@
+{{#if data}}
+  <table class="table">
+  {{#if header}}
+    <tr>
+    {{{print_header header}}}
+    </tr>
+  {{/if}}
+
+  {{#each data}}
+    <tr>
+    {{{print_publication this}}}
+    </tr>
+  {{/each}}
+  </table>
+{{/if}}

@@ -1,0 +1,28 @@
+{
+  "@context": {
+    "stanza": "http://togostanza.org/resource/stanza#"
+  },
+  "@id": "variant_jbrowse",
+  "stanza:label": "Genomic context",
+  "stanza:definition": "Schematic view of the structure and surroundings of a gene.",
+  "stanza:parameter": [
+    {
+      "stanza:key": "tgv_id",
+      "stanza:example": "13",
+      "stanza:description": "TogoVar ID",
+      "stanza:required": true
+    }
+  ],
+  "stanza:usage": "<togostanza-variant_jbrowse tgv_id=\"13\"></togostanza-variant_jbrowse>",
+  "stanza:type": "Stanza",
+  "stanza:context": "Variant",
+  "stanza:display": "Other",
+  "stanza:provider": "DBCLS",
+  "stanza:license": "CC-BY",
+  "stanza:author": "Stanza Togo",
+  "stanza:address": "hoge@example.org",
+  "stanza:contributor": [
+  ],
+  "stanza:created": "2015-02-03",
+  "stanza:updated": "2015-09-30"
+}

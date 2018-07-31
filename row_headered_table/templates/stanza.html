@@ -1,0 +1,10 @@
+{{#if data}}
+  <table class="table">
+  {{#each data}}
+    <tr>
+      <th>{{header}}</th>
+      <td>{{{pretty_print data}}}</td>
+    </tr>
+  {{/each}}
+  </table>
+{{/if}}

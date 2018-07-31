@@ -1,0 +1,19 @@
+{{#if data}}
+  <table class="table">
+  {{#if header}}
+    <tr>
+    {{#each header}}
+      <th>{{this}}</th>
+    {{/each}}
+    </tr>
+  {{/if}}
+  
+  {{#each data}}
+    <tr>
+    {{#each this}}
+      <td>{{{pretty_print this}}}</td>
+    {{/each}}
+    </tr>
+  {{/each}}
+  </table>
+{{/if}}
