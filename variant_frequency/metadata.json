@@ -7,13 +7,19 @@
   "stanza:definition": "Variant frequency",
   "stanza:parameter": [
     {
-      "stanza:key": "tgv_id",
-      "stanza:example": "6332",
-      "stanza:description": "TogoVar identifier",
+      "stanza:key": "url1",
+      "stanza:example": "https://togovar.biosciencedbc.jp/sparqlist/api/variant_frequency?tgv_id=30913364",
+      "stanza:description": "SPARQList URL",
+      "stanza:required": true
+    },
+    {
+      "stanza:key": "url2",
+      "stanza:example": "https://togovar.biosciencedbc.jp/sparqlist/api/variant_exac_frequency?tgv_id=30913364",
+      "stanza:description": "SPARQList URL",
       "stanza:required": true
     }
   ],
-  "stanza:usage": "<togostanza-variant_frequency tgv_id=\"6332\"></togostanza-variant_frequency>",
+  "stanza:usage": "<togostanza-variant_frequency url1=\"https://togovar.biosciencedbc.jp/sparqlist/api/variant_frequency?tgv_id=30913364\" url2=\"https://togovar.biosciencedbc.jp/sparqlist/api/variant_exac_frequency?tgv_id=30913364\"></togostanza-variant_frequency>",
   "stanza:type": "Stanza",
   "stanza:context": "Variant",
   "stanza:display": "",

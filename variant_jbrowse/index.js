@@ -1,11 +1,7 @@
-Stanza(function(stanza, params) {
-  var q = stanza.query({
-    endpoint: "https://togovar.biosciencedbc.jp/sparql",
-    template: "position.rq",
-    parameters: params
-  });
-
-  q.then(function(data) {
+Stanza((stanza, params) => {
+  fetch(params.url, { method: 'GET', headers: { Accept: 'application/json' } }).then((response) => {
+    return response.json();
+  }).then((data) => {
     const range = 50;
 
     seq_label = "";
@@ -22,8 +18,11 @@ Stanza(function(stanza, params) {
     }
 
     stanza.render({
-      template: "stanza.html",
+      template: "stanza.html"
     });
     display(stanza.select('#target'), seq_label, display_start_pos, display_end_pos);
+    
+  }).catch((error) => {
+    console.error('There has been a problem with fetch operation: ' + error.message)
   });
 });

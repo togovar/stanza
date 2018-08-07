@@ -1,12 +1,12 @@
-Stanza(function(stanza, params) {
-  stanza.handlebars().registerHelper("locale_string", function(str) {
+Stanza((stanza, params) => {
+  stanza.handlebars().registerHelper("locale_string", (str) => {
     if (str) {
       return parseInt(str).toLocaleString();
     } else {
       return '';
     }
   });
-  stanza.handlebars().registerHelper("format_float", function(val) {
+  stanza.handlebars().registerHelper("format_float", (val) => {
     var v = parseFloat(val);
     if (v === 0)
       return '0.0';
@@ -17,7 +17,7 @@ Stanza(function(stanza, params) {
     else
       return Math.round(v * Math.pow(10, 3)) / Math.pow(10, 3);
   });
-  stanza.handlebars().registerHelper("filter_status", function(bool) {
+  stanza.handlebars().registerHelper("filter_status", (bool) => {
     if (bool) {
       return '<span class="green">PASS</span>';
     } else {
@@ -25,39 +25,28 @@ Stanza(function(stanza, params) {
     }
   });
 
-  var endpoint = "https://togovar.biosciencedbc.jp/sparql";
+  var results = [params.url1, params.url2].map((url) => {
+    return new Promise((resolve, reject) => {
+      fetch(url, { method: 'GET', headers: { Accept: 'application/json' } }).then((response) => {
+        resolve(response.json());
+      }).catch((error) => {
+        reject('There has been a problem with fetch operation: ' + error.message);
+      });
+    });
+  });
 
-  var queries = [
-    {
-      endpoint: endpoint,
-      template: "frequency.rq",
-      parameters: params
-    },
-    {
-      endpoint: endpoint,
-      template: "exac_frequency.rq",
-      parameters: params
-    }
-  ];
-
-  Promise.all(queries.map(function(q) {
-    return new Promise(function(resolve, reject) {
-      setTimeout(function() {
-        resolve(stanza.query(q));
-      }, 500);
-    }); 
-  })).then(function(results) {
+  Promise.all(results).then((values) => {
     stanza.render({
       template: "stanza.html",
       parameters: {
-        data: stanza.unwrapValueFromBinding(results[0]),
-        exac_pop: stanza.unwrapValueFromBinding(results[1])
+        data: stanza.unwrapValueFromBinding(values[0]),
+        exac_pop: stanza.unwrapValueFromBinding(values[1])
       }
     });
     if (!(window.ShadyDOM)) {
       stanza.select('main').innerHTML += '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">';
     }
-  }).catch(function(error) {
-    console.error(error);
+  }).catch((msg) => { 
+    console.error(msg)
   });
 });
