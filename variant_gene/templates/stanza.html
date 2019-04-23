@@ -1,0 +1,36 @@
+<style>
+  @import url("/css/stanza.css");
+</style>
+
+<table class="table">
+  <tr>
+    <th>HGNC/Approved name</th>
+    <td>{{binding.approved_name}}</td>
+  </tr>
+
+  <tr>
+    <th>HGNC/Approved symbol</th>
+    <td>
+      <ul>
+        {{#each binding.symbol}}
+        <li>
+          {{this}}
+        </li>
+        {{/each}}
+      </ul>
+    </td>
+  </tr>
+
+  <tr>
+    <th>HGNC/Alias name</th>
+    <td>
+      <ul>
+        {{#each binding.synonym}}
+        <li>
+          {{this}}
+        </li>
+        {{/each}}
+      </ul>
+    </td>
+  </tr>
+</table>
