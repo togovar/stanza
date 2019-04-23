@@ -1,12 +1,12 @@
-Stanza((stanza, params) => {
-  stanza.handlebars().registerHelper("locale_string", (str) => {
+Stanza(function(stanza, params) {
+  stanza.handlebars.registerHelper("locale_string", (str) => {
     if (str) {
       return parseInt(str).toLocaleString();
     } else {
       return '';
     }
   });
-  stanza.handlebars().registerHelper("format_float", (val) => {
+  stanza.handlebars.registerHelper("format_float", (val) => {
     var v = parseFloat(val);
     if (v === 0)
       return '0.0';
@@ -17,7 +17,7 @@ Stanza((stanza, params) => {
     else
       return Math.round(v * Math.pow(10, 3)) / Math.pow(10, 3);
   });
-  stanza.handlebars().registerHelper("filter_status", (bool) => {
+  stanza.handlebars.registerHelper("filter_status", (bool) => {
     if (bool) {
       return '<span class="green">PASS</span>';
     } else {
