@@ -1,0 +1,33 @@
+<style>
+  @import url("/css/stanza.css");
+</style>
+
+<table class="table">
+  <tr>
+    <th>Variant type</th>
+    <td><span class="{{binding.so_type}}">{{binding.variant_type}}</span></td>
+  </tr>
+
+  <tr>
+    <th>Position</th>
+    <td>{{{print_position binding}}}</td>
+  </tr>
+
+  <tr>
+    <th>Ref / Alt</th>
+    <td>{{print_allele binding}}</td>
+  </tr>
+
+  <tr>
+    <th>hgvs</th>
+    <td>
+      <ul>
+        {{#each binding.hgvs}}
+        <li>
+          {{this}}
+        </li>
+        {{/each}}
+      </ul>
+    </td>
+  </tr>
+</table>
