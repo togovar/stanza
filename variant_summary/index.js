@@ -1,5 +1,7 @@
 Stanza(function (stanza, params) {
   stanza.handlebars.registerHelper("print_position", function (binding) {
+    if (!binding) { return }
+
     let [chr, assembly] = binding.reference.replace(/.*\//, "").split("#");
     let position = binding.stop ? binding.start + ":" + binding.stop : binding.start;
 
@@ -9,6 +11,8 @@ Stanza(function (stanza, params) {
   });
 
   stanza.handlebars.registerHelper("print_allele", function (binding) {
+    if (!binding) { return }
+
     let ref = binding.ref || "";
     let alt = binding.alt || "";
 
@@ -36,7 +40,9 @@ Stanza(function (stanza, params) {
     let bindings = stanza.unwrapValueFromBinding(json);
     let binding = bindings[0];
 
-    binding.hgvs = Array.from(new Set(stanza.grouping(bindings, "hgvs").filter(v => v)));
+    if (binding) {
+      binding.hgvs = Array.from(new Set(stanza.grouping(bindings, "hgvs").filter(v => v)));
+    }
 
     stanza.render({
       template: "stanza.html",
