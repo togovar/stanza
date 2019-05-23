@@ -23,6 +23,12 @@
       "stanza:example": "https://togovar.biosciencedbc.jp/sparqlist/api",
       "stanza:description": "SPARQList API",
       "stanza:required": false
+    },
+    {
+      "stanza:key": "assembly",
+      "stanza:example": "GRCh37",
+      "stanza:description": "assembly",
+      "stanza:required": false
     }
   ],
   "stanza:usage": "<togostanza-variant_gene tgv_id=\"tgv47263127\"></togostanza-variant_gene>",
