@@ -1,0 +1,55 @@
+<style>
+  @import url("/css/stanza.css");
+</style>
+
+<table class="table">
+  {{#if data}}
+  <thead>
+  <tr>
+    <th>TogoVar ID</th>
+    <th>Variant type</th>
+    <th>Ref / Alt</th>
+    <th>Alt frequency</th>
+    <th>Consequence</th>
+    <th>SIFT</th>
+    <th>PolyPhen</th>
+    <th>Clinical Significance</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  {{#each data}}
+  <tr>
+    <td>{{id}}</td>
+    <td>{{so_label type}}</td>
+    <td>{{{print_allele this}}}</td>
+    <td>
+      <ul>
+        {{#each frequencies}}
+        <li>{{this.source}} : {{this.num_alt_alleles}} / {{this.num_alleles}} = {{this.frequency}}</li>
+        {{/each}}
+      </ul>
+    </td>
+    <td>
+      {{most_severe_consequence}} {{badge transcripts.length}}
+    </td>
+    <td>
+      {{sift}}
+    </td>
+    <td>
+      {{polyphen}}
+    </td>
+    <td>
+      {{significance.[0].condition}} {{badge significance.length}}
+    </td>
+  </tr>
+  {{/each}}
+  </tbody>
+  {{else}}
+  <tbody>
+  <tr>
+    <td>No other variants on the same location</td>
+  </tr>
+  </tbody>
+</table>
+{{/if}}
