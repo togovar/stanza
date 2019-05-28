@@ -3,8 +3,8 @@
     "stanza": "http://togostanza.org/resource/stanza#"
   },
   "@id": "variant_summary",
-  "stanza:label": "Variant summary",
-  "stanza:definition": "Variant summary",
+  "stanza:label": "Variant / Summary",
+  "stanza:definition": "Display variant summary",
   "stanza:parameter": [
     {
       "stanza:key": "tgv_id",
@@ -31,8 +31,8 @@
   "stanza:display": "",
   "stanza:provider": "provider of this stanza",
   "stanza:license": "",
-  "stanza:author": "author name",
-  "stanza:address": "name@example.org",
+  "stanza:author": "Daisuke Satoh",
+  "stanza:address": "daisuke.satoh@lifematics.co.jp",
   "stanza:contributor": [
   ],
   "stanza:created": "2019-04-22",

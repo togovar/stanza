@@ -3,14 +3,20 @@
     "stanza": "http://togostanza.org/resource/stanza#"
   },
   "@id": "variant_gene",
-  "stanza:label": "Variant gene",
-  "stanza:definition": "Variant gene",
+  "stanza:label": "Variant / Gene",
+  "stanza:definition": "Display genes on which the variant exists",
   "stanza:parameter": [
     {
       "stanza:key": "tgv_id",
       "stanza:example": "tgv47263127",
       "stanza:description": "TogoVar ID",
       "stanza:required": true
+    },
+    {
+      "stanza:key": "assembly",
+      "stanza:example": "GRCh37",
+      "stanza:description": "assembly: \"GRCh37\"(default) or \"GRCh38\"",
+      "stanza:required": false
     },
     {
       "stanza:key": "ep",
@@ -23,12 +29,6 @@
       "stanza:example": "https://togovar.biosciencedbc.jp/sparqlist/api",
       "stanza:description": "SPARQList API",
       "stanza:required": false
-    },
-    {
-      "stanza:key": "assembly",
-      "stanza:example": "GRCh37",
-      "stanza:description": "assembly",
-      "stanza:required": false
     }
   ],
   "stanza:usage": "<togostanza-variant_gene tgv_id=\"tgv47263127\"></togostanza-variant_gene>",
@@ -37,8 +37,8 @@
   "stanza:display": "",
   "stanza:provider": "provider of this stanza",
   "stanza:license": "",
-  "stanza:author": "author name",
-  "stanza:address": "name@example.org",
+  "stanza:author": "Daisuke Satoh",
+  "stanza:address": "daisuke.satoh@lifematics.co.jp",
   "stanza:contributor": [
   ],
   "stanza:created": "2019-04-22",
