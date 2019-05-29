@@ -30,15 +30,15 @@
     <td>{{dataset}}</td>
     <td>{{population}}</td>
 
-    <td>{{num_alt_alleles}}</td>
-    <td>{{num_alleles}}</td>
-    <td>{{frequency}}</td>
+    <td>{{locale_string num_alt_alleles}}</td>
+    <td>{{locale_string num_alleles}}</td>
+    <td>{{format_float frequency}}</td>
 
-    <td>{{num_genotype_alt_homo}}</td>
-    <td>{{num_genotype_hetero}}</td>
-    <td>{{num_genotype_ref_homo}}</td>
+    <td>{{locale_string num_genotype_alt_homo}}</td>
+    <td>{{locale_string num_genotype_hetero}}</td>
+    <td>{{locale_string num_genotype_ref_homo}}</td>
 
-    <td>{{filter}}</td>
+    <td>{{{format_filter filter}}}</td>
     <td>{{quality}}</td>
   </tr>
   {{else}}
