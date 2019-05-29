@@ -22,6 +22,39 @@ const ORDER_WEIGHT = {
 };
 
 Stanza(function (stanza, params) {
+  stanza.handlebars.registerHelper("locale_string", (str) => {
+    return str ? parseInt(str).toLocaleString() : "";
+  });
+
+  stanza.handlebars.registerHelper("format_float", (str) => {
+    let v = parseFloat(str);
+
+    if (v === 0)
+      return "0.0";
+    else if (v === 1)
+      return "1.0";
+    else if (v < 0.001)
+      return v.toExponential(3);
+    else
+      return Math.round(v * Math.pow(10, 3)) / Math.pow(10, 3);
+  });
+
+  stanza.handlebars.registerHelper("format_filter", (str) => {
+    if (!str || str === "") {
+      return "-"
+    }
+
+    let status = str.split(",")[0];
+
+    if (status === "") {
+      return "-"
+    } else if (status === "PASS") {
+      return "<span class=\"green\">PASS</span>";
+    } else {
+      return "<span class=\"red\">" + status + "</span>";
+    }
+  });
+
   if (params.api) {
     let url = params.api.concat("/variant_frequency?tgv_id=", params.tgv_id);
 
