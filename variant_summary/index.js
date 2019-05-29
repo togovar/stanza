@@ -30,8 +30,8 @@ Stanza(function (stanza, params) {
     return ref + " / " + alt;
   });
 
-  if (params.api && params.ep) {
-    let url = (params.api ? params.api : "").concat("/variant_summary?tgv_id=" + params.tgv_id);
+  if (params.api) {
+    let url = params.api.concat("/variant_summary?tgv_id=" + params.tgv_id);
 
     if (params.ep) {
       url = url.concat("&ep=" + encodeURIComponent(params.ep))
