@@ -1,3 +1,20 @@
+const DATASETS = [
+  "jga_ngs",
+  "jga_snp",
+  "tommo",
+  "hgvd",
+  "exac"
+];
+
+const FREQUENCY_TEMPLATE = {
+  source: null,
+  num_alleles: null,
+  num_ref_alleles: null,
+  num_alt_alleles: null,
+  frequency: null,
+  filter: null
+};
+
 Stanza(function (stanza, params) {
   stanza.handlebars.registerHelper("print_allele", function (v) {
     if (!v) {
@@ -50,12 +67,29 @@ Stanza(function (stanza, params) {
           return response.json();
         }
       }).then(function (json) {
-        let data = json.data;
+        let data = json.data ? json.data.filter(v => v.id !== params.tgv_id) : [];
+
+        data.forEach(function (row) {
+          row.frequencies = DATASETS.map(function (elem) {
+            let obj;
+
+            if (row.frequencies) {
+              obj = row.frequencies.find(x => x.source === elem)
+            }
+
+            if (!obj) {
+              obj = JSON.parse(JSON.stringify(FREQUENCY_TEMPLATE));
+              obj.source = elem;
+            }
+
+            return obj;
+          });
+        });
 
         stanza.render({
           template: "stanza.html",
           parameters: {
-            data: data ? data.filter(v => v.id !== params.tgv_id) : []
+            data: data
           }
         });
       }).catch(function (e) {
