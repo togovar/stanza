@@ -1,0 +1,33 @@
+<style>
+  @import url("/css/stanza.css");
+</style>
+
+<table id="target" class="table">
+  {{#if bindings}}
+  <thead>
+  <tr>
+    <th>Title</th>
+    <th>Clinical significance</th>
+    <th>Review status</th>
+    <th>Last evaluated</th>
+    <th>Condition(s)</th>
+  </tr>
+  </thead>
+  {{/if}}
+
+  <tbody>
+  {{#each bindings}}
+  <tr>
+    <td>{{link title clinvar}}</td>
+    <td>{{interpretation}}</td>
+    <td><span data-stars={{stars}}>{{review_status}}</span></td>
+    <td>{{last_evaluated}}</td>
+    <td>{{link condition.label condition.url}}</td>
+  </tr>
+  {{else}}
+  <tr>
+    <td>No data</td>
+  </tr>
+  {{/each}}
+  </tbody>
+</table>
