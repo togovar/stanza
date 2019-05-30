@@ -2,12 +2,12 @@ Stanza(function (stanza, params) {
   if (params.api) {
     let url = params.api.concat("/variant_gene?tgv_id=" + params.tgv_id);
 
-    if (params.ep) {
-      url = url.concat("&ep=" + encodeURIComponent(params.ep))
-    }
-
     if (params.assembly) {
       url = url.concat("&assembly=" + encodeURIComponent(params.assembly))
+    }
+
+    if (params.ep) {
+      url = url.concat("&ep=" + encodeURIComponent(params.ep))
     }
 
     fetch(url, {method: "GET", headers: {"Accept": "application/json"}}).then(function (response) {
