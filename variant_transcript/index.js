@@ -66,41 +66,39 @@ Stanza(function (stanza, params) {
     );
   });
 
-  if (params.api) {
-    let url = params.api.concat("/variant_transcript?tgv_id=" + params.tgv_id);
+  let url = (params.api ? params.api : "").concat("/variant_transcript?tgv_id=" + params.tgv_id);
 
-    if (params.assembly) {
-      url = url.concat("&assembly=" + encodeURIComponent(params.assembly))
-    }
-
-    if (params.ep) {
-      url = url.concat("&ep=" + encodeURIComponent(params.ep))
-    }
-
-    fetch(url, {method: "GET", headers: {"Accept": "application/json"}}).then(function (response) {
-      if (response.ok) {
-        return response.json();
-      }
-    }).then(function (json) {
-      let bindings = stanza.unwrapValueFromBinding(json);
-
-      bindings.forEach(function (binding) {
-        binding.transcript = {
-          label: binding.transcript.split('/').reverse()[0],
-          url: binding.enst_id ? "http://identifiers.org/ensembl/".concat(binding.enst_id) : null
-        };
-        binding.consequence_label = binding.consequence_label.split(',');
-      });
-
-      stanza.render({
-        template: "stanza.html",
-        parameters: {
-          bindings: bindings
-        }
-      });
-    }).catch(function (e) {
-      stanza.root.querySelector("main").innerHTML = "<p>" + e.message + "</p>";
-      throw e;
-    });
+  if (params.assembly) {
+    url = url.concat("&assembly=" + encodeURIComponent(params.assembly))
   }
+
+  if (params.ep) {
+    url = url.concat("&ep=" + encodeURIComponent(params.ep))
+  }
+
+  fetch(url, {method: "GET", headers: {"Accept": "application/json"}}).then(function (response) {
+    if (response.ok) {
+      return response.json();
+    }
+  }).then(function (json) {
+    let bindings = stanza.unwrapValueFromBinding(json);
+
+    bindings.forEach(function (binding) {
+      binding.transcript = {
+        label: binding.transcript.split('/').reverse()[0],
+        url: binding.enst_id ? "http://identifiers.org/ensembl/".concat(binding.enst_id) : null
+      };
+      binding.consequence_label = binding.consequence_label.split(',');
+    });
+
+    stanza.render({
+      template: "stanza.html",
+      parameters: {
+        bindings: bindings
+      }
+    });
+  }).catch(function (e) {
+    stanza.root.querySelector("main").innerHTML = "<p>" + e.message + "</p>";
+    throw e;
+  });
 });

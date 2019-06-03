@@ -55,40 +55,38 @@ Stanza(function (stanza, params) {
     }
   });
 
-  if (params.api) {
-    let url = params.api.concat("/variant_frequency?tgv_id=", params.tgv_id);
+  let url = (params.api ? params.api : "").concat("/variant_frequency?tgv_id=", params.tgv_id);
 
-    if (params.ep) {
-      url = url.concat("&ep=", encodeURIComponent(params.ep))
-    }
-
-    fetch(url, {method: "GET", headers: {"Accept": "application/json"}}).then(function (response) {
-      if (response.ok) {
-        return response.json();
-      }
-    }).then(function (json) {
-      let bindings = stanza.unwrapValueFromBinding(json);
-
-      bindings.forEach(function (binding) {
-        let x = binding.source.split(':');
-        binding.dataset = x[0];
-        binding.population = x[1] || POPULATION_LABEL[x[0]] || "-";
-        binding.order = (ORDER_WEIGHT[x[0]] || 0) + (ORDER_WEIGHT[x[1]] || 0);
-      });
-
-      bindings.sort(function (a, b) {
-        return a.order - b.order;
-      });
-
-      stanza.render({
-        template: "stanza.html",
-        parameters: {
-          bindings: bindings
-        }
-      });
-    }).catch(function (e) {
-      stanza.root.querySelector("main").innerHTML = "<p>" + e.message + "</p>";
-      throw e;
-    });
+  if (params.ep) {
+    url = url.concat("&ep=", encodeURIComponent(params.ep))
   }
+
+  fetch(url, {method: "GET", headers: {"Accept": "application/json"}}).then(function (response) {
+    if (response.ok) {
+      return response.json();
+    }
+  }).then(function (json) {
+    let bindings = stanza.unwrapValueFromBinding(json);
+
+    bindings.forEach(function (binding) {
+      let x = binding.source.split(':');
+      binding.dataset = x[0];
+      binding.population = x[1] || POPULATION_LABEL[x[0]] || "-";
+      binding.order = (ORDER_WEIGHT[x[0]] || 0) + (ORDER_WEIGHT[x[1]] || 0);
+    });
+
+    bindings.sort(function (a, b) {
+      return a.order - b.order;
+    });
+
+    stanza.render({
+      template: "stanza.html",
+      parameters: {
+        bindings: bindings
+      }
+    });
+  }).catch(function (e) {
+    stanza.root.querySelector("main").innerHTML = "<p>" + e.message + "</p>";
+    throw e;
+  });
 });

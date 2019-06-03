@@ -20,7 +20,7 @@
     },
     {
       "stanza:key": "api",
-      "stanza:example": "https://togovar.biosciencedbc.jp/search",
+      "stanza:example": "https://togovar.biosciencedbc.jp",
       "stanza:description": "TogoVar search API",
       "stanza:required": false
     }

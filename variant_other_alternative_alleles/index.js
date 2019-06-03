@@ -48,57 +48,55 @@ Stanza(function (stanza, params) {
     return parseInt(count) > 1 ? '' + (count - 1) + '+' : '';
   });
 
-  if (params.api && params.ep) {
-    stanza.query({
-      endpoint: params.ep,
-      template: "fetch_position.rq",
-      parameters: params
-    }).then(function (data) {
-      let v = stanza.unwrapValueFromBinding(data)[0];
+  stanza.query({
+    endpoint: params.ep ? params.ep : "/sparql",
+    template: "fetch_position.rq",
+    parameters: params
+  }).then(function (data) {
+    let v = stanza.unwrapValueFromBinding(data)[0];
 
-      if (!v) {
-        return
+    if (!v) {
+      return
+    }
+
+    let url = (params.api ? params.api : "").concat("/search?stat=0&quality=0&term=" + v.chromosome + ":" + v.position);
+
+    fetch(url, {method: "GET", headers: {"Accept": "application/json"}}).then(function (response) {
+      if (response.ok) {
+        return response.json();
       }
+    }).then(function (json) {
+      let data = json.data ? json.data.filter(v => v.id !== params.tgv_id) : [];
 
-      let url = params.api.concat("?stat=0&quality=0&term=" + v.chromosome + ":" + v.position);
+      data.forEach(function (row) {
+        row.frequencies = DATASETS.map(function (elem) {
+          let obj;
 
-      fetch(url, {method: "GET", headers: {"Accept": "application/json"}}).then(function (response) {
-        if (response.ok) {
-          return response.json();
-        }
-      }).then(function (json) {
-        let data = json.data ? json.data.filter(v => v.id !== params.tgv_id) : [];
-
-        data.forEach(function (row) {
-          row.frequencies = DATASETS.map(function (elem) {
-            let obj;
-
-            if (row.frequencies) {
-              obj = row.frequencies.find(x => x.source === elem)
-            }
-
-            if (!obj) {
-              obj = JSON.parse(JSON.stringify(FREQUENCY_TEMPLATE));
-              obj.source = elem;
-            }
-
-            return obj;
-          });
-        });
-
-        stanza.render({
-          template: "stanza.html",
-          parameters: {
-            data: data
+          if (row.frequencies) {
+            obj = row.frequencies.find(x => x.source === elem)
           }
+
+          if (!obj) {
+            obj = JSON.parse(JSON.stringify(FREQUENCY_TEMPLATE));
+            obj.source = elem;
+          }
+
+          return obj;
         });
-      }).catch(function (e) {
-        stanza.root.querySelector("main").innerHTML = "<p>" + e.message + "</p>";
-        throw e;
+      });
+
+      stanza.render({
+        template: "stanza.html",
+        parameters: {
+          data: data
+        }
       });
     }).catch(function (e) {
       stanza.root.querySelector("main").innerHTML = "<p>" + e.message + "</p>";
       throw e;
     });
-  }
+  }).catch(function (e) {
+    stanza.root.querySelector("main").innerHTML = "<p>" + e.message + "</p>";
+    throw e;
+  });
 });

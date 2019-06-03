@@ -21,36 +21,34 @@ Stanza(function (stanza, params) {
     );
   });
 
-  if (params.api) {
-    let url = params.api.concat("/variant_clinvar?tgv_id=", params.tgv_id);
+  let url = (params.api ? params.api : "").concat("/variant_clinvar?tgv_id=", params.tgv_id);
 
-    if (params.ep) {
-      url = url.concat("&ep=", encodeURIComponent(params.ep))
-    }
-
-    fetch(url, {method: "GET", headers: {"Accept": "application/json"}}).then(function (response) {
-      if (response.ok) {
-        return response.json();
-      }
-    }).then(function (json) {
-      let bindings = stanza.unwrapValueFromBinding(json);
-
-      bindings.forEach(function (binding) {
-        binding.stars = REVIEW_STATUS[binding.review_status] || 0;
-        binding.condition = { label: binding.condition, url: "https://identifiers.org/medgen:".concat(binding.medgen) }
-      });
-
-      stanza.render({
-        template: "stanza.html",
-        parameters: {
-          bindings: bindings
-        }
-      });
-
-      rowspanize(stanza.select("#target"));
-    }).catch(function (e) {
-      stanza.root.querySelector("main").innerHTML = "<p>" + e.message + "</p>";
-      throw e;
-    });
+  if (params.ep) {
+    url = url.concat("&ep=", encodeURIComponent(params.ep))
   }
+
+  fetch(url, {method: "GET", headers: {"Accept": "application/json"}}).then(function (response) {
+    if (response.ok) {
+      return response.json();
+    }
+  }).then(function (json) {
+    let bindings = stanza.unwrapValueFromBinding(json);
+
+    bindings.forEach(function (binding) {
+      binding.stars = REVIEW_STATUS[binding.review_status] || 0;
+      binding.condition = {label: binding.condition, url: "https://identifiers.org/medgen:".concat(binding.medgen)}
+    });
+
+    stanza.render({
+      template: "stanza.html",
+      parameters: {
+        bindings: bindings
+      }
+    });
+
+    rowspanize(stanza.select("#target"));
+  }).catch(function (e) {
+    stanza.root.querySelector("main").innerHTML = "<p>" + e.message + "</p>";
+    throw e;
+  });
 });
