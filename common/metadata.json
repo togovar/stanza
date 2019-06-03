@@ -1,0 +1,22 @@
+{
+  "@context": {
+    "stanza": "http://togostanza.org/resource/stanza#"
+  },
+  "@id": "common",
+  "stanza:label": "Stanza for common assets",
+  "stanza:definition": "Do not use this stanza.",
+  "stanza:parameter": [
+  ],
+  "stanza:usage": "<togostanza-common></togostanza-common>",
+  "stanza:type": "Stanza",
+  "stanza:context": "",
+  "stanza:display": "",
+  "stanza:provider": "provider of this stanza",
+  "stanza:license": "",
+  "stanza:author": "Daisuke Satoh",
+  "stanza:address": "daisuke.satoh@lifematics.co.jp",
+  "stanza:contributor": [
+  ],
+  "stanza:created": "2019-05-31",
+  "stanza:updated": "2019-05-31"
+}
