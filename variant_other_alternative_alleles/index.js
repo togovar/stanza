@@ -60,7 +60,7 @@ Stanza(function (stanza, params) {
         return
       }
 
-      let url = params.api.concat("?stat=0&quality=0&start_only&term=" + v.chromosome + ":" + v.position);
+      let url = params.api.concat("?stat=0&quality=0&term=" + v.chromosome + ":" + v.position);
 
       fetch(url, {method: "GET", headers: {"Accept": "application/json"}}).then(function (response) {
         if (response.ok) {
