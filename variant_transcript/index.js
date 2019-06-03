@@ -89,7 +89,7 @@ Stanza(function (stanza, params) {
           label: binding.transcript.split('/').reverse()[0],
           url: binding.enst_id ? "http://identifiers.org/ensembl/".concat(binding.enst_id) : null
         };
-        binding.consequence_label = binding.consequence_label.split(',')
+        binding.consequence_label = binding.consequence_label.split(',');
       });
 
       console.log(bindings);
