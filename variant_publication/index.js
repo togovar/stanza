@@ -39,8 +39,6 @@ Stanza(function (stanza, params) {
           headers += "<th>" + val + "</th>";
         });
 
-        console.log('<table id="displayTable"><thead><tr>' + headers + '</tr></thead></table>');
-
         $(stanza.select("#target")).html('<table id="displayTable"><thead><tr>' + headers + '</tr></thead></table>');
 
         json.searching = false;

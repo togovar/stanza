@@ -92,8 +92,6 @@ Stanza(function (stanza, params) {
         binding.consequence_label = binding.consequence_label.split(',');
       });
 
-      console.log(bindings);
-
       stanza.render({
         template: "stanza.html",
         parameters: {
