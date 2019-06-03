@@ -12,7 +12,7 @@ const REVIEW_STATUS = {
 Stanza(function (stanza, params) {
   let Handlebars = stanza.handlebars;
 
-  Handlebars.registerHelper('link', function(text, url) {
+  Handlebars.registerHelper('link', function (text, url) {
     url = Handlebars.escapeExpression(url);
     text = Handlebars.escapeExpression(text);
 

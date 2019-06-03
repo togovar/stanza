@@ -13,7 +13,7 @@ const POLYPHEN_DISPLAY_LABEL = {
 Stanza(function (stanza, params) {
   let Handlebars = stanza.handlebars;
 
-  Handlebars.registerHelper('link', function(text, url) {
+  Handlebars.registerHelper('link', function (text, url) {
     if (!url) {
       return text;
     }
@@ -26,7 +26,7 @@ Stanza(function (stanza, params) {
     );
   });
 
-  Handlebars.registerHelper('print_sift', function(value) {
+  Handlebars.registerHelper('print_sift', function (value) {
     let v = parseFloat(value);
     if (!v) {
       return value;
@@ -45,7 +45,7 @@ Stanza(function (stanza, params) {
     );
   });
 
-  Handlebars.registerHelper('print_polyphen', function(value) {
+  Handlebars.registerHelper('print_polyphen', function (value) {
     let v = parseFloat(value);
     if (!v) {
       return value;
