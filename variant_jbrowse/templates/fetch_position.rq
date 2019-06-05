@@ -1,0 +1,18 @@
+DEFINE sql:select-option "order"
+
+PREFIX tgv:   <http://togovar.biosciencedbc.jp/variant/>
+PREFIX faldo: <http://biohackathon.org/resource/faldo#>
+PREFIX hco:   <http://identifiers.org/hco/>
+
+SELECT ?type ?chromosome ?start ?stop
+FROM <http://togovar.biosciencedbc.jp/graph/variant>
+WHERE {
+  VALUES ?variant { tgv:{{tgv_id}} }
+
+  ?variant a ?type ;
+    faldo:location/faldo:begin?/faldo:reference ?reference ;
+    faldo:location/faldo:begin?/faldo:position ?start ;
+    faldo:location/faldo:end?/faldo:position ?stop .
+
+  BIND(REPLACE(REPLACE(STR(?reference), hco:, ""), "#.*", "") AS ?chromosome)
+}

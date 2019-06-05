@@ -1,28 +1,41 @@
 Stanza((stanza, params) => {
-  fetch(params.url, { method: 'GET', headers: { Accept: 'application/json' } }).then((response) => {
-    return response.json();
+  const RANGE = 50;
+
+  stanza.query({
+    endpoint: params.ep ? params.ep : "/sparql",
+    template: "fetch_position.rq",
+    parameters: params
   }).then((data) => {
-    const range = 50;
+    let v = stanza.unwrapValueFromBinding(data)[0];
 
-    seq_label = "";
-    display_start_pos = 0;
-    display_end_pos = 0;
+    let type = v.type;
+    let chr = v.chromosome;
+    let start = parseInt(v.start);
+    let stop = parseInt(v.stop);
 
-    result = stanza.unwrapValueFromBinding(data);
-    if (result.length > 0) {
-      start = result[0].start;
-      stop = result[0].stop;
-      seq_label = result[0].seq_label;
-      display_start_pos = Math.max(parseInt(start) - range, 0);
-      display_end_pos = parseInt(stop) + range;
+    if (type.match("SO_0000159")) { // deletion
+      start = start - 1;
+    } else if (type.match("SO_0000667")) { // insertion
+      stop = stop - 1;
     }
 
+    let from = start - RANGE;
+    let to = stop + RANGE;
+
+    let options = "".concat(encodeURIComponent("data=data/" + params.assembly),
+      "&loc=", encodeURIComponent(chr + ":" + from + ".." + to),
+      "&highlight=", encodeURIComponent(chr + ":" + start + ".." + stop));
+
     stanza.render({
-      template: "stanza.html"
+      template: "stanza.html",
+      parameters: {
+        options: options,
+        width: params.width || "100%",
+        height: params.height || "600px"
+      }
     });
-    display(stanza.select('#target'), seq_label, display_start_pos, display_end_pos);
-    
-  }).catch((error) => {
-    console.error('There has been a problem with fetch operation: ' + error.message)
+  }).catch(function (e) {
+    stanza.root.querySelector("main").innerHTML = "<p>" + e.message + "</p>";
+    throw e;
   });
 });
