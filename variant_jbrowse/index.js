@@ -22,7 +22,7 @@ Stanza((stanza, params) => {
     let from = start - RANGE;
     let to = stop + RANGE;
 
-    let options = "".concat(encodeURIComponent("data=data/" + params.assembly),
+    let options = "data=".concat(encodeURIComponent("data/" + params.assembly),
       "&loc=", encodeURIComponent(chr + ":" + from + ".." + to),
       "&highlight=", encodeURIComponent(chr + ":" + start + ".." + stop));
 
