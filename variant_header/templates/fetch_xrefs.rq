@@ -1,0 +1,14 @@
+DEFINE sql:select-option "order"
+
+PREFIX tgv:   <http://togovar.biosciencedbc.jp/variant/>
+
+SELECT ?dbsnp
+FROM <http://togovar.biosciencedbc.jp/graph/variant>
+WHERE {
+  VALUES ?variant { tgv:{{tgv_id}} }
+
+  OPTIONAL {
+    ?variant rdfs:seeAlso ?dbsnp .
+    FILTER STRSTARTS(STR(?dbsnp), 'http://identifiers.org/dbsnp/')
+  }
+}
