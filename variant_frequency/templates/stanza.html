@@ -1,48 +1,60 @@
-<link rel="stylesheet" type="text/css" href="/stanza/common/assets/stylesheets/stanza.css"/>
+<link rel="stylesheet" type="text/css" href="/stanza/common/assets/stylesheets/stanza.css" />
+<link rel="stylesheet" type="text/css" href="/stanza/variant_frequency/assets/style.css" />
 
-<table class="table">
-  {{#if bindings}}
-  <thead>
-  <tr>
-    <th rowspan="2">Dataset</th>
-    <th rowspan="2">Population</th>
-    <th colspan="3">Allele count</th>
-    <th colspan="3">Genotype count</th>
-    <th rowspan="2">Filter status</th>
-    <th rowspan="2">Quality score</th>
-  </tr>
-  <tr>
-    <th>Alt</th>
-    <th>Total</th>
-    <th>Frequency</th>
-    <th>Alt / Alt</th>
-    <th>Alt / Ref</th>
-    <th>Ref / Ref</th>
-  </tr>
-  </thead>
-  {{/if}}
+<table class="table frequency-detail">
+	{{#if bindings}}
+	<thead>
+		<tr>
+			<th rowspan="2">Dataset</th>
+			<th rowspan="2">Population</th>
+			<th colspan="4">Allele count</th>
+			<th colspan="3">Genotype count</th>
+			<th class="filter_status" rowspan="2">Filter status</th>
+			<th rowspan="2">Quality score</th>
+		</tr>
+		<tr>
+			<th class="alt">Alt</th>
+			<th>Total</th>
+			<th class="frequency">Frequency</th>
+			<th></th>
+			<th class="num_genotype_alt_homo alt">Alt / Alt</th>
+			<th class="num_genotype_hetero">Alt / Ref</th>
+			<th class="num_genotype_ref_homo">Ref / Ref</th>
+		</tr>
+	</thead>
+	{{/if}}
 
-  <tbody>
-  {{#each bindings}}
-  <tr>
-    <td>{{dataset}}</td>
-    <td>{{population}}</td>
+	<tbody>
+		{{#each bindings}}
+		<tr>
+			<td class="dataset">
+				<div class="dataset-icon" data-dataset="{{to_lower_case dataset}}"></div>
+				{{dataset}}
+			</td>
+			<td class="population">{{population}}</td>
 
-    <td>{{locale_string num_alt_alleles}}</td>
-    <td>{{locale_string num_alleles}}</td>
-    <td>{{format_float frequency}}</td>
+			<td class="num_alt_alleles">{{locale_string num_alt_alleles}}<span class="slash">/</span></td>
+			<td class="num_alleles">{{locale_string num_alleles}}</td>
+			<td class="frequency">
+				<span>{{format_float frequency}}</span>
+			</td>
+			<td class="frequency-graph">
+				<div class="allele-frequency-graph">
+					<span class="dataset" data-frequency="{{get_frequency_stage frequency num_alt_alleles}}"
+						data-dataset="{{to_lower_case dataset}}"></span>
+				</div>
+			</td>
+			<td class="num_genotype_alt_homo">{{locale_string num_genotype_alt_homo}}</td>
+			<td class="num_genotype_hetero">{{locale_string num_genotype_hetero}}</td>
+			<td class="num_genotype_ref_homo">{{locale_string num_genotype_ref_homo}}</td>
 
-    <td>{{locale_string num_genotype_alt_homo}}</td>
-    <td>{{locale_string num_genotype_hetero}}</td>
-    <td>{{locale_string num_genotype_ref_homo}}</td>
-
-    <td>{{{format_filter filter}}}</td>
-    <td>{{quality}}</td>
-  </tr>
-  {{else}}
-  <tr>
-    <td>No data</td>
-  </tr>
-  {{/each}}
-  </tbody>
+			<td class="filter">{{{format_filter filter}}}</td>
+			<td class="quality">{{quality}}</td>
+		</tr>
+		{{else}}
+		<tr>
+			<td>No data</td>
+		</tr>
+		{{/each}}
+	</tbody>
 </table>

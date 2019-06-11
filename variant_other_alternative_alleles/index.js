@@ -254,7 +254,7 @@ Stanza(function (stanza, params) {
 			alt = "-"
 		}
 
-		return ref + " / " + alt;
+		return `<span class='ref' data-sum='${ref.length}'>${ref}</span><span class='arrow'></span><span class='alt' data-sum='${alt.length}'>${alt}</span>`;
 	});
 
 	stanza.handlebars.registerHelper("mapConsequence", function (consequence) {
@@ -279,11 +279,26 @@ Stanza(function (stanza, params) {
 
 	stanza.handlebars.registerHelper("getSift", function (sift) {
 		let class_name = sift >= .05 ? 'T' : 'D';
-		return `<span class="variant-function" data-function="${class_name}">${sift}</span>`
+		let sift_val = String(sift)
+
+		if (sift_val === '0') {
+			sift_val = '0.000'
+		} else {
+			sift_val = sift_val.padEnd(5, '0')
+		}
+
+		return `<span class="variant-function" data-function="${class_name}">${sift_val}</span>`
 	});
 
 	stanza.handlebars.registerHelper("getPolyphen", function (polyphen) {
 		let class_name = ''
+		let polyphen_val = String(polyphen)
+
+		if (polyphen_val === '0') {
+			polyphen_val = '0.000'
+		} else {
+			polyphen_val = polyphen_val.padEnd(5, '0')
+		}
 		switch (true) {
 			case polyphen > .908:
 				class_name = 'PROBD';
@@ -298,7 +313,8 @@ Stanza(function (stanza, params) {
 				class_name = 'U';
 				break;
 		}
-		return `<span class="variant-function" data-function="${class_name}">${polyphen}</span>`
+
+		return `<span class="variant-function" data-function="${class_name}">${polyphen_val}</span>`
 	});
 
 	stanza.handlebars.registerHelper("getSignificance", function (significance) {

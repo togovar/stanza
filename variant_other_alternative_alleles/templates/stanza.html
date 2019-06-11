@@ -1,4 +1,5 @@
-<link rel="stylesheet" type="text/css" href="/stanza/common/assets/stylesheets/stanza.css"/>
+<link rel="stylesheet" type="text/css" href="/stanza/common/assets/stylesheets/stanza.css" />
+<link rel="stylesheet" type="text/css" href="/stanza/variant_other_alternative_alleles/assets/style.css" />
 
 <table class="table other_alternative_alleles">
 	{{#if data}}
@@ -24,7 +25,7 @@
 				</a>
 			</td>
 			<td class="type">{{so_label type}}</td>
-			<td>{{{print_allele this}}}</td>
+			<td class="ref-alt">{{{print_allele this}}}</td>
 			<td>
 				<div class="frequency-graph">
 					{{#each frequencies}}
