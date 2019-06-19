@@ -27,6 +27,16 @@
       padding-top: 14px;
       padding-bottom: 8px;
       border-bottom: 1px solid #444444; }
+      #target > #displayTable_wrapper > #displayTable > thead > tr > th[data-label="PMID"] {
+        width: 10% !important; }
+      #target > #displayTable_wrapper > #displayTable > thead > tr > th[data-label="Reference"] {
+        width: 55% !important; }
+      #target > #displayTable_wrapper > #displayTable > thead > tr > th[data-label="Year"] {
+        width: 5% !important; }
+      #target > #displayTable_wrapper > #displayTable > thead > tr > th[data-label="Cited"] {
+        width: 5% !important; }
+      #target > #displayTable_wrapper > #displayTable > thead > tr > th[data-label="Diseases"] {
+        width: 25% !important; }
       #target > #displayTable_wrapper > #displayTable > thead > tr > th.sorting_asc, #target > #displayTable_wrapper > #displayTable > thead > tr > th.sorting_desc, #target > #displayTable_wrapper > #displayTable > thead > tr > th.sorting {
         background-size: 15px;
         background-position-y: 16px; }
@@ -38,10 +48,16 @@
     vertical-align: middle;
     border-bottom: 1px solid #dee2e6; }
     #target > #displayTable_wrapper > #displayTable > tbody > tr > td:first-of-type {
-      padding-left: 14px; }
-    #target > #displayTable_wrapper > #displayTable > tbody > tr > td:last-of-type > th,
-    #target > #displayTable_wrapper > #displayTable > tbody > tr > td:last-of-type > td {
-      border: none; }
+      padding-left: 14px;
+      width: 10% !important; }
+    #target > #displayTable_wrapper > #displayTable > tbody > tr > td:nth-of-type(2) {
+      width: 55% !important; }
+    #target > #displayTable_wrapper > #displayTable > tbody > tr > td:nth-of-type(3) {
+      width: 5% !important; }
+    #target > #displayTable_wrapper > #displayTable > tbody > tr > td:nth-of-type(4) {
+      width: 5% !important; }
+    #target > #displayTable_wrapper > #displayTable > tbody > tr > td:last-of-type {
+      width: 25% !important; }
 
 #target > #displayTable_wrapper > .dataTables_paginate {
   float: unset;

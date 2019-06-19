@@ -36,7 +36,7 @@ Stanza(function (stanza, params) {
 			success: function (json) {
 				let headers = "";
 				$.each(json.columns, function (i, val) {
-					headers += "<th>" + val + "</th>";
+					headers += "<th data-label = " + val + ">" + val + "</th>";
 				});
 
 				$(stanza.select("#target")).html('<table id="displayTable"><thead><tr>' + headers + '</tr></thead></table>');

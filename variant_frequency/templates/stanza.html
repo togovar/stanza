@@ -26,9 +26,9 @@
 
 	<tbody>
 		{{#each bindings}}
-		<tr>
-			<td class="dataset">
-				<div class="dataset-icon" data-dataset="{{to_lower_case dataset}}"></div>
+		<tr data-dataset="{{ getClassName dataset }}" class="{{ getToggleState dataset}}">
+			<td class="dataset" id="{{ getClassName dataset }}" data-dataset="{{ getClassName dataset }}">
+				<div class="dataset-icon" data-dataset="{{getClassName dataset}}"></div>
 				{{dataset}}
 			</td>
 			<td class="population">{{population}}</td>
@@ -41,7 +41,7 @@
 			<td class="frequency-graph">
 				<div class="allele-frequency-graph">
 					<span class="dataset" data-frequency="{{get_frequency_stage frequency num_alt_alleles}}"
-						data-dataset="{{to_lower_case dataset}}"></span>
+						data-dataset="{{getClassName dataset}}"></span>
 				</div>
 			</td>
 			<td class="num_genotype_alt_homo">{{locale_string num_genotype_alt_homo}}</td>

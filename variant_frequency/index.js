@@ -66,8 +66,29 @@ Stanza(function (stanza, params) {
 		}
 	});
 
-	stanza.handlebars.registerHelper("to_lower_case", (text) => {
-		return text.toLowerCase()
+	let counter_get_toggle_state = 0
+	stanza.handlebars.registerHelper("getToggleState", (text, a, b, c, d, e) => {
+		let state = ''
+		if (text === "ExAC") {
+			if (counter_get_toggle_state === 0) {
+				state = 'exac_first_tr close'
+			} else {
+				state = 'exac_without_first none'
+			}
+			counter_get_toggle_state++
+		}
+		return state
+	});
+	let counter_get_class_name = 0
+	stanza.handlebars.registerHelper("getClassName", (text) => {
+		text = text.toLowerCase()
+		if (text === 'exac') {
+			counter_get_class_name++
+		}
+		if (text === 'exac' && counter_get_class_name === 1 || text === 'exac' && counter_get_class_name === 2 || text === 'exac' && counter_get_class_name === 3) {
+			text = 'exac_first'
+		}
+		return text
 	});
 
 	let url = (params.api ? params.api : "").concat("/variant_frequency?tgv_id=", params.tgv_id);
@@ -131,6 +152,15 @@ Stanza(function (stanza, params) {
 			parameters: {
 				bindings: bindings
 			}
+		});
+
+		const exac_first = stanza.select('#exac_first');
+		let exac_without_first = stanza.selectAll('.exac_without_first')
+		let exac_first_tr = stanza.selectAll('.exac_first_tr')
+		exac_first.addEventListener('click', function () {
+			$(exac_without_first).toggleClass('none')
+			$(exac_first).toggleClass('open')
+			$(exac_first_tr).toggleClass('close')
 		});
 	}).catch(function (e) {
 		stanza.root.querySelector("main").innerHTML = "<p>" + e.message + "</p>";
