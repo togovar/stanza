@@ -3,24 +3,19 @@
 
 <div class="summary_table_wrapper">
   <table class="table">
-    <tr class="variant-type-wrapper">
+    <tr>
       <th>Variant type</th>
       <td class="variant-type-value">
         <span class="{{binding.so_type}} variant-value">{{binding.variant_type}}</span>
       </td>
+
+      <th>Ref / Alt</th>
+      <td class="ref-alt">{{{print_allele binding}}}</td>
     </tr>
 
     <tr>
       <th>Position</th>
       <td>{{{print_position binding}}}</td>
-    </tr>
-  </table>
-  <table class="table">
-    <tr>
-      <th>Ref / Alt</th>
-      <td class="ref-alt">{{{print_allele binding}}}</td>
-    </tr>
-    <tr>
       <th>hgvs</th>
       <td>
         <ul>

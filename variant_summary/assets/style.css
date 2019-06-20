@@ -6,7 +6,8 @@
 }
 
 .summary_table_wrapper .table {
-  width: 50%;
+  width: 100%;
+  table-layout: fixed;
 }
 
 .summary_table_wrapper .table > tbody > tr:last-child > th {
