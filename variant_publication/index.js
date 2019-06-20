@@ -43,6 +43,7 @@ Stanza(function (stanza, params) {
 
         json.searching = false;
         json.dom = "ilrtfp";
+        json.order = [[2, "desc"]];
 
         $(stanza.select("#displayTable")).dataTable(json);
       }
