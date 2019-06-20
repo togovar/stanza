@@ -1,4 +1,4 @@
-Stanza(function(stanza, params) {
+Stanza(function (stanza, params) {
   let Handlebars = stanza.handlebars;
 
   Handlebars.registerHelper('link', function (text, url) {
@@ -25,7 +25,9 @@ Stanza(function(stanza, params) {
       {
         name: 'dbSNP',
         refs: Array.from(new Set(results.map(x => x.dbsnp)))
-          .map(function (x) { return { label: x.replace('http://identifiers.org/dbsnp/', ''), url: x } })
+          .map(function (x) {
+            return {label: x.replace('http://identifiers.org/dbsnp/', ''), url: x}
+          })
       }
     ];
 

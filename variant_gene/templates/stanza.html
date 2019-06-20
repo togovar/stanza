@@ -1,37 +1,37 @@
-<link rel="stylesheet" type="text/css" href="/stanza/common/assets/stylesheets/stanza.css" />
-<link rel="stylesheet" type="text/css" href="/stanza/variant_gene/assets/style.css" />
+<link rel="stylesheet" type="text/css" href="/stanza/common/assets/stylesheets/stanza.css"/>
+<link rel="stylesheet" type="text/css" href="/stanza/variant_gene/assets/style.css"/>
 
 <table class="table gene">
-	<tr>
-		<th>HGNC/Approved name</th>
-		<td>{{binding.approved_name}}</td>
-	</tr>
+  <tr>
+    <th>HGNC/Approved name</th>
+    <td>{{binding.approved_name}}</td>
+  </tr>
 
-	<tr>
-		<th>HGNC/Approved symbol</th>
-		<td>
-			<ul>
-				{{#each binding.symbol}}
-				<li>
-					<a href="">
-						{{this}}
-					</a>
-				</li>
-				{{/each}}
-			</ul>
-		</td>
-	</tr>
+  <tr>
+    <th>HGNC/Approved symbol</th>
+    <td>
+      <ul>
+        {{#each binding.symbol}}
+        <li>
+          <a href="">
+            {{this}}
+          </a>
+        </li>
+        {{/each}}
+      </ul>
+    </td>
+  </tr>
 
-	<tr>
-		<th>HGNC/Alias name</th>
-		<td>
-			<ul>
-				{{#each binding.synonym}}
-				<li>
-					{{this}}
-				</li>
-				{{/each}}
-			</ul>
-		</td>
-	</tr>
+  <tr>
+    <th>HGNC/Alias name</th>
+    <td>
+      <ul>
+        {{#each binding.synonym}}
+        <li>
+          {{this}}
+        </li>
+        {{/each}}
+      </ul>
+    </td>
+  </tr>
 </table>

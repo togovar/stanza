@@ -1,10 +1,15 @@
 .table > tbody > tr > td {
-  height: 26px; }
-  .table > tbody > tr > td > .variant-function {
-    font-size: 12px;
-    padding: 1px 8px;
-    border-radius: 20px; }
-  .table > tbody > tr > td > .sift-label,
-  .table > tbody > tr > td > .polyphen-label {
-    font-size: 12px;
-    margin-left: 5px; }
+  height: 26px;
+}
+
+.table > tbody > tr > td > .variant-function {
+  font-size: 12px;
+  padding: 1px 8px;
+  border-radius: 20px;
+}
+
+.table > tbody > tr > td > .sift-label,
+.table > tbody > tr > td > .polyphen-label {
+  font-size: 12px;
+  margin-left: 5px;
+}

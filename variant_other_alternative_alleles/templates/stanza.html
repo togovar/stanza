@@ -1,59 +1,59 @@
-<link rel="stylesheet" type="text/css" href="/stanza/common/assets/stylesheets/stanza.css" />
-<link rel="stylesheet" type="text/css" href="/stanza/variant_other_alternative_alleles/assets/style.css" />
+<link rel="stylesheet" type="text/css" href="/stanza/common/assets/stylesheets/stanza.css"/>
+<link rel="stylesheet" type="text/css" href="/stanza/variant_other_alternative_alleles/assets/style.css"/>
 
 <table class="table other_alternative_alleles">
-	{{#if data}}
-	<thead>
-		<tr>
-			<th>TogoVar ID</th>
-			<th>Variant type</th>
-			<th>Ref / Alt</th>
-			<th>Alt frequency</th>
-			<th>Consequence</th>
-			<th>SIFT</th>
-			<th>PolyPhen</th>
-			<th>Clinical Significance</th>
-		</tr>
-	</thead>
+  {{#if data}}
+  <thead>
+  <tr>
+    <th>TogoVar ID</th>
+    <th>Variant type</th>
+    <th>Ref / Alt</th>
+    <th>Alt frequency</th>
+    <th>Consequence</th>
+    <th>SIFT</th>
+    <th>PolyPhen</th>
+    <th>Clinical Significance</th>
+  </tr>
+  </thead>
 
-	<tbody>
-		{{#each data}}
-		<tr>
-			<td class="id">
-				<a href="">
-					{{id}}
-				</a>
-			</td>
-			<td class="type">{{so_label type}}</td>
-			<td class="ref-alt">{{{print_allele this}}}</td>
-			<td>
-				<div class="frequency-graph">
-					{{#each frequencies}}
-					{{{ getFrequency this }}}
-					{{/each}}
-				</div>
-			</td>
-			<td class="consequence">
-				{{mapConsequence most_severe_consequence}}
-				{{{badge transcripts.length}}}
-			</td>
-			<td class="sift">
-				{{{getSift sift}}}
-			</td>
-			<td class="polyphen">
-				{{{getPolyphen polyphen}}}
-			</td>
-			<td class="clinical_significance_wrapper">
-				{{{getSignificance significance.[0]}}} {{{badge significance.length}}}
-			</td>
-		</tr>
-		{{/each}}
-	</tbody>
-	{{else}}
-	<tbody>
-		<tr>
-			<td>No other variants on the same location</td>
-		</tr>
-	</tbody>
+  <tbody>
+  {{#each data}}
+  <tr>
+    <td class="id">
+      <a href="">
+        {{id}}
+      </a>
+    </td>
+    <td class="type">{{so_label type}}</td>
+    <td class="ref-alt">{{{print_allele this}}}</td>
+    <td>
+      <div class="frequency-graph">
+        {{#each frequencies}}
+        {{{ getFrequency this }}}
+        {{/each}}
+      </div>
+    </td>
+    <td class="consequence">
+      {{mapConsequence most_severe_consequence}}
+      {{{badge transcripts.length}}}
+    </td>
+    <td class="sift">
+      {{{getSift sift}}}
+    </td>
+    <td class="polyphen">
+      {{{getPolyphen polyphen}}}
+    </td>
+    <td class="clinical_significance_wrapper">
+      {{{getSignificance significance.[0]}}} {{{badge significance.length}}}
+    </td>
+  </tr>
+  {{/each}}
+  </tbody>
+  {{else}}
+  <tbody>
+  <tr>
+    <td>No other variants on the same location</td>
+  </tr>
+  </tbody>
 </table>
 {{/if}}
