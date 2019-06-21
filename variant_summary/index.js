@@ -39,13 +39,13 @@ Stanza(function (stanza, params) {
     return `<span class='ref' data-sum='${ref_length}'>${ref}</span><span class='arrow'></span><span class='alt' data-sum='${alt_length}'>${alt}</span>`;
   });
 
-  let url = (params.api ? params.api : "").concat("/variant_summary?tgv_id=" + params.tgv_id);
+  let sparqlist = (params.api ? params.api : "/sparqlist/api").concat("/variant_summary?tgv_id=" + params.tgv_id);
 
   if (params.ep) {
-    url = url.concat("&ep=" + encodeURIComponent(params.ep))
+    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.ep))
   }
 
-  fetch(url, {
+  fetch(sparqlist, {
     method: "GET",
     headers: {
       "Accept": "application/json"
