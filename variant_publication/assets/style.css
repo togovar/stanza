@@ -1,118 +1,178 @@
-#target > #displayTable_wrapper > #displayTable_info {
+#dataTable_wrapper > #dataTable_info {
   display: inline-block;
   font-size: 14px;
   margin-bottom: 10px;
-  margin-left: 17px; }
+  margin-left: 17px;
+}
 
-#target > #displayTable_wrapper > #displayTable_length {
+#dataTable_wrapper > #dataTable_length {
   display: inline-block;
   position: absolute;
-  right: 0; }
-  #target > #displayTable_wrapper > #displayTable_length > label {
-    font-size: 14px;
-    margin: 11px 17px 0 0; }
+  right: 0;
+}
 
-#target > #displayTable_wrapper > #displayTable {
+#dataTable_wrapper > #dataTable_length > label {
+  font-size: 14px;
+  margin: 11px 17px 0 0;
+}
+
+#dataTable_wrapper > #dataTable {
   width: auto !important;
   border-collapse: collapse;
-  font-family: 'Roboto Condensed', sans-serif; }
-  #target > #displayTable_wrapper > #displayTable > thead {
-    padding-top: 2px; }
-    #target > #displayTable_wrapper > #displayTable > thead > tr > th {
-      font-size: 12px;
-      color: #94928d;
-      font-weight: 500;
-      vertical-align: baseline;
-      text-align: left;
-      padding-top: 14px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid #444444; }
-      #target > #displayTable_wrapper > #displayTable > thead > tr > th[data-label="PMID"] {
-        width: 10% !important; }
-      #target > #displayTable_wrapper > #displayTable > thead > tr > th[data-label="Reference"] {
-        width: 55% !important; }
-      #target > #displayTable_wrapper > #displayTable > thead > tr > th[data-label="Year"] {
-        width: 5% !important; }
-      #target > #displayTable_wrapper > #displayTable > thead > tr > th[data-label="Cited"] {
-        width: 5% !important; }
-      #target > #displayTable_wrapper > #displayTable > thead > tr > th[data-label="Diseases"] {
-        width: 25% !important; }
-      #target > #displayTable_wrapper > #displayTable > thead > tr > th.sorting_asc, #target > #displayTable_wrapper > #displayTable > thead > tr > th.sorting_desc, #target > #displayTable_wrapper > #displayTable > thead > tr > th.sorting {
-        background-size: 15px;
-        background-position-y: 16px; }
-    #target > #displayTable_wrapper > #displayTable > thead:first-child {
-      padding-left: 14px; }
-  #target > #displayTable_wrapper > #displayTable > tbody > tr > td {
-    font-size: 14px;
-    color: #444444;
-    vertical-align: middle;
-    border-bottom: 1px solid #dee2e6; }
-    #target > #displayTable_wrapper > #displayTable > tbody > tr > td:first-of-type {
-      padding-left: 14px;
-      width: 10% !important; }
-    #target > #displayTable_wrapper > #displayTable > tbody > tr > td:nth-of-type(2) {
-      width: 55% !important; }
-    #target > #displayTable_wrapper > #displayTable > tbody > tr > td:nth-of-type(3) {
-      width: 5% !important; }
-    #target > #displayTable_wrapper > #displayTable > tbody > tr > td:nth-of-type(4) {
-      width: 5% !important; }
-    #target > #displayTable_wrapper > #displayTable > tbody > tr > td:last-of-type {
-      width: 25% !important; }
+  font-family: 'Roboto Condensed', sans-serif;
+}
 
-#target > #displayTable_wrapper > .dataTables_paginate {
+#dataTable_wrapper > #dataTable > thead {
+  padding-top: 2px;
+}
+
+#dataTable_wrapper > #dataTable > thead > tr > th {
+  font-size: 12px;
+  color: #94928d;
+  font-weight: 500;
+  vertical-align: baseline;
+  text-align: left;
+  padding-top: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #444444;
+}
+
+#dataTable_wrapper > #dataTable > thead > tr > th[data-label="PMID"] {
+  width: 10% !important;
+}
+
+#dataTable_wrapper > #dataTable > thead > tr > th[data-label="Reference"] {
+  width: 55% !important;
+}
+
+#dataTable_wrapper > #dataTable > thead > tr > th[data-label="Year"] {
+  width: 5% !important;
+}
+
+#dataTable_wrapper > #dataTable > thead > tr > th[data-label="Cited"] {
+  width: 5% !important;
+}
+
+#dataTable_wrapper > #dataTable > thead > tr > th[data-label="Diseases"] {
+  width: 25% !important;
+}
+
+#dataTable_wrapper > #dataTable > thead > tr > th.sorting_asc,
+#dataTable_wrapper > #dataTable > thead > tr > th.sorting_desc,
+#dataTable_wrapper > #dataTable > thead > tr > th.sorting {
+  background-size: 15px;
+  background-position-y: 16px;
+}
+
+#dataTable_wrapper > #dataTable > thead:first-child {
+  padding-left: 14px;
+}
+
+#dataTable_wrapper > #dataTable > tbody > tr > td {
+  font-size: 14px;
+  color: #444444;
+  vertical-align: middle;
+  border-bottom: 1px solid #dee2e6;
+}
+
+#dataTable_wrapper > #dataTable > tbody > tr > td:first-of-type {
+  padding-left: 14px;
+  width: 10% !important;
+}
+
+#dataTable_wrapper > #dataTable > tbody > tr > td:nth-of-type(2) {
+  width: 55% !important;
+}
+
+#dataTable_wrapper > #dataTable > tbody > tr > td:nth-of-type(3) {
+  width: 5% !important;
+}
+
+#dataTable_wrapper > #dataTable > tbody > tr > td:nth-of-type(4) {
+  width: 5% !important;
+}
+
+#dataTable_wrapper > #dataTable > tbody > tr > td:last-of-type {
+  width: 25% !important;
+}
+
+#dataTable_wrapper > .dataTables_paginate {
   float: unset;
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 14px;
-  font-weight: bold; }
-  #target > #displayTable_wrapper > .dataTables_paginate > span > .paginate_button {
-    padding: 1px 0 0 0;
-    width: 24px;
-    height: 24px;
-    margin: 15px 7px 11px; }
-    #target > #displayTable_wrapper > .dataTables_paginate > span > .paginate_button.current {
-      color: #ffffff !important;
-      background: none;
-      background-color: #249eb3;
-      border-radius: 50px;
-      border: none; }
-      #target > #displayTable_wrapper > .dataTables_paginate > span > .paginate_button.current:focus {
-        outline: none; }
-    #target > #displayTable_wrapper > .dataTables_paginate > span > .paginate_button:hover {
-      color: #ffffff !important;
-      background: none;
-      background-color: #249eb3;
-      border-radius: 50px;
-      border: none; }
-  #target > #displayTable_wrapper > .dataTables_paginate > .paginate_button {
-    text-indent: 100vw;
-    white-space: nowrap;
-    overflow: hidden;
-    display: inline-block;
-    content: '';
-    width: 15px;
-    height: 15px;
-    background-repeat: no-repeat;
-    background-size: 6px;
-    padding: 0;
-    margin-top: 5px;
-    background-position: 2px 1px; }
-    #target > #displayTable_wrapper > .dataTables_paginate > .paginate_button:hover {
-      border: none;
-      width: 15px;
-      height: 15px;
-      background-size: 15px;
-      background-position: 0; }
-    #target > #displayTable_wrapper > .dataTables_paginate > .paginate_button.previous {
-      background-image: url("/stanza/common/assets/stylesheets/DataTables-1.10.18/images/prev_btn.png"); }
-      #target > #displayTable_wrapper > .dataTables_paginate > .paginate_button.previous:hover {
-        background-image: url("/stanza/common/assets/stylesheets/DataTables-1.10.18/images/prev_btn_hover.png"); }
-    #target > #displayTable_wrapper > .dataTables_paginate > .paginate_button.next {
-      background-image: url("/stanza/common/assets/stylesheets/DataTables-1.10.18/images/next_btn.png");
-      margin-left: 12px; }
-      #target > #displayTable_wrapper > .dataTables_paginate > .paginate_button.next:hover {
-        background-image: url("/stanza/common/assets/stylesheets/DataTables-1.10.18/images/next_btn_hover.png"); }
-    #target > #displayTable_wrapper > .dataTables_paginate > .paginate_button:focus {
-      outline: none; }
+  font-weight: bold;
+}
+
+#dataTable_wrapper > .dataTables_paginate > span > .paginate_button {
+  padding: 1px 0 0 0;
+  width: 24px;
+  height: 24px;
+  margin: 15px 7px 11px;
+}
+
+#dataTable_wrapper > .dataTables_paginate > span > .paginate_button.current {
+  color: #ffffff !important;
+  background: none;
+  background-color: #249eb3;
+  border-radius: 50px;
+  border: none;
+}
+
+#dataTable_wrapper > .dataTables_paginate > span > .paginate_button.current:focus {
+  outline: none;
+}
+
+#dataTable_wrapper > .dataTables_paginate > span > .paginate_button:hover {
+  color: #ffffff !important;
+  background: none;
+  background-color: #249eb3;
+  border-radius: 50px;
+  border: none;
+}
+
+#dataTable_wrapper > .dataTables_paginate > .paginate_button {
+  text-indent: 100vw;
+  white-space: nowrap;
+  overflow: hidden;
+  display: inline-block;
+  content: '';
+  width: 15px;
+  height: 15px;
+  background-repeat: no-repeat;
+  background-size: 6px;
+  padding: 0;
+  margin-top: 5px;
+  background-position: 2px 1px;
+}
+
+#dataTable_wrapper > .dataTables_paginate > .paginate_button:hover {
+  border: none;
+  width: 15px;
+  height: 15px;
+  background-size: 15px;
+  background-position: 0;
+}
+
+#dataTable_wrapper > .dataTables_paginate > .paginate_button.previous {
+  background-image: url("../../common/assets/stylesheets/DataTables-1.10.18/images/prev_btn.png");
+}
+
+#dataTable_wrapper > .dataTables_paginate > .paginate_button.previous:hover {
+  background-image: url("../../common/assets/stylesheets/DataTables-1.10.18/images/prev_btn_hover.png");
+}
+
+#dataTable_wrapper > .dataTables_paginate > .paginate_button.next {
+  background-image: url("../../common/assets/stylesheets/DataTables-1.10.18/images/next_btn.png");
+  margin-left: 12px;
+}
+
+#dataTable_wrapper > .dataTables_paginate > .paginate_button.next:hover {
+  background-image: url("../../common/assets/stylesheets/DataTables-1.10.18/images/next_btn_hover.png");
+}
+
+#dataTable_wrapper > .dataTables_paginate > .paginate_button:focus {
+  outline: none;
+}

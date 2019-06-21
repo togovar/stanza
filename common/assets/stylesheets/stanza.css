@@ -914,6 +914,10 @@ label > input {
 
 /* Commom */
 ul {
+  padding-inline-start: 2rem;
+}
+
+ul.no-bullet {
   list-style: none;
   margin: 0;
   padding: 0;
