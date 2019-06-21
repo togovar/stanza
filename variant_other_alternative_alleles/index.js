@@ -280,6 +280,10 @@ Stanza(function (stanza, params) {
   });
 
   stanza.handlebars.registerHelper("getSift", function (sift) {
+    if (!sift) {
+      return
+    }
+
     let class_name = sift >= .05 ? "T" : "D";
     let sift_val = String(sift);
 
@@ -293,6 +297,10 @@ Stanza(function (stanza, params) {
   });
 
   stanza.handlebars.registerHelper("getPolyphen", function (polyphen) {
+    if (!polyphen) {
+      return
+    }
+
     let class_name = "";
     let polyphen_val = String(polyphen);
 
