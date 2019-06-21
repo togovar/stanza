@@ -20,7 +20,13 @@
     },
     {
       "stanza:key": "api",
-      "stanza:example": "https://togovar.biosciencedbc.jp",
+      "stanza:example": "https://togovar.biosciencedbc.jp/sparqlist/api",
+      "stanza:description": "SPARQList API",
+      "stanza:required": false
+    },
+    {
+      "stanza:key": "search_api",
+      "stanza:example": "https://togovar.biosciencedbc.jp/search",
       "stanza:description": "TogoVar search API",
       "stanza:required": false
     }
