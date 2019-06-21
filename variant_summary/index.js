@@ -21,8 +21,7 @@ Stanza(function (stanza, params) {
       return
     }
 
-    let ref = v.ref || "";
-    let alt = v.alt || "";
+    let ref = v.ref || "", alt = v.alt || "";
 
     if (ref.length === 0) {
       ref = "-"
@@ -30,12 +29,14 @@ Stanza(function (stanza, params) {
     if (alt.length === 0) {
       alt = "-"
     }
+
     let ref_length = ref.length;
     let alt_length = alt.length;
-    if (ref.length >= 4) {
+
+    if (ref.length > 4) {
       ref = ref.slice(0, 4) + "..."
     }
-    if (alt.length >= 4) {
+    if (alt.length > 4) {
       alt = alt.slice(0, 4) + "..."
     }
 
