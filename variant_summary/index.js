@@ -12,10 +12,6 @@ Stanza(function (stanza, params) {
       .concat(" <span class='assembly'>(" + assembly + ")</span>");
   });
 
-  stanza.handlebars.registerHelper("lower_case", function (text) {
-    return text.toLowerCase()
-  });
-
   stanza.handlebars.registerHelper("print_allele", function (v) {
     if (!v) {
       return
