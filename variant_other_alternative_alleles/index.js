@@ -244,17 +244,19 @@ Stanza(function (stanza, params) {
       return
     }
 
-    let ref = v.reference || "";
-    let alt = v.alternative || "";
+    let ref = v.reference || "", alt = v.alternative || "";
 
-    if (ref.length === 0) {
-      ref = "-"
+    let ref_length = ref.length;
+    let alt_length = alt.length;
+
+    if (ref.length > 4) {
+      ref = ref.slice(0, 4) + "..."
     }
-    if (alt.length === 0) {
-      alt = "-"
+    if (alt.length > 4) {
+      alt = alt.slice(0, 4) + "..."
     }
 
-    return `<span class="ref" data-sum="${ref.length}">${ref}</span><span class="arrow"></span><span class="alt" data-sum="${alt.length}">${alt}</span>`;
+    return `<span class='ref' data-sum='${ref_length}'>${ref}</span><span class='arrow'></span><span class='alt' data-sum='${alt_length}'>${alt}</span>`;
   });
 
   stanza.handlebars.registerHelper("mapConsequence", function (consequence) {
