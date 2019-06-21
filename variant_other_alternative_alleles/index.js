@@ -367,62 +367,52 @@ Stanza(function (stanza, params) {
     }
   });
 
-  if (params.api && params.ep) {
-    stanza.query({
-      endpoint: params.ep,
-      template: "fetch_position.rq",
-      parameters: params
-    }).then(function (data) {
-      let v = stanza.unwrapValueFromBinding(data)[0];
+  let sparqlist = (params.api ? params.api : "/sparqlist/api").concat("/variant_other_alternative_alleles?tgv_id=" + params.tgv_id);
 
-      if (!v) {
-        return
-      }
-
-      let url = params.api.concat("?stat=0&quality=0&start_only&term=" + v.chromosome + ":" + v.position);
-
-      fetch(url, {
-        method: "GET",
-        headers: {
-          "Accept": "application/json"
-        }
-      }).then(function (response) {
-        if (response.ok) {
-          return response.json();
-        }
-      }).then(function (json) {
-        let data = json.data ? json.data.filter(v => v.id !== params.tgv_id) : [];
-
-        data.forEach(function (row) {
-          row.frequencies = DATASETS.map(function (elem) {
-            let obj;
-
-            if (row.frequencies) {
-              obj = row.frequencies.find(x => x.source === elem)
-            }
-
-            if (!obj) {
-              obj = JSON.parse(JSON.stringify(FREQUENCY_TEMPLATE));
-              obj.source = elem;
-            }
-
-            return obj;
-          });
-        });
-
-        stanza.render({
-          template: "stanza.html",
-          parameters: {
-            data: data
-          }
-        });
-      }).catch(function (e) {
-        stanza.root.querySelector("main").innerHTML = "<p>" + e.message + "</p>";
-        throw e;
-      });
-    }).catch(function (e) {
-      stanza.root.querySelector("main").innerHTML = "<p>" + e.message + "</p>";
-      throw e;
-    });
+  if (params.ep) {
+    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.ep))
   }
+  if (params.search_api) {
+    sparqlist = sparqlist.concat("&search_api=" + encodeURIComponent(params.search_api))
+  }
+
+  fetch(sparqlist, {
+    method: "GET",
+    headers: {
+      "Accept": "application/json"
+    }
+  }).then(function (response) {
+    if (response.ok) {
+      return response.json();
+    }
+  }).then(function (json) {
+    let data = json.data ? json.data.filter(v => v.id !== params.tgv_id) : [];
+
+    data.forEach(function (row) {
+      row.frequencies = DATASETS.map(function (elem) {
+        let obj;
+
+        if (row.frequencies) {
+          obj = row.frequencies.find(x => x.source === elem)
+        }
+
+        if (!obj) {
+          obj = JSON.parse(JSON.stringify(FREQUENCY_TEMPLATE));
+          obj.source = elem;
+        }
+
+        return obj;
+      });
+    });
+
+    stanza.render({
+      template: "stanza.html",
+      parameters: {
+        data: data
+      }
+    });
+  }).catch(function (e) {
+    stanza.root.querySelector("main").innerHTML = "<p>" + e.message + "</p>";
+    throw e;
+  });
 });
