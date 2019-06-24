@@ -23,6 +23,12 @@
       "stanza:example": "https://togovar.biosciencedbc.jp/sparql",
       "stanza:description": "Endpoint URL",
       "stanza:required": false
+    },
+    {
+      "stanza:key": "jbrowse",
+      "stanza:example": "https://togovar.biosciencedbc.jp/jbrowse/index.html",
+      "stanza:description": "JBrowse URL",
+      "stanza:required": false
     }
   ],
   "stanza:usage": "<togostanza-variant_jbrowse tgv_id=\"tgv132831\" assembly=\"GRCh37\"></togostanza-variant_jbrowse>",

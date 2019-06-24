@@ -1,15 +1,15 @@
 Stanza(function (stanza, params) {
-  let url = (params.api ? params.api : "").concat("/variant_gene?tgv_id=" + params.tgv_id);
+  let sparqlist = (params.api ? params.api : "/sparqlist/api").concat("/variant_gene?tgv_id=" + params.tgv_id);
 
   if (params.assembly) {
-    url = url.concat("&assembly=" + encodeURIComponent(params.assembly))
+    sparqlist = sparqlist.concat("&assembly=" + encodeURIComponent(params.assembly))
   }
 
   if (params.ep) {
-    url = url.concat("&ep=" + encodeURIComponent(params.ep))
+    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.ep))
   }
 
-  fetch(url, {method: "GET", headers: {"Accept": "application/json"}}).then(function (response) {
+  fetch(sparqlist, {method: "GET", headers: {"Accept": "application/json"}}).then(function (response) {
     if (response.ok) {
       return response.json();
     }

@@ -971,3 +971,10 @@ ul.no-bullet {
 .table > tbody > tr:last-of-type > td {
   border: none;
 }
+
+p.error {
+  font-size: 12px;
+  color: #94928d;
+  font-weight: 500;
+  padding: 10px;
+}
