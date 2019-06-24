@@ -43,7 +43,7 @@ Stanza(function (stanza, params) {
       }
       throw new Error(sparqlist + " returns status " + response.status);
     }).then(function (json) {
-      if (!(json.data && data.data.length > 0)) {
+      if (!(json.data && json.data.length > 0)) {
         return stanza.render({
           template: "error.html",
           parameters: {
