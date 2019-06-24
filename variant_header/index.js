@@ -17,19 +17,16 @@ Stanza(function (stanza, params) {
   }).then(function (data) {
     let results = stanza.unwrapValueFromBinding(data);
 
-    if (!results) {
-      return
+    let xrefs;
+    if (results && results.length > 0) {
+      xrefs = [
+        {
+          name: 'dbSNP',
+          refs: Array.from(new Set(results.map(x => x.dbsnp)))
+            .map(x => ({label: x.replace('http://identifiers.org/dbsnp/', ''), url: x}))
+        }
+      ];
     }
-
-    let xrefs = [
-      {
-        name: 'dbSNP',
-        refs: Array.from(new Set(results.map(x => x.dbsnp)))
-          .map(function (x) {
-            return {label: x.replace('http://identifiers.org/dbsnp/', ''), url: x}
-          })
-      }
-    ];
 
     stanza.render({
       template: "stanza.html",
