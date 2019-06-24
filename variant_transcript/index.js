@@ -133,7 +133,7 @@ Stanza(function (stanza, params) {
 
     bindings.forEach(function (binding) {
       binding.transcript = {
-        label: binding.transcript.split("/").reverse()[0],
+        label: binding.transcript ? binding.transcript.split("/").reverse()[0] : "",
         url: binding.enst_id ? "http://identifiers.org/ensembl/".concat(binding.enst_id) : null
       };
       binding.consequence_label = binding.consequence_label.split(",");
