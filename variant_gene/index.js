@@ -1,4 +1,13 @@
 Stanza(function (stanza, params) {
+  if (!params.tgv_id) {
+    return stanza.render({
+      template: "error.html",
+      parameters: {
+        message: "Parameter missing: tgv_id",
+      }
+    });
+  }
+
   let sparqlist = (params.api ? params.api : "/sparqlist/api").concat("/variant_gene?tgv_id=" + params.tgv_id);
 
   if (params.assembly) {
@@ -13,6 +22,7 @@ Stanza(function (stanza, params) {
     if (response.ok) {
       return response.json();
     }
+    throw new Error(sparqlist + " returns status " + response.status);
   }).then(function (json) {
     let bindings = stanza.unwrapValueFromBinding(json);
     let binding = bindings[0];
@@ -29,7 +39,11 @@ Stanza(function (stanza, params) {
       }
     });
   }).catch(function (e) {
-    stanza.root.querySelector("main").innerHTML = "<p>" + e.message + "</p>";
-    throw e;
+    stanza.render({
+      template: "error.html",
+      parameters: {
+        message: e.message,
+      }
+    });
   });
 });

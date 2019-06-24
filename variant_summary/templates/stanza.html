@@ -1,6 +1,7 @@
 <link rel="stylesheet" type="text/css" href="/stanza/common/assets/stylesheets/stanza.css"/>
 <link rel="stylesheet" type="text/css" href="/stanza/variant_summary/assets/style.css"/>
 
+{{#if binding}}
 <div class="summary_table_wrapper">
   <table class="table">
     <tr>
@@ -29,3 +30,6 @@
     </tr>
   </table>
 </div>
+{{else}}
+<p class="error">No other variants on the same location</p>
+{{/if}}

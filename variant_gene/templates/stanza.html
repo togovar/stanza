@@ -1,6 +1,7 @@
 <link rel="stylesheet" type="text/css" href="/stanza/common/assets/stylesheets/stanza.css"/>
 <link rel="stylesheet" type="text/css" href="/stanza/variant_gene/assets/style.css"/>
 
+{{#if binding}}
 <table class="table gene">
   <tr>
     <th>HGNC/Approved name</th>
@@ -35,3 +36,6 @@
     </td>
   </tr>
 </table>
+{{else}}
+<p class="error">No data</p>
+{{/if}}

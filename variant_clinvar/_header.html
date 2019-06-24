@@ -1,5 +1,9 @@
 <script>
   function rowspanize(table) {
+    if (!table) {
+      return;
+    }
+
     let arr = [];
 
     table.querySelectorAll("tr").forEach(function (tr, r) {

@@ -22,6 +22,15 @@ const ORDER_WEIGHT = {
 };
 
 Stanza(function (stanza, params) {
+  if (!params.tgv_id) {
+    return stanza.render({
+      template: "error.html",
+      parameters: {
+        message: "Parameter missing: tgv_id",
+      }
+    });
+  }
+
   stanza.handlebars.registerHelper("locale_string", (str) => {
     return str ? parseInt(str).toLocaleString() : "";
   });
@@ -140,6 +149,7 @@ Stanza(function (stanza, params) {
     if (response.ok) {
       return response.json();
     }
+    throw new Error(sparqlist + " returns status " + response.status);
   }).then(function (json) {
     let bindings = stanza.unwrapValueFromBinding(json);
 
@@ -162,15 +172,23 @@ Stanza(function (stanza, params) {
     });
 
     const exac_first = stanza.select('#exac_first');
-    let exac_without_first = stanza.selectAll('.exac_without_first')
-    let exac_first_tr = stanza.selectAll('.exac_first_tr')
-    exac_first.addEventListener('click', function () {
-      $(exac_without_first).toggleClass('none')
-      $(exac_first).toggleClass('open')
-      $(exac_first_tr).toggleClass('close')
-    });
+
+    if (exac_first) {
+      let exac_without_first = stanza.selectAll('.exac_without_first');
+      let exac_first_tr = stanza.selectAll('.exac_first_tr');
+
+      exac_first.addEventListener('click', function () {
+        $(exac_without_first).toggleClass('none');
+        $(exac_first).toggleClass('open');
+        $(exac_first_tr).toggleClass('close');
+      });
+    }
   }).catch(function (e) {
-    stanza.root.querySelector("main").innerHTML = "<p>" + e.message + "</p>";
-    throw e;
+    stanza.render({
+      template: "error.html",
+      parameters: {
+        message: e.message,
+      }
+    });
   });
 });

@@ -239,6 +239,15 @@ let consequence_map = {
 };
 
 Stanza(function (stanza, params) {
+  if (!params.tgv_id) {
+    return stanza.render({
+      template: "error.html",
+      parameters: {
+        message: "Parameter missing: tgv_id",
+      }
+    });
+  }
+
   stanza.handlebars.registerHelper("print_allele", function (v) {
     if (!v) {
       return
@@ -395,6 +404,7 @@ Stanza(function (stanza, params) {
     if (response.ok) {
       return response.json();
     }
+    throw new Error(sparqlist + " returns status " + response.status);
   }).then(function (json) {
     let data = json.data ? json.data.filter(v => v.id !== params.tgv_id) : [];
 
@@ -422,7 +432,11 @@ Stanza(function (stanza, params) {
       }
     });
   }).catch(function (e) {
-    stanza.root.querySelector("main").innerHTML = "<p>" + e.message + "</p>";
-    throw e;
+    stanza.render({
+      template: "error.html",
+      parameters: {
+        message: e.message,
+      }
+    });
   });
 });

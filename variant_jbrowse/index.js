@@ -1,24 +1,29 @@
 Stanza((stanza, params) => {
-  const RANGE = 50;
-
   if (!params.tgv_id) {
-    stanza.render({
+    return stanza.render({
       template: "error.html",
       parameters: {
         message: "Parameter missing: tgv_id",
       }
     });
-    return
   }
   if (!params.assembly) {
-    stanza.render({
+    return stanza.render({
       template: "error.html",
       parameters: {
         message: "Parameter missing: assembly",
       }
     });
-    return
+  } else if (!(params.assembly === "GRCh37" || params.assembly === "GRCh38")) {
+    return stanza.render({
+      template: "error.html",
+      parameters: {
+        message: "Invalid parameter: assembly=" + params.assembly,
+      }
+    });
   }
+
+  const RANGE = 50;
 
   stanza.query({
     endpoint: params.ep ? params.ep : "/sparql",
@@ -28,13 +33,12 @@ Stanza((stanza, params) => {
     let v = stanza.unwrapValueFromBinding(data)[0];
 
     if (!v) {
-      stanza.render({
+      return stanza.render({
         template: "error.html",
         parameters: {
           message: "Failed to obtain genomic position for " + params.tgv_id,
         }
       });
-      return
     }
 
     let type = v.type;
@@ -65,7 +69,11 @@ Stanza((stanza, params) => {
       }
     });
   }).catch(function (e) {
-    stanza.root.querySelector("main").innerHTML = "<p>" + e.message + "</p>";
-    throw e;
+    stanza.render({
+      template: "error.html",
+      parameters: {
+        message: e.message,
+      }
+    });
   });
 });

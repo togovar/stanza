@@ -27,6 +27,15 @@ const CLINICAL_SIGNIFICANCE = {
 };
 
 Stanza(function (stanza, params) {
+  if (!params.tgv_id) {
+    return stanza.render({
+      template: "error.html",
+      parameters: {
+        message: "Parameter missing: tgv_id",
+      }
+    });
+  }
+
   let Handlebars = stanza.handlebars;
 
   Handlebars.registerHelper('link', function (text, url) {
@@ -57,6 +66,7 @@ Stanza(function (stanza, params) {
     if (response.ok) {
       return response.json();
     }
+    throw new Error(sparqlist + " returns status " + response.status);
   }).then(function (json) {
     let bindings = stanza.unwrapValueFromBinding(json);
 
@@ -77,7 +87,11 @@ Stanza(function (stanza, params) {
 
     rowspanize(stanza.select("#target"));
   }).catch(function (e) {
-    stanza.root.querySelector("main").innerHTML = "<p>" + e.message + "</p>";
-    throw e;
+    stanza.render({
+      template: "error.html",
+      parameters: {
+        message: e.message,
+      }
+    });
   });
 });

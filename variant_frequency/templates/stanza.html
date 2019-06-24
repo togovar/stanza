@@ -1,8 +1,8 @@
 <link rel="stylesheet" type="text/css" href="/stanza/common/assets/stylesheets/stanza.css"/>
 <link rel="stylesheet" type="text/css" href="/stanza/variant_frequency/assets/style.css"/>
 
+{{#if bindings}}
 <table class="table frequency-detail">
-  {{#if bindings}}
   <thead>
   <tr>
     <th rowspan="2">Dataset</th>
@@ -22,7 +22,6 @@
     <th class="num_genotype_ref_homo">Ref / Ref</th>
   </tr>
   </thead>
-  {{/if}}
 
   <tbody>
   {{#each bindings}}
@@ -51,11 +50,10 @@
     <td class="filter">{{{format_filter filter}}}</td>
     <td class="quality">{{quality}}</td>
   </tr>
-  {{else}}
-  <tr>
-    <td>No data</td>
-  </tr>
   {{/each}}
 
   </tbody>
 </table>
+{{else}}
+<p class="error">No data</p>
+{{/if}}

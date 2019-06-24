@@ -1,8 +1,8 @@
 <link rel="stylesheet" type="text/css" href="/stanza/common/assets/stylesheets/stanza.css"/>
 <link rel="stylesheet" type="text/css" href="/stanza/variant_other_alternative_alleles/assets/style.css"/>
 
+{{#if data}}
 <table class="table other_alternative_alleles">
-  {{#if data}}
   <thead>
   <tr>
     <th>TogoVar ID</th>
@@ -49,11 +49,7 @@
   </tr>
   {{/each}}
   </tbody>
-  {{else}}
-  <tbody>
-  <tr>
-    <td>No other variants on the same location</td>
-  </tr>
-  </tbody>
 </table>
+{{else}}
+<p class="error">No other variants on the same location</p>
 {{/if}}

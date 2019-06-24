@@ -1,8 +1,8 @@
 <link rel="stylesheet" type="text/css" href="/stanza/common/assets/stylesheets/stanza.css"/>
 <link rel="stylesheet" type="text/css" href="/stanza/variant_clinvar/assets/style.css"/>
 
+{{#if bindings}}
 <table id="target" class="table">
-  {{#if bindings}}
   <thead>
   <tr>
     <th>Title</th>
@@ -12,7 +12,6 @@
     <th>Condition(s)</th>
   </tr>
   </thead>
-  {{/if}}
 
   <tbody>
   {{#each bindings}}
@@ -31,10 +30,9 @@
     <td class="last-evaluated">{{last_evaluated}}</td>
     <td class="condition">{{link condition.label condition.url}}</td>
   </tr>
-  {{else}}
-  <tr>
-    <td>No data</td>
-  </tr>
   {{/each}}
   </tbody>
 </table>
+{{else}}
+<p class="error">No data</p>
+{{/if}}

@@ -1,4 +1,13 @@
 Stanza(function (stanza, params) {
+  if (!params.tgv_id) {
+    return stanza.render({
+      template: "error.html",
+      parameters: {
+        message: "Parameter missing: tgv_id",
+      }
+    });
+  }
+
   params.prefix = "http://identifiers.org/dbsnp/";
 
   stanza.query({
@@ -9,14 +18,12 @@ Stanza(function (stanza, params) {
     let rs = stanza.unwrapValueFromBinding(data)[0];
 
     if (!rs) {
-      stanza.render({
-        template: "stanza.html",
+      return stanza.render({
+        template: "error.html",
         parameters: {
-          message: "No data"
+          message: "No data",
         }
       });
-
-      return
     }
 
     let sparqlist = (params.api ? params.api : "/sparqlist/api").concat("/variant_publication?rs=" + rs.uri.replace(params.prefix, ""));
@@ -24,10 +31,6 @@ Stanza(function (stanza, params) {
     // if (params.ep) {
     //   sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.ep))
     // }
-
-    stanza.render({
-      template: "stanza.html"
-    });
 
     fetch(sparqlist, {
       method: "GET",
@@ -38,10 +41,20 @@ Stanza(function (stanza, params) {
       if (response.ok) {
         return response.json();
       }
+      throw new Error(sparqlist + " returns status " + response.status);
     }).then(function (json) {
-      if (!json) {
-        return ''
+      if (!(json.data && data.data.length > 0)) {
+        return stanza.render({
+          template: "error.html",
+          parameters: {
+            message: "No data",
+          }
+        });
       }
+
+      stanza.render({
+        template: "stanza.html"
+      });
 
       $(stanza.select("#container")).html('<table id="dataTable"><thead><tr>' + json.columns.map(x => "<th>" + x + "</th>").join("") + '</tr></thead></table>');
 
@@ -66,11 +79,19 @@ Stanza(function (stanza, params) {
         ]
       });
     }).catch(function (e) {
-      stanza.root.querySelector("main").innerHTML = "<p>" + e.message + "</p>";
-      throw e;
+      return stanza.render({
+        template: "error.html",
+        parameters: {
+          message: e.message,
+        }
+      });
     });
   }).catch(function (e) {
-    stanza.root.querySelector("main").innerHTML = "<p>" + e.message + "</p>";
-    throw e;
+    return stanza.render({
+      template: "error.html",
+      parameters: {
+        message: e.message,
+      }
+    });
   });
 });

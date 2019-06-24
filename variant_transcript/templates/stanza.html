@@ -1,8 +1,8 @@
 <link rel="stylesheet" type="text/css" href="/stanza/common/assets/stylesheets/stanza.css"/>
 <link rel="stylesheet" type="text/css" href="/stanza/variant_transcript/assets/style.css"/>
 
+{{#if bindings}}
 <table class="table">
-  {{#if bindings}}
   <thead>
   <tr>
     <th>Transcript ID</th>
@@ -14,7 +14,6 @@
     <th>PolyPhen</th>
   </tr>
   </thead>
-  {{/if}}
 
   <tbody>
   {{#each bindings}}
@@ -33,10 +32,9 @@
     <td class="sift">{{print_sift sift}}</td>
     <td class="polyphen">{{print_polyphen polyphen}}</td>
   </tr>
-  {{else}}
-  <tr>
-    <td>No data</td>
-  </tr>
   {{/each}}
   </tbody>
 </table>
+{{else}}
+<p class="error">No data</p>
+{{/if}}
