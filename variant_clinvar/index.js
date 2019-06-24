@@ -9,6 +9,23 @@ const REVIEW_STATUS = {
   "practice guideline": 4
 };
 
+const CLINICAL_SIGNIFICANCE = {
+  "pathogenic": "P",
+  "likely pathogenic": "LP",
+  "uncertain significance": "US",
+  "likely benign": "LB",
+  "benign": "B",
+  "conflicting interpretations of pathogenicity": "CI",
+  "drug response": "DR",
+  "association": "A",
+  "risk factor": "RF",
+  "protective": "PR",
+  "affects": "AF",
+  "other": "O",
+  "not provided": "NP",
+  "association_not found": "AN",
+};
+
 Stanza(function (stanza, params) {
   let Handlebars = stanza.handlebars;
 
@@ -21,47 +38,17 @@ Stanza(function (stanza, params) {
     );
   });
 
-  Handlebars.registerHelper('get-clinical-significance-sign', function (interpretation) {
-    let data_sign = ""
-    if (interpretation === "Pathogenic") {
-      data_sign = 'P'
-    } else if (interpretation === "Likely pathogenic") {
-      data_sign = 'LP'
-    } else if (interpretation === "Uncertain significance") {
-      data_sign = 'US'
-    } else if (interpretation === "likely benign") {
-      data_sign = 'LB'
-    } else if (interpretation === "Benign") {
-      data_sign = 'B'
-    } else if (interpretation === "Conflicting interpretations of pathogenicity") {
-      data_sign = 'CI'
-    } else if (interpretation === "Drug response") {
-      data_sign = 'DR'
-    } else if (interpretation === "Association") {
-      data_sign = 'A'
-    } else if (interpretation === "Risk factor") {
-      data_sign = 'RF'
-    } else if (interpretation === "Protective") {
-      data_sign = 'PR'
-    } else if (interpretation === "Affects") {
-      data_sign = 'AF'
-    } else if (interpretation === "Other") {
-      data_sign = 'O'
-    } else if (interpretation === "Not provided") {
-      data_sign = 'NP'
-    } else if (interpretation === "Association_not found") {
-      data_sign = 'AN'
-    }
-    return data_sign
+  Handlebars.registerHelper('significance_class', function (interpretation) {
+    return CLINICAL_SIGNIFICANCE[interpretation.toLowerCase()]
   });
 
-  let url = (params.api ? params.api : "").concat("/variant_clinvar?tgv_id=", params.tgv_id);
+  let sparqlist = (params.api ? params.api : "/sparqlist/api").concat("/variant_clinvar?tgv_id=" + params.tgv_id);
 
   if (params.ep) {
-    url = url.concat("&ep=", encodeURIComponent(params.ep))
+    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.ep))
   }
 
-  fetch(url, {
+  fetch(sparqlist, {
     method: "GET",
     headers: {
       "Accept": "application/json"
