@@ -26,8 +26,8 @@
 
   <tbody>
   {{#each bindings}}
-  <tr data-dataset="{{ getClassName dataset }}" class="{{ getToggleState dataset}}">
-    <td class="dataset" id="{{ getClassName dataset }}" data-dataset="{{ getClassName dataset }}">
+  <tr data-dataset="{{getClassName dataset}}" class="{{getToggleState dataset}}">
+    <td class="dataset" id="{{getClassName dataset}}" data-dataset="{{getClassName dataset}}">
       <div class="dataset-icon" data-dataset="{{getClassName dataset}}"></div>
       {{dataset}}
     </td>
@@ -56,5 +56,6 @@
     <td>No data</td>
   </tr>
   {{/each}}
+
   </tbody>
 </table>

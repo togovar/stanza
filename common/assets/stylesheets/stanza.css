@@ -822,7 +822,7 @@ label > input {
   background-size: 200px 60px;
 }
 
-.dataset-icon[data-dataset="jga_ngs"], .dataset-icon[data-dataset="jga_snp"] {
+.dataset-icon[data-dataset="jga-ngs"], .dataset-icon[data-dataset="jga-snp"] {
   background-position: -40px 0;
 }
 

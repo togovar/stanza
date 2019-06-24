@@ -66,9 +66,9 @@ Stanza(function (stanza, params) {
     }
   });
 
-  let counter_get_toggle_state = 0
+  let counter_get_toggle_state = 0;
   stanza.handlebars.registerHelper("getToggleState", (text, a, b, c, d, e) => {
-    let state = ''
+    let state = "";
     if (text === "ExAC") {
       if (counter_get_toggle_state === 0) {
         state = 'exac_first_tr close'
@@ -77,17 +77,23 @@ Stanza(function (stanza, params) {
       }
       counter_get_toggle_state++
     }
+
     return state
   });
-  let counter_get_class_name = 0
+
+  let counter_get_class_name = 0;
   stanza.handlebars.registerHelper("getClassName", (text) => {
-    text = text.toLowerCase()
+    text = text.toLowerCase();
+
     if (text === 'exac') {
       counter_get_class_name++
+    } else if (text === "3.5k jpn") {
+      text = "tommo";
     }
     if (text === 'exac' && counter_get_class_name === 1 || text === 'exac' && counter_get_class_name === 2 || text === 'exac' && counter_get_class_name === 3) {
       text = 'exac_first'
     }
+
     return text
   });
 
