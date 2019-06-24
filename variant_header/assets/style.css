@@ -1,0 +1,19 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
+
+.table {
+  border-collapse: collapse;
+  font-family: 'Roboto Condensed', sans-serif;
+}
+
+.table.header-xref > thead > tr > th {
+  font-size: 12px;
+  color: #1f5065;
+}
+
+.table.header-xref > tbody > tr > td {
+  font-size: 14px;
+}
+
+.table.header-xref > tbody > tr > td > a {
+  color: #ffffff;
+}

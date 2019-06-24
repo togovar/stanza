@@ -1,8 +1,24 @@
-{{#each xrefs}}
-<div class="container">
-  <strong>{{name}}</strong>
-  {{#each refs}}
-  {{link this.label this.url}}
-  {{/each}}
-</div>
-{{/each}}
+<link rel="stylesheet" type="text/css" href="/stanza/variant_header/assets/style.css"/>
+
+{{#if xrefs}}
+<table class="table header-xref">
+  <thead>
+  <tr>
+    {{#each xrefs}}
+    <th>{{name}}</th>
+    {{/each}}
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    {{#each xrefs}}
+    <td>
+      {{#each refs}}
+      {{link this.label this.url}}
+      {{/each}}
+    </td>
+    {{/each}}
+  </tr>
+  </tbody>
+</table>
+{{/if}}

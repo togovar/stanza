@@ -2,7 +2,7 @@ DEFINE sql:select-option "order"
 
 PREFIX tgv:   <http://togovar.biosciencedbc.jp/variant/>
 
-SELECT ?dbsnp
+SELECT DISTINCT ?dbsnp
 FROM <http://togovar.biosciencedbc.jp/graph/variant>
 WHERE {
   VALUES ?variant { tgv:{{tgv_id}} }
