@@ -97,14 +97,9 @@ Stanza(function (stanza, params) {
     return text
   });
 
-  let url = (params.api ? params.api : "").concat("/variant_frequency?tgv_id=", params.tgv_id);
-
-  if (params.ep) {
-    url = url.concat("&ep=", encodeURIComponent(params.ep))
-  }
-
   stanza.handlebars.registerHelper("get_frequency_stage", (frequency, alt) => {
-    let stage = ''
+    let stage = '';
+
     if (frequency < 0.0001) {
       stage = '<0.0001'
     } else if (0.0001 <= frequency && frequency < 0.001) {
@@ -121,7 +116,7 @@ Stanza(function (stanza, params) {
 
     if (alt === null) {
       stage = 'na'
-    } else if (frequency == 0) {
+    } else if (frequency === 0) {
       stage = 'monomorphic'
     } else if (frequency === 1) {
       stage = 'singleton'
@@ -130,7 +125,13 @@ Stanza(function (stanza, params) {
     return stage
   });
 
-  fetch(url, {
+  let sparqlist = (params.api ? params.api : "/sparqlist/api").concat("/variant_frequency?tgv_id=" + params.tgv_id);
+
+  if (params.ep) {
+    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.ep))
+  }
+
+  fetch(sparqlist, {
     method: "GET",
     headers: {
       "Accept": "application/json"
