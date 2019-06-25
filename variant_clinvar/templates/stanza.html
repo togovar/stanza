@@ -1,36 +1,48 @@
-<link rel="stylesheet" type="text/css" href="/stanza/common/assets/stylesheets/stanza.css"/>
-<link rel="stylesheet" type="text/css" href="/stanza/variant_clinvar/assets/style.css"/>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="/stanza/common/assets/stylesheets/stanza.css"
+/>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="/stanza/variant_clinvar/assets/style.css"
+/>
 
 {{#if bindings}}
 <table id="target" class="table">
   <thead>
-  <tr>
-    <th>Title</th>
-    <th>Clinical significance</th>
-    <th>Review status</th>
-    <th>Last evaluated</th>
-    <th>Condition(s)</th>
-  </tr>
+    <tr>
+      <th>Title</th>
+      <th>Clinical significance</th>
+      <th>Review status</th>
+      <th>Last evaluated</th>
+      <th>Condition(s)</th>
+    </tr>
   </thead>
 
   <tbody>
-  {{#each bindings}}
-  <tr>
-    <td class="title">{{link title clinvar}}</td>
-    <td class="clinical-significance-col">
-				<span class="clinical-significance-full"
-              data-sign="{{significance_class interpretation}}">{{interpretation}}</span>
-    </td>
-    <td class="review-status">
-				<span class="star-rating">
-					<span data-stars={{stars}} class="star-rating-item"></span>
-				</span>
-      <span class="status-description">{{review_status}}</span>
-    </td>
-    <td class="last-evaluated">{{last_evaluated}}</td>
-    <td class="condition">{{link condition.label condition.url}}</td>
-  </tr>
-  {{/each}}
+    {{#each bindings}}
+    <tr>
+      <td class="title">{{link title clinvar}}</td>
+      <td class="clinical-significance-col">
+        <span
+          class="clinical-significance-full"
+          data-sign="{{significance_class interpretation}}"
+          >{{ interpretation }}</span
+        >
+      </td>
+      <td class="review-status">
+        <span class="star-rating">
+          <span data-stars="{{ stars }}" class="star-rating-item"></span>
+        </span>
+        <br />
+        <span class="status-description">{{ review_status }}</span>
+      </td>
+      <td class="last-evaluated">{{ last_evaluated }}</td>
+      <td class="condition">{{link condition.label condition.url}}</td>
+    </tr>
+    {{/each}}
   </tbody>
 </table>
 {{else}}

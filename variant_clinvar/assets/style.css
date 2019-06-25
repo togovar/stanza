@@ -1,4 +1,6 @@
-.table > tbody > tr:first-of-type > td:nth-of-type(1), .table > tbody > tr:first-of-type > td:nth-of-type(2), .table > tbody > tr:first-of-type > td:nth-of-type(3) {
+.table > tbody > tr:first-of-type > td:nth-of-type(1),
+.table > tbody > tr:first-of-type > td:nth-of-type(2),
+.table > tbody > tr:first-of-type > td:nth-of-type(3) {
   border: none;
 }
 
@@ -6,7 +8,7 @@
   padding-left: 0;
 }
 
-.table > tbody > tr > td.title, .table > tbody > tr > td.clinical-significance-col, .table > tbody > tr > td.review-status {
+.table > tbody > tr > td {
   vertical-align: baseline;
 }
 
@@ -15,7 +17,7 @@
 }
 
 .table > tbody > tr > td.condition:before {
-  content: '\022c5';
+  content: "\022c5";
   display: inline-block;
   margin-right: 4px;
 }
@@ -23,9 +25,6 @@
 .table > tbody > tr > td.review-status {
   position: relative;
   min-width: 97px;
-}
-
-.table > tbody > tr > td.review-status > .status-description {
-  margin-top: 19px;
-  position: absolute;
+  white-space: initial;
+  height: 40px;
 }
