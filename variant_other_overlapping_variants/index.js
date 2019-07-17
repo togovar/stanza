@@ -392,7 +392,7 @@ Stanza(function (stanza, params) {
     }
   });
 
-  let sparqlist = (params.sparqlist ? params.sparqlist : "/sparqlist").concat("/apivariant_other_alternative_alleles?tgv_id=" + params.tgv_id);
+  let sparqlist = (params.sparqlist ? params.sparqlist : "/sparqlist").concat("/api/variant_other_alternative_alleles?tgv_id=" + params.tgv_id);
 
   if (params.sparql) {
     sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.sparql))
