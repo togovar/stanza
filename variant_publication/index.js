@@ -17,7 +17,7 @@ Stanza(function (stanza, params) {
   params.prefix = "http://identifiers.org/dbsnp/";
 
   stanza.query({
-    endpoint: params.ep ? params.ep : "/sparql",
+    endpoint: params.sparql ? params.sparql : "/sparql",
     template: "fetch_rs.rq",
     parameters: params
   }).then(function (data) {
@@ -33,10 +33,10 @@ Stanza(function (stanza, params) {
       });
     }
 
-    let sparqlist = (params.api ? params.api : "/sparqlist/api").concat("/variant_publication?rs=" + rs.uri.replace(params.prefix, ""));
+    let sparqlist = (params.sparqlist ? params.sparqlist : "/sparqlist").concat("/api/variant_publication?rs=" + rs.uri.replace(params.prefix, ""));
 
-    // if (params.ep) {
-    //   sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.ep))
+    // if (params.sparql) {
+    //   sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.sparql))
     // }
 
     fetch(sparqlist, {

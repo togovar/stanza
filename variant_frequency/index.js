@@ -140,10 +140,10 @@ Stanza(function (stanza, params) {
     return stage
   });
 
-  let sparqlist = (params.api ? params.api : "/sparqlist/api").concat("/variant_frequency?tgv_id=" + params.tgv_id);
+  let sparqlist = (params.sparqlist ? params.sparqlist : "/sparqlist").concat("/api/variant_frequency?tgv_id=" + params.tgv_id);
 
-  if (params.ep) {
-    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.ep))
+  if (params.sparql) {
+    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.sparql))
   }
 
   fetch(sparqlist, {

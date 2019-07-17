@@ -54,10 +54,10 @@ Stanza(function (stanza, params) {
     return `<span class='ref' data-sum='${ref_length}'>${ref}</span><span class='arrow'></span><span class='alt' data-sum='${alt_length}'>${alt}</span>`;
   });
 
-  let sparqlist = (params.api ? params.api : "/sparqlist/api").concat("/variant_summary?tgv_id=" + params.tgv_id);
+  let sparqlist = (params.sparqlist ? params.sparqlist : "/sparqlist").concat("/api/variant_summary?tgv_id=" + params.tgv_id);
 
-  if (params.ep) {
-    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.ep))
+  if (params.sparql) {
+    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.sparql))
   }
 
   fetch(sparqlist, {

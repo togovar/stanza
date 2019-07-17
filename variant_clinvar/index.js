@@ -57,10 +57,10 @@ Stanza(function (stanza, params) {
     return CLINICAL_SIGNIFICANCE[interpretation.toLowerCase()]
   });
 
-  let sparqlist = (params.api ? params.api : "/sparqlist/api").concat("/variant_clinvar?tgv_id=" + params.tgv_id);
+  let sparqlist = (params.sparqlist ? params.sparqlist : "/sparqlist").concat("/api/variant_clinvar?tgv_id=" + params.tgv_id);
 
-  if (params.ep) {
-    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.ep))
+  if (params.sparql) {
+    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.sparql))
   }
 
   fetch(sparqlist, {

@@ -19,15 +19,15 @@
       "stanza:required": false
     },
     {
-      "stanza:key": "ep",
+      "stanza:key": "sparql",
       "stanza:example": "https://togovar.biosciencedbc.jp/sparql",
-      "stanza:description": "Endpoint URL",
+      "stanza:description": "SPARQL endpoint URL",
       "stanza:required": false
     },
     {
-      "stanza:key": "api",
-      "stanza:example": "https://togovar.biosciencedbc.jp/sparqlist/api",
-      "stanza:description": "SPARQList API",
+      "stanza:key": "sparqlist",
+      "stanza:example": "https://togovar.biosciencedbc.jp/sparqlist",
+      "stanza:description": "SPARQList URL",
       "stanza:required": false
     },
     {

@@ -16,7 +16,7 @@ Stanza(function (stanza, params) {
   });
 
   stanza.query({
-    endpoint: params.ep ? params.ep : "/sparql",
+    endpoint: params.sparql ? params.sparql : "/sparql",
     template: "fetch_xrefs.rq",
     parameters: params
   }).then(function (data) {

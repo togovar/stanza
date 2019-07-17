@@ -392,10 +392,10 @@ Stanza(function (stanza, params) {
     }
   });
 
-  let sparqlist = (params.api ? params.api : "/sparqlist/api").concat("/variant_other_alternative_alleles?tgv_id=" + params.tgv_id);
+  let sparqlist = (params.sparqlist ? params.sparqlist : "/sparqlist").concat("/apivariant_other_alternative_alleles?tgv_id=" + params.tgv_id);
 
-  if (params.ep) {
-    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.ep))
+  if (params.sparql) {
+    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.sparql))
   }
   if (params.search_api) {
     sparqlist = sparqlist.concat("&search_api=" + encodeURIComponent(params.search_api))

@@ -34,7 +34,7 @@ Stanza((stanza, params) => {
   const RANGE = 50;
 
   stanza.query({
-    endpoint: params.ep ? params.ep : "/sparql",
+    endpoint: params.sparql ? params.sparql : "/sparql",
     template: "fetch_position.rq",
     parameters: params
   }).then((data) => {
