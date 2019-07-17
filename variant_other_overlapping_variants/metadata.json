@@ -2,8 +2,8 @@
   "@context": {
     "stanza": "http://togostanza.org/resource/stanza#"
   },
-  "@id": "variant_other_alternative_alleles",
-  "stanza:label": "Variant / Other alternative alleles",
+  "@id": "variant_other_overlapping_variants",
+  "stanza:label": "Variant / Other overlapping variants",
   "stanza:definition": "Display variants that exists on same chromosomal location.",
   "stanza:parameter": [
     {
@@ -37,7 +37,7 @@
       "stanza:required": false
     }
   ],
-  "stanza:usage": "<togostanza-variant_other_alternative_alleles tgv_id=\"tgv55413188\"></togostanza-variant_other_alternative_alleles>",
+  "stanza:usage": "<togostanza-variant_other_overlapping_variants tgv_id=\"tgv55413188\"></togostanza-variant_other_overlapping_variants>",
   "stanza:type": "Stanza",
   "stanza:context": "",
   "stanza:display": "",
