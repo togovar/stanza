@@ -64,8 +64,8 @@ Stanza((stanza, params) => {
     let from = start - RANGE;
     let to = stop + RANGE;
 
-    let src = (params.jbrowse ? params.jbrowse : "/jbrowse/index.html").concat(
-      "?data=", encodeURIComponent("data/" + params.assembly),
+    let src = (params.jbrowse ? params.jbrowse : "/jbrowse").concat(
+      "/index.html?data=", encodeURIComponent("data/" + params.assembly),
       "&loc=", encodeURIComponent(chr + ":" + from + ".." + to),
       "&highlight=", encodeURIComponent(chr + ":" + start + ".." + stop));
 

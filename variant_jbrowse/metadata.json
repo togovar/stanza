@@ -26,7 +26,7 @@
     },
     {
       "stanza:key": "jbrowse",
-      "stanza:example": "https://togovar.biosciencedbc.jp/jbrowse/index.html",
+      "stanza:example": "https://togovar.biosciencedbc.jp/jbrowse",
       "stanza:description": "JBrowse URL",
       "stanza:required": false
     },
