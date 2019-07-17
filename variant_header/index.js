@@ -1,4 +1,9 @@
 Stanza(function (stanza, params) {
+  // set default value
+  if (!params.base_url) {
+    params.base_url = "/stanza";
+  }
+
   let Handlebars = stanza.handlebars;
 
   Handlebars.registerHelper('link', function (text, url) {
@@ -31,6 +36,7 @@ Stanza(function (stanza, params) {
     stanza.render({
       template: "stanza.html",
       parameters: {
+        params: params,
         xrefs: xrefs
       }
     });

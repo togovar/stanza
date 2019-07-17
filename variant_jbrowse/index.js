@@ -1,8 +1,14 @@
 Stanza((stanza, params) => {
+  // set default value
+  if (!params.base_url) {
+    params.base_url = "/stanza";
+  }
+
   if (!params.tgv_id) {
     return stanza.render({
       template: "error.html",
       parameters: {
+        params: params,
         message: "Parameter missing: tgv_id",
       }
     });
@@ -11,6 +17,7 @@ Stanza((stanza, params) => {
     return stanza.render({
       template: "error.html",
       parameters: {
+        params: params,
         message: "Parameter missing: assembly",
       }
     });
@@ -18,6 +25,7 @@ Stanza((stanza, params) => {
     return stanza.render({
       template: "error.html",
       parameters: {
+        params: params,
         message: "Invalid parameter: assembly=" + params.assembly,
       }
     });
@@ -36,6 +44,7 @@ Stanza((stanza, params) => {
       return stanza.render({
         template: "error.html",
         parameters: {
+          params: params,
           message: "Failed to obtain genomic position for " + params.tgv_id,
         }
       });
@@ -72,6 +81,7 @@ Stanza((stanza, params) => {
     stanza.render({
       template: "error.html",
       parameters: {
+        params: params,
         message: e.message,
       }
     });

@@ -1,8 +1,14 @@
 Stanza(function (stanza, params) {
+  // set default value
+  if (!params.base_url) {
+    params.base_url = "/stanza";
+  }
+
   if (!params.tgv_id) {
     return stanza.render({
       template: "error.html",
       parameters: {
+        params: params,
         message: "Parameter missing: tgv_id",
       }
     });
@@ -21,6 +27,7 @@ Stanza(function (stanza, params) {
       return stanza.render({
         template: "error.html",
         parameters: {
+          params: params,
           message: "No data",
         }
       });
@@ -47,13 +54,17 @@ Stanza(function (stanza, params) {
         return stanza.render({
           template: "error.html",
           parameters: {
+            params: params,
             message: "No data",
           }
         });
       }
 
       stanza.render({
-        template: "stanza.html"
+        template: "stanza.html",
+        parameters: {
+          params: params
+        }
       });
 
       $(stanza.select("#container")).html('<table id="dataTable"><thead><tr>' + json.columns.map(x => "<th>" + x + "</th>").join("") + '</tr></thead></table>');
@@ -82,6 +93,7 @@ Stanza(function (stanza, params) {
       return stanza.render({
         template: "error.html",
         parameters: {
+          params: params,
           message: e.message,
         }
       });
@@ -90,6 +102,7 @@ Stanza(function (stanza, params) {
     return stanza.render({
       template: "error.html",
       parameters: {
+        params: params,
         message: e.message,
       }
     });

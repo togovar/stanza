@@ -11,10 +11,16 @@ const POLYPHEN_DISPLAY_LABEL = {
 };
 
 Stanza(function (stanza, params) {
+  // set default value
+  if (!params.base_url) {
+    params.base_url = "/stanza";
+  }
+
   if (!params.tgv_id) {
     return stanza.render({
       template: "error.html",
       parameters: {
+        params: params,
         message: "Parameter missing: tgv_id",
       }
     });
@@ -23,6 +29,7 @@ Stanza(function (stanza, params) {
     return stanza.render({
       template: "error.html",
       parameters: {
+        params: params,
         message: "Parameter missing: assembly",
       }
     });
@@ -30,6 +37,7 @@ Stanza(function (stanza, params) {
     return stanza.render({
       template: "error.html",
       parameters: {
+        params: params,
         message: "Invalid parameter: assembly=" + params.assembly,
       }
     });
@@ -142,6 +150,7 @@ Stanza(function (stanza, params) {
     stanza.render({
       template: "stanza.html",
       parameters: {
+        params: params,
         bindings: bindings
       }
     });
@@ -149,6 +158,7 @@ Stanza(function (stanza, params) {
     stanza.render({
       template: "error.html",
       parameters: {
+        params: params,
         message: e.message,
       }
     });

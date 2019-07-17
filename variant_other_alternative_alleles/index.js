@@ -239,10 +239,16 @@ let consequence_map = {
 };
 
 Stanza(function (stanza, params) {
+  // set default value
+  if (!params.base_url) {
+    params.base_url = "/stanza";
+  }
+
   if (!params.tgv_id) {
     return stanza.render({
       template: "error.html",
       parameters: {
+        params: params,
         message: "Parameter missing: tgv_id",
       }
     });
@@ -428,6 +434,7 @@ Stanza(function (stanza, params) {
     stanza.render({
       template: "stanza.html",
       parameters: {
+        params: params,
         data: data
       }
     });
@@ -435,6 +442,7 @@ Stanza(function (stanza, params) {
     stanza.render({
       template: "error.html",
       parameters: {
+        params: params,
         message: e.message,
       }
     });
