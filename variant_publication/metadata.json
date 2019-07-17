@@ -23,6 +23,12 @@
       "stanza:example": "https://togovar.biosciencedbc.jp/sparqlist/api",
       "stanza:description": "SPARQList API",
       "stanza:required": false
+    },
+    {
+      "stanza:key": "base_url",
+      "stanza:example": "https://togovar.biosciencedbc.jp/stanza",
+      "stanza:description": "use absolute path rather than relative path for scripts or stylesheets",
+      "stanza:required": false
     }
   ],
   "stanza:usage": "<togostanza-variant_publication tgv_id=\"tgv29245294\"></togostanza-variant_publication>",
@@ -36,5 +42,5 @@
   "stanza:contributor": [
   ],
   "stanza:created": "2019-04-22",
-  "stanza:updated": "2019-04-22"
+  "stanza:updated": "2019-07-17"
 }

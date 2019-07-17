@@ -29,6 +29,12 @@
       "stanza:example": "https://togovar.biosciencedbc.jp/search",
       "stanza:description": "TogoVar search API",
       "stanza:required": false
+    },
+    {
+      "stanza:key": "base_url",
+      "stanza:example": "https://togovar.biosciencedbc.jp/stanza",
+      "stanza:description": "use absolute path rather than relative path for scripts or stylesheets",
+      "stanza:required": false
     }
   ],
   "stanza:usage": "<togostanza-variant_other_alternative_alleles tgv_id=\"tgv55413188\"></togostanza-variant_other_alternative_alleles>",
@@ -42,5 +48,5 @@
   "stanza:contributor": [
   ],
   "stanza:created": "2019-04-22",
-  "stanza:updated": "2019-04-22"
+  "stanza:updated": "2019-07-17"
 }

@@ -29,6 +29,12 @@
       "stanza:example": "https://togovar.biosciencedbc.jp/jbrowse/index.html",
       "stanza:description": "JBrowse URL",
       "stanza:required": false
+    },
+    {
+      "stanza:key": "base_url",
+      "stanza:example": "https://togovar.biosciencedbc.jp/stanza",
+      "stanza:description": "use absolute path rather than relative path for scripts or stylesheets",
+      "stanza:required": false
     }
   ],
   "stanza:usage": "<togostanza-variant_jbrowse tgv_id=\"tgv132831\" assembly=\"GRCh37\"></togostanza-variant_jbrowse>",
@@ -42,5 +48,5 @@
   "stanza:contributor": [
   ],
   "stanza:created": "2015-02-03",
-  "stanza:updated": "2019-04-22"
+  "stanza:updated": "2019-07-17"
 }
