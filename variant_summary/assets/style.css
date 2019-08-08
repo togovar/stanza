@@ -32,14 +32,6 @@
   padding-bottom: 3px;
 }
 
-.summary_table_wrapper .table > tbody > tr > td.ref-alt > .arrow:before {
-  top: 2px;
-}
-
-.summary_table_wrapper .table > tbody > tr > td.ref-alt > .arrow:after {
-  top: 3px;
-}
-
 .summary_table_wrapper .table > tbody > tr > td span.chromosome {
   font-weight: bold;
 }

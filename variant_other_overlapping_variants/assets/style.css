@@ -37,14 +37,6 @@
   position: relative;
 }
 
-.table.other_alternative_alleles > tbody > tr > td.ref-alt > .arrow:before {
-  top: 2px;
-}
-
-.table.other_alternative_alleles > tbody > tr > td.ref-alt > .arrow:after {
-  top: 3px;
-}
-
 .table.other_alternative_alleles > tbody > tr > td.clinical_significance_wrapper {
   position: relative;
 }
