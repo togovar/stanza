@@ -294,52 +294,38 @@ Stanza(function (stanza, params) {
     } [accession] || "Unknown";
   });
 
-  stanza.handlebars.registerHelper("getSift", function (sift) {
-    if (!sift) {
-      return
-    }
-
-    let class_name = sift >= .05 ? "T" : "D";
-    let sift_val = String(sift);
-
-    if (sift_val === "0") {
-      sift_val = "0.000"
-    } else {
-      sift_val = sift_val.padEnd(5, "0")
-    }
-
-    return `<span class="variant-function" data-function="${class_name}">${sift_val}</span>`
+  const fraction3 = new Intl.NumberFormat('en', {
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3,
   });
 
-  stanza.handlebars.registerHelper("getPolyphen", function (polyphen) {
-    if (!polyphen) {
+  stanza.handlebars.registerHelper("getSift", function (value) {
+    let v = parseFloat(value);
+    if (isNaN(v)) {
       return
     }
 
-    let class_name = "";
-    let polyphen_val = String(polyphen);
+    let class_name = (v >= 0.05) ? "T" : "D";
 
-    if (polyphen_val === "0") {
-      polyphen_val = "0.000"
+    return `<span class="variant-function" data-function="${class_name}">${fraction3.format(v)}</span>`
+  });
+
+  stanza.handlebars.registerHelper("getPolyphen", function (value) {
+    let v = parseFloat(value);
+    if (isNaN(v)) {
+      return
+    }
+
+    let class_name = "U";
+    if (v > 0.908) {
+      class_name = "PROBD";
+    } else if (v > 0.446) {
+      class_name = "POSSD";
     } else {
-      polyphen_val = polyphen_val.padEnd(5, "0")
-    }
-    switch (true) {
-      case polyphen > .908:
-        class_name = "PROBD";
-        break;
-      case polyphen > .446:
-        class_name = "POSSD";
-        break;
-      case polyphen >= 0:
-        class_name = "B";
-        break;
-      default:
-        class_name = "U";
-        break;
+      class_name = "B";
     }
 
-    return `<span class="variant-function" data-function="${class_name}">${polyphen_val}</span>`
+    return `<span class="variant-function" data-function="${class_name}">${fraction3.format(v)}</span>`
   });
 
   stanza.handlebars.registerHelper("getSignificance", function (significance) {

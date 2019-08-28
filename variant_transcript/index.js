@@ -11,10 +11,16 @@ const POLYPHEN_DISPLAY_LABEL = {
 };
 
 Stanza(function (stanza, params) {
+  // set default value
+  if (!params.base_url) {
+    params.base_url = "/stanza";
+  }
+
   if (!params.tgv_id) {
     return stanza.render({
       template: "error.html",
       parameters: {
+        params: params,
         message: "Parameter missing: tgv_id",
       }
     });
@@ -23,6 +29,7 @@ Stanza(function (stanza, params) {
     return stanza.render({
       template: "error.html",
       parameters: {
+        params: params,
         message: "Parameter missing: assembly",
       }
     });
@@ -30,6 +37,7 @@ Stanza(function (stanza, params) {
     return stanza.render({
       template: "error.html",
       parameters: {
+        params: params,
         message: "Invalid parameter: assembly=" + params.assembly,
       }
     });
@@ -50,30 +58,24 @@ Stanza(function (stanza, params) {
     );
   });
 
+  const fraction3 = new Intl.NumberFormat('en', {
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3,
+  });
+
   Handlebars.registerHelper("print_sift", function (value) {
     let v = parseFloat(value);
     if (isNaN(v)) {
       return value;
     }
 
-    let klass;
+    let klass = "T";
     if (v < 0.05) {
       klass = "D"
-    } else {
-      klass = "T"
-    }
-
-    let sift_val = Math.round(value * Math.pow(10, 3)) / Math.pow(10, 3);
-    sift_val = String(sift_val);
-
-    if (sift_val === "0") {
-      sift_val = "0.000"
-    } else {
-      sift_val = sift_val.padEnd(5, "0")
     }
 
     return new Handlebars.SafeString(
-      "<span class='variant-function' data-function='" + klass + "'>" + sift_val + "</span>" +
+      "<span class='variant-function' data-function='" + klass + "'>" + fraction3.format(v) + "</span>" +
       "<span class='sift-label'>" + SIFT_DISPLAY_LABEL[klass] + "</span>"
     );
   });
@@ -84,38 +86,26 @@ Stanza(function (stanza, params) {
       return value;
     }
 
-    let klass;
+    let klass = "B";
     if (v > 0.908) {
       klass = "PROBD"
     } else if (v > 0.446 && v <= 0.908) {
       klass = "POSSD"
-    } else {
-      klass = "B"
-    }
-
-    let polyphen_val = Math.round(value * Math.pow(10, 3)) / Math.pow(10, 3);
-    polyphen_val = String(polyphen_val);
-
-    if (polyphen_val === "0") {
-      polyphen_val = "0.000"
-    } else {
-      polyphen_val = polyphen_val.padEnd(5, "0")
     }
 
     return new Handlebars.SafeString(
-      "<span class='variant-function' data-function='" + klass + "'>" + polyphen_val + "</span>" +
+      "<span class='variant-function' data-function='" + klass + "'>" + fraction3.format(v) + "</span>" +
       "<span class='polyphen-label'>" + POLYPHEN_DISPLAY_LABEL[klass] + "</span>"
     );
   });
 
-  let sparqlist = (params.api ? params.api : "/sparqlist/api").concat("/variant_transcript?tgv_id=" + params.tgv_id);
+  let sparqlist = (params.sparqlist ? params.sparqlist : "/sparqlist").concat("/api/variant_transcript?tgv_id=" + params.tgv_id);
 
   if (params.assembly) {
-    sparqlist = sparqlist.concat("&assembly=" + encodeURIComponent(params.assembly))
+    sparqlist = sparqlist.concat("&assembly=" + encodeURIComponent(params.assembly));
   }
-
-  if (params.ep) {
-    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.ep))
+  if (params.sparql) {
+    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.sparql));
   }
 
   fetch(sparqlist, {
@@ -142,6 +132,7 @@ Stanza(function (stanza, params) {
     stanza.render({
       template: "stanza.html",
       parameters: {
+        params: params,
         bindings: bindings
       }
     });
@@ -149,6 +140,7 @@ Stanza(function (stanza, params) {
     stanza.render({
       template: "error.html",
       parameters: {
+        params: params,
         message: e.message,
       }
     });
