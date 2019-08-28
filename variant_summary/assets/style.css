@@ -28,8 +28,7 @@
 }
 
 .summary_table_wrapper .table > tbody > tr > td.ref-alt {
-  padding-top: 0;
-  padding-bottom: 3px;
+  display: flex;
 }
 
 .summary_table_wrapper .table > tbody > tr > td span.chromosome {
