@@ -37,19 +37,19 @@
   border-bottom: 1px solid #444444;
 }
 
-#dataTable_wrapper > #dataTable > thead > tr > th[data-label="PMID"] {
+#dataTable_wrapper > #dataTable > thead > tr > th[aria-label="PMID"] {
   width: 10% !important;
 }
 
-#dataTable_wrapper > #dataTable > thead > tr > th[data-label="Reference"] {
-  width: 55% !important;
+#dataTable_wrapper > #dataTable > thead > tr > th[aria-label="Reference"] {
+  width: 80% !important;
 }
 
-#dataTable_wrapper > #dataTable > thead > tr > th[data-label="Year"] {
+#dataTable_wrapper > #dataTable > thead > tr > th[aria-label="Date"] {
   width: 5% !important;
 }
 
-#dataTable_wrapper > #dataTable > thead > tr > th[data-label="Cited"] {
+#dataTable_wrapper > #dataTable > thead > tr > th[aria-label="Cited by"] {
   width: 5% !important;
 }
 
@@ -81,7 +81,7 @@
 }
 
 #dataTable_wrapper > #dataTable > tbody > tr > td:nth-of-type(2) {
-  width: 55% !important;
+  width: 80% !important;
 }
 
 #dataTable_wrapper > #dataTable > tbody > tr > td:nth-of-type(3) {
@@ -175,4 +175,10 @@
 
 #dataTable_wrapper > .dataTables_paginate > .paginate_button:focus {
   outline: none;
+}
+
+#dataTable_wrapper caption {
+  padding: 0.75rem;
+  font-size: 1.5em;
+  font-weight: bold;
 }

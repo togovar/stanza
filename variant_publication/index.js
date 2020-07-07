@@ -1,9 +1,4 @@
 Stanza(function (stanza, params) {
-  // set default value
-  if (!params.base_url) {
-    params.base_url = "/stanza";
-  }
-
   if (!params.tgv_id) {
     return stanza.render({
       template: "error.html",
@@ -17,7 +12,7 @@ Stanza(function (stanza, params) {
   params.prefix = "http://identifiers.org/dbsnp/";
 
   stanza.query({
-    endpoint: params.sparql ? params.sparql : "/sparql",
+    endpoint: params.ep ? params.ep : "/sparql",
     template: "fetch_rs.rq",
     parameters: params
   }).then(function (data) {
@@ -33,11 +28,11 @@ Stanza(function (stanza, params) {
       });
     }
 
-    let sparqlist = (params.sparqlist ? params.sparqlist : "/sparqlist").concat("/api/variant_publication?rs=" + rs.uri.replace(params.prefix, ""));
+    let sparqlist = (params.sparqlist ? params.sparqlist : "/sparqlist").concat("/api/variant_publication?rs=" + rs.xref.replace(params.prefix, ""));
 
-    // if (params.sparql) {
-    //   sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.sparql))
-    // }
+    if (params.ep) {
+      sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.ep))
+    }
 
     fetch(sparqlist, {
       method: "GET",
@@ -68,6 +63,8 @@ Stanza(function (stanza, params) {
       });
 
       $(stanza.select("#container")).html('<table id="dataTable"><thead><tr>' + json.columns.map(x => "<th>" + x + "</th>").join("") + '</tr></thead></table>');
+      $(stanza.select("#dataTable")).append('<caption>Note: The link to LitVar leads to a list of all PubMed articles related to this variant. ' +
+        'Please find a PMID of your choice in the list.</caption>');
 
       $(stanza.select("#dataTable")).dataTable({
         columns: json.columns,
@@ -77,7 +74,8 @@ Stanza(function (stanza, params) {
         order: [[2, "desc"]],
         columnDefs: [
           {
-            targets: 4,
+            targets: 3,
+            className: 'dt-head-right dt-body-right',
             orderable: false,
             render: function (data, type, row) {
               if (type === "display" && Array.isArray(data)) {
