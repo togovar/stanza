@@ -1,5 +1,5 @@
-<link rel="stylesheet" type="text/css" href="{{params.base_url}}/common/assets/stylesheets/stanza.css"/>
-<link rel="stylesheet" type="text/css" href="{{params.base_url}}/variant_other_overlapping_variants/assets/style.css"/>
+<link rel="stylesheet" type="text/css" href="/stanza/common/assets/stylesheets/stanza.css"/>
+<link rel="stylesheet" type="text/css" href="/stanza/variant_other_overlapping_variants/assets/style.css"/>
 
 {{#if data}}
 <table class="table other_alternative_alleles">
@@ -25,7 +25,7 @@
       </a>
     </td>
     <td class="type">{{so_label type}}</td>
-    <td class="ref-alt">{{{print_allele this}}}</td>
+    <td>{{{print_allele this}}}</td>
     <td>
       <div class="frequency-graph">
         {{#each frequencies}}

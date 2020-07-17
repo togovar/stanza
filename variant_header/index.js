@@ -1,34 +1,26 @@
 Stanza(function (stanza, params) {
-  // set default value
-  if (!params.base_url) {
-    params.base_url = "/stanza";
-  }
-
-  let Handlebars = stanza.handlebars;
+  const Handlebars = stanza.handlebars;
 
   Handlebars.registerHelper('link', function (text, url) {
-    url = Handlebars.escapeExpression(url);
-    text = Handlebars.escapeExpression(text);
-
     return new Handlebars.SafeString(
-      "<a href='" + url + "'>" + text + "</a>"
+      "<a href='" + Handlebars.escapeExpression(url) + "'>" + Handlebars.escapeExpression(text) + "</a>"
     );
   });
 
   stanza.query({
-    endpoint: params.sparql ? params.sparql : "/sparql",
+    endpoint: params.ep ? params.ep : "/sparql",
     template: "fetch_xrefs.rq",
     parameters: params
   }).then(function (data) {
-    let results = stanza.unwrapValueFromBinding(data);
+    const results = stanza.unwrapValueFromBinding(data);
 
     let xrefs;
     if (results && results.length > 0) {
       xrefs = [
         {
           name: 'dbSNP',
-          refs: Array.from(new Set(results.map(x => x.dbsnp)))
-            .map(x => ({label: x.replace('http://identifiers.org/dbsnp/', ''), url: x}))
+          refs: Array.from(new Set(results.map(x => x.xref)))
+            .map(x => ({label: x.split('/').slice(-1)[0], url: x}))
         }
       ];
     }

@@ -1,5 +1,5 @@
-<link rel="stylesheet" type="text/css" href="{{params.base_url}}/common/assets/stylesheets/stanza.css"/>
-<link rel="stylesheet" type="text/css" href="{{params.base_url}}/variant_frequency/assets/style.css"/>
+<link rel="stylesheet" type="text/css" href="/stanza/common/assets/stylesheets/stanza.css"/>
+<link rel="stylesheet" type="text/css" href="/stanza/variant_frequency/assets/style.css"/>
 
 {{#if bindings}}
 <table class="table frequency-detail">
@@ -28,7 +28,7 @@
   <tr data-dataset="{{getClassName dataset}}" class="{{getToggleState dataset}}">
     <td class="dataset" id="{{getClassName dataset}}" data-dataset="{{getClassName dataset}}">
       <div class="dataset-icon" data-dataset="{{getClassName dataset}}"></div>
-      {{dataset}}
+      {{getDatasetName dataset}}
     </td>
     <td class="population">{{population}}</td>
 

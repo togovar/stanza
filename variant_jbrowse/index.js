@@ -1,9 +1,4 @@
 Stanza((stanza, params) => {
-  // set default value
-  if (!params.base_url) {
-    params.base_url = "/stanza";
-  }
-
   if (!params.tgv_id) {
     return stanza.render({
       template: "error.html",
@@ -31,14 +26,12 @@ Stanza((stanza, params) => {
     });
   }
 
-  const RANGE = 50;
-
   stanza.query({
-    endpoint: params.sparql ? params.sparql : "/sparql",
+    endpoint: params.ep ? params.ep : "/sparql",
     template: "fetch_position.rq",
     parameters: params
   }).then((data) => {
-    let v = stanza.unwrapValueFromBinding(data)[0];
+    const v = stanza.unwrapValueFromBinding(data)[0];
 
     if (!v) {
       return stanza.render({
@@ -50,24 +43,14 @@ Stanza((stanza, params) => {
       });
     }
 
-    let type = v.type;
-    let chr = v.chromosome;
-    let start = parseInt(v.start);
-    let stop = parseInt(v.stop);
+    const chr = v.label.split('-')[0];
+    const position = parseInt(v.label.split('-')[1]);
+    const range = parseInt(params.margin) || 50;
 
-    if (type.match("SO_0000159")) { // deletion
-      start = start - 1;
-    } else if (type.match("SO_0000667")) { // insertion
-      stop = stop - 1;
-    }
-
-    let from = start - RANGE;
-    let to = stop + RANGE;
-
-    let src = (params.jbrowse ? params.jbrowse : "/jbrowse").concat(
+    const src = (params.jbrowse ? params.jbrowse : "/jbrowse").concat(
       "/index.html?data=", encodeURIComponent("data/" + params.assembly),
-      "&loc=", encodeURIComponent(chr + ":" + from + ".." + to),
-      "&highlight=", encodeURIComponent(chr + ":" + start + ".." + stop));
+      "&loc=", encodeURIComponent(`${chr}:${position - range}..${position + range}`),
+      "&highlight=", encodeURIComponent(`${chr}:${position}..${position}`));
 
     stanza.render({
       template: "stanza.html",

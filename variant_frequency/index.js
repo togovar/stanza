@@ -1,7 +1,8 @@
 const POPULATION_LABEL = {
+  "GEMJ 10K": "Japanese",
+  "ToMMo 4.7KJPN": "Japanese",
   "JGA-NGS": "Japanese",
   "JGA-SNP": "Japanese",
-  "3.5k JPN": "Japanese",
   "HGVD": "Japanese",
   "ExAC": "Total"
 };
@@ -9,7 +10,8 @@ const POPULATION_LABEL = {
 const ORDER_WEIGHT = {
   "JGA-NGS": 10,
   "JGA-SNP": 20,
-  "3.5k JPN": 30,
+  "ToMMo 4.7KJPN": 30,
+  "GEMJ 10K": 35,
   "HGVD": 40,
   "ExAC": 50,
   "African/African American": 1,
@@ -22,11 +24,6 @@ const ORDER_WEIGHT = {
 };
 
 Stanza(function (stanza, params) {
-  // set default value
-  if (!params.base_url) {
-    params.base_url = "/stanza";
-  }
-
   if (!params.tgv_id) {
     return stanza.render({
       template: "error.html",
@@ -42,17 +39,18 @@ Stanza(function (stanza, params) {
   });
 
   stanza.handlebars.registerHelper("format_float", (str) => {
-    let v = parseFloat(str);
-    let frequency_val = 0
+    const v = parseFloat(str);
+    let frequency_val = 0;
 
-    if (v === 0)
+    if (v === 0) {
       frequency_val = "0.0";
-    else if (v === 1)
+    } else if (v === 1) {
       frequency_val = "1.0";
-    else if (v < 0.001)
+    } else if (v < 0.001) {
       frequency_val = v.toExponential(3);
-    else
+    } else {
       frequency_val = Math.round(v * Math.pow(10, 3)) / Math.pow(10, 3);
+    }
 
     frequency_val = String(frequency_val)
 
@@ -102,8 +100,10 @@ Stanza(function (stanza, params) {
 
     if (text === 'exac') {
       counter_get_class_name++
-    } else if (text === "3.5k jpn") {
-      text = "tommo";
+    } else if (text === "tommo 4.7kjpn") {
+      text = "tommo_4.7kjpn";
+    } else if (text === "gemj 10k") {
+      text = "gem_j_wga";
     }
     if (text === 'exac' && counter_get_class_name === 1 || text === 'exac' && counter_get_class_name === 2 || text === 'exac' && counter_get_class_name === 3) {
       text = 'exac_first'
@@ -112,7 +112,20 @@ Stanza(function (stanza, params) {
     return text
   });
 
+  stanza.handlebars.registerHelper("getDatasetName", (text) => {
+    const key = text.toLowerCase();
+
+    if (key === "gemj 10k") {
+      text = "GEM-J WGA";
+    }
+
+    return text
+  });
+
   stanza.handlebars.registerHelper("get_frequency_stage", (frequency, alt) => {
+    frequency = parseFloat(frequency);
+    alt = parseInt(alt);
+
     let stage = '';
 
     if (frequency < 0.0001) {
@@ -131,9 +144,9 @@ Stanza(function (stanza, params) {
 
     if (alt === null) {
       stage = 'na'
-    } else if (frequency === 0) {
+    } else if (alt === 0) {
       stage = 'monomorphic'
-    } else if (frequency === 1) {
+    } else if (alt === 1) {
       stage = 'singleton'
     }
 
@@ -157,10 +170,10 @@ Stanza(function (stanza, params) {
     }
     throw new Error(sparqlist + " returns status " + response.status);
   }).then(function (json) {
-    let bindings = stanza.unwrapValueFromBinding(json);
+    const bindings = stanza.unwrapValueFromBinding(json);
 
     bindings.forEach(function (binding) {
-      let x = binding.source.split(':');
+      const x = binding.source.split(':');
       binding.dataset = x[0];
       binding.population = x[1] || POPULATION_LABEL[x[0]] || "-";
       binding.order = (ORDER_WEIGHT[x[0]] || 0) + (ORDER_WEIGHT[x[1]] || 0);
@@ -181,8 +194,8 @@ Stanza(function (stanza, params) {
     const exac_first = stanza.select('#exac_first');
 
     if (exac_first) {
-      let exac_without_first = stanza.selectAll('.exac_without_first');
-      let exac_first_tr = stanza.selectAll('.exac_first_tr');
+      const exac_without_first = stanza.selectAll('.exac_without_first');
+      const exac_first_tr = stanza.selectAll('.exac_first_tr');
 
       exac_first.addEventListener('click', function () {
         $(exac_without_first).toggleClass('none');

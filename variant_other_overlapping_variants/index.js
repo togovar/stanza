@@ -1,7 +1,8 @@
 const DATASETS = [
   "jga_ngs",
   "jga_snp",
-  "tommo",
+  "tommo_4.7kjpn",
+  "gem_j_wga",
   "hgvd",
   "exac"
 ];
@@ -239,11 +240,6 @@ let consequence_map = {
 };
 
 Stanza(function (stanza, params) {
-  // set default value
-  if (!params.base_url) {
-    params.base_url = "/stanza";
-  }
-
   if (!params.tgv_id) {
     return stanza.render({
       template: "error.html",
@@ -254,12 +250,12 @@ Stanza(function (stanza, params) {
     });
   }
 
-  stanza.handlebars.registerHelper("print_allele", function (v) {
-    if (!v) {
+  stanza.handlebars.registerHelper("print_allele", function (variation) {
+    if (!variation) {
       return
     }
 
-    let ref = v.reference || "", alt = v.alternative || "";
+    let ref = variation.reference || "", alt = variation.alternative || "";
 
     let ref_length = ref.length;
     let alt_length = alt.length;
@@ -271,7 +267,7 @@ Stanza(function (stanza, params) {
       alt = alt.slice(0, 4) + "..."
     }
 
-    return `<span class='ref' data-sum='${ref_length}'>${ref}</span><span class='arrow'></span><span class='alt' data-sum='${alt_length}'>${alt}</span>`;
+    return `<div class="ref-alt"><span class='ref' data-sum='${ref_length}'>${ref}</span><span class='arrow'></span><span class='alt' data-sum='${alt_length}'>${alt}</span></div>`;
   });
 
   stanza.handlebars.registerHelper("mapConsequence", function (consequence) {
@@ -300,32 +296,32 @@ Stanza(function (stanza, params) {
   });
 
   stanza.handlebars.registerHelper("getSift", function (value) {
-    let v = parseFloat(value);
-    if (isNaN(v)) {
+    value = parseFloat(value);
+    if (isNaN(value)) {
       return
     }
 
-    let class_name = (v >= 0.05) ? "T" : "D";
+    let class_name = (value >= 0.05) ? "T" : "D";
 
-    return `<span class="variant-function" data-function="${class_name}">${fraction3.format(v)}</span>`
+    return `<span class="variant-function" data-function="${class_name}">${fraction3.format(value)}</span>`
   });
 
   stanza.handlebars.registerHelper("getPolyphen", function (value) {
-    let v = parseFloat(value);
-    if (isNaN(v)) {
+    value = parseFloat(value);
+    if (isNaN(value)) {
       return
     }
 
     let class_name = "U";
-    if (v > 0.908) {
+    if (value > 0.908) {
       class_name = "PROBD";
-    } else if (v > 0.446) {
+    } else if (value > 0.446) {
       class_name = "POSSD";
     } else {
       class_name = "B";
     }
 
-    return `<span class="variant-function" data-function="${class_name}">${fraction3.format(v)}</span>`
+    return `<span class="variant-function" data-function="${class_name}">${fraction3.format(value)}</span>`
   });
 
   stanza.handlebars.registerHelper("getSignificance", function (significance) {
@@ -337,37 +333,42 @@ Stanza(function (stanza, params) {
   stanza.handlebars.registerHelper("getFrequency", function (data) {
     let frequencyValue = "";
     let dataSource = "";
-    if (data) {
+
+    const num_alt_alleles = parseInt(data.num_alt_alleles);
+    const frequency = parseFloat(data.frequency);
+
+    if (isNaN(data)) {
+      frequencyValue = "na"
+    } else {
       dataSource = data.source;
       switch (true) {
-        case data.num_alt_alleles === 1:
+        case num_alt_alleles === 1:
           frequencyValue = "singleton";
           break;
-        case data.frequency >= .5:
+        case frequency >= .5:
           frequencyValue = "≥0.5";
           break;
-        case data.frequency > .05:
+        case frequency > .05:
           frequencyValue = "<0.5";
           break;
-        case data.frequency > .01:
+        case frequency > .01:
           frequencyValue = "<0.05";
           break;
-        case data.frequency > .001:
+        case frequency > .001:
           frequencyValue = "<0.01";
           break;
-        case data.frequency > .0001:
+        case frequency > .0001:
           frequencyValue = "<0.001";
           break;
-        case data.frequency > 0:
+        case frequency > 0:
           frequencyValue = "<0.0001";
           break;
         default:
           frequencyValue = "monomorphic";
           break;
       }
-    } else {
-      frequencyValue = "na"
     }
+
     return `<div class="dataset" data-dataset="${dataSource}" data-frequency="${frequencyValue}"></div>`
   });
 
@@ -380,8 +381,8 @@ Stanza(function (stanza, params) {
 
   let sparqlist = (params.sparqlist ? params.sparqlist : "/sparqlist").concat("/api/variant_other_alternative_alleles?tgv_id=" + params.tgv_id);
 
-  if (params.sparql) {
-    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.sparql))
+  if (params.ep) {
+    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.ep))
   }
   if (params.search_api) {
     sparqlist = sparqlist.concat("&search_api=" + encodeURIComponent(params.search_api))
@@ -398,7 +399,7 @@ Stanza(function (stanza, params) {
     }
     throw new Error(sparqlist + " returns status " + response.status);
   }).then(function (json) {
-    let data = json.data ? json.data.filter(v => v.id !== params.tgv_id) : [];
+    let data = json.data ? json.data.filter(x => x.id !== params.tgv_id) : [];
 
     data.forEach(function (row) {
       row.frequencies = DATASETS.map(function (elem) {

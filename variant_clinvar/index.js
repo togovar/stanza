@@ -27,11 +27,6 @@ const CLINICAL_SIGNIFICANCE = {
 };
 
 Stanza(function (stanza, params) {
-  // set default value
-  if (!params.base_url) {
-    params.base_url = "/stanza";
-  }
-
   if (!params.tgv_id) {
     return stanza.render({
       template: "error.html",
@@ -59,8 +54,8 @@ Stanza(function (stanza, params) {
 
   let sparqlist = (params.sparqlist ? params.sparqlist : "/sparqlist").concat("/api/variant_clinvar?tgv_id=" + params.tgv_id);
 
-  if (params.sparql) {
-    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.sparql))
+  if (params.ep) {
+    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.ep))
   }
 
   fetch(sparqlist, {

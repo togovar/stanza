@@ -19,7 +19,7 @@
       "stanza:required": true
     },
     {
-      "stanza:key": "sparql",
+      "stanza:key": "ep",
       "stanza:example": "https://togovar.biosciencedbc.jp/sparql",
       "stanza:description": "SPARQL endpoint URL",
       "stanza:required": false
@@ -31,9 +31,9 @@
       "stanza:required": false
     },
     {
-      "stanza:key": "base_url",
-      "stanza:example": "https://togovar.biosciencedbc.jp/stanza",
-      "stanza:description": "use absolute path rather than relative path for scripts or stylesheets",
+      "stanza:key": "margin",
+      "stanza:example": 50,
+      "stanza:description": "Margin of front and rear of the variation",
       "stanza:required": false
     }
   ],
@@ -48,5 +48,5 @@
   "stanza:contributor": [
   ],
   "stanza:created": "2015-02-03",
-  "stanza:updated": "2019-07-17"
+  "stanza:updated": "2020-07-17"
 }

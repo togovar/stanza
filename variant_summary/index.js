@@ -1,9 +1,4 @@
 Stanza(function (stanza, params) {
-  // set default value
-  if (!params.base_url) {
-    params.base_url = "/stanza";
-  }
-
   if (!params.tgv_id) {
     return stanza.render({
       template: "error.html",
@@ -19,7 +14,7 @@ Stanza(function (stanza, params) {
       return
     }
 
-    let [chr, assembly] = v.reference.replace(/.*\//, "").split("#");
+    let [chr, assembly] = v.reference.split("/").slice(-2);
     let position = v.stop ? v.start + ":" + v.stop : v.start;
 
     return "<span class='chromosome'>" + chr + "</span>"
@@ -51,13 +46,13 @@ Stanza(function (stanza, params) {
       alt = alt.slice(0, 4) + "..."
     }
 
-    return `<span class='ref' data-sum='${ref_length}'>${ref}</span><span class='arrow'></span><span class='alt' data-sum='${alt_length}'>${alt}</span>`;
+    return `<div class="ref-alt"><span class='ref' data-sum='${ref_length}'>${ref}</span><span class='arrow'></span><span class='alt' data-sum='${alt_length}'>${alt}</span></div>`;
   });
 
   let sparqlist = (params.sparqlist ? params.sparqlist : "/sparqlist").concat("/api/variant_summary?tgv_id=" + params.tgv_id);
 
-  if (params.sparql) {
-    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.sparql))
+  if (params.ep) {
+    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.ep))
   }
 
   fetch(sparqlist, {

@@ -11,11 +11,6 @@ const POLYPHEN_DISPLAY_LABEL = {
 };
 
 Stanza(function (stanza, params) {
-  // set default value
-  if (!params.base_url) {
-    params.base_url = "/stanza";
-  }
-
   if (!params.tgv_id) {
     return stanza.render({
       template: "error.html",
@@ -104,8 +99,8 @@ Stanza(function (stanza, params) {
   if (params.assembly) {
     sparqlist = sparqlist.concat("&assembly=" + encodeURIComponent(params.assembly));
   }
-  if (params.sparql) {
-    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.sparql));
+  if (params.ep) {
+    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.ep));
   }
 
   fetch(sparqlist, {

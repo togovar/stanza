@@ -8,12 +8,12 @@
   "stanza:parameter": [
     {
       "stanza:key": "tgv_id",
-      "stanza:example": "tgv55413188",
-      "stanza:description": "TogoVar ID: other e.g. tgv218973",
+      "stanza:example": "tgv132831",
+      "stanza:description": "TogoVar ID",
       "stanza:required": true
     },
     {
-      "stanza:key": "sparql",
+      "stanza:key": "ep",
       "stanza:example": "https://togovar.biosciencedbc.jp/sparql",
       "stanza:description": "SPARQL endpoint URL",
       "stanza:required": false
@@ -29,15 +29,9 @@
       "stanza:example": "https://togovar.biosciencedbc.jp/search",
       "stanza:description": "TogoVar search API",
       "stanza:required": false
-    },
-    {
-      "stanza:key": "base_url",
-      "stanza:example": "https://togovar.biosciencedbc.jp/stanza",
-      "stanza:description": "use absolute path rather than relative path for scripts or stylesheets",
-      "stanza:required": false
     }
   ],
-  "stanza:usage": "<togostanza-variant_other_overlapping_variants tgv_id=\"tgv55413188\"></togostanza-variant_other_overlapping_variants>",
+  "stanza:usage": "<togostanza-variant_other_overlapping_variants tgv_id=\"tgv132831\"></togostanza-variant_other_overlapping_variants>",
   "stanza:type": "Stanza",
   "stanza:context": "",
   "stanza:display": "",
@@ -48,5 +42,5 @@
   "stanza:contributor": [
   ],
   "stanza:created": "2019-04-22",
-  "stanza:updated": "2019-07-17"
+  "stanza:updated": "2020-07-17"
 }

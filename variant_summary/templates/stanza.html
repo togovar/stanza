@@ -1,5 +1,5 @@
-<link rel="stylesheet" type="text/css" href="{{params.base_url}}/common/assets/stylesheets/stanza.css"/>
-<link rel="stylesheet" type="text/css" href="{{params.base_url}}/variant_summary/assets/style.css"/>
+<link rel="stylesheet" type="text/css" href="/stanza/common/assets/stylesheets/stanza.css"/>
+<link rel="stylesheet" type="text/css" href="/stanza/variant_summary/assets/style.css"/>
 
 {{#if binding}}
 <div class="summary_table_wrapper">
@@ -7,11 +7,11 @@
     <tr>
       <th>Variant type</th>
       <td class="variant-type-value">
-        <span class="{{binding.so_type}} variant-value">{{binding.variant_type}}</span>
+        <span class="{{binding.so_type}} variant-value">{{binding.type_label}}</span>
       </td>
 
       <th>Ref / Alt</th>
-      <td class="ref-alt">{{{print_allele binding}}}</td>
+      <td>{{{print_allele binding}}}</td>
     </tr>
 
     <tr>
