@@ -647,8 +647,12 @@ label > input {
   background-color: #46B9CC;
 }
 
-.frequency-graph > .dataset[data-dataset="tommo"] {
-  background-color: #C78198;
+.frequency-graph > .dataset[data-dataset="tommo_4.7kjpn"] {
+  background-color: #abe03f;
+}
+
+.frequency-graph > .dataset[data-dataset="gem_j_wga"] {
+  background-color: #DC2828;
 }
 
 .frequency-graph > .dataset[data-dataset="hgvd"] {
@@ -656,7 +660,7 @@ label > input {
 }
 
 .frequency-graph > .dataset[data-dataset="exac"] {
-  background-color: #628C00;
+  background-color: #94928d;
 }
 
 .frequency-graph > .dataset[data-frequency="na"] {
@@ -765,8 +769,12 @@ label > input {
   background-color: #46B9CC;
 }
 
-.allele-frequency-graph > .dataset[data-dataset="tommo"] {
-  background-color: #C78198;
+.allele-frequency-graph > .dataset[data-dataset="tommo_4.7kjpn"] {
+  background-color: #abe03f;
+}
+
+.allele-frequency-graph > .dataset[data-dataset="gem_j_wga"] {
+  background-color: #DC2828;
 }
 
 .allele-frequency-graph > .dataset[data-dataset="hgvd"] {
@@ -774,7 +782,7 @@ label > input {
 }
 
 .allele-frequency-graph > .dataset[data-dataset="exac"] {
-  background-color: #628C00;
+  background-color: #94928d;
 }
 
 .allele-frequency-graph > .dataset[data-frequency="na"] {
@@ -826,7 +834,11 @@ label > input {
   background-position: -40px 0;
 }
 
-.dataset-icon[data-dataset="tommo"] {
+.dataset-icon[data-dataset="tommo_4.7kjpn"] {
+  background-position: -60px 0;
+}
+
+.dataset-icon[data-dataset="gem_j_wga"] {
   background-position: -60px 0;
 }
 
