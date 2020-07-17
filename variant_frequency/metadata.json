@@ -13,7 +13,7 @@
       "stanza:required": true
     },
     {
-      "stanza:key": "sparql",
+      "stanza:key": "ep",
       "stanza:example": "https://togovar.biosciencedbc.jp/sparql",
       "stanza:description": "SPARQL endpoint URL",
       "stanza:required": false

@@ -155,8 +155,8 @@ Stanza(function (stanza, params) {
 
   let sparqlist = (params.sparqlist ? params.sparqlist : "/sparqlist").concat("/api/variant_frequency?tgv_id=" + params.tgv_id);
 
-  if (params.sparql) {
-    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.sparql))
+  if (params.ep) {
+    sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.ep))
   }
 
   fetch(sparqlist, {
