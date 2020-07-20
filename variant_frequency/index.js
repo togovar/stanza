@@ -8,10 +8,10 @@ const POPULATION_LABEL = {
 };
 
 const ORDER_WEIGHT = {
+  "GEMJ 10K": 0,
   "JGA-NGS": 10,
   "JGA-SNP": 20,
   "ToMMo 4.7KJPN": 30,
-  "GEMJ 10K": 35,
   "HGVD": 40,
   "ExAC": 50,
   "African/African American": 1,
