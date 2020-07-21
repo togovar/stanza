@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /* import foundation and  component*/
 /*!
  * Bootstrap Reboot v4.3.1 (https://getbootstrap.com/)
@@ -337,6 +338,12 @@ template {
   font-family: 'FontAwesome';
   src: url("../fonts/fontawesome-webfont.eot");
   src: url("../fonts/fontawesome-webfont.eot") format("embedded-opentype"), url("../fonts/fontawesome-webfont.woff2") format("woff2"), url("../fonts/fontawesome-webfont.woff") format("woff"), url("../fonts/fontawesome-webfont.ttf") format("truetype"), url("../fonts/fontawesome-webfont.svg") format("svg");
+}
+
+@font-face {
+  font-family: 'fontello';
+  src: url("../fonts/fontello.eot");
+  src: url("../fonts/fontello.eot") format("embedded-opentype"), url("../fonts/fontello.woff2") format("woff2"), url("../fonts/fontello.woff") format("woff"), url("../fonts/fontello.ttf") format("truetype"), url("../fonts/fontello.svg") format("svg");
 }
 
 html {
@@ -822,40 +829,85 @@ label > input {
 }
 
 .dataset-icon {
-  width: 18px;
   height: 18px;
-  background-image: url("../images/csssprite.png");
-  background-repeat: no-repeat;
-  background-position: 0 0;
-  background-size: 200px 60px;
+  font-family: fontello;
+  position: relative;
 }
 
-.dataset-icon[data-dataset="jga-ngs"], .dataset-icon[data-dataset="jga-snp"] {
-  background-position: -40px 0;
+.dataset-icon:before {
+  content: "";
+  margin-right: 2px;
+  position: relative;
+  left: 2px;
+  display: inline-block;
+  height: 18px;
 }
 
-.dataset-icon[data-dataset="tommo_4.7kjpn"] {
-  background-position: -60px 0;
+.dataset-icon > .properties {
+  font-size: 10px;
+  display: -webkit-inline-box;
+  display: inline-flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+          flex-direction: column;
+  -webkit-box-pack: center;
+          justify-content: center;
+  font-family: "Roboto Condensed";
+  font-weight: lighter;
+  line-height: 9px;
+  position: relative;
+  left: -2px;
+  top: -1px;
+  vertical-align: middle;
+  height: 20px;
+  -webkit-transform: scale(0.9);
+          transform: scale(0.9);
 }
 
-.dataset-icon[data-dataset="gem_j_wga"] {
-  background-position: -60px 0;
+.dataset-icon > .properties::before, .dataset-icon > .properties::after {
+  display: block;
+  height: 10px;
 }
 
-.dataset-icon[data-dataset="hgvd"] {
-  background-position: -80px 0;
+.dataset-icon[data-dataset="jga_ngs"]:before, .dataset-icon[data-dataset="jga_snp"]:before {
+  color: #46B9CC;
 }
 
-.dataset-icon[data-dataset="exac"] {
-  background-position: -100px 0;
+.dataset-icon[data-dataset="tommo_4.7kjpn"]:before {
+  color: #abe03f;
 }
 
-.dataset-icon[data-dataset="mgend"].-none {
-  background-position: -20px 0;
+.dataset-icon[data-dataset="hgvd"]:before, .dataset-icon[data-dataset="mgend"]:before {
+  color: #005B80;
 }
 
-.dataset-icon[data-dataset="clinvar"] {
-  background-position: -120px 0;
+.dataset-icon[data-dataset="gem_j_wga"]:before {
+  color: #DC2828;
+}
+
+.dataset-icon[data-dataset="bbj"]:before {
+  color: #FF993F;
+}
+
+.dataset-icon[data-dataset="clinvar"]:before, .dataset-icon[data-dataset="exac"]:before, .dataset-icon[data-dataset="gnomad"]:before {
+  color: #94928d;
+}
+
+.dataset-icon[data-dataset="clinvar"] > .properties::before, .dataset-icon[data-dataset="mgend"] > .properties::before {
+  color: #FF5A54;
+  content: "Disease";
+}
+
+.dataset-icon[data-dataset="tommo_4.7kjpn"] > .properties::after, .dataset-icon[data-dataset="gem_j_wga"] > .properties::after {
+  content: "WGS";
+}
+
+.dataset-icon[data-dataset="jga_ngs"] > .properties::after, .dataset-icon[data-dataset="hgvd"] > .properties::after, .dataset-icon[data-dataset="exac"] > .properties::after {
+  content: "WES";
+}
+
+.dataset-icon[data-dataset="jga_snp"] > .properties::after, .dataset-icon[data-dataset="bbj"] > .properties::after {
+  content: "SNP";
 }
 
 .variant-icon {
