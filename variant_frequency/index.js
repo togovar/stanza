@@ -96,17 +96,16 @@ Stanza(function (stanza, params) {
 
   let counter_get_class_name = 0;
   stanza.handlebars.registerHelper("getClassName", (text) => {
-    text = text.toLowerCase();
+    text = text.toLowerCase().replace(/[ -]/g, '_');
 
     if (text === 'exac') {
       counter_get_class_name++
-    } else if (text === "tommo 4.7kjpn") {
-      text = "tommo_4.7kjpn";
-    } else if (text === "gemj 10k") {
-      text = "gem_j_wga";
     }
+
     if (text === 'exac' && counter_get_class_name === 1 || text === 'exac' && counter_get_class_name === 2 || text === 'exac' && counter_get_class_name === 3) {
       text = 'exac_first'
+    } else if (text === "gemj 10k") {
+      text = "gem_j_wga";
     }
 
     return text
