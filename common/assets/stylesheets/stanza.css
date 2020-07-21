@@ -910,35 +910,6 @@ label > input {
   content: "SNP";
 }
 
-.variant-icon {
-  width: 32px;
-  height: 26px;
-  background-image: url("../images/csssprite.png");
-  background-repeat: no-repeat;
-  background-position: 0 0;
-  background-size: 200px 60px;
-}
-
-.variant-icon.-snv {
-  background-position: 0 -20px;
-}
-
-.variant-icon.-insertion {
-  background-position: -40px -20px;
-}
-
-.variant-icon.-deletion {
-  background-position: -80px -20px;
-}
-
-.variant-icon.-indel {
-  background-position: -120px -20px;
-}
-
-.variant-icon.-substitution {
-  background-position: -160px -20px;
-}
-
 .star-rating {
   display: inline-block;
   position: absolute;
