@@ -104,7 +104,7 @@ Stanza(function (stanza, params) {
 
     if (text === 'exac' && counter_get_class_name === 1 || text === 'exac' && counter_get_class_name === 2 || text === 'exac' && counter_get_class_name === 3) {
       text = 'exac_first'
-    } else if (text === "gemj 10k") {
+    } else if (text === "gemj_10k") {
       text = "gem_j_wga";
     }
 
