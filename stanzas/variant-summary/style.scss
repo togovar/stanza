@@ -1,0 +1,42 @@
+@use 'common';
+
+main {
+  .summary_table_wrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 7px 0 0;
+
+    .table {
+      width: 100%;
+      table-layout: fixed;
+
+      > tbody > tr {
+        &:last-child > {
+          th, td {
+            border-bottom: none;
+          }
+        }
+
+        > {
+          th {
+            width: 77px;
+            text-align: right;
+          }
+
+          td {
+            padding-left: 12px;
+
+            &.ref-alt {
+              display: flex;
+            }
+
+            span.chromosome {
+              font-weight: bold;
+            }
+          }
+        }
+      }
+    }
+  }
+}
