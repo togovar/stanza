@@ -1,0 +1,26 @@
+{{#with result}}
+  <table class="table variant-header">
+    <thead>
+    <tr>
+      {{#each xrefs}}
+        <th>{{name}}</th>
+      {{/each}}
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      {{#each xrefs}}
+        <td>
+          {{#each refs}}
+            <a href="{{this.url}}">{{this.label}}</a>
+          {{/each}}
+        </td>
+      {{/each}}
+    </tr>
+    </tbody>
+  </table>
+{{/with}}
+
+{{#with error}}
+  <p class="error">{{message}}</p>
+{{/with}}
