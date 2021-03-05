@@ -2,9 +2,18 @@
   "@context": {
     "stanza": "http://togostanza.org/resource/stanza#"
   },
-  "@id": "variant_other_overlapping_variants",
+  "@id": "variant-other-overlapping-variants",
   "stanza:label": "Variant / Other overlapping variants",
-  "stanza:definition": "Display variants that exists on same chromosomal location.",
+  "stanza:definition": "Display variants that exists on same chromosomal location",
+  "stanza:type": "Stanza",
+  "stanza:display": "Table",
+  "stanza:provider": "TogoVar",
+  "stanza:license": "MIT",
+  "stanza:author": "Daisuke Satoh",
+  "stanza:address": "daisuke.satoh@lifematics.co.jp",
+  "stanza:contributor": [],
+  "stanza:created": "2019-04-22",
+  "stanza:updated": "2021-03-04",
   "stanza:parameter": [
     {
       "stanza:key": "tgv_id",
@@ -31,16 +40,6 @@
       "stanza:required": false
     }
   ],
-  "stanza:usage": "<togostanza-variant_other_overlapping_variants tgv_id=\"tgv132831\"></togostanza-variant_other_overlapping_variants>",
-  "stanza:type": "Stanza",
-  "stanza:context": "",
-  "stanza:display": "",
-  "stanza:provider": "provider of this stanza",
-  "stanza:license": "",
-  "stanza:author": "Daisuke Satoh",
-  "stanza:address": "daisuke.satoh@lifematics.co.jp",
-  "stanza:contributor": [
-  ],
-  "stanza:created": "2019-04-22",
-  "stanza:updated": "2020-07-17"
+  "stanza:about-link-placement": "bottom-right",
+  "stanza:style": []
 }
