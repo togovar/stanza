@@ -2,9 +2,18 @@
   "@context": {
     "stanza": "http://togostanza.org/resource/stanza#"
   },
-  "@id": "variant_frequency",
-  "stanza:label": "Variant / Frequency",
-  "stanza:definition": "Display alternative allele frequencies of the variant",
+  "@id": "variant-clinvar",
+  "stanza:label": "Variant / ClinVar",
+  "stanza:definition": "Display ClinVar annotations of the variant",
+  "stanza:type": "Stanza",
+  "stanza:display": "Table",
+  "stanza:provider": "TogoVar",
+  "stanza:license": "MIT",
+  "stanza:author": "Daisuke Satoh",
+  "stanza:address": "daisuke.satoh@lifematics.co.jp",
+  "stanza:contributor": [],
+  "stanza:created": "2019-04-22",
+  "stanza:updated": "2021-03-04",
   "stanza:parameter": [
     {
       "stanza:key": "tgv_id",
@@ -25,16 +34,6 @@
       "stanza:required": false
     }
   ],
-  "stanza:usage": "<togostanza-variant_frequency tgv_id=\"tgv219804\"></togostanza-variant_frequency>",
-  "stanza:type": "Stanza",
-  "stanza:context": "",
-  "stanza:display": "",
-  "stanza:provider": "provider of this stanza",
-  "stanza:license": "",
-  "stanza:author": "Daisuke Satoh",
-  "stanza:address": "daisuke.satoh@lifematics.co.jp",
-  "stanza:contributor": [
-  ],
-  "stanza:created": "2019-04-22",
-  "stanza:updated": "2020-07-17"
+  "stanza:about-link-placement": "bottom-right",
+  "stanza:style": []
 }
