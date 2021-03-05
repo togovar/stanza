@@ -2,9 +2,18 @@
   "@context": {
     "stanza": "http://togostanza.org/resource/stanza#"
   },
-  "@id": "variant_jbrowse",
-  "stanza:label": "Genomic context",
+  "@id": "variant-genomic-context",
+  "stanza:label": "Variant / Genomic context",
   "stanza:definition": "Schematic view of the structure and surroundings of a gene.",
+  "stanza:type": "Stanza",
+  "stanza:display": "Other",
+  "stanza:provider": "TogoVar",
+  "stanza:license": "MIT",
+  "stanza:author": "Daisuke Satoh",
+  "stanza:address": "daisuke.satoh@lifematics.co.jp",
+  "stanza:contributor": [],
+  "stanza:created": "2015-02-03",
+  "stanza:updated": "2021-03-04",
   "stanza:parameter": [
     {
       "stanza:key": "tgv_id",
@@ -37,16 +46,6 @@
       "stanza:required": false
     }
   ],
-  "stanza:usage": "<togostanza-variant_jbrowse tgv_id=\"tgv132831\" assembly=\"GRCh37\"></togostanza-variant_jbrowse>",
-  "stanza:type": "Stanza",
-  "stanza:context": "",
-  "stanza:display": "",
-  "stanza:provider": "provider of this stanza",
-  "stanza:license": "",
-  "stanza:author": "Daisuke Satoh",
-  "stanza:address": "daisuke.satoh@lifematics.co.jp",
-  "stanza:contributor": [
-  ],
-  "stanza:created": "2015-02-03",
-  "stanza:updated": "2020-07-17"
+  "stanza:about-link-placement": "bottom-right",
+  "stanza:style": []
 }
