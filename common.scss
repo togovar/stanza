@@ -539,6 +539,7 @@ ul {
   margin-right: 1px;
   background-color: #249EB3;
   vertical-align: middle;
+  box-sizing: border-box;
 
   &:before, &:after {
     content: "";
@@ -577,7 +578,7 @@ ul {
     background-color: #005B80;
   }
 
-  &[data-dataset="exac"] {
+  &[data-dataset^="exac"] {
     background-color: #94928d;
   }
 
