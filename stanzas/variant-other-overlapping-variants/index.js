@@ -1,9 +1,11 @@
 import {DATASETS} from "@/lib/constants.js";
 import * as display from "@/lib/display.js";
-import {sortBySource} from "@/lib/sort.js";
+import {sortBy} from "@/lib/sort.js";
+
+const sources = ["gem_j_wga", "jga_ngs", "jga_snp", "tommo_4.7kjpn", "hgvd", "exac"];
 
 const ensureAllDatasets = frequencies => {
-  Object.keys(DATASETS).forEach(function (source) {
+  sources.forEach(source => {
     if (!frequencies.find(x => x.source === source)) {
       frequencies.push({source: source});
     }
@@ -31,6 +33,8 @@ export default async function variantSummary(stanza, params) {
     }
     throw new Error(sparqlist + " returns status " + res.status);
   }).then(json => {
+    const datasets = Object.values(DATASETS);
+
     let records = json.data ? json.data.filter(x => x.id !== params.tgv_id) : [];
 
     records.forEach(record => {
@@ -41,7 +45,7 @@ export default async function variantSummary(stanza, params) {
         record.frequencies = [];
       }
       ensureAllDatasets(record.frequencies);
-      sortBySource(record.frequencies, x => x.source);
+      sortBy(record.frequencies, x => datasets.find(y => y.id === x.source)?.idx);
       record.frequencies.forEach(x => {
         const ac = parseInt(x.allele?.count);
         const freq = parseFloat(x.allele?.frequency);
