@@ -26,18 +26,21 @@ Stanza(function (stanza, params) {
     throw new Error(sparqlist + " returns status " + response.status);
   }).then(function (json) {
     let bindings = stanza.unwrapValueFromBinding(json);
-    let binding = bindings[0];
-
-    if (binding) {
-      binding.symbol = Array.from(new Set(stanza.grouping(bindings, "symbol").filter(v => v)));
-      binding.synonym = Array.from(new Set(stanza.grouping(bindings, "synonym").filter(v => v)));
-    }
+    let binding = bindings[0] || {};
 
     stanza.render({
       template: "stanza.html",
       parameters: {
         params: params,
-        binding: binding
+        binding: {
+          ...binding,
+          symbol: Object.values(bindings.map(x => ({hgnc: x.hgnc, symbol: x.symbol}))
+            .reduce((accumulator, currentValue) => {
+              accumulator[currentValue.hgnc] = currentValue;
+              return accumulator;
+            }, {})),
+          synonym: Array.from(new Set(stanza.grouping(bindings, "synonym").filter(v => v)))
+        }
       }
     });
   }).catch(function (e) {
