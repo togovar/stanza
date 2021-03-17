@@ -14,7 +14,11 @@
       <ul class="no-bullet">
         {{#each binding.symbol}}
         <li>
-          <a href="{{hgnc}}">{{symbol}}</a>
+          {{#if hgnc}}
+            <a href="{{hgnc}}">{{symbol}}</a>
+          {{else}}
+            {{symbol}}
+          {{/if}}
         </li>
         {{/each}}
       </ul>
