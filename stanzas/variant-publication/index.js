@@ -78,7 +78,7 @@ export default async function variantPublication(stanza, params) {
           data: 'Cited by',
           title: 'Cited by',
           className: 'dt-head-right dt-body-right',
-          render: (data, type, row) => {
+          render: (data, type, _row) => {
             if (type === "display" && Array.isArray(data)) {
               data = `<ul>${data.map(x => `<li>${x}</li>`).join("")}</ul>`;
             }
