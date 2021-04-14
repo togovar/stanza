@@ -1,0 +1,47 @@
+{{#if error}}
+  <div class="alert alert-danger">{{error.message}}</div>
+{{else}}
+  <table class="table">
+    <thead>
+    <tr>
+      <th>Transcript ID</th>
+      <th>Gene symbol</th>
+      <th>Consequence type</th>
+      <th>HGVS(cDNA)</th>
+      <th>HGVS(Amino acid seq.)</th>
+      <th>SIFT</th>
+      <th>PolyPhen</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {{#each result}}
+      <tr>
+        <td><a href="{{transcript.url}}">{{transcript.label}}</a></td>
+        <td><a href="{{gene_xref}}">{{gene_symbol}}</a></td>
+        <td>
+          <ul class="no-bullet">
+            {{#each consequence_label}}
+              <li>{{this}}</li>
+            {{/each}}
+          </ul>
+        </td>
+        <td>{{hgvs_c}}</td>
+        <td>{{hgvs_p}}</td>
+        <td class="sift">
+          <span class="variant-function" data-function="{{sift_class}}">{{sift}}</span>
+          <span class="sift-label">{{sift_label}}</span>
+        </td>
+        <td class="polyphen">
+          <span class="variant-function" data-function="{{polyphen_class}}">{{polyphen}}</span>
+          <span class="polyphen-label">{{polyphen_label}}</span>
+        </td>
+      </tr>
+    {{else}}
+      <tr>
+        <td colspan="7" class="text-center">No data</td>
+      </tr>
+    {{/each}}
+    </tbody>
+  </table>
+{{/if}}
