@@ -3,12 +3,18 @@
   "version": "0.0.1",
   "license": "MIT",
   "repository": "https://github.com/togovar/stanza.git",
-  "dependencies": {
-    "eslint": "^7.21.0",
-    "togostanza": "github:togostanza/togostanza"
-  },
   "engines": {
     "node": ">=14"
+  },
+  "dependencies": {
+    "togostanza": "github:togostanza/togostanza"
+  },
+  "devDependencies": {
+    "eslint": "^7.24.0",
+    "stylelint": "^13.12.0",
+    "stylelint-config-recommended": "^4.0.0",
+    "stylelint-config-recommended-scss": "^4.2.0",
+    "stylelint-scss": "^3.19.0"
   },
   "private": true
 }
