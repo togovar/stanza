@@ -47,11 +47,7 @@ export default async function variantSummary(stanza, params) {
     sortBy(bindings, x => datasets.find(y => y.source === x.source)?.idx);
 
     return {result: {bindings: bindings}};
-  }).catch(e => {
-    console.error(e);
-
-    return {error: {message: e.message}}
-  });
+  }).catch(e => ({error: {message: e.message}}));
 
   stanza.render({
     template: "stanza.html.hbs",
