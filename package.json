@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "license": "MIT",
   "repository": "https://github.com/togovar/stanza.git",
+  "private": true,
   "engines": {
     "node": ">=14"
   },
@@ -16,5 +17,13 @@
     "stylelint-config-recommended-scss": "^4.2.0",
     "stylelint-scss": "^3.19.0"
   },
-  "private": true
+  "scripts": {
+    "build": "yarn togostanza build",
+    "generate": "yarn togostanza generate stanza",
+    "start": "yarn togostanza serve",
+    "lint": "yarn lint:js && yarn lint:css",
+    "lint:css": "stylelint common.scss stanzas/**/*.{css,scss,sass}",
+    "lint:js": "yarn lint:eslint lib stanzas",
+    "lint:eslint": "eslint --ignore-path .gitignore"
+  }
 }
