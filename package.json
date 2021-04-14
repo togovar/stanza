@@ -4,6 +4,7 @@
   "license": "MIT",
   "repository": "https://github.com/togovar/stanza.git",
   "dependencies": {
+    "eslint": "^7.21.0",
     "togostanza": "github:togostanza/togostanza"
   },
   "engines": {
