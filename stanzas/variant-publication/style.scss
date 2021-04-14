@@ -1,3 +1,6 @@
+@use 'common.scss';
+@use 'assets/vendor/datatables/1.10.24/datatables.min.css';
+
 #dataTable_wrapper > #dataTable_info {
   display: inline-block;
   font-size: 14px;
@@ -157,20 +160,24 @@
 }
 
 #dataTable_wrapper > .dataTables_paginate > .paginate_button.previous {
-  background-image: url("../../common/assets/stylesheets/DataTables-1.10.18/images/prev_btn.png");
+  background-image: url("../../assets/vendor/datatables/1.10.24/images/prev_btn.png");
 }
 
 #dataTable_wrapper > .dataTables_paginate > .paginate_button.previous:hover {
-  background-image: url("../../common/assets/stylesheets/DataTables-1.10.18/images/prev_btn_hover.png");
+  background-image: url("../../assets/vendor/datatables/1.10.24/images/prev_btn_hover.png");
 }
 
 #dataTable_wrapper > .dataTables_paginate > .paginate_button.next {
-  background-image: url("../../common/assets/stylesheets/DataTables-1.10.18/images/next_btn.png");
+  background-image: url("../../assets/vendor/datatables/1.10.24/images/next_btn.png");
   margin-left: 12px;
 }
 
 #dataTable_wrapper > .dataTables_paginate > .paginate_button.next:hover {
-  background-image: url("../../common/assets/stylesheets/DataTables-1.10.18/images/next_btn_hover.png");
+  background-image: url("../../assets/vendor/datatables/1.10.24/images/next_btn_hover.png");
+}
+
+#dataTable_wrapper > .dataTables_paginate > .paginate_button.next:hover {
+  background-image: url("../../assets/vendor/datatables/1.10.24/images/next_btn_hover.png");
 }
 
 #dataTable_wrapper > .dataTables_paginate > .paginate_button:focus {
@@ -178,7 +185,10 @@
 }
 
 #dataTable_wrapper caption {
-  padding: 0.75rem;
+  caption-side: bottom;
+  text-align: left;
   font-size: 1.5em;
   font-weight: bold;
+  color: #6c757d;
+  padding: 0.75rem;
 }

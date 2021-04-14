@@ -1,0 +1,39 @@
+{
+  "@context": {
+    "stanza": "http://togostanza.org/resource/stanza#"
+  },
+  "@id": "variant-publication",
+  "stanza:label": "Variant / Publication",
+  "stanza:definition": "Display publications to be related to the variant",
+  "stanza:type": "Stanza",
+  "stanza:display": "Table",
+  "stanza:provider": "TogoVar",
+  "stanza:license": "MIT",
+  "stanza:author": "Daisuke Satoh",
+  "stanza:address": "daisuke.satoh@lifematics.co.jp",
+  "stanza:contributor": [],
+  "stanza:created": "2019-04-22",
+  "stanza:updated": "2021-04-14",
+  "stanza:parameter": [
+    {
+      "stanza:key": "tgv_id",
+      "stanza:example": "tgv29245294",
+      "stanza:description": "TogoVar ID",
+      "stanza:required": true
+    },
+    {
+      "stanza:key": "ep",
+      "stanza:example": "https://togovar.biosciencedbc.jp/sparql",
+      "stanza:description": "SPARQL endpoint URL",
+      "stanza:required": false
+    },
+    {
+      "stanza:key": "sparqlist",
+      "stanza:example": "https://togovar.biosciencedbc.jp/sparqlist",
+      "stanza:description": "SPARQList URL",
+      "stanza:required": false
+    }
+  ],
+  "stanza:about-link-placement": "bottom-right",
+  "stanza:style": []
+}
