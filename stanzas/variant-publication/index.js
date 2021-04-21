@@ -5,7 +5,12 @@ const RS_PREFIX = "http://identifiers.org/dbsnp/";
 export default async function variantPublication(stanza, params) {
   stanza.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
 
-  const scripts = stanza.embbedScriptTag("./assets/vendor/jquery/3.6.0/jquery.min.js", "./assets/vendor/datatables/1.10.24/jquery.dataTables.js")
+  const sources = [
+    new URL("./assets/vendor/jquery/3.6.0/jquery.min.js", import.meta.url),
+    new URL("./assets/vendor/datatables/1.10.24/jquery.dataTables.js", import.meta.url),
+  ];
+
+  const scripts = stanza.embedScriptTag(...sources)
 
   const r = await stanza.query({
     endpoint: params.ep ? params.ep : "/sparql",
@@ -57,10 +62,13 @@ export default async function variantPublication(stanza, params) {
 
   scripts.then(() => {
     $(stanza.select("#dataTable")).DataTable({
-      data: r.result || [],
+      data: r?.result || [],
       searching: false,
       dom: "ilrtfp",
       order: [[2, "desc"]],
+      language: {
+        emptyTable: "No data",
+      },
       columns: [
         {
           data: 'PMID',
