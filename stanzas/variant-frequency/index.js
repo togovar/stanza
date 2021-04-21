@@ -4,7 +4,7 @@ import {sortBy} from "@/lib/sort.js";
 
 export default async function variantSummary(stanza, params) {
   stanza.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
-  stanza.importWebFontCSS("/assets/fontello.css");
+  stanza.importWebFontCSS(new URL("./assets/fontello.css", import.meta.url));
 
   const sparqlist = (params?.sparqlist || "/sparqlist")
     .concat(`/api/variant_frequency?tgv_id=${params.tgv_id}`)
