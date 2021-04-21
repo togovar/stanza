@@ -1,14 +1,12 @@
 {{#if error}}
   <div class="alert alert-danger">{{error.message}}</div>
 {{else}}
-  {{#if result}}
     <table id="dataTable" style="width:100%">
+    {{#if result}}
       <caption>
         Note: The link to LitVar leads to a list of all PubMed articles related to this variant.
         Please find a PMID of your choice in the list.
       </caption>
+    {{/if}}
     </table>
-  {{else}}
-    <div class="text-center">No data</div>
-  {{/if}}
 {{/if}}
