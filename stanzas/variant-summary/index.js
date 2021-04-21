@@ -1,5 +1,5 @@
-import uniq from "@/lib/uniq.js";
-import * as display from "@/lib/display.js";
+import uniq from "../../lib/uniq.js";
+import * as display from "../../lib/display.js";
 
 export default async function variantSummary(stanza, params) {
   stanza.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");

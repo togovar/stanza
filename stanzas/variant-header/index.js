@@ -1,4 +1,4 @@
-import uniq from "@/lib/uniq.js";
+import uniq from "../../lib/uniq.js";
 
 export default async function variantHeader(stanza, params) {
   stanza.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");

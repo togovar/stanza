@@ -1,6 +1,6 @@
-import {DATASETS} from "@/lib/constants.js";
-import * as display from "@/lib/display.js";
-import {sortBy} from "@/lib/sort.js";
+import {DATASETS} from "../../lib/constants.js";
+import * as display from "../../lib/display.js";
+import {sortBy} from "../../lib/sort.js";
 
 export default async function variantSummary(stanza, params) {
   stanza.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");

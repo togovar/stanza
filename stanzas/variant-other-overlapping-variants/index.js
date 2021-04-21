@@ -1,6 +1,6 @@
-import {DATASETS} from "@/lib/constants.js";
-import * as display from "@/lib/display.js";
-import {sortBy} from "@/lib/sort.js";
+import {DATASETS} from "../../lib/constants.js";
+import * as display from "../../lib/display.js";
+import {sortBy} from "../../lib/sort.js";
 
 const sources = ["gem_j_wga", "jga_ngs", "jga_snp", "tommo_4.7kjpn", "hgvd", "exac"];
 
