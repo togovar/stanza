@@ -1,5 +1,5 @@
-import {CLINICAL_SIGNIFICANCE, REVIEW_STATUS} from "@/lib/constants";
-import * as table from "@/lib/table";
+import {CLINICAL_SIGNIFICANCE, REVIEW_STATUS} from "../../lib/constants";
+import * as table from "../../lib/table";
 
 export default async function variantSummary(stanza, params) {
   stanza.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
