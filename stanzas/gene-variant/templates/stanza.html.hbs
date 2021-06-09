@@ -1,0 +1,51 @@
+{{#with result}}
+<table id="target" class="table">
+  <thead>
+    <tr>
+      <th>TogoVar ID</th>
+      <th>Variant type</th>
+      <th>Ref / Alt</th>
+      <th>Alt frequency</th>
+      <th>Consequence</th>
+      <th>SIFT</th>
+      <th>PolyPhen</th>
+      <th>Clinical Significance</th>
+    </tr>
+  </thead>
+  <tbody>
+  {{#each bindings}}
+    <tr>
+      <td class="id"><a href="/variant/{{id}}">{{id}}</a></td>
+      <td class="type">{{type}}</td>
+      <td>
+        <div class="ref-alt">
+          <span class='ref' data-sum='{{ref_length}}'>{{ref}}</span>
+          <span class='arrow'></span>
+          <span class='alt' data-sum='{{alt_length}}'>{{alt}}</span>
+        </div>
+      </td>
+      <td>
+        <div class="frequency-graph">
+        {{#each frequencies}}
+          <span class="dataset" data-frequency="{{allele.frequency}}" data-dataset="{{source}}"></span>
+        {{/each}}
+        </div>
+      </td>
+      <td class="consequence">
+        {{consequence}}
+      </td>
+      <td class="sift">{{sift_class}}{{sift_label}}</td>
+      <td class="polyphen">{{polyphen}}</td>
+      <td class="clinical_significance_wrapper">
+      {{#each significance}}
+        {{interpretations}}</br>{{condition}}
+      {{/each}}
+      </td>
+    </tr>
+  {{/each}}
+  </tbody>
+</table>
+{{/with}}
+{{#with error}}
+  <div class="alert alert-danger">{{message}}</div>
+{{/with}}

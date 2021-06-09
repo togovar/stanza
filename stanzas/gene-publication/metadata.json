@@ -1,0 +1,39 @@
+{
+  "@context": {
+    "stanza": "http://togostanza.org/resource/stanza#"
+  },
+  "@id": "gene-publication",
+  "stanza:label": "Gene publication",
+  "stanza:definition": "Display publications to be related to the gene",
+  "stanza:type": "Stanza",
+  "stanza:display": "Table",
+  "stanza:provider": "TogoVar",
+  "stanza:license": "MIT",
+  "stanza:author": "Yu Tokunaga",
+  "stanza:address": "tokunaga@biosciencedbc.jp",
+  "stanza:contributor": [],
+  "stanza:created": "2021-05-27",
+  "stanza:updated": "2021-05-27",
+  "stanza:parameter": [
+    {
+      "stanza:key": "hgnc_id",
+      "stanza:example": "404",
+      "stanza:description": "HGNC ID",
+      "stanza:required": true
+    },
+    {
+      "stanza:key": "ep",
+      "stanza:example": "https://togovar-dev.biosciencedbc.jp/sparql",
+      "stanza:description": "SPARQL endpoint URL",
+      "stanza:required": false
+    },
+    {
+      "stanza:key": "sparqlist",
+      "stanza:example": "https://togovar-dev.biosciencedbc.jp/sparqlist",
+      "stanza:description": "SPARQList URL",
+      "stanza:required": false
+    }
+  ],
+  "stanza:about-link-placement": "bottom-right",
+  "stanza:style": []
+}
