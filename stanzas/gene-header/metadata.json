@@ -1,0 +1,53 @@
+{
+  "@context": {
+    "stanza": "http://togostanza.org/resource/stanza#"
+  },
+  "@id": "gene-header",
+  "stanza:label": "Gene header",
+  "stanza:definition": "",
+  "stanza:type": "Stanza",
+  "stanza:display": "Table",
+  "stanza:provider": "Togovar",
+  "stanza:license": "MIT",
+  "stanza:author": "Shuichi Tahara",
+  "stanza:address": "tahara@biosciencedbc.jp",
+  "stanza:contributor": [],
+  "stanza:created": "2021-06-08",
+  "stanza:updated": "2021-06-08",
+  "stanza:parameter": [
+    {
+      "stanza:key": "hgnc_id",
+      "stanza:example": "404",
+      "stanza:description": "HGNC ID",
+      "stanza:required": true
+    },
+    {
+      "stanza:key": "ep",
+      "stanza:example": "https://togovar-dev.biosciencedbc.jp/sparql",
+      "stanza:description": "SPARQL endpoint URL",
+      "stanza:required": false
+    }
+  ],
+  "stanza:menu-placement": "bottom-right",
+  "stanza:style": [
+    {
+      "stanza:key": "--greeting-color",
+      "stanza:type": "color",
+      "stanza:default": "#eb7900",
+      "stanza:description": "text color of greeting"
+    },
+    {
+      "stanza:key": "--greeting-align",
+      "stanza:type": "single-choice",
+      "stanza:choice": [
+        "left",
+        "center",
+        "right"
+      ],
+      "stanza:default": "center",
+      "stanza:description": "text align of greeting"
+    }
+  ],
+  "stanza:incomingEvent": [],
+  "stanza:outgoingEvent": []
+}

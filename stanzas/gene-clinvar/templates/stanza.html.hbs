@@ -1,0 +1,44 @@
+<table id="target" class="table">
+  <thead>
+    <tr>
+      <th>ToogoVar ID</th>
+      <th>ClinVar VCV</th>
+      <th>Clinical significance</th>
+      <th>Review status</th>
+      <th>Last evaluated</th>
+      <th>Condition(s)</th>
+    </tr>
+  </thead>
+
+  <tbody>
+  {{#if result}}
+    {{#each result}}
+    <tr>
+      <td class="tgv-id">{{ tgv_id}}</td>
+      <td class="linVar-vcv">{{vcv_disp}}</td>
+      <td class="clinical-significance-col">
+        <span class="clinical-significance-full" data-sign="{{significance_class}}">{{ interpretation }}</span>
+      </td>
+      <td class="review-status">
+        <span class="star-rating">
+          <span data-stars="{{stars}}" class="status-rating-item"></span>
+        </span>
+        </br>
+        <span class="status-description">{{review_status}}</span>
+      </td>
+      <td class="last-evaluated">{{ last_evaluated }}</td>
+      <td class="condition">
+        <a href="{{condition.url}}">{{condition.label}}</a>
+      </td>
+    </tr>
+    {{/each}}
+  {{else}}
+    <tr>
+      <td class="text-center" colspan="5">No data</td>
+  {{/if}}
+  </tbody>
+</table>
+
+{{#with error}}
+  <div class="alert alert-danger">{{message}}</div>
+{{/with}}

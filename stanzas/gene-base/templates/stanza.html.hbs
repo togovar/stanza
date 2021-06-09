@@ -1,0 +1,45 @@
+{{#with binding}}
+<table class="table gene">
+  <tr>
+    <th>HGNC/Approved name</th>
+    <td>
+      <a href="{{HGNCURI}}" target="_blank">
+        {{ApprovedName}}
+      </a>
+    </td>
+    <th>Ensembl</th>
+    <td>
+      <a href="{{EnsemblURI}}" target="_blank">
+        {{Ensembl}}
+      </a>
+    </td>
+  </tr>
+
+  <tr>
+    <th>Alias</th>
+    <td>{{Alias}}</td>
+    <th>NCBI Gene</th>
+    <td>
+      <a href="{{NCBIGeneURI}}" target="_blank">
+        {{NCBIGene}}
+      </a>
+    </td>
+  </tr>
+
+  <tr>
+    <th>Chromosomal Location</th>
+    <td>{{ChromosomalLocation}}</td>
+    <th>RefSeq</th>
+    <td>
+      <a href="{{RefSeqURI}}" target="_blank">
+        {{RefSeq}}
+      </a>
+    </td>
+  </tr>
+
+
+</table>
+{{/with}}
+{{#with error}}
+  <div class="alert alert-danger">{{message}}</div>
+{{/with}}
