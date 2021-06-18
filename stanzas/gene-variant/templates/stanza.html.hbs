@@ -13,34 +13,54 @@
     </tr>
   </thead>
   <tbody>
-  {{#each bindings}}
+  {{#each data}}
     <tr>
-      <td class="id"><a href="/variant/{{id}}">{{id}}</a></td>
-      <td class="type">{{type}}</td>
+      <td class="id">
+        <a href="/variant/{{id}}">
+          {{id}}
+        </a>
+      </td>
+      <td class="type">
+        {{type}}
+      </td>
       <td>
         <div class="ref-alt">
-          <span class='ref' data-sum='{{ref_length}}'>{{ref}}</span>
-          <span class='arrow'></span>
-          <span class='alt' data-sum='{{alt_length}}'>{{alt}}</span>
+          <span class='ref' data-sum='{{ref_length}}'>{{ref}}</span><span class='arrow'></span><span class='alt' data-sum='{{alt_length}}'>{{alt}}</span>
         </div>
       </td>
       <td>
         <div class="frequency-graph">
         {{#each frequencies}}
-          <span class="dataset" data-frequency="{{allele.frequency}}" data-dataset="{{source}}"></span>
+          <div class="dataset" data-dataset="{{this.source}}" data-frequency="{{this.level}}"></div>
         {{/each}}
         </div>
       </td>
       <td class="consequence">
-        {{consequence}}
+        {{most_severe_consequence}}
+        {{#if consequence_badge}}
+          <span class="badge">{{consequence_badge}}</span>
+        {{/if}}
       </td>
-      <td class="sift">{{sift_class}}{{sift_label}}</td>
-      <td class="polyphen">{{polyphen}}</td>
+      <td class="sift">
+        <span class="variant-function" data-function="{{sift_class}}">{{sift}}</span>
+      </td>
+      <td class="polyphen">
+        <span class="variant-function" data-function="{{polyphen_class}}">{{polyphen}}</span>
+      </td>
       <td class="clinical_significance_wrapper">
-      {{#each significance}}
-        {{interpretations}}</br>{{condition}}
-      {{/each}}
+      {{#if significance}}
+        <span class="clinical-significance" data-sign="{{significance.interpretation}}">
+          {{significance.condition}}
+        </span>
+        {{#if significance_badge}}
+          <span class="badge">{{significance_badge}}</span>
+        {{/if}}
+      {{/if}}
       </td>
+    </tr>
+  {{else}}
+    <tr>
+      <td class="text-center" colspan="8">No data </td>
     </tr>
   {{/each}}
   </tbody>

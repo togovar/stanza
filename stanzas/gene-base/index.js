@@ -15,25 +15,33 @@ export default async function geneBase(stanza, params) {
     }
     throw new Error(sparqlist + " returns status " + res.status);
   }).then(json => {
-    let binding = stanza.unwrapValueFromBinding(json)[0];
+    let bindings = stanza.unwrapValueFromBinding(json);
+    let binding = bindings[0];
 
-    if(binding){
-      binding.ApprovedName = Array.from(new Set(stanza.grouping(bindings, "approved_name").filter(v => v)));
-      binding.HGNCID = (binding.hgnc_uri !== undefined) ? binding.hgnc_uri.substr(28) : binding.hgnc_uri;
-      binding.HGNCURI = "http://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/HGNC:" + binding.HGNCID;
-      binding.NCBIGene = (binding.ncbigene !== undefined) ? binding.ncbigene.substr(32) : binding.ncbigene;
-      binding.NCBIGeneURI = "https://www.ncbi.nlm.nih.gov/gene/" + binding.NCBIGene;
-      binding.Alias = Array.from(new Set(stanza.grouping(bindings, "alias").filter(v => v)));
-      binding.ChromosomalLocation = Array.from(new Set(stanza.grouping(bindings, "chromosomal_location").filter(v => v)));
-      binding.EnsemblURI = (binding.ensg !== undefined) ? "https://asia.ensembl.org/Homo_sapiens/Gene/Summary?g=" + binding.ensg.substr(31): "";
-      binding.Ensembl = (binding.ensg !== undefined) ? binding.ensg.substr(31) : binding.ensg;
-      binding.RefSeqURI = (binding.refseq !== undefined) ? "https://www.ncbi.nlm.nih.gov/nuccore/" + binding.refseq.substr(30): "";
-      binding.RefSeq = (binding.refseq !== undefined) ? binding.refseq.substr(30) : binding.refseq;
+    let approved_names = [];
+    let alias = [];
+    let locations = [];
+
+    bindings.forEach(record => {
+      approved_names.push(record.approved_name);
+      alias.push(record.alias);
+      locations.push(record.chromosomal_location);
+    });
+      binding.ApprovedName = approved_names.filter(function (x, i, self) { return self.indexOf(x) === i; }).join(',');
+      binding.Alias = alias.filter(function (x, i, self) { return self.indexOf(x) === i; }).join(',');
+      binding.ChromosomalLocation = locations.filter(function (x, i, self) { return self.indexOf(x) === i; }).join(',');
+
+    binding.HGNCID = (binding.hgnc_uri !== undefined) ? binding.hgnc_uri.substr(28) : binding.hgnc_uri;
+    binding.HGNCURI = "http://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/HGNC:" + binding.HGNCID;
+    binding.NCBIGene = (binding.ncbigene !== undefined) ? binding.ncbigene.substr(32) : binding.ncbigene;
+    binding.NCBIGeneURI = "https://www.ncbi.nlm.nih.gov/gene/" + binding.NCBIGene;
+    binding.EnsemblURI = (binding.ensg !== undefined) ? "https://asia.ensembl.org/Homo_sapiens/Gene/Summary?g=" + binding.ensg.substr(31): "";
+    binding.Ensembl = (binding.ensg !== undefined) ? binding.ensg.substr(31) : binding.ensg;
+    binding.RefSeqURI = (binding.refseq !== undefined) ? "https://www.ncbi.nlm.nih.gov/nuccore/" + binding.refseq.substr(30): "";
+    binding.RefSeq = (binding.refseq !== undefined) ? binding.refseq.substr(30) : binding.refseq;
 
 	
-  }
-	
-    return {result: {binding: binding}};
+    return {result: {...binding}};
   }).catch(e => ({error: {message: e.message}}));
   stanza.render({
     template: 'stanza.html.hbs',
