@@ -1,19 +1,19 @@
 @use 'common';
 
-main {
-  padding: 1rem 2rem;
-}
-
 .table {
   &.variant-header {
     thead tr th {
-      font-size: 12px;
+      font-size: 12yarn px;
       text-align: var(--text-align);
       color: #1f5065;
+      border-bottom: 0px;
+      font-weight: bold;
+      padding: 1px;
     }
     tbody td {
       font-size: 14px;
       text-align: var(--text-align);
+      padding: 1px!important;
       a {
         color: #ffffff;
       }
