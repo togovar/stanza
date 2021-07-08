@@ -28,24 +28,18 @@
       "stanza:required": false
     }
   ],
-  "stanza:menu-placement": "bottom-right",
+  "stanza:togostanza-menu-placement": "none",
   "stanza:style": [
     {
-      "stanza:key": "--greeting-color",
-      "stanza:type": "color",
-      "stanza:default": "#eb7900",
-      "stanza:description": "text color of greeting"
-    },
-    {
-      "stanza:key": "--greeting-align",
+      "stanza:key": "--text-align",
       "stanza:type": "single-choice",
       "stanza:choice": [
         "left",
         "center",
         "right"
       ],
-      "stanza:default": "center",
-      "stanza:description": "text align of greeting"
+      "stanza:default": "left",
+      "stanza:description": "text align"
     }
   ],
   "stanza:incomingEvent": [],
