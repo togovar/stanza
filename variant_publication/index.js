@@ -63,8 +63,6 @@ Stanza(function (stanza, params) {
       });
 
       $(stanza.select("#container")).html('<table id="dataTable"><thead><tr>' + json.columns.map(x => "<th>" + x + "</th>").join("") + '</tr></thead></table>');
-      $(stanza.select("#dataTable")).append('<caption>Note: The link to LitVar leads to a list of all PubMed articles related to this variant. ' +
-        'Please find a PMID of your choice in the list.</caption>');
 
       $(stanza.select("#dataTable")).dataTable({
         columns: json.columns,
