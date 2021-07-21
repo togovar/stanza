@@ -1,25 +1,17 @@
 {{#with result}}
-<table class="table header-xref gene-header">
-  <thead>
-  <tr>
-    {{#each xrefs}}
-    <th>{{name}}</th>
+<div class="table header-xref gene-header">
+  {{#each xrefs}}
+  <p class="pagetype">{{name}}</p>
+  {{/each}}
+  {{#each xrefs}}
+  <h2 class="title report-gene">
+    {{#each refs}}
+      {{this.label}},
     {{/each}}
-  </tr>
-  </thead>
-  <tbody>
-  <tr>
-    {{#each xrefs}}
-    <td>
-      {{#each refs}}
-        {{this.label}},
-      {{/each}}
-      {{#each approved_name}}
-        {{this.label}}
-      {{/each}}
-    </td>
+    {{#each approved_name}}
+      {{this.label}}
     {{/each}}
-  </tr>
-  </tbody>
-</table>
+  </h2>
+  {{/each}}
+</div>
 {{/with}}

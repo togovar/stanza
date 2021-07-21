@@ -1,23 +1,26 @@
 // Load the repository-wide global style here. The actual file is located at ../common.scss for details.
 @use '@/common.scss';
 
-.table {
-  &.gene-header {
-    position: relative;
-    top: -2px;
-    thead tr th {
-      font-size: 12px;
+.gene-header {
+    // position: relative;
+    // top: -2px;
+    .pagetype{
+      font-size: 14px;
       text-align: var(--text-align);
       color: #1f5065;
       border-bottom: 0px;
       font-weight: bold;
+      margin: 0;
       padding: 1px;
+      line-height: 16px;
     }
-    tbody td {
-      font-size: 14px;
+    .title {
+      font-size: 28px;
+      font-weight: 600;
       text-align: var(--text-align);
-      padding: 1px 28px 1px 1px!important;
+      margin: 0;
+      padding: 1px 1px 1px 1px!important;
       color: #ffffff;
+      line-height: 28px;
     }
   }
-}
