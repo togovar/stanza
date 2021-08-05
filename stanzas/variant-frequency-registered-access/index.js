@@ -1,10 +1,19 @@
 import {DATASETS} from "../../lib/constants.js";
 import * as display from "../../lib/display.js";
 import {sortBy} from "../../lib/sort.js";
+//import "../../lib/stanza";
 
 export default async function variantSummary(stanza, params) {
   stanza.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
   stanza.importWebFontCSS(new URL("./assets/fontello.css", import.meta.url));
+
+/*
+  const sources = [
+    new URL("./assets/vendor/jquery/3.6.0/jquery.min.js", import.meta.url),
+    new URL("./assets/vendor/datatables/1.10.24/jquery.dataTables.js", import.meta.url),
+  ];
+
+  const scripts = stanza.embedScriptTag(...sources)
 
   var cookies = document.cookie;
   var cookiesArray = cookies.split(';');
@@ -18,7 +27,7 @@ export default async function variantSummary(stanza, params) {
       access_token = cArray[1];
     }
   }
- 
+
   if (!access_token || access_token === "") {
     return stanza.render(
     {
@@ -29,16 +38,7 @@ export default async function variantSummary(stanza, params) {
       }
     });
   }
-
-  var options = {
-    url: url,
-    method: 'GET',
-    json: true,
-    headers: {
-      'Authorization: Bearer': access_token
-    }
-  }
-
+*/
   var accepTerPolicAsserted = "";
   var accepTerPolicValue = "";
   var accepTerPolicSource = "";
@@ -48,21 +48,44 @@ export default async function variantSummary(stanza, params) {
   var reseaStatSource = "";
   var reseaStatBy = "";
 
-  request(options, function (error, response, body) {
+//  scripts.then(() => {
+//    window.alert($.fn.jquery);
+/*
+    $.ajax({
+      url: 'https://test51.biosciencedbc.jp/openam/oauth2/userinfo?realm=/togoVarRegisteredAccess',
+      headers: {
+        'Accept':'application/json',
+        'Content-Type':'application/json',
+        'Authorization':'Bearer ' + access_token;
+      },
+      method: 'GET',
+      dataType: 'json',
+      success: function(data){
+        console.log('success: '+data);
+      }
+    });
 
-   console.log(body);
+    accepTerPolicAsserted = data.visaAcceptedTermsAndPoliciesAsserted;
+    accepTerPolicValue    = data.visaAcceptedTermsAndPoliciesValue;
+    accepTerPolicSource   = data.visaAcceptedTermsAndPoliciesSource;
+    accepTerPolicBy       = data.visaAcceptedTermsAndPoliciesBy;
+    reseaStatAsserted     = data.visaResearcherStatusAsserted;
+    reseaStatValue        = data.visaResearcherStatusValue;
+    reseaStatSource       = data.visaResearcherStatusSource;
+    reseaStatBy           = data.visaResearcherStatusBy;
+*/
+/*
+    $.ajax({
+      type: get,
+      url: 'https://test51.biosciencedbc.jp/openam/oauth2/userinfo?realm=/togoVarRegisteredAccess',
+      dataType: json,
+      beforeSend: function( xhr, settings ) { xhr.setRequestHeader( Authorization, Bearer + access_token ); }
+    });
+*/
 
-   accepTerPolicAsserted = body.visaAcceptedTermsAndPoliciesAsserted;
-   accepTerPolicValue    = body.visaAcceptedTermsAndPoliciesValue;
-   accepTerPolicSource   = body.visaAcceptedTermsAndPoliciesSource;
-   accepTerPolicBy       = body.visaAcceptedTermsAndPoliciesBy;
-   reseaStatAsserted     = body.visaResearcherStatusAsserted;
-   reseaStatValue        = body.visaResearcherStatusValue;
-   reseaStatSource       = body.visaResearcherStatusSource;
-   reseaStatBy           = body.visaResearcherStatusBy;
+//  })
 
-  })
-
+/*
   if (!accepTerPolicAsserted || accepTerPolicAsserted === "" ||
       !reseaStatAsserted || reseaStatAsserted === "") { 
     return stanza.render(
@@ -70,7 +93,7 @@ export default async function variantSummary(stanza, params) {
       template: "link.html.hbs",
 	parameters: {
 	  params: params,
-	  message: "＜制限公開データセットの情報を参照する場合はログインしてください＞"
+	  message: "＜権限がありません。権限があるアカウントで再ログインしてください＞"
       }   
     });
   }                                                                                                                 
@@ -87,6 +110,9 @@ export default async function variantSummary(stanza, params) {
       }
     });
   }
+*/
+
+
 
   const sparqlist = (params?.sparqlist || "/sparqlist")
     .concat(`/api/variant_frequency?tgv_id=${params.tgv_id}`)

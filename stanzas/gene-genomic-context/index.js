@@ -9,16 +9,16 @@ export default async function geneJbrowse(stanza, params) {
     if (!binding) {
       return {error: {message: `Failed to obtain genomic position for ${params.hgnc_id}`}};
     }
-	
+
     const type = binding.type;
     const chr = binding.chromosome;
     const start = parseInt(binding.start);
     const stop = parseInt(binding.stop);
     const range = 200;
 
-    if (type.match("SO_0000159")) { // deletion
+    if (type.match("SO_0000159")) {
       start = start - 1;
-    } else if (type.match("SO_0000667")) { // insertion
+    } else if (type.match("SO_0000667")) {
       stop = stop - 1;
     }
 
@@ -36,7 +36,7 @@ export default async function geneJbrowse(stanza, params) {
       },
     };
   }).catch(e => ({error: {message: e.message}}));
-	
+
   stanza.render({
     template: 'stanza.html.hbs',
     parameters: {

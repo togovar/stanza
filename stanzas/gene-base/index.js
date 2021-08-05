@@ -4,7 +4,7 @@ export default async function geneBase(stanza, params) {
     .concat(`/api/gene_base?hgnc_id=${params.hgnc_id}`)
     .concat(params.ep ? `&ep=${encodeURIComponent(params.ep)}` : "");
 
-  const r = await fetch(sparqlist,{	
+  const r = await fetch(sparqlist,{
     method: "GET",
     headers: {
       "Accept": "application/json",
@@ -40,7 +40,6 @@ export default async function geneBase(stanza, params) {
     binding.RefSeqURI = (binding.refseq !== undefined) ? "https://www.ncbi.nlm.nih.gov/nuccore/" + binding.refseq.substr(30): "";
     binding.RefSeq = (binding.refseq !== undefined) ? binding.refseq.substr(30) : binding.refseq;
 
-	
     return {result: {...binding}};
   }).catch(e => ({error: {message: e.message}}));
   stanza.render({
