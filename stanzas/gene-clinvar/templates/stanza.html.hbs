@@ -13,24 +13,24 @@
   <tbody>
   {{#if result}}
     {{#each result}}
-    <tr>
-      <td class="tgv-id">{{ tgv_id}}</td>
-      <td class="linVar-vcv">{{vcv_disp}}</td>
-      <td class="clinical-significance-col">
-        <span class="clinical-significance-full" data-sign="{{significance_class}}">{{ interpretation }}</span>
-      </td>
-      <td class="review-status">
-        <span class="star-rating">
-          <span data-stars="{{stars}}" class="status-rating-item"></span>
-        </span>
-        </br>
-        <span class="status-description">{{review_status}}</span>
-      </td>
-      <td class="last-evaluated">{{ last_evaluated }}</td>
-      <td class="condition">
-        <a href="{{condition.url}}">{{condition.label}}</a>
-      </td>
-    </tr>
+      <tr>
+        <td class="tgv-id">{{ tgv_id}}</td>
+        <td class="linVar-vcv">{{vcv_disp}}</td>
+        <td class="clinical-significance-col">
+          <span class="clinical-significance-full" data-sign="{{significance_class}}">{{ interpretation }}</span>
+        </td>
+        <td class="review-status">
+          <span class="star-rating">
+            <span data-stars="{{stars}}" class="star-rating-item"></span>
+          </span>
+          </br>
+          <span class="status-description">{{review_status}}</span>
+        </td>
+        <td class="last-evaluated">{{ last_evaluated }}</td>
+        <td class="condition">
+          <a href="{{condition.url}}">{{condition.label}}</a>
+        </td>
+      </tr>
     {{/each}}
   {{else}}
     <tr>

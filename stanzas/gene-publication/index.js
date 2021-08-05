@@ -10,13 +10,13 @@ export default async function genePublication(stanza, params) {
   ];
 
   const scripts = stanza.embedScriptTag(...sources)
-  
-  let sparqlist = (params.sparqlist || "/sparqlist").concat(`/api/gene_publication_by_variant?hgnc_id=${params.hgnc_id}`);
+ 
+  let sparqlist = (params.sparqlist || "/sparqlist").concat(`/api/gene_publication?hgnc_id=${params.hgnc_id}`);
 
   if (params.ep) {
     sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.ep));
   }
-  
+ 
   const r = await fetch(sparqlist, {
     method: "GET",
     headers: {
@@ -35,11 +35,7 @@ export default async function genePublication(stanza, params) {
       }, {}))
     }
   }).catch(e => ({ error: { message: e.message } }));
-  
 
-	
-	
-	
   stanza.render({
     template: 'stanza.html.hbs',
     parameters: {

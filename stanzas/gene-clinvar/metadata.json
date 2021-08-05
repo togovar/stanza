@@ -23,37 +23,17 @@
     },
     {
       "stanza:key": "ep",
-      "stanza:example": "https://togovar-dev.biosciencedbc.jp/sparql",
+      "stanza:example": "https://togovar.biosciencedbc.jp/sparql",
       "stanza:description": "SPARQL endpoint URL",
       "stanza:required": false
     },
     {
       "stanza:key": "sparqlist",
-      "stanza:example": "https://togovar-dev.biosciencedbc.jp/sparqlist",
+      "stanza:example": "https://togovar.biosciencedbc.jp/sparqlist",
       "stanza:description": "SPARQList URL",
       "stanza:required": false
     }
   ],
   "stanza:menu-placement": "bottom-right",
-  "stanza:style": [
-    {
-      "stanza:key": "--greeting-color",
-      "stanza:type": "color",
-      "stanza:default": "#eb7900",
-      "stanza:description": "text color of greeting"
-    },
-    {
-      "stanza:key": "--greeting-align",
-      "stanza:type": "single-choice",
-      "stanza:choice": [
-        "left",
-        "center",
-        "right"
-      ],
-      "stanza:default": "center",
-      "stanza:description": "text align of greeting"
-    }
-  ],
-  "stanza:incomingEvent": [],
-  "stanza:outgoingEvent": []
+  "stanza:style": []
 }

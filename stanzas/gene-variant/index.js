@@ -35,7 +35,6 @@ export default async function variantSummary(stanza, params) {
   }).then(json => {
     const datasets = Object.values(DATASETS);
 
-//    let records = json.data ? json.data.filter(x => x.symbols[0].id !== params.hgnc_id) : [];
     let  records = json.data ? json.data.filter(x => x.symbols.find(y => y.id !== params.hgnc_id)) : [];
 
     records.forEach(record => {
@@ -68,6 +67,12 @@ export default async function variantSummary(stanza, params) {
       if (record.significance && record.significance.length > 0) {
         record.significance = record.significance[0];
         record.significance.interpretation = record.significance.interpretations[0];
+      }
+      if (record.existing_variations) {
+        record.dbsnp = record.existing_variations[0];
+      }
+      if (record.existing_variations && record.existing_variations.length > 1){
+        record.dbsnp_badge = `${record.existing_variations.length - 1}+`;
       }
     });
 

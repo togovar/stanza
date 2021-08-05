@@ -20,7 +20,7 @@ export default async function geneHeader(stanza, params) {
     return {result: {xrefs:xrefs}};
 
   }).catch(e => ({error: {message: e.message}}));
-	
+
   stanza.render({
     template: 'stanza.html.hbs',
     parameters: {
