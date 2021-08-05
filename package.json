@@ -8,8 +8,7 @@
     "node": ">=14"
   },
   "dependencies": {
-    "postcss-import": "^14.0.2",
-    "togostanza": "github:togostanza/togostanza#v3.0.0-beta.19"
+    "togostanza": "github:togostanza/togostanza"
   },
   "devDependencies": {
     "eslint": "^7.24.0",
