@@ -1,0 +1,45 @@
+{
+  "@context": {
+    "stanza": "http://togostanza.org/resource/stanza#"
+  },
+  "@id": "disease-header",
+  "stanza:label": "Disease header",
+  "stanza:definition": "",
+  "stanza:type": "Stanza",
+  "stanza:display": "Table",
+  "stanza:provider": "Togovar",
+  "stanza:license": "MIT",
+  "stanza:author": "Shuichi Tahara",
+  "stanza:address": "tahara@biosciencedbc.jp",
+  "stanza:contributor": [],
+  "stanza:created": "2021-06-08",
+  "stanza:updated": "2021-06-15",
+  "stanza:parameter": [
+    {
+      "stanza:key": "medgen_cid",
+      "stanza:example": "C2675520",
+      "stanza:description": "MedGen CID",
+      "stanza:required": true
+    },
+    {
+      "stanza:key": "ep",
+      "stanza:example": "https://togovar.biosciencedbc.jp/sparql",
+      "stanza:description": "SPARQL endpoint URL",
+      "stanza:required": false
+    }
+  ],
+  "stanza:togostanza-menu-placement": "none",
+  "stanza:style": [
+    {
+      "stanza:key": "--text-align",
+      "stanza:type": "single-choice",
+      "stanza:choice": [
+        "left",
+        "center",
+        "right"
+      ],
+      "stanza:default": "left",
+      "stanza:description": "text align"
+    }
+  ]
+}
