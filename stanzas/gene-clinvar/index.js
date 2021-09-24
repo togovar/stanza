@@ -22,7 +22,7 @@ export default async function geneClinvar(stanza, params) {
   }).then(json => {
     let bindings = stanza.unwrapValueFromBinding(json);
     bindings.forEach(function (binding) {
-      binding.tgv_link = "https://togovar-dev.biosciencedbc.jp/variant/".concat(binding.tgv_id);
+      binding.tgv_link = "/variant/".concat(binding.tgv_id);
       binding.significance_class = CLINICAL_SIGNIFICANCE[binding.interpretation?.toLowerCase()]?.key;
       binding.stars = REVIEW_STATUS[binding.review_status]?.stars || 0;
       binding.condition = {

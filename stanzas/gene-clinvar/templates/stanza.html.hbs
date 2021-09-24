@@ -2,7 +2,7 @@
   <thead>
     <tr>
       <th>ToogoVar ID</th>
-      <th>ClinVar VCV</th>
+      <th>Title</th>
       <th>Clinical significance</th>
       <th>Review status</th>
       <th>Last evaluated</th>
@@ -14,8 +14,12 @@
   {{#if result}}
     {{#each result}}
       <tr>
-        <td class="tgv-id">{{ tgv_id}}</td>
-        <td class="linVar-vcv">{{vcv_disp}}</td>
+        <td class="tgv-id">
+          <a href="{{tgv_link}}">{{ tgv_id}}</a>
+        </td>
+        <td class="linVar-vcv">
+          <a href="{{clinvar}}">{{title}}</a>
+        </td>
         <td class="clinical-significance-col">
           <span class="clinical-significance-full" data-sign="{{significance_class}}">{{ interpretation }}</span>
         </td>
