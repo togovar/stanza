@@ -41,6 +41,10 @@ export default async function variantSummary(stanza, params) {
       Object.assign(record, display.variantType(record.type));
       Object.assign(record, display.refAlt(record.reference, record.alternative));
 
+      if(record.existing_variations && record.existing_variations.length > 0){
+        record.dbsnp = record.existing_variations[0];
+      }
+
       if (!record.frequencies) {
         record.frequencies = [];
       }
