@@ -11,10 +11,6 @@ Stanza(function (stanza, params) {
 
   let sparqlist = (params.sparqlist ? params.sparqlist : "/sparqlist").concat("/api/variant_gene?tgv_id=" + params.tgv_id);
 
-  if (params.assembly) {
-    sparqlist = sparqlist.concat("&assembly=" + encodeURIComponent(params.assembly))
-  }
-
   if (params.ep) {
     sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.ep))
   }

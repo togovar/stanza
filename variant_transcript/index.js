@@ -20,23 +20,6 @@ Stanza(function (stanza, params) {
       }
     });
   }
-  if (!params.assembly) {
-    return stanza.render({
-      template: "error.html",
-      parameters: {
-        params: params,
-        message: "Parameter missing: assembly",
-      }
-    });
-  } else if (!(params.assembly === "GRCh37" || params.assembly === "GRCh38")) {
-    return stanza.render({
-      template: "error.html",
-      parameters: {
-        params: params,
-        message: "Invalid parameter: assembly=" + params.assembly,
-      }
-    });
-  }
 
   let Handlebars = stanza.handlebars;
 
@@ -96,9 +79,6 @@ Stanza(function (stanza, params) {
 
   let sparqlist = (params.sparqlist ? params.sparqlist : "/sparqlist").concat("/api/variant_transcript?tgv_id=" + params.tgv_id);
 
-  if (params.assembly) {
-    sparqlist = sparqlist.concat("&assembly=" + encodeURIComponent(params.assembly));
-  }
   if (params.ep) {
     sparqlist = sparqlist.concat("&ep=" + encodeURIComponent(params.ep));
   }
