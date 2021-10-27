@@ -25,7 +25,7 @@
       "stanza:required": false
     }
   ],
-  "stanza:usage": "<togostanza-variant_transcript tgv_id=\"tgv219804\" assembly=\"GRCh37\"></togostanza-variant_transcript>",
+  "stanza:usage": "<togostanza-variant_transcript tgv_id=\"tgv219804\"></togostanza-variant_transcript>",
   "stanza:type": "Stanza",
   "stanza:context": "",
   "stanza:display": "",
