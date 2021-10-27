@@ -15,7 +15,7 @@ Stanza(function (stanza, params) {
     }
 
     let [chr, assembly] = v.reference.split("/").slice(-2);
-    let position = v.label.split('-')[1];
+    let position = v.variation.split('-')[1];
 
     return "<span class='chromosome'>" + chr + "</span>"
       .concat(":<span class='position'>" + position + "</span>")
