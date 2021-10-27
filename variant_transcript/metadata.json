@@ -13,12 +13,6 @@
       "stanza:required": true
     },
     {
-      "stanza:key": "assembly",
-      "stanza:example": "GRCh37",
-      "stanza:description": "assembly: \"GRCh37\" or \"GRCh38\"",
-      "stanza:required": true
-    },
-    {
       "stanza:key": "ep",
       "stanza:example": "https://togovar.biosciencedbc.jp/sparql",
       "stanza:description": "SPARQL endpoint URL",

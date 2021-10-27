@@ -1,26 +1,29 @@
 const POPULATION_LABEL = {
-  "GEMJ 10K": "Japanese",
-  "ToMMo 4.7KJPN": "Japanese",
+  "GEM-J WGA": "Japanese",
+  "ToMMo 8.3KJPN": "Japanese",
   "JGA-NGS": "Japanese",
   "JGA-SNP": "Japanese",
   "HGVD": "Japanese",
-  "ExAC": "Total"
+  "gnomAD Genomes": "Total",
+  "gnomAD Exomes": "Total"
 };
 
 const ORDER_WEIGHT = {
   "GEMJ 10K": 0,
   "JGA-NGS": 10,
   "JGA-SNP": 20,
-  "ToMMo 4.7KJPN": 30,
+  "ToMMo 8.3KJPN": 30,
   "HGVD": 40,
-  "ExAC": 50,
-  "African/African American": 1,
-  "American": 2,
-  "East Asian": 3,
-  "Finnish": 4,
+  "gnomAD Genomes": 50,
+  "gnomAD Exomes": 60,
+  "African-American/African": 1,
+  "Latino": 2,
+  "South Asian": 3,
+  "Other": 4,
   "Non-Finnish European": 5,
-  "Other": 6,
-  "South Asian": 7
+  "Ashkenazi Jewish": 6,
+  "East Asian": 7,
+  "Finnish": 8,
 };
 
 Stanza(function (stanza, params) {
@@ -79,45 +82,35 @@ Stanza(function (stanza, params) {
     }
   });
 
-  let counter_get_toggle_state = 0;
-  stanza.handlebars.registerHelper("getToggleState", (text, a, b, c, d, e) => {
-    let state = "";
-    if (text === "ExAC") {
-      if (counter_get_toggle_state === 0) {
-        state = 'exac_first_tr close'
-      } else {
-        state = 'exac_without_first none'
-      }
-      counter_get_toggle_state++
-    }
+  // let counter_get_toggle_state = 0;
+  // stanza.handlebars.registerHelper("getToggleState", (text) => {
+  //   let state = "";
+  //   if (text === "gnomAD Genomes") {
+  //     if (counter_get_toggle_state === 0) {
+  //       state = 'gnomad_genomes_first_tr close'
+  //     } else {
+  //       state = 'gnomad_genomes_without_first none'
+  //     }
+  //     counter_get_toggle_state++
+  //   }
+  //   if (text === "gnomAD Exomes") {
+  //     if (counter_get_toggle_state === 0) {
+  //       state = 'gnomad_exomes_first_tr close'
+  //     } else {
+  //       state = 'gnomad_exomes_without_first none'
+  //     }
+  //     counter_get_toggle_state++
+  //   }
+  //
+  //   return state
+  // });
 
-    return state
-  });
-
-  let counter_get_class_name = 0;
+  // let counter_get_class_name = 0;
   stanza.handlebars.registerHelper("getClassName", (text) => {
-    text = text.toLowerCase().replace(/[ -]/g, '_');
-
-    if (text === 'exac') {
-      counter_get_class_name++
-    }
-
-    if (text === 'exac' && counter_get_class_name === 1 || text === 'exac' && counter_get_class_name === 2 || text === 'exac' && counter_get_class_name === 3) {
-      text = 'exac_first'
-    } else if (text === "gemj_10k") {
-      text = "gem_j_wga";
-    }
-
-    return text
+    return text.toLowerCase().replace(/[ -]/g, '_');
   });
 
   stanza.handlebars.registerHelper("getDatasetName", (text) => {
-    const key = text.toLowerCase();
-
-    if (key === "gemj 10k") {
-      text = "GEM-J WGA";
-    }
-
     return text
   });
 
@@ -169,16 +162,14 @@ Stanza(function (stanza, params) {
     }
     throw new Error(sparqlist + " returns status " + response.status);
   }).then(function (json) {
-    const bindings = stanza.unwrapValueFromBinding(json);
-
-    bindings.forEach(function (binding) {
+    json.forEach(function (binding) {
       const x = binding.source.split(':');
       binding.dataset = x[0];
       binding.population = x[1] || POPULATION_LABEL[x[0]] || "-";
       binding.order = (ORDER_WEIGHT[x[0]] || 0) + (ORDER_WEIGHT[x[1]] || 0);
     });
 
-    bindings.sort(function (a, b) {
+    json.sort(function (a, b) {
       return a.order - b.order;
     });
 
@@ -186,22 +177,46 @@ Stanza(function (stanza, params) {
       template: "stanza.html",
       parameters: {
         params: params,
-        bindings: bindings
+        bindings: json
       }
     });
 
-    const exac_first = stanza.select('#exac_first');
+    ['gnomad_genomes', 'gnomad_exomes'].forEach(dataset =>{
+      const rows = stanza.selectAll(`tr[data-dataset="${dataset}"]`);
 
-    if (exac_first) {
-      const exac_without_first = stanza.selectAll('.exac_without_first');
-      const exac_first_tr = stanza.selectAll('.exac_first_tr');
+      rows.forEach((row, i) => {
+        if (i === 0) {
+          row.className += "parent";
 
-      exac_first.addEventListener('click', function () {
-        $(exac_without_first).toggleClass('none');
-        $(exac_first).toggleClass('open');
-        $(exac_first_tr).toggleClass('close');
+          row.addEventListener('click', function () {
+            $(row).toggleClass('open');
+            const children = stanza.selectAll(`tr.child[data-dataset="${dataset}"]`);
+            children.forEach((child) => {
+              $(child).toggleClass('hidden');
+            });
+          });
+          return;
+        }
+
+        row.className += "child hidden";
       });
-    }
+
+      // total_row.addEventListener('click', function () {
+      //   console.log($(total_row));
+      //   // $(this).parent().next("tr").toggleClass("active");
+      // });
+
+      // if (first) {
+      //   const without_first = stanza.selectAll(`.${x}_without_first`);
+      //   const first_tr = stanza.selectAll(`.${x}_first_tr`);
+      //
+      //   first.addEventListener('click', function () {
+      //     $(without_first).toggleClass('none');
+      //     $(first).toggleClass('open');
+      //     $(first_tr).toggleClass('close');
+      //   });
+      // }
+    });
   }).catch(function (e) {
     stanza.render({
       template: "error.html",

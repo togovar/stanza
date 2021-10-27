@@ -25,10 +25,10 @@
 
   <tbody>
   {{#each bindings}}
-  <tr data-dataset="{{getClassName dataset}}" class="{{getToggleState dataset}}">
+  <tr data-dataset="{{getClassName dataset}}">
     <td class="dataset" id="{{getClassName dataset}}" data-dataset="{{getClassName dataset}}">
       <div class="dataset-icon" data-dataset="{{getClassName dataset}}"></div>
-      {{getDatasetName dataset}}
+      {{dataset}}
     </td>
     <td class="population">{{population}}</td>
 

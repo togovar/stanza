@@ -42,18 +42,6 @@
   border-left: 1px solid #dee2e6;
 }
 
-.table > tbody > tr[data-dataset="exac"] {
-  transition: .3s;
-}
-
-.table > tbody > tr[data-dataset="exac"].none {
-  display: none;
-}
-
-.table > tbody > tr[data-dataset="exac_first"].close > td {
-  border-bottom: none;
-}
-
 .table > tbody > tr > td {
   height: 26.4px;
   vertical-align: middle;
@@ -62,36 +50,6 @@
 .table > tbody > tr > td.dataset {
   width: 150px;
   padding-left: 14px;
-}
-
-.table > tbody > tr > td.dataset[data-dataset="exac"] {
-  visibility: hidden;
-  border: none;
-}
-
-.table > tbody > tr > td.dataset[data-dataset="exac_first"] {
-  visibility: visible;
-  border: none;
-  position: relative;
-}
-
-.table > tbody > tr > td.dataset[data-dataset="exac_first"]:after {
-  content: '';
-  width: 6px;
-  height: 6px;
-  border: 0px;
-  border-top: solid 1px #444444;
-  border-right: solid 1px #444444;
-  transform: rotate(135deg);
-  position: absolute;
-  top: 7px;
-  right: 6px;
-  display: inline-block;
-  transition: .3s;
-}
-
-.table > tbody > tr > td.dataset[data-dataset="exac_first"].open:after {
-  transform: rotate(-45deg);
 }
 
 .table > tbody > tr > td.population {
@@ -153,4 +111,47 @@
 
 .table > tbody > tr > td.filter .red {
   color: #FF5A54;
+}
+
+.table > tbody > tr.parent > td:first-child {
+  padding-right: 20px;
+  visibility: visible;
+  border: none;
+  position: relative;
+}
+
+.table > tbody > tr.parent.open > td.dataset {
+  border-bottom-color: transparent;
+}
+
+.table > tbody > tr.child {
+  transition: .3s;
+}
+
+.table > tbody > tr.child > td.dataset {
+  visibility: hidden;
+  border: none;
+}
+
+.table > tbody > tr.child.hidden {
+  display: none;
+}
+
+.table > tbody > tr.parent > td:after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border: 0px;
+  border-top: solid 1px #444444;
+  border-right: solid 1px #444444;
+  transform: rotate(135deg);
+  position: absolute;
+  top: 7px;
+  right: 6px;
+  display: inline-block;
+  transition: .3s;
+}
+
+.table > tbody > tr.parent.open > td:after {
+  transform: rotate(-45deg);
 }

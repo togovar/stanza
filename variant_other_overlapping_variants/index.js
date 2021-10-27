@@ -2,9 +2,10 @@ const DATASETS = {
   "gem_j_wga": 1,
   "jga_ngs": 2,
   "jga_snp": 3,
-  "tommo_4.7kjpn": 4,
+  "tommo": 4,
   "hgvd": 5,
-  "exac": 6
+  "gnomad_genomes": 6,
+  "gnomad_exomes": 7,
 };
 
 let consequence_map = {

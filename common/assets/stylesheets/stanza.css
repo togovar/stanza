@@ -654,7 +654,7 @@ label > input {
   background-color: #46B9CC;
 }
 
-.frequency-graph > .dataset[data-dataset="tommo_4.7kjpn"] {
+.frequency-graph > .dataset[data-dataset="tommo_8.3kjpn"] {
   background-color: #abe03f;
 }
 
@@ -666,7 +666,9 @@ label > input {
   background-color: #005B80;
 }
 
-.frequency-graph > .dataset[data-dataset="exac"] {
+.frequency-graph > .dataset[data-dataset="exac"],
+.frequency-graph > .dataset[data-dataset="gnomad_genomes"],
+.frequency-graph > .dataset[data-dataset="gnomad_exomes"] {
   background-color: #94928d;
 }
 
@@ -776,7 +778,7 @@ label > input {
   background-color: #46B9CC;
 }
 
-.allele-frequency-graph > .dataset[data-dataset="tommo_4.7kjpn"] {
+.allele-frequency-graph > .dataset[data-dataset="tommo_8.3kjpn"] {
   background-color: #abe03f;
 }
 
@@ -788,7 +790,9 @@ label > input {
   background-color: #005B80;
 }
 
-.allele-frequency-graph > .dataset[data-dataset="exac"] {
+.allele-frequency-graph > .dataset[data-dataset="exac"],
+.allele-frequency-graph > .dataset[data-dataset="gnomad_genomes"],
+.allele-frequency-graph > .dataset[data-dataset="gnomad_exomes"] {
   background-color: #94928d;
 }
 
@@ -873,7 +877,7 @@ label > input {
   color: #46B9CC;
 }
 
-.dataset-icon[data-dataset="tommo_4.7kjpn"]:before {
+.dataset-icon[data-dataset="tommo_8.3kjpn"]:before {
   color: #abe03f;
 }
 
@@ -889,7 +893,10 @@ label > input {
   color: #FF993F;
 }
 
-.dataset-icon[data-dataset="clinvar"]:before, .dataset-icon[data-dataset="exac"]:before, .dataset-icon[data-dataset="gnomad"]:before {
+.dataset-icon[data-dataset="clinvar"]:before,
+.dataset-icon[data-dataset="exac"]:before,
+.dataset-icon[data-dataset="gnomad_genomes"]:before,
+.dataset-icon[data-dataset="gnomad_exomes"]:before {
   color: #94928d;
 }
 
@@ -898,11 +905,15 @@ label > input {
   content: "Disease";
 }
 
-.dataset-icon[data-dataset="tommo_4.7kjpn"] > .properties::after, .dataset-icon[data-dataset="gem_j_wga"] > .properties::after {
+.dataset-icon[data-dataset="tommo_8.3kjpn"] > .properties::after, .dataset-icon[data-dataset="gem_j_wga"] > .properties::after {
   content: "WGS";
 }
 
-.dataset-icon[data-dataset="jga_ngs"] > .properties::after, .dataset-icon[data-dataset="hgvd"] > .properties::after, .dataset-icon[data-dataset="exac"] > .properties::after {
+.dataset-icon[data-dataset="jga_ngs"] > .properties::after,
+.dataset-icon[data-dataset="hgvd"] > .properties::after,
+.dataset-icon[data-dataset="exac"] > .properties::after,
+.dataset-icon[data-dataset="gnomad_genomes"] > .properties::after,
+.dataset-icon[data-dataset="gnomad_exomes"] > .properties::after {
   content: "WES";
 }
 
