@@ -17,13 +17,13 @@ const ORDER_WEIGHT = {
   "gnomAD Genomes": 50,
   "gnomAD Exomes": 60,
   "African-American/African": 1,
-  "Latino": 2,
-  "South Asian": 3,
-  "Other": 4,
-  "Non-Finnish European": 5,
-  "Ashkenazi Jewish": 6,
-  "East Asian": 7,
-  "Finnish": 8,
+  "Ashkenazi Jewish": 2,
+  "East Asian": 3,
+  "Finnish": 4,
+  "Latino": 5,
+  "Non-Finnish European": 6,
+  "Other": 7,
+  "South Asian": 8,
 };
 
 Stanza(function (stanza, params) {
