@@ -1,19 +1,6 @@
 @charset "UTF-8";
+@use "foundation/variables" as *;
 @use "components/table";
-
-$COLOR_BLACK: #444;
-$COLOR_GRAY: #94928D;
-$COLOR_LIGHT_GRAY: lighten($COLOR_GRAY, 35%);
-$COLOR_SEPARATOR: rgba(0, 0, 0, .3);
-$COLOR_SEPARATOR_SUB: rgba(0, 0, 0, .2);
-
-$COLOR_SIGN_SAFE: #24D636;
-$COLOR_SIGN_NORMAL: #9DCF3A;
-$COLOR_SIGN_WARNING: #FFAE00;
-$COLOR_SIGN_DANGEROUS: #FF5A54;
-$COLOR_SIGN_MODIFIER: #C654FF;
-$COLOR_SIGN_OTHER: #9C8200;
-$COLOR_SIGN_UNKNOWN: $COLOR_GRAY;
 
 main {
   font-family: "Roboto Condensed", sans-serif;
@@ -22,16 +9,16 @@ main {
 }
 
 a {
-  color: #256D80;
+  color: $COLOR_KEY_DARK;
 
   &:link {
-    color: #256D80;
+    color: $COLOR_KEY_DARK;
     text-decoration: underline;
   }
 
   &:active,
   &:hover {
-    color: #249EB3;
+    color: $COLOR_KEY_DEEP;
   }
 }
 
@@ -133,33 +120,33 @@ ul {
     }
 
     .ref {
-      border-left: solid 1px #249EB3;
-      border-top: solid 1px #249EB3;
-      border-bottom: solid 1px #249EB3;
+      border-left: solid 1px $COLOR_REF;
+      border-top: solid 1px $COLOR_REF;
+      border-bottom: solid 1px $COLOR_REF;
       border-top-left-radius: 3px;
       border-bottom-left-radius: 3px;
-      color: #249EB3;
+      color: $COLOR_REF;
       background-color: #d8f0f4;
       position: relative;
       padding-right: 4px;
 
       &[data-sum]:after {
-        background-color: #249EB3;
+        background-color: $COLOR_REF;
       }
     }
 
     .alt {
-      border-right: solid 1px #FF6682;
-      border-top: solid 1px #FF6682;
-      border-bottom: solid 1px #FF6682;
+      border-right: solid 1px $COLOR_ALT;
+      border-top: solid 1px $COLOR_ALT;
+      border-bottom: solid 1px $COLOR_ALT;
       border-top-right-radius: 3px;
       border-bottom-right-radius: 3px;
-      color: #FF6682;
+      color: $COLOR_ALT;
       background-color: #fde2e7;
       padding-left: 9px;
 
       &[data-sum]:after {
-        background-color: #FF6682;
+        background-color: $COLOR_ALT;
       }
     }
 
@@ -176,7 +163,7 @@ ul {
       &:before {
         border-top: 9px solid transparent;
         border-bottom: 9px solid transparent;
-        border-left: 6px solid #249EB3;
+        border-left: 6px solid $COLOR_KEY_DEEP;
         top: 0;
         right: -6px;
       }
@@ -200,20 +187,20 @@ ul {
 
   &[data-function="T"],
   &[data-function="B"] {
-    background-color: #24D636;
+    background-color: $COLOR_SIGN_SAFE;
   }
 
   &[data-function="POSSD"] {
-    background-color: #FFAE00;
+    background-color: $COLOR_SIGN_WARNING;
   }
 
   &[data-function="D"],
   &[data-function="PROBD"] {
-    background-color: #FF5A54;
+    background-color: $COLOR_SIGN_DANGEROUS;
   }
 
   &[data-function="U"] {
-    color: #444;
+    color: $COLOR_BLACK;
     background-color: #eaeae9;
   }
 }
@@ -236,38 +223,38 @@ ul {
   }
 
   &[data-sign="P"]:before {
-    color: #FF5A54;
-    border-color: #FF5A54;
+    color: $COLOR_SIGN_DANGEROUS;
+    border-color: $COLOR_SIGN_DANGEROUS;
     background-color: #ffeeed;
   }
 
   &[data-sign="LP"]:before {
-    color: #FFAE00;
-    border-color: #FFAE00;
+    color: $COLOR_SIGN_WARNING;
+    border-color: $COLOR_SIGN_WARNING;
     background-color: #fff7e6;
   }
 
   &[data-sign="US"]:before {
-    color: #94928D;
-    border-color: #94928D;
+    color: $COLOR_GRAY;
+    border-color: $COLOR_GRAY;
     background-color: #eaeae9;
   }
 
   &[data-sign="LB"]:before {
-    color: #9DCF3A;
-    border-color: #9DCF3A;
+    color: $COLOR_SIGN_NORMAL;
+    border-color: $COLOR_SIGN_NORMAL;
     background-color: #f3f9e6;
   }
 
   &[data-sign="B"]:before {
-    color: #24D636;
-    border-color: #24D636;
+    color: $COLOR_SIGN_SAFE;
+    border-color: $COLOR_SIGN_SAFE;
     background-color: #e5fbe7;
   }
 
   &[data-sign="CI"]:before {
-    color: #C654FF;
-    border-color: #C654FF;
+    color: $COLOR_SIGN_MODIFIER;
+    border-color: $COLOR_SIGN_MODIFIER;
     background-color: #f9edff;
   }
 
@@ -277,15 +264,15 @@ ul {
   &[data-sign="PR"]:before,
   &[data-sign="AF"]:before,
   &[data-sign="O"]:before {
-    color: #9C8200;
-    border-color: #9C8200;
+    color: $COLOR_SIGN_OTHER;
+    border-color: $COLOR_SIGN_OTHER;
     background-color: #fff7cf;
   }
 
   &[data-sign="NP"]:before,
   &[data-sign="AN"]:before {
-    color: #444;
-    border-color: #94928D;
+    color: $COLOR_BLACK;
+    border-color: $COLOR_GRAY;
     background-color: white;
   }
 }
@@ -298,38 +285,38 @@ ul {
   padding: 0 7px;
 
   &[data-sign="P"] {
-    color: #FF5A54;
-    border-color: #FF5A54;
+    color: $COLOR_SIGN_DANGEROUS;
+    border-color: $COLOR_SIGN_DANGEROUS;
     background-color: #ffeeed;
   }
 
   &[data-sign="LP"] {
-    color: #FFAE00;
-    border-color: #FFAE00;
+    color: $COLOR_SIGN_WARNING;
+    border-color: $COLOR_SIGN_WARNING;
     background-color: #fff7e6;
   }
 
   &[data-sign="US"] {
-    color: #94928D;
-    border-color: #94928D;
+    color: $COLOR_GRAY;
+    border-color: $COLOR_GRAY;
     background-color: #eaeae9;
   }
 
   &[data-sign="LB"] {
-    color: #9DCF3A;
-    border-color: #9DCF3A;
+    color: $COLOR_SIGN_NORMAL;
+    border-color: $COLOR_SIGN_NORMAL;
     background-color: #f3f9e6;
   }
 
   &[data-sign="B"] {
-    color: #24D636;
-    border-color: #24D636;
+    color: $COLOR_SIGN_SAFE;
+    border-color: $COLOR_SIGN_SAFE;
     background-color: #e5fbe7;
   }
 
   &[data-sign="CI"] {
-    color: #C654FF;
-    border-color: #C654FF;
+    color: $COLOR_SIGN_MODIFIER;
+    border-color: $COLOR_SIGN_MODIFIER;
     background-color: #f9edff;
   }
 
@@ -339,15 +326,15 @@ ul {
   &[data-sign="PR"],
   &[data-sign="AF"],
   &[data-sign="O"] {
-    color: #9C8200;
-    border-color: #9C8200;
+    color: $COLOR_SIGN_OTHER;
+    border-color: $COLOR_SIGN_OTHER;
     background-color: #fff7cf;
   }
 
   &[data-sign="NP"],
   &[data-sign="AN"] {
-    color: #444;
-    border-color: #94928D;
+    color: $COLOR_BLACK;
+    border-color: $COLOR_GRAY;
     background-color: white;
   }
 }
@@ -360,7 +347,7 @@ ul {
   box-sizing: border-box;
   position: relative;
   margin-right: 1px;
-  background-color: #249EB3;
+  background-color: $COLOR_KEY_DEEP;
   vertical-align: middle;
 
   &:before {
@@ -385,23 +372,23 @@ ul {
 
   &[data-dataset="jga_ngs"],
   &[data-dataset="jga_snp"] {
-    background-color: #46B9CC;
+    background-color: $COLOR_DATASET_JGA;
   }
 
   &[data-dataset="tommo_4.7kjpn"] {
-    background-color: #abe03f;
+    background-color: $COLOR_DATASET_TOMMO;
   }
 
   &[data-dataset="gem_j_wga"] {
-    background-color: #DC2828;
+    background-color: $COLOR_DATASET_GEM_J;
   }
 
   &[data-dataset="hgvd"] {
-    background-color: #005B80;
+    background-color: $COLOR_DATASET_HGVD;
   }
 
   &[data-dataset="exac"] {
-    background-color: #94928d;
+    background-color: $COLOR_GRAY;
   }
 
   &[data-frequency="na"] {
@@ -461,12 +448,12 @@ ul {
 
     &.alt {
       font-weight: bold;
-      color: #FF6682;
+      color: $COLOR_ALT;
 
       &:after {
         content: "/";
         font-size: 10px;
-        color: #444;
+        color: $COLOR_BLACK;
         margin-left: .5em;
       }
     }
@@ -485,7 +472,7 @@ ul {
   box-shadow: 0 0 0 1px #dfdedd;
   position: relative;
   margin-right: 1px;
-  background-color: #249EB3;
+  background-color: $COLOR_KEY_DEEP;
   vertical-align: middle;
   box-sizing: border-box;
 
@@ -511,23 +498,23 @@ ul {
 
   &[data-dataset="jga_ngs"],
   &[data-dataset="jga_snp"] {
-    background-color: #46B9CC;
+    background-color: $COLOR_DATASET_JGA;
   }
 
   &[data-dataset="tommo_4.7kjpn"] {
-    background-color: #abe03f;
+    background-color: $COLOR_DATASET_TOMMO;
   }
 
   &[data-dataset="gem_j_wga"] {
-    background-color: #DC2828;
+    background-color: $COLOR_DATASET_GEM_J;
   }
 
   &[data-dataset="hgvd"] {
-    background-color: #005B80;
+    background-color: $COLOR_DATASET_HGVD;
   }
 
   &[data-dataset^="exac"] {
-    background-color: #94928d;
+    background-color: $COLOR_GRAY;
   }
 
   &[data-frequency="na"] {
@@ -608,35 +595,35 @@ ul {
 
   &[data-dataset="jga_ngs"]:before,
   &[data-dataset="jga_snp"]:before {
-    color: #46B9CC;
+    color: $COLOR_DATASET_JGA;
   }
 
   &[data-dataset="tommo_4.7kjpn"]:before {
-    color: #abe03f;
+    color: $COLOR_DATASET_TOMMO;
   }
 
   &[data-dataset="hgvd"]:before,
   &[data-dataset="mgend"]:before {
-    color: #005B80;
+    color: $COLOR_DATASET_HGVD;
   }
 
   &[data-dataset="gem_j_wga"]:before {
-    color: #DC2828;
+    color: $COLOR_DATASET_GEM_J;
   }
 
   &[data-dataset="bbj"]:before {
-    color: #FF993F;
+    color: $COLOR_DATASET_BBJ;
   }
 
   &[data-dataset="clinvar"]:before,
   &[data-dataset="exac"]:before,
   &[data-dataset="gnomad"]:before {
-    color: #94928d;
+    color: $COLOR_GRAY;
   }
 
   &[data-dataset="clinvar"] > .properties::before,
   &[data-dataset="mgend"] > .properties::before {
-    color: #FF5A54;
+    color: $COLOR_SIGN_DANGEROUS;
     content: "Disease";
   }
 
@@ -673,7 +660,7 @@ ul {
 
     &:before {
       content: "\02605\02605\02605\02605";
-      color: #249EB3;
+      color: $COLOR_KEY_DEEP;
     }
 
     &[data-stars="1"] {
