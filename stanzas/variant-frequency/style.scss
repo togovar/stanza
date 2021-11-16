@@ -1,44 +1,40 @@
-@use "@/common";
+@use "@/assets/css/common";
+@use "@/assets/css/foundation/variables" as *;
 
 .table > {
   thead > tr {
-    &:nth-of-type(1) > th {
-      padding-top: 0;
-    }
 
     &:nth-of-type(2) > th {
-      padding: 0;
-      transform: translateY(-3px);
+      &.alt, &.alt + th, &.frequency, &.num_genotype_alt_homo, &.num_genotype_hetero, &.num_genotype_ref_homo {
+        padding-top: 0;
+      }
     }
 
     > th {
-      &[colspan="3"], &[colspan="4"] {
+      white-space: nowrap;
+      &[rowspan] {
+        vertical-align: bottom;
+      }
+      &[colspan] {
         font-size: 10px;
-        color: #444444;
-        padding: 0 0 0 7px;
+        color: $COLOR_BLACK;
+        padding-left: 7px;
+        padding-top: 3px;
+        padding-bottom: 0;
         border: none;
         border-left: 1px solid #dee2e6;
-      }
-
-      &[rowspan="2"] {
-        padding-bottom: 0;
-        transform: translateY(8px);
       }
 
       &.frequency {
         padding-left: 20px;
       }
 
-      &.num_genotype_hetero {
-        transform: translate(18px, -3px);
-      }
-
-      &.num_genotype_ref_homo {
-        transform: translate(17px, -3px);
+      &.num_genotype_hetero, &.num_genotype_ref_homo {
+        padding-left: 17px;
       }
 
       &.alt, &.filter_status {
-        padding: 0 0 0 7px;
+        padding-left: 7px;
         border-left: 1px solid #dee2e6;
       }
     }
@@ -58,11 +54,9 @@
     }
 
     > td {
-      height: 26.4px;
-      vertical-align: middle;
 
       &.dataset {
-        width: 150px;
+        white-space: nowrap;
         padding-left: 14px;
 
         &[data-dataset="exac"] {
@@ -75,8 +69,8 @@
             width: 6px;
             height: 6px;
             border: 0;
-            border-top: solid 1px #444444;
-            border-right: solid 1px #444444;
+            border-top: solid 1px $COLOR_BLACK;
+            border-right: solid 1px $COLOR_BLACK;
             transform: rotate(135deg);
             position: absolute;
             top: 7px;
@@ -96,25 +90,21 @@
         }
       }
 
-      &.population {
-        width: 182px;
-      }
-
       &.num_alt_alleles {
         text-align: right;
-        color: #ff6682;
+        color: $COLOR_ALT;
         border-left: 1px solid #dee2e6;
 
         .slash {
           font-size: 10px;
-          color: #444444;
+          color: $COLOR_BLACK;
           margin-left: 7px;
           margin-right: 4px;
         }
       }
 
       &.num_alleles {
-        color: #444444;
+        color: $COLOR_BLACK;
         text-align: right;
       }
 
@@ -127,29 +117,29 @@
 
       &.num_genotype_alt_homo {
         text-align: right;
-        color: #ff6682;
+        color: $COLOR_ALT;
         border-left: 1px solid #dee2e6;
       }
 
       &.num_genotype_hetero {
         text-align: right;
-        color: #444444;
+        color: $COLOR_BLACK;
       }
 
       &.num_genotype_ref_homo {
         text-align: right;
-        color: #249eb3;
+        color: $COLOR_KEY_DEEP;
         box-sizing: content-box;
-        padding-right: 39px;
+        padding-right: 7px;
       }
 
       &.filter {
-        color: #FF5A54;
+        color: $COLOR_SIGN_DANGEROUS;
         padding: 0 0 0 7px;
         border-left: 1px solid #dee2e6;
 
         &[data-filter="PASS"] {
-          color: #24d636;
+          color: $COLOR_SIGN_SAFE;
         }
       }
     }
