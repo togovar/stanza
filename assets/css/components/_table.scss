@@ -6,24 +6,20 @@
   th, td {
     padding: 3px 0;
     vertical-align: middle;
+    border-bottom: 1px solid #dee2e6;
+    line-height: 1.2;
   }
 
   th {
     font-size: 12px;
     color: #94928d;
     font-weight: 500;
-    vertical-align: baseline;
   }
 
   td {
     font-size: 14px;
     color: #444444;
-    vertical-align: middle;
     white-space: nowrap;
-  }
-
-  th, td {
-    border-bottom: 1px solid #dee2e6;
   }
 
   > {
@@ -32,8 +28,8 @@
 
       > tr > th {
         text-align: left;
-        padding-top: 14px;
-        padding-bottom: 8px;
+        padding-top: 6px;
+        padding-bottom: 4px;
         border-bottom: 1px solid #444444;
 
         &:first-child {
@@ -43,8 +39,13 @@
     }
 
     tbody > tr {
-      > td:first-of-type {
-        padding-left: 14px;
+      > td {
+        &:first-of-type {
+          padding-left: 14px;
+        }
+        &.ref-alt {
+          display: flex;
+        }
       }
       &:last-child > {
         th, td {

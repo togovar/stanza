@@ -1,4 +1,4 @@
-@use "@/common";
+@import "@/assets/css/common";
 
 .table.other_alternative_alleles > tbody > tr > td {
   height: 26px;
@@ -38,10 +38,6 @@
   &.consequence {
     font-size: 12px;
     position: relative;
-  }
-
-  &.ref-alt {
-    display: flex;
   }
 
   &.clinical_significance_wrapper {
