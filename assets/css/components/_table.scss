@@ -1,0 +1,62 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: "Roboto Condensed", sans-serif;
+
+  th, td {
+    padding: 3px 0;
+    vertical-align: middle;
+  }
+
+  th {
+    font-size: 12px;
+    color: #94928d;
+    font-weight: 500;
+    vertical-align: baseline;
+  }
+
+  td {
+    font-size: 14px;
+    color: #444444;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  th, td {
+    border-bottom: 1px solid #dee2e6;
+  }
+
+  > {
+    thead {
+      padding-top: 2px;
+
+      > tr > th {
+        text-align: left;
+        padding-top: 14px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #444444;
+
+        &:first-child {
+          padding-left: 14px;
+        }
+      }
+    }
+
+    tbody > tr {
+      > td:first-of-type {
+        padding-left: 14px;
+      }
+      &:last-child > {
+        th, td {
+          border-bottom: none;
+        }
+      }
+  
+      &:last-of-type > {
+        th, td {
+          border: none;
+        }
+      }
+    }
+  }
+}
