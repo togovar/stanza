@@ -1,10 +1,15 @@
-@use 'common.scss';
+@use "@/assets/css/common";
 
-.table.gene > tbody > tr > th {
-  width: 139px;
-  text-align: right;
-}
-
-.table.gene > tbody > tr > td {
-  padding-left: 13px;
+.table.gene {
+  > tbody {
+    > tr {
+      > th {
+        width: 139px;
+        text-align: right;
+      }
+      > td {
+        padding-left: 13px;
+      }
+    }
+  }
 }
