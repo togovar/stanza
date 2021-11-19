@@ -53,6 +53,7 @@ export default async function genePublication(stanza, params) {
       language: {
         emptyTable: "No data",
       },
+      lengthMenu: [ [5, 20, 50, -1], [5, 20, 50, "All"] ],
       columns: [
         {
           data: 'PMID',
