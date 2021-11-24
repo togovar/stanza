@@ -4,6 +4,7 @@
 @use "components/dataTable_wrapper";
 @use "components/table";
 @use "components/variant-function";
+@use "components/within-sticky-table-header";
 
 main {
   font-family: "Roboto Condensed", sans-serif;
