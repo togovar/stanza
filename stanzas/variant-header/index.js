@@ -18,7 +18,7 @@ export default async function variantHeader(stanza, params) {
       result: {
         xrefs: [
           {
-            name: "dbSNP",
+            name: "RefSNP ID",
             refs: uniq(results.map(x => x.xref)).map(x => ({label: x.split("/").slice(-1)[0], url: x})),
           },
         ],
