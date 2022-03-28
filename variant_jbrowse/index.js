@@ -43,14 +43,13 @@ Stanza((stanza, params) => {
       });
     }
 
-    const chr = v.label.split('-')[0];
-    const position = parseInt(v.label.split('-')[1]);
+    const chr = v.reference.match(/http:\/\/identifiers.org\/hco\/(.+)\//)[1];
     const range = parseInt(params.margin) || 50;
 
     const src = (params.jbrowse ? params.jbrowse : "/jbrowse").concat(
       "/index.html?data=", encodeURIComponent("data/" + params.assembly),
-      "&loc=", encodeURIComponent(`${chr}:${position - range}..${position + range}`),
-      "&highlight=", encodeURIComponent(`${chr}:${position}..${position}`));
+      "&loc=", encodeURIComponent(`${chr}:${parseInt(v.start) - range}..${parseInt(v.stop) + range}`),
+      "&highlight=", encodeURIComponent(`${chr}:${parseInt(v.start)}..${parseInt(v.stop)}`));
 
     stanza.render({
       template: "stanza.html",
