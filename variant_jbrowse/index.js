@@ -45,11 +45,13 @@ Stanza((stanza, params) => {
 
     const chr = v.reference.match(/http:\/\/identifiers.org\/hco\/(.+)\//)[1];
     const range = parseInt(params.margin) || 50;
+    const start = parseInt(v.start);
+    const stop = v.stop ? parseInt(v.stop) : start
 
     const src = (params.jbrowse ? params.jbrowse : "/jbrowse").concat(
       "/index.html?data=", encodeURIComponent("data/" + params.assembly),
-      "&loc=", encodeURIComponent(`${chr}:${parseInt(v.start) - range}..${parseInt(v.stop) + range}`),
-      "&highlight=", encodeURIComponent(`${chr}:${parseInt(v.start)}..${parseInt(v.stop)}`));
+      "&loc=", encodeURIComponent(`${chr}:${start - range}..${stop + range}`),
+      "&highlight=", encodeURIComponent(`${chr}:${start}..${stop}`));
 
     stanza.render({
       template: "stanza.html",
