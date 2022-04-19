@@ -1,47 +1,52 @@
-export default async function geneJbrowse(stanza, params) {
-  const r = await stanza.query({
-    template: "fetch_position.rq",
-    parameters: params,
-    endpoint: params?.ep || "/sparql",
-  }).then(data => {
-    const binding = stanza.unwrapValueFromBinding(data)[0];
+import Stanza from "togostanza/stanza";
+import {unwrapValueFromBinding} from "togostanza/utils";
 
-    if (!binding) {
-      return {error: {message: `Failed to obtain genomic position for ${params.hgnc_id}`}};
-    }
+export default class GeneJbrowse extends Stanza {
+  async render() {
+    const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/gene_genomic_context?hgnc_id=${this.params.hgnc_id}`);
 
-    const type = binding.type;
-    const chr = binding.chromosome;
-    const start = parseInt(binding.start);
-    const stop = parseInt(binding.stop);
-    const range = 200;
-
-    if (type.match("SO_0000159")) {
-      start = start - 1;
-    } else if (type.match("SO_0000667")) {
-      stop = stop - 1;
-    }
-
-
-    const src = (params.jbrowse ? params.jbrowse : "/jbrowse").concat(
-      "/index.html?data=", encodeURIComponent("data/" + params.assembly),
-      "&loc=", encodeURIComponent(`${chr}:${start - range}..${stop + range}`),
-      "&highlight=", encodeURIComponent(`${chr}:${start}..${stop}`));
-
-    return {
-      result: {
-        src: src,
-        width: params.width || "100%",
-        height: params.height || "600px",
+    const r = await fetch(sparqlist, {
+      method: "GET",
+      headers: {
+        "Accept": "application/json",
       },
-    };
-  }).catch(e => ({error: {message: e.message}}));
+    }).then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      throw new Error(sparqlist + " returns status " + res.status);
+    }).then(data => {
+      const binding = unwrapValueFromBinding(data)[0];
 
-  stanza.render({
-    template: 'stanza.html.hbs',
-    parameters: {
-      params: params,
-      ...r,
-    },
-  });
+      if (!binding) {
+        return {error: {message: `Failed to obtain genomic position for ${this.params.hgnc_id}`}};
+      }
+
+      const chr = binding.chromosome;
+      const start = parseInt(binding.start);
+      const stop = parseInt(binding.stop);
+      const margin = Math.max((stop - start) * ((parseInt(this.params.margin) || 10) / 100.0), 50);
+
+      const src = (this.params.jbrowse ? this.params.jbrowse : "/jbrowse").concat(
+        "/index.html?data=", encodeURIComponent("data/" + this.params.assembly),
+        "&loc=", encodeURIComponent(`${chr}:${start - margin}..${stop + margin}`),
+        "&highlight=", encodeURIComponent(`${chr}:${start}..${stop}`));
+
+      return {
+        result: {
+          src: src,
+          width: this.params.width || "100%",
+          height: this.params.height || "600px",
+        },
+      };
+    }).catch(e => ({error: {message: e.message}}));
+
+    this.renderTemplate({
+      template: 'stanza.html.hbs',
+      parameters: {
+        params: this.params,
+        ...r,
+      },
+    });
+  }
 }

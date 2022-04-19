@@ -3,18 +3,13 @@
 
 .table > {
   thead > tr {
-
-    &:nth-of-type(2) > th {
-      &.alt, &.alt + th, &.frequency, &.num_genotype_alt_homo, &.num_genotype_hetero, &.num_genotype_ref_homo {
-        padding-top: 0;
-      }
-    }
-
     > th {
       white-space: nowrap;
+
       &[rowspan] {
         vertical-align: bottom;
       }
+
       &[colspan] {
         font-size: 10px;
         color: $COLOR_BLACK;
@@ -38,28 +33,22 @@
         border-left: 1px solid #dee2e6;
       }
     }
+
+    &:nth-of-type(2) > th {
+      &.alt, &.alt + th, &.frequency, &.num_genotype_alt_homo, &.num_genotype_hetero, &.num_genotype_ref_homo {
+        padding-top: 0;
+      }
+    }
   }
 
   tbody > tr {
-    &[data-dataset^="exac"] {
-      transition: .3s;
-
-      &.none {
-        display: none;
-      }
-
-      .close > td {
-        border-bottom: none;
-      }
-    }
-
     > td {
 
       &.dataset {
         white-space: nowrap;
         padding-left: 14px;
 
-        &[data-dataset="exac"] {
+        &[data-dataset="gnomad_genomes"], &[data-dataset="gnomad_exomes"] {
           visibility: visible;
           border: none;
           position: relative;
@@ -84,7 +73,7 @@
           }
         }
 
-        &[data-dataset^="exac_"] {
+        &[data-dataset^="gnomad_genomes_"], &[data-dataset^="gnomad_exomes_"] {
           visibility: hidden;
           border: none;
         }
@@ -141,6 +130,18 @@
         &[data-filter="PASS"] {
           color: $COLOR_SIGN_SAFE;
         }
+      }
+    }
+
+    &[data-dataset^="gnomad"] {
+      transition: .3s;
+
+      &.none {
+        display: none;
+      }
+
+      .close > td {
+        border-bottom: none;
       }
     }
   }

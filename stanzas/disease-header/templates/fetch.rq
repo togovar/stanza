@@ -1,8 +1,0 @@
-PREFIX medgen: <http://www.ncbi.nlm.nih.gov/medgen/>
-SELECT DISTINCT ?medgen_cid ?approved_name
-FROM <http://togovar.biosciencedbc.jp/medgen>
-WHERE {
-  VALUES ?medgen { medgen:{{medgen_cid}} }
-
-  ?medgen rdfs:label ?approved_name.
-}

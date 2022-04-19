@@ -3,8 +3,8 @@
     "stanza": "http://togostanza.org/resource/stanza#"
   },
   "@id": "gene-header",
-  "stanza:label": "Gene header",
-  "stanza:definition": "",
+  "stanza:label": "Gene / Header",
+  "stanza:definition": "Display header information",
   "stanza:type": "Stanza",
   "stanza:display": "Table",
   "stanza:provider": "Togovar",
@@ -22,9 +22,9 @@
       "stanza:required": true
     },
     {
-      "stanza:key": "ep",
-      "stanza:example": "https://togovar.biosciencedbc.jp/sparql",
-      "stanza:description": "SPARQL endpoint URL",
+      "stanza:key": "sparqlist",
+      "stanza:example": "https://togovar.biosciencedbc.jp/sparqlist",
+      "stanza:description": "SPARQList URL",
       "stanza:required": false
     }
   ],

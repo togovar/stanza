@@ -1,89 +1,46 @@
-import {DATASETS} from "../../lib/constants.js";
-import * as display from "../../lib/display.js";
-import {sortBy} from "../../lib/sort.js";
+import Stanza from "togostanza/stanza";
 
-const sources = ["gem_j_wga", "jga_ngs", "jga_snp", "tommo_4.7kjpn", "hgvd", "exac"];
+import {transformRecord} from "@/lib/display";
 
-const ensureAllDatasets = frequencies => {
-  sources.forEach(source => {
-    if (!frequencies.find(x => x.source === source)) {
-      frequencies.push({source: source});
-    }
-  });
+export default class GeneVariant extends Stanza {
+  async render() {
+    this.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
 
-  return frequencies;
-};
+    const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/gene_variant?hgnc_id=${this.params.hgnc_id}`);
 
-export default async function variantSummary(stanza, params) {
-  stanza.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
-
-  const sparqlist = (params?.sparqlist || "/sparqlist")
-    .concat(`/api/gene_variant?hgnc_id=${params.hgnc_id}`)
-    .concat(params.ep ? `&ep=${encodeURIComponent(params.ep)}` : "")
-    .concat(params.search_api ? `&search_api=${encodeURIComponent(params.search_api)}` : "");
-
-  const r = await fetch(sparqlist, {
-    method: "GET",
-    headers: {
-      "Accept": "application/json",
-    },
-  }).then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    throw new Error(sparqlist + " returns status " + res.status);
-  }).then(json => {
-    const datasets = Object.values(DATASETS);
-
-    let  records = json.data ? json.data.filter(x => x.symbols.find(y => y.id !== params.hgnc_id)) : [];
-
-    records.forEach(record => {
-      Object.assign(record, display.variantType(record.type));
-      Object.assign(record, display.refAlt(record.reference, record.alternative));
-
-      if (!record.frequencies) {
-        record.frequencies = [];
+    const r = await fetch(sparqlist, {
+      method: "GET",
+      headers: {
+        "Accept": "application/json",
+      },
+    }).then(res => {
+      if (res.ok) {
+        return res.json();
       }
-      ensureAllDatasets(record.frequencies);
-      sortBy(record.frequencies, x => datasets.find(y => y.id === x.source)?.idx);
-      record.frequencies.forEach(x => {
-        const ac = parseInt(x.allele?.count);
-        const freq = parseFloat(x.allele?.frequency);
+      throw new Error(sparqlist + " returns status " + res.status);
+    }).then(json => {
+      let  records = json.data ? json.data.filter(x => x.symbols.find(y => y.id !== this.params.hgnc_id)) : [];
 
-        Object.assign(x, display.frequency(ac, freq));
+      records.forEach(record => {
+        transformRecord(record);
+
+        if (record.existing_variations) {
+          record.dbsnp = record.existing_variations[0];
+        }
+        if (record.existing_variations && record.existing_variations.length > 1){
+          record.dbsnp_badge = `${record.existing_variations.length - 1}+`;
+        }
       });
 
-      Object.assign(record, display.consequence(record.most_severe_consequence));
-      if (record.transcripts && record.transcripts.length > 1) {
-        record.consequence_badge = `${record.transcripts.length - 1}+`;
-      }
+      return {result: {data: records}};
+    }).catch(e => ({error: {message: e.message}}));
 
-      Object.assign(record, display.sift(record.sift));
-      Object.assign(record, display.polyphen(record.polyphen));
-
-      if (record.significance && record.significance.length > 1) {
-        record.significance_badge = `${record.significance.length - 1}+`;
-      }
-      if (record.significance && record.significance.length > 0) {
-        record.significance = record.significance[0];
-        record.significance.interpretation = record.significance.interpretations[0];
-      }
-      if (record.existing_variations) {
-        record.dbsnp = record.existing_variations[0];
-      }
-      if (record.existing_variations && record.existing_variations.length > 1){
-        record.dbsnp_badge = `${record.existing_variations.length - 1}+`;
-      }
+    this.renderTemplate({
+      template: "stanza.html.hbs",
+      parameters: {
+        params: this.params,
+        ...r,
+      },
     });
-
-    return {result: {data: records}};
-  }).catch(e => ({error: {message: e.message}}));
-
-  stanza.render({
-    template: "stanza.html.hbs",
-    parameters: {
-      params: params,
-      ...r,
-    },
-  });
+  }
 }

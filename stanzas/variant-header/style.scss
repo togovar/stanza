@@ -1,4 +1,4 @@
-@use 'common';
+@use "@/assets/css/common";
 
 .table {
   &.variant-header {
@@ -6,14 +6,16 @@
       font-size: 12px;
       text-align: var(--text-align);
       color: #1f5065;
-      border-bottom: 0px;
+      border-bottom: 0;
       font-weight: bold;
       padding: 1px;
     }
+
     tbody td {
       font-size: 14px;
       text-align: var(--text-align);
-      padding: 1px!important;
+      padding: 1px !important;
+
       a {
         color: #ffffff;
       }

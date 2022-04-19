@@ -3,8 +3,8 @@
     "stanza": "http://togostanza.org/resource/stanza#"
   },
   "@id": "disease-header",
-  "stanza:label": "Disease header",
-  "stanza:definition": "",
+  "stanza:label": "Disease / Header",
+  "stanza:definition": "Display header information",
   "stanza:type": "Stanza",
   "stanza:display": "Table",
   "stanza:provider": "Togovar",
@@ -13,7 +13,7 @@
   "stanza:address": "tahara@biosciencedbc.jp",
   "stanza:contributor": [],
   "stanza:created": "2021-06-08",
-  "stanza:updated": "2021-06-15",
+  "stanza:updated": "2022-04-15",
   "stanza:parameter": [
     {
       "stanza:key": "medgen_cid",
@@ -22,9 +22,9 @@
       "stanza:required": true
     },
     {
-      "stanza:key": "ep",
-      "stanza:example": "https://togovar.biosciencedbc.jp/sparql",
-      "stanza:description": "SPARQL endpoint URL",
+      "stanza:key": "sparqlist",
+      "stanza:example": "https://togovar.biosciencedbc.jp/sparqlist",
+      "stanza:description": "SPARQList URL",
       "stanza:required": false
     }
   ],

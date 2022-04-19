@@ -1,0 +1,55 @@
+{{#with result}}
+<table class="table gene -horizontalkeyvalue">
+  <tr>
+    <th>HGNC/Approved name</th>
+    <td>
+      {{#if hgnc_url}}
+        <a href="{{hgnc_url}}" target="_blank">{{approved_name}}</a>
+      {{else}}
+        {{approved_name}}
+      {{/if}}
+    </td>
+
+    <th>Ensembl</th>
+    <td>
+      {{#if ensembl_url}}
+        <a href="{{ensembl_url}}" target="_blank">{{ensembl}}</a>
+      {{else}}
+        {{ensembl}}
+      {{/if}}
+    </td>
+  </tr>
+
+  <tr>
+    <th>Alias</th>
+    <td>{{alias}}</td>
+
+    <th>NCBI Gene</th>
+    <td>
+      {{#if ncbi_gene_url}}
+        <a href="{{ncbi_gene_url}}" target="_blank">{{ncbi_gene}}</a>
+      {{else}}
+        {{ncbi_gene}}
+      {{/if}}
+    </td>
+  </tr>
+
+  <tr>
+    <th>Chromosomal Location</th>
+    <td>{{location}}</td>
+
+    <th>RefSeq</th>
+    <td>
+      {{#if refseq_url}}
+        <a href="{{refseq_url}}" target="_blank">{{refseq}}</a>
+      {{else}}
+        {{refseq}}
+      {{/if}}
+    </td>
+  </tr>
+</table>
+{{/with}}
+
+{{#with error}}
+  <div class="alert alert-danger">{{message}}</div>
+{{/with}}

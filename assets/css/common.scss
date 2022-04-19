@@ -379,7 +379,7 @@ ul {
     background-color: $COLOR_DATASET_JGA;
   }
 
-  &[data-dataset="tommo_4.7kjpn"] {
+  &[data-dataset="tommo"] {
     background-color: $COLOR_DATASET_TOMMO;
   }
 
@@ -391,7 +391,7 @@ ul {
     background-color: $COLOR_DATASET_HGVD;
   }
 
-  &[data-dataset="exac"] {
+  &[data-dataset^="gnomad"] {
     background-color: $COLOR_GRAY;
   }
 
@@ -505,7 +505,7 @@ ul {
     background-color: $COLOR_DATASET_JGA;
   }
 
-  &[data-dataset="tommo_4.7kjpn"] {
+  &[data-dataset="tommo"] {
     background-color: $COLOR_DATASET_TOMMO;
   }
 
@@ -517,7 +517,7 @@ ul {
     background-color: $COLOR_DATASET_HGVD;
   }
 
-  &[data-dataset^="exac"] {
+  &[data-dataset^="gnomad"] {
     background-color: $COLOR_GRAY;
   }
 
@@ -602,7 +602,7 @@ ul {
     color: $COLOR_DATASET_JGA;
   }
 
-  &[data-dataset="tommo_4.7kjpn"]:before {
+  &[data-dataset="tommo"]:before {
     color: $COLOR_DATASET_TOMMO;
   }
 
@@ -620,8 +620,7 @@ ul {
   }
 
   &[data-dataset="clinvar"]:before,
-  &[data-dataset="exac"]:before,
-  &[data-dataset="gnomad"]:before {
+  &[data-dataset^="gnomad"]:before {
     color: $COLOR_GRAY;
   }
 
@@ -631,14 +630,14 @@ ul {
     content: "Disease";
   }
 
-  &[data-dataset="tommo_4.7kjpn"] > .properties::after,
+  &[data-dataset="tommo"] > .properties::after,
   &[data-dataset="gem_j_wga"] > .properties::after {
     content: "WGS";
   }
 
   &[data-dataset="jga_ngs"] > .properties::after,
   &[data-dataset="hgvd"] > .properties::after,
-  &[data-dataset="exac"] > .properties::after {
+  &[data-dataset^="gnomad"] > .properties::after {
     content: "WES";
   }
 
