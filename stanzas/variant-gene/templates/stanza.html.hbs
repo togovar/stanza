@@ -1,34 +1,32 @@
 {{#with error}}
   <div class="alert alert-danger">{{message}}</div>
-{{/with}}
-
-{{#with result}}
-  <table class="table gene">
-    <tr>
-      <th>HGNC/Approved name</th>
-      <td>{{approved_name}}</td>
-    </tr>
-
-    <tr>
-      <th>HGNC/Approved symbol</th>
-      <td>
-        <ul class="no-bullet">
-          {{#each symbol}}
-            <li><a href="{{href}}">{{value}}</a></li>
-          {{/each}}
-        </ul>
-      </td>
-    </tr>
-
-    <tr>
-      <th>HGNC/Alias name</th>
-      <td>
-        <ul class="no-bullet">
-          {{#each synonym}}
-            <li>{{this}}</li>
-          {{/each}}
-        </ul>
-      </td>
-    </tr>
-  </table>
+{{else}}
+  {{#with result}}
+    <table class="table gene">
+      <tr>
+        <th>HGNC/Approved name</th>
+        <td>{{approved_name}}</td>
+      </tr>
+      <tr>
+        <th>HGNC/Approved symbol</th>
+        <td>
+          <ul class="no-bullet">
+            {{#each symbol}}
+              <li><a href="{{href}}">{{value}}</a></li>
+            {{/each}}
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <th>HGNC/Alias name</th>
+        <td>
+          <ul class="no-bullet">
+            {{#each synonym}}
+              <li>{{this}}</li>
+            {{/each}}
+          </ul>
+        </td>
+      </tr>
+    </table>
+  {{/with}}
 {{/with}}
