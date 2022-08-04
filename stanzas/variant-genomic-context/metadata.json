@@ -29,7 +29,7 @@
     },
     {
       "stanza:key": "jbrowse",
-      "stanza:example": "https://togovar-stg.biosciencedbc.jp/jbrowse",
+      "stanza:example": "https://togovar.biosciencedbc.jp/jbrowse",
       "stanza:description": "JBrowse URL",
       "stanza:required": false
     },
