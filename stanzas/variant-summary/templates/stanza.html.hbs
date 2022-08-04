@@ -1,0 +1,39 @@
+{{#with error}}
+  <div class="alert alert-danger">{{message}}</div>
+{{else}}
+  <div>
+    <table class="table -horizontalkeyvalue">
+      {{#with result}}
+        <tr>
+          <th>Variant type</th>
+          <td class="variant-type-value"><span class="variant-value">{{type}}</span></td>
+          <th>Ref / Alt</th>
+          <td>
+            <div class="ref-alt">
+              <span class='ref' data-sum='{{ref_length}}'>{{ref}}</span><span class='arrow'></span><span
+                class='alt' data-sum='{{alt_length}}'>{{alt}}</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <th>Position</th>
+          <td>
+            <span class="chromosome">{{chr}}</span>:<span class='position'>{{position}}</span> <span
+              class='assembly'>({{assembly}})</span>
+          </td>
+          <th>hgvs</th>
+          <td>
+            <ul class="no-bullet">
+              {{#each hgvs}}
+                <li>
+                  {{this}}
+                </li>
+              {{/each}}
+            </ul>
+          </td>
+        </tr>
+      {{/with}}
+    </table>
+  </div>
+{{/with}}

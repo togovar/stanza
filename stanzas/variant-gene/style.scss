@@ -1,0 +1,16 @@
+@use "@/assets/css/common";
+
+.table.gene {
+  > tbody {
+    > tr {
+      > th {
+        width: 139px;
+        text-align: right;
+      }
+
+      > td {
+        padding-left: 13px;
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "@context": {
+    "stanza": "http://togostanza.org/resource/stanza#"
+  },
+  "@id": "gene-variant",
+  "stanza:label": "Gene / Variants",
+  "stanza:definition": "Display variants that exists on the gene",
+  "stanza:type": "Stanza",
+  "stanza:display": "Table",
+  "stanza:provider": "Togovar",
+  "stanza:license": "MIT",
+  "stanza:author": "Shuichi Tahara",
+  "stanza:address": "tahara@biosciencedbc.jp",
+  "stanza:contributor": [],
+  "stanza:created": "2021-06-01",
+  "stanza:updated": "2022-04-15",
+  "stanza:parameter": [
+    {
+      "stanza:key": "hgnc_id",
+      "stanza:example": "404",
+      "stanza:description": "HGNC ID",
+      "stanza:required": true
+    },
+    {
+      "stanza:key": "sparqlist",
+      "stanza:example": "https://togovar.biosciencedbc.jp/sparqlist",
+      "stanza:description": "SPARQList URL",
+      "stanza:required": false
+    }
+  ],
+  "stanza:menu-placement": "bottom-right",
+  "stanza:style": []
+}

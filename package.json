@@ -1,0 +1,30 @@
+{
+  "name": "togovar-stanza",
+  "version": "0.0.2",
+  "license": "MIT",
+  "repository": "https://github.com/togovar/stanza.git",
+  "private": true,
+  "engines": {
+    "node": ">=14"
+  },
+  "dependencies": {
+    "togostanza": "github:togostanza/togostanza"
+  },
+  "devDependencies": {
+    "eslint": "^8.13.0",
+    "eslint-config-prettier": "^8.5.0",
+    "stylelint": "^13.12.0",
+    "stylelint-config-recommended": "^4.0.0",
+    "stylelint-config-recommended-scss": "^4.2.0",
+    "stylelint-scss": "^3.19.0"
+  },
+  "scripts": {
+    "build": "npx togostanza build",
+    "generate": "npx togostanza generate stanza",
+    "start": "npx togostanza serve",
+    "lint": "npm run lint:js && npm run lint:css",
+    "lint:css": "stylelint common.scss stanzas/**/*.{css,scss,sass}",
+    "lint:js": "npm run lint:eslint lib stanzas",
+    "lint:eslint": "eslint --ignore-path .gitignore"
+  }
+}

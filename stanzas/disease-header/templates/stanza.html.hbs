@@ -1,0 +1,21 @@
+{{#with error}}
+  <div class="alert alert-danger">{{message}}</div>
+{{else}}
+  {{#with result}}
+    <div class="table header-xref disease-header">
+      {{#each xrefs}}
+        <p class="pagetype">{{name}}</p>
+      {{/each}}
+      {{#each xrefs}}
+        <h2 class="title report-disease">
+          {{#each refs}}
+            {{this.label}},
+          {{/each}}
+          {{#each approved_name}}
+            {{this.label}}
+          {{/each}}
+        </h2>
+      {{/each}}
+    </div>
+  {{/with}}
+{{/with}}
