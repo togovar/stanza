@@ -19,8 +19,9 @@ jobs:
         with:
           node-version: '14'
 
-      - run: yarn install --frozen-lockfile
-      - run: yarn run togostanza build
+      - run: npm install -g npm
+      - run: npm ci
+      - run: npx togostanza build
 
       - uses: peaceiris/actions-gh-pages@v3
         with:
