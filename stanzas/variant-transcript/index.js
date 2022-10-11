@@ -7,10 +7,7 @@ export default class VariantTranscript extends Stanza {
   async render() {
     this.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
 
-    let sparqlist = (this.params.sparqlist || "/sparqlist").concat(`/api/variant_transcript?tgv_id=${this.params.tgv_id}`);
-    if (this.params.assembly) {
-      sparqlist = sparqlist.concat("&assembly=" + encodeURIComponent(this.params.assembly))
-    }
+    const sparqlist = (this.params.sparqlist || "/sparqlist").concat(`/api/variant_transcript?tgv_id=${this.params.tgv_id}`);
 
     const r = await fetch(sparqlist, {
       method: "GET",

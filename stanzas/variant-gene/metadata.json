@@ -22,12 +22,6 @@
       "stanza:required": true
     },
     {
-      "stanza:key": "assembly",
-      "stanza:example": "GRCh37",
-      "stanza:description": "assembly: \"GRCh37\"(default) or \"GRCh38\"",
-      "stanza:required": false
-    },
-    {
       "stanza:key": "sparqlist",
       "stanza:example": "https://togovar.biosciencedbc.jp/sparqlist",
       "stanza:description": "SPARQList URL",
