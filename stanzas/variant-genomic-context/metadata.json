@@ -23,7 +23,7 @@
     },
     {
       "stanza:key": "assembly",
-      "stanza:example": "GRCh37",
+      "stanza:example": "GRCh38",
       "stanza:description": "assembly: \"GRCh37\" or \"GRCh38\"",
       "stanza:required": true
     },
