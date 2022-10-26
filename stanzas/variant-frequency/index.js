@@ -9,6 +9,7 @@ export default class VariantSummary extends Stanza {
     this.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
     this.importWebFontCSS(new URL("./assets/fontello.css", import.meta.url));
 
+    const assembly = this.params.assembly;
     const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/variant_frequency?tgv_id=${this.params.tgv_id}`);
 
     const r = await fetch(sparqlist, {
@@ -32,7 +33,7 @@ export default class VariantSummary extends Stanza {
         const localeString = (v) => v ? parseInt(v).toLocaleString() : null;
 
         binding.key = dataset?.id;
-        binding.dataset = dataset?.dataset;
+        binding.dataset = dataset?.dataset(assembly);
         binding.population = dataset?.population;
         binding.class_name = binding.source.startsWith("ExAC:") ? "none" : "";
         binding.num_alleles = localeString(binding.num_alleles);
