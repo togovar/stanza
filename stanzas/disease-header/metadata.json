@@ -23,7 +23,7 @@
     },
     {
       "stanza:key": "sparqlist",
-      "stanza:example": "https://togovar.biosciencedbc.jp/sparqlist",
+      "stanza:example": "https://grch38.togovar.org/sparqlist",
       "stanza:description": "SPARQList URL",
       "stanza:required": false
     }

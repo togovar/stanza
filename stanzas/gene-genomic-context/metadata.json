@@ -29,13 +29,13 @@
     },
     {
       "stanza:key": "jbrowse",
-      "stanza:example": "https://togovar.biosciencedbc.jp/jbrowse",
+      "stanza:example": "https://grch38.togovar.org/jbrowse",
       "stanza:description": "JBrowse URL",
       "stanza:required": false
     },
     {
       "stanza:key": "sparqlist",
-      "stanza:example": "https://togovar.biosciencedbc.jp/sparqlist",
+      "stanza:example": "https://grch38.togovar.org/sparqlist",
       "stanza:description": "SPARQList URL",
       "stanza:required": false
     },

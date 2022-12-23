@@ -1,6 +1,6 @@
 # togovar-stanza
 
-[Togovar-Stanza](https://togovar.biosciencedbc.jp/stanza "Togovar-Stanza")
+[Togovar-Stanza](https://grch38.togovar.org/stanza "Togovar-Stanza")
 
 ## Prerequisites
 
