@@ -28,8 +28,7 @@ export default class GeneJbrowse extends Stanza {
       const margin = Math.max((stop - start) * ((parseInt(this.params.margin) || 10) / 100.0), 50);
 
       const src = (this.params.jbrowse ? this.params.jbrowse : "/jbrowse").concat(
-        "/index.html?data=", encodeURIComponent("data/" + this.params.assembly),
-        "&loc=", encodeURIComponent(`${chr}:${start - margin}..${stop + margin}`),
+        "/index.html?loc=", encodeURIComponent(`${chr}:${start - margin}..${stop + margin}`),
         "&highlight=", encodeURIComponent(`${chr}:${start}..${stop}`));
 
       return {
