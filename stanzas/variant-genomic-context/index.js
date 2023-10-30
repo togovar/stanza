@@ -28,8 +28,7 @@ export default class VariantSummary extends Stanza {
       const range = parseInt(this.params.margin) || 50;
 
       const src = (this.params.jbrowse ? this.params.jbrowse : "/jbrowse").concat(
-        "/index.html?data=", encodeURIComponent("data/" + this.params.assembly),
-        "&loc=", encodeURIComponent(`${chr}:${start - range}..${stop + range}`),
+        "/index.html?loc=", encodeURIComponent(`${chr}:${start - range}..${stop + range}`),
         "&highlight=", encodeURIComponent(`${chr}:${start}..${stop}`));
 
       return {
