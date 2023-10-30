@@ -8,7 +8,7 @@
     "node": ">=14"
   },
   "dependencies": {
-    "togostanza": "github:togostanza/togostanza"
+    "togostanza": "3.0.0-beta.55"
   },
   "devDependencies": {
     "eslint": "^8.13.0",
