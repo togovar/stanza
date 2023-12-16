@@ -9,6 +9,7 @@
       <th>Consequence type</th>
       <th>HGVS(cDNA)</th>
       <th>HGVS(Amino acid seq.)</th>
+      <th>AlphaMissense</th>
       <th>SIFT</th>
       <th>PolyPhen</th>
     </tr>
@@ -28,6 +29,10 @@
         </td>
         <td>{{hgvs_c}}</td>
         <td>{{hgvs_p}}</td>
+        <td class="alphamissense">
+          <span class="variant-function" data-function="{{alpha_missense_class}}">{{alpha_missense}}</span>
+          <span class="alphamissense-label">{{alpha_missense_label}}</span>
+        </td>
         <td class="sift">
           <span class="variant-function" data-function="{{sift_class}}">{{sift}}</span>
           <span class="sift-label">{{sift_label}}</span>
