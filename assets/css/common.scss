@@ -40,6 +40,20 @@ ul {
   }
 }
 
+.table {
+  > thead>tr>th {
+    +th {
+      padding-left: 10px;
+    }
+  }
+
+  >tbody>tr>td {
+    +td {
+      padding-left: 10px;
+    }
+  }
+}
+
 .text-center {
   text-align: center;
 }
@@ -194,7 +208,12 @@ ul {
     background-color: $COLOR_SIGN_SAFE;
   }
 
-  &[data-function="POSSD"] {
+  &[data-function="LB"] {
+    background-color: $COLOR_SIGN_NORMAL;
+  }
+
+  &[data-function="POSSD"],
+  &[data-function="LP"] {
     background-color: $COLOR_SIGN_WARNING;
   }
 
@@ -206,6 +225,10 @@ ul {
   &[data-function="U"] {
     color: $COLOR_BLACK;
     background-color: #eaeae9;
+  }
+
+  &[data-function="AMBIGUOUS"] {
+    background-color: $COLOR_SIGN_UNKNOWN;
   }
 }
 
@@ -503,18 +526,22 @@ ul {
   &[data-dataset="jga_ngs"],
   &[data-dataset="jga_snp"] {
     background-color: $COLOR_DATASET_JGA;
+    box-shadow: 0 0 0 1px $COLOR_DATASET_JGA;
   }
 
   &[data-dataset="tommo"] {
     background-color: $COLOR_DATASET_TOMMO;
+    box-shadow: 0 0 0 1px $COLOR_DATASET_TOMMO;
   }
 
   &[data-dataset="gem_j_wga"] {
     background-color: $COLOR_DATASET_GEM_J;
+    box-shadow: 0 0 0 1px $COLOR_DATASET_GEM_J;
   }
 
   &[data-dataset="hgvd"] {
     background-color: $COLOR_DATASET_HGVD;
+    box-shadow: 0 0 0 1px $COLOR_DATASET_HGVD;
   }
 
   &[data-dataset^="gnomad"] {
