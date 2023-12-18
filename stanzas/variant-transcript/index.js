@@ -1,7 +1,7 @@
 import Stanza from "togostanza/stanza";
 import {unwrapValueFromBinding} from "togostanza/utils";
 
-import {polyphen, sift, alphaMissense} from "@/lib/display";
+import {alphaMissense, sift, polyphen} from "@/lib/display";
 
 export default class VariantTranscript extends Stanza {
   async render() {
@@ -29,9 +29,9 @@ export default class VariantTranscript extends Stanza {
         };
         binding.consequence_label = binding.consequence_label.split(",");
 
+        Object.assign(binding, alphaMissense(binding.alpha_missense));
         Object.assign(binding, sift(binding.sift));
         Object.assign(binding, polyphen(binding.polyphen));
-        Object.assign(binding, alphaMissense(binding.alpha_missense));
       });
 
       return {result: bindings};
