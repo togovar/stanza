@@ -3,9 +3,9 @@
 .table > tbody > tr > td {
   height: 26px;
 
+    > .alphamissense-label,
     > .sift-label,
-    > .polyphen-label,
-    > .alphamissense-label {
+    > .polyphen-label {
       font-size: 12px;
       margin-left: 5px;
     }
