@@ -1,0 +1,7 @@
+{{#with error}}
+  <div class="alert alert-danger">{{message}}</div>
+{{else}}
+  {{#with result}}
+    <iframe src="{{src}}" width="{{width}}" height="{{height}}"></iframe>
+  {{/with}}
+{{/with}}

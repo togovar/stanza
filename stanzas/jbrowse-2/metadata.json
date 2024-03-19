@@ -1,0 +1,49 @@
+{
+  "@context": {
+    "stanza": "http://togostanza.org/resource/stanza#"
+  },
+  "@id": "jbrowse-2",
+  "stanza:label": "Jbrowse 2",
+  "stanza:definition": "",
+  "stanza:license": "MIT",
+  "stanza:author": "Daisuke Satoh",
+  "stanza:contributor": [],
+  "stanza:created": "2024-03-19",
+  "stanza:updated": "2024-03-19",
+  "stanza:parameter": [
+    {
+      "stanza:key": "assembly",
+      "stanza:example": "GRCh38",
+      "stanza:description": "assembly: \"GRCh37\" or \"GRCh38\"",
+      "stanza:required": true
+    },
+    {
+      "stanza:key": "chromosome",
+      "stanza:example": "1",
+      "stanza:description": "TODO: resolve by tgv ID",
+      "stanza:required": true
+    },
+    {
+      "stanza:key": "start",
+      "stanza:example": 10100,
+      "stanza:description": "TODO: resolve by tgv ID",
+      "stanza:required": true
+    },
+    {
+      "stanza:key": "stop",
+      "stanza:example": 10199,
+      "stanza:description": "TODO: resolve by tgv ID",
+      "stanza:required": true
+    },
+    {
+      "stanza:key": "jbrowse",
+      "stanza:example": "https://grch38.togovar.org/jbrowse2",
+      "stanza:description": "JBrowse URL",
+      "stanza:required": false
+    }
+  ],
+  "stanza:menu-placement": "bottom-right",
+  "stanza:style": [],
+  "stanza:incomingEvent": [],
+  "stanza:outgoingEvent": []
+}
