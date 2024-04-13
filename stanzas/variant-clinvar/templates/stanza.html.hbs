@@ -1,45 +1,48 @@
 {{#with error}}
-  <div class="alert alert-danger">{{message}}</div>
+  <div class='alert alert-danger'>{{message}}</div>
 {{else}}
-  <table id="target" class="table">
+  <table id='target' class='table'>
     <thead>
-    <tr>
-      <th>Title</th>
-      <th>Clinical significance</th>
-      <th>Review status</th>
-      <th>Last evaluated</th>
-      <th>Condition(s)</th>
-    </tr>
+      <tr>
+        <th>Title</th>
+        <th>Review status</th>
+        <th>Clinical significance</th>
+        <th>Last evaluated</th>
+        <th>Condition(s)</th>
+      </tr>
     </thead>
 
     <tbody>
-    {{#each result}}
-      <tr>
-        <td class="title">
-          <a href="{{clinvar}}">{{title}}</a>
-        </td>
-        <td class="clinical-significance-col">
-          <span class="clinical-significance-full" data-sign="{{significance_class}}">{{interpretation}}</span>
-        </td>
-        <td class="review-status">
-        <span class="star-rating">
-          <span data-stars="{{stars}}" class="star-rating-item"></span>
-        </span>
-          <br/>
-          <span class="status-description">{{review_status}}</span>
-        </td>
-        <td class="last-evaluated">
-          {{last_evaluated}}
-        </td>
-        <td class="condition">
-          <a href="{{condition.url}}">{{condition.label}}</a>
-        </td>
-      </tr>
-    {{else}}
-      <tr>
-        <td class="text-center" colspan="5">No data</td>
-      </tr>
-    {{/each}}
+      {{#each result}}
+        <tr>
+          <td class='title'>
+            <a href='{{clinvar}}'>{{title}}</a>
+          </td>
+          <td class='review-status'>
+            <span class='star-rating'>
+              <span data-stars='{{stars}}' class='star-rating-item'></span>
+            </span>
+            <br />
+            <span class='status-description'>{{review_status}}</span>
+          </td>
+          <td class='clinical-significance-col'>
+            <span
+              class='clinical-significance-full'
+              data-sign='{{significance_class}}'
+            >{{interpretation}}</span>
+          </td>
+          <td class='last-evaluated'>
+            {{last_evaluated}}
+          </td>
+          <td class='condition'>
+            <a href='{{condition.url}}'>{{condition.label}}</a>
+          </td>
+        </tr>
+      {{else}}
+        <tr>
+          <td class='text-center' colspan='5'>No data</td>
+        </tr>
+      {{/each}}
     </tbody>
   </table>
 {{/with}}
