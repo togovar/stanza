@@ -40,9 +40,6 @@
 
     tbody > tr {
       > td {
-        &:first-of-type {
-          padding-left: 14px;
-        }
         &.ref-alt {
           display: flex;
         }
@@ -52,7 +49,7 @@
           border-bottom: none;
         }
       }
-  
+
       &:last-of-type > {
         th, td {
           border: none;

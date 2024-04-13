@@ -2,20 +2,10 @@
 
 .table > tbody > tr {
   > td {
-    &:first-of-type {
-      padding-left: 0;
-    }
-
     vertical-align: baseline;
 
     &.title {
       padding-left: 14px;
-    }
-
-    &.condition:before {
-      content: "\022c5";
-      display: inline-block;
-      margin-right: 4px;
     }
 
     &.review-status {
