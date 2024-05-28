@@ -1,9 +1,9 @@
 @use "@/assets/css/common";
 @use "@/assets/css/foundation/variables" as *;
 
-.table > {
-  thead > tr {
-    > th {
+.table> {
+  thead>tr {
+    >th {
       white-space: nowrap;
 
       &[rowspan] {
@@ -24,124 +24,184 @@
         padding-left: 20px;
       }
 
-      &.num_genotype_hetero, &.num_genotype_ref_homo {
+      &.num_genotype_hetero,
+      &.num_genotype_ref_homo {
         padding-left: 17px;
       }
 
-      &.alt, &.filter_status {
+      &.alt,
+      &.filter_status {
         padding-left: 7px;
         border-left: 1px solid #dee2e6;
       }
     }
 
-    &:nth-of-type(2) > th {
-      &.alt, &.alt + th, &.frequency, &.num_genotype_alt_homo, &.num_genotype_hetero, &.num_genotype_ref_homo {
+    &:nth-of-type(2)>th {
+
+      &.alt,
+      &.alt+th,
+      &.frequency,
+      &.num_genotype_alt_homo,
+      &.num_genotype_hetero,
+      &.num_genotype_ref_homo {
         padding-top: 0;
       }
     }
   }
 
-  tbody > tr {
-    > td {
+  tbody {
+    border-bottom: 1px solid #dee2e6;
 
-      &.dataset {
-        white-space: nowrap;
-        padding-left: 14px;
+    >tr {
 
-        &[data-dataset="gnomad_genomes"], &[data-dataset="gnomad_exomes"] {
-          visibility: visible;
-          border: none;
-          position: relative;
-
-          &:after {
-            content: '';
-            width: 6px;
-            height: 6px;
-            border: 0;
-            border-top: solid 1px $COLOR_BLACK;
-            border-right: solid 1px $COLOR_BLACK;
-            transform: rotate(135deg);
-            position: absolute;
-            top: 7px;
-            right: 6px;
-            display: inline-block;
-            transition: .3s;
-          }
-
-          &.open:after {
-            transform: rotate(-45deg);
-          }
-        }
-
-        &[data-dataset^="gnomad_genomes_"], &[data-dataset^="gnomad_exomes_"] {
-          visibility: hidden;
-          border: none;
-        }
-      }
-
-      &.num_alt_alleles {
-        text-align: right;
-        color: $COLOR_ALT;
-        border-left: 1px solid #dee2e6;
-
-        .slash {
-          font-size: 10px;
-          color: $COLOR_BLACK;
-          margin-left: 7px;
-          margin-right: 4px;
-        }
-      }
-
-      &.num_alleles {
-        color: $COLOR_BLACK;
-        text-align: right;
-      }
-
-      &.frequency {
-        padding-left: 20px;
-        box-sizing: content-box;
-        text-align: left;
-        width: 58px;
-      }
-
-      &.num_genotype_alt_homo {
-        text-align: right;
-        color: $COLOR_ALT;
-        border-left: 1px solid #dee2e6;
-      }
-
-      &.num_genotype_hetero {
-        text-align: right;
-        color: $COLOR_BLACK;
-      }
-
-      &.num_genotype_ref_homo {
-        text-align: right;
-        color: $COLOR_KEY_DEEP;
-        box-sizing: content-box;
-        padding-right: 7px;
-      }
-
-      &.filter {
-        color: $COLOR_SIGN_DANGEROUS;
-        padding: 0 0 0 7px;
-        border-left: 1px solid #dee2e6;
-
-        &[data-filter="PASS"] {
-          color: $COLOR_SIGN_SAFE;
-        }
-      }
-    }
-
-    &[data-dataset^="gnomad"] {
-      transition: .3s;
-
-      &.none {
+      &.sub-layer,
+      &.layer1-nonchild,
+      &.layer1-haschild,
+      &.layer2,
+      &.layer2-nonchild,
+      &.layer3 {
         display: none;
       }
 
-      .close > td {
-        border-bottom: none;
+      &.show-by-total,
+      &.show-by-sub,
+      &.show {
+        display: table-row;
+      }
+
+      &.close-by-total,
+      &.close-by-sub {
+        display: none;
+      }
+
+      >td {
+        padding-right: 5px;
+
+        &.dataset {
+          white-space: nowrap;
+          padding-left: 14px;
+
+          &.layer-none {
+            border-top: 1px solid #dee2e6;
+          }
+
+          &.layer-total {
+            border-top: 1px solid #dee2e6;
+            border-bottom: none;
+          }
+
+          &.sub-layer,
+          &.layer1-haschild,
+          &.layer1-nonchild,
+          &.layer2,
+          &.layer2-nonchild,
+          &.layer3 {
+            visibility: hidden;
+            border: none;
+          }
+        }
+
+        &.population {
+          &.layer-total {
+            padding-left: 12px;
+          }
+
+          &.sub-layer,
+          &.layer1-haschild,
+          &.layer1-nonchild {
+            padding-left: 28px;
+          }
+
+          &.layer2,
+          &.layer2-nonchild {
+            padding-left: 44px;
+          }
+
+          &.layer3 {
+            padding-left: 60px;
+          }
+
+          &.layer-total,
+          &.sub-layer,
+          &.layer1-haschild,
+          &.layer2 {
+            &::before {
+              content: '';
+              position: relative;
+              right: 4px;
+              bottom: 2px;
+              display: inline-block;
+              width: 6px;
+              height: 6px;
+              border-right: 1px solid $COLOR_BLACK;
+              border-bottom: 1px solid $COLOR_BLACK;
+              transform: rotate(-45deg);
+            }
+
+            &.open {
+              &::before {
+                right: 0px;
+                bottom: 3px;
+                margin-right: 3px;
+                transform: rotate(45deg);
+              }
+            }
+
+          }
+        }
+
+        &.num_alt_alleles {
+          text-align: right;
+          color: $COLOR_ALT;
+          border-left: 1px solid #dee2e6;
+
+          .slash {
+            font-size: 10px;
+            color: $COLOR_BLACK;
+            margin-left: 7px;
+            margin-right: 4px;
+          }
+        }
+
+        &.num_alleles {
+          color: $COLOR_BLACK;
+          text-align: right;
+        }
+
+        &.frequency {
+          padding-left: 20px;
+          box-sizing: content-box;
+          text-align: left;
+          width: 58px;
+        }
+
+        &.num_genotype_alt_homo {
+          text-align: right;
+          color: $COLOR_ALT;
+          border-left: 1px solid #dee2e6;
+        }
+
+        &.num_genotype_hetero {
+          text-align: right;
+          color: $COLOR_BLACK;
+        }
+
+        &.num_genotype_ref_homo {
+          text-align: right;
+          color: $COLOR_KEY_DEEP;
+          box-sizing: content-box;
+          padding-right: 7px;
+        }
+
+        &.filter {
+          color: $COLOR_SIGN_DANGEROUS;
+          padding: 0 0 0 7px;
+          border-left: 1px solid #dee2e6;
+
+          &[data-filter="PASS"] {
+            color: $COLOR_SIGN_SAFE;
+          }
+        }
       }
     }
   }

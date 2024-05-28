@@ -521,20 +521,28 @@ ul {
     box-shadow: 5px 0 white, 10px 0 white, 15px 0 white, 20px 0 white, 25px 0 white, 30px 0 white;
   }
 
+  &[data-dataset="gem_j_wga"],
+  &[data-dataset="GEM-J WGA"] {
+    background-color: $COLOR_DATASET_GEM_J;
+    box-shadow: 0 0 0 1px $COLOR_DATASET_GEM_J;
+  }
+
   &[data-dataset="jga_ngs"],
-  &[data-dataset="jga_snp"] {
+  &[data-dataset="JGA-NGS"],
+  &[data-dataset="jga_snp"],
+  &[data-dataset="JGA-SNP"] {
     background-color: $COLOR_DATASET_JGA;
     box-shadow: 0 0 0 1px $COLOR_DATASET_JGA;
   }
 
-  &[data-dataset="tommo"] {
+  &[data-dataset="tommo"],&[data-dataset="ToMMo"] {
     background-color: $COLOR_DATASET_TOMMO;
     box-shadow: 0 0 0 1px $COLOR_DATASET_TOMMO;
   }
 
-  &[data-dataset="gem_j_wga"] {
-    background-color: $COLOR_DATASET_GEM_J;
-    box-shadow: 0 0 0 1px $COLOR_DATASET_GEM_J;
+  &[data-dataset="ncbn"],&[data-dataset="NCBN"] {
+    background-color: $COLOR_DATASET_NCBN;
+    box-shadow: 0 0 0 1px $COLOR_DATASET_NCBN;
   }
 
   &[data-dataset="hgvd"] {
@@ -542,7 +550,8 @@ ul {
     box-shadow: 0 0 0 1px $COLOR_DATASET_HGVD;
   }
 
-  &[data-dataset^="gnomad"] {
+  &[data-dataset^="gnomad"],
+  &[data-dataset^="gnomAD"] {
     background-color: $COLOR_GRAY;
   }
 
@@ -629,6 +638,10 @@ ul {
 
   &[data-dataset="tommo"]:before {
     color: $COLOR_DATASET_TOMMO;
+  }
+
+  &[data-dataset="ncbn"]:before {
+    color: $COLOR_DATASET_NCBN;
   }
 
   &[data-dataset="hgvd"]:before,
