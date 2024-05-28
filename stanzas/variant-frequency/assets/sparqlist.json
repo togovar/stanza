@@ -1,0 +1,574 @@
+[
+  {
+    "source": "gem_j_wga",
+    "ac": 575,
+    "an": 14594,
+    "af": 0.039,
+    "filter": ["PASS"],
+    "quality": 151200
+  },
+  {
+    "source": "jga_ngs",
+    "ac": 6,
+    "an": 250,
+    "af": 0.024,
+    "filter": ["PASS"],
+    "quality": 783.77
+  },
+  {
+    "source": "jga_snp",
+    "ac": 13169,
+    "an": 364314,
+    "af": 0.0361474,
+    "aac": 270,
+    "arc": 12629,
+    "rrc": 169258,
+    "filter": ["PASS"]
+  },
+  {
+    "source": "bbj_riken.mpheno1",
+    "ac": 4113,
+    "an": 7890,
+    "af": 0.521293,
+    "aac": 1098,
+    "arc": 1917,
+    "rrc": 930,
+    "filter": ["PASS"]
+  },
+  {
+    "source": "bbj_riken.mpheno1.male",
+    "ac": 2747,
+    "an": 5268,
+    "af": 0.52145,
+    "aac": 730,
+    "arc": 1287,
+    "rrc": 617,
+    "filter": ["PASS"]
+  },
+  {
+    "source": "bbj_riken.mpheno1.female",
+    "ac": 1366,
+    "an": 2622,
+    "af": 0.520976,
+    "aac": 368,
+    "arc": 630,
+    "rrc": 313,
+    "filter": ["PASS"]
+  },
+  {
+    "source": "bbj_riken.mpheno8",
+    "ac": 5381,
+    "an": 10382,
+    "af": 0.518301,
+    "aac": 1406,
+    "arc": 2569,
+    "rrc": 1216,
+    "filter": ["PASS"]
+  },
+  {
+    "source": "bbj_riken.mpheno8.male",
+    "ac": 5381,
+    "an": 10382,
+    "af": 0.518301,
+    "aac": 1406,
+    "arc": 2569,
+    "rrc": 1216,
+    "filter": ["PASS"]
+  },
+  {
+    "source": "bbj_riken.mpheno46",
+    "ac": 3216,
+    "an": 6130,
+    "af": 0.524633,
+    "aac": 874,
+    "arc": 1468,
+    "rrc": 723,
+    "filter": ["PASS"]
+  },
+  {
+    "source": "bbj_riken.mpheno46.male",
+    "ac": 1368,
+    "an": 2658,
+    "af": 0.514673,
+    "aac": 359,
+    "arc": 650,
+    "rrc": 320,
+    "filter": ["PASS"]
+  },
+  {
+    "source": "bbj_riken.mpheno46.female",
+    "ac": 1848,
+    "an": 3472,
+    "af": 0.532258,
+    "aac": 515,
+    "arc": 818,
+    "rrc": 403,
+    "filter": ["PASS"]
+  },
+  {
+    "source": "tommo",
+    "ac": 4003,
+    "an": 108600,
+    "af": 0.03686,
+    "filter": ["PASS"],
+    "quality": 1708460
+  },
+  {
+    "source": "ncbn",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.jpn",
+    "ac": 9507,
+    "an": 18576,
+    "af": 0.511789,
+    "aac": 2448,
+    "arc": 4611,
+    "rrc": 2229,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.jpn.hondo",
+    "ac": 9274,
+    "an": 18068,
+    "af": 0.513283,
+    "aac": 2397,
+    "arc": 4480,
+    "rrc": 2157,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.jpn.ryukyu",
+    "ac": 168,
+    "an": 372,
+    "af": 0.451613,
+    "aac": 38,
+    "arc": 92,
+    "rrc": 56,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.acb",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.asw",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.beb",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.gbr",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.cdx",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.ceu",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.clm",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.esn",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.fin",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.gwd",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.gih",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.chb",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.chs",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.ibs",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.itu",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.jpt",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.khv",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.lwk",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.msl",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.mxl",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.pel",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.pur",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.pjl",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.stu",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.tsi",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "ncbn.yri",
+    "ac": 10669,
+    "an": 23520,
+    "af": 0.453614,
+    "aac": 2619,
+    "arc": 5431,
+    "rrc": 3710,
+    "filter": ["LowCR", "HWE"],
+    "quality": 7.38587e6
+  },
+  {
+    "source": "gnomad_genomes",
+    "ac": 276,
+    "an": 152184,
+    "af": 0.00181359,
+    "filter": "PASS"
+  },
+  {
+    "source": "gnomad_genomes.afr",
+    "ac": 1,
+    "an": 41522,
+    "af": 0.0000240836
+  },
+  {
+    "source": "gnomad_genomes.ami",
+    "ac": 0,
+    "an": 912,
+    "af": 0
+  },
+  {
+    "source": "gnomad_genomes.amr",
+    "ac": 2,
+    "an": 15290,
+    "af": 0.000130804
+  },
+  {
+    "source": "gnomad_genomes.asj",
+    "ac": 29,
+    "an": 3470,
+    "af": 0.00835735
+  },
+  {
+    "source": "gnomad_genomes.eas",
+    "ac": 228,
+    "an": 5160,
+    "af": 0.044186
+  },
+  {
+    "source": "gnomad_genomes.fin",
+    "ac": 0,
+    "an": 10614,
+    "af": 0
+  },
+  {
+    "source": "gnomad_genomes.mid",
+    "ac": 0,
+    "an": 294,
+    "af": 0
+  },
+  {
+    "source": "gnomad_genomes.nfe",
+    "ac": 0,
+    "an": 67992,
+    "af": 0
+  },
+  {
+    "source": "gnomad_genomes.remaining",
+    "ac": 5,
+    "an": 2116,
+    "af": 0.00236295
+  },
+  {
+    "source": "gnomad_genomes.sas",
+    "ac": 11,
+    "an": 4814,
+    "af": 0.002285
+  },
+  {
+    "source": "gnomad_exomes",
+    "ac": 2015,
+    "an": 1460006,
+    "af": 0.00138013,
+    "filter": "PASS"
+  },
+  {
+    "source": "gnomad_exomes.afr",
+    "ac": 0,
+    "an": 33434,
+    "af": 0
+  },
+  {
+    "source": "gnomad_exomes.amr",
+    "ac": 3,
+    "an": 44722,
+    "af": 0.0000670811
+  },
+  {
+    "source": "gnomad_exomes.asj",
+    "ac": 148,
+    "an": 26120,
+    "af": 0.00566616
+  },
+  {
+    "source": "gnomad_exomes.eas",
+    "ac": 1635,
+    "an": 39686,
+    "af": 0.0411984
+  },
+  {
+    "source": "gnomad_exomes.fin",
+    "ac": 0,
+    "an": 53398,
+    "af": 0
+  },
+  {
+    "source": "gnomad_exomes.mid",
+    "ac": 0,
+    "an": 5754,
+    "af": 0
+  },
+  {
+    "source": "gnomad_exomes.nfe",
+    "ac": 43,
+    "an": 1110346,
+    "af": 0.0000387267
+  },
+  {
+    "source": "gnomad_exomes.remaining",
+    "ac": 108,
+    "an": 60328,
+    "af": 0.00179021
+  },
+  {
+    "source": "gnomad_exomes.sas",
+    "ac": 78,
+    "an": 86218,
+    "af": 0.000904683
+  }
+]

@@ -1,50 +1,73 @@
 {{#with error}}
-  <div class="alert alert-danger">{{message}}</div>
+  <div class='alert alert-danger'>{{message}}</div>
 {{else}}
   {{#with result}}
-    <table class="table frequency-detail">
+    <table class='table frequency-detail'>
       <thead>
-      <tr>
-        <th rowspan="2">Dataset</th>
-        <th rowspan="2">Population</th>
-        <th colspan="4">Allele count</th>
-        <th colspan="3">Genotype count</th>
-        <th class="filter_status" rowspan="2">Filter status</th>
-        <th rowspan="2">Quality score</th>
-      </tr>
-      <tr>
-        <th class="alt">Alt</th>
-        <th>Total</th>
-        <th class="frequency">Frequency</th>
-        <th></th>
-        <th class="num_genotype_alt_homo alt">Alt / Alt</th>
-        <th class="num_genotype_hetero">Alt / Ref</th>
-        <th class="num_genotype_ref_homo">Ref / Ref</th>
-      </tr>
+        <tr>
+          <th rowspan='2'>Dataset</th>
+          <th rowspan='2'>Population</th>
+          <th colspan='4'>Allele count</th>
+          <th colspan='3'>Genotype count</th>
+          <th class='filter_status' rowspan='2'>Filter status</th>
+          <th rowspan='2'>Quality score</th>
+        </tr>
+        <tr>
+          <th class='alt'>Alt</th>
+          <th>Total</th>
+          <th class='frequency'>Frequency</th>
+          <th></th>
+          <th class='num_genotype_alt_homo alt'>Alt / Alt</th>
+          <th class='num_genotype_hetero'>Alt / Ref</th>
+          <th class='num_genotype_ref_homo'>Ref / Ref</th>
+        </tr>
       </thead>
 
       <tbody>
-      {{#each bindings}}
-        <tr data-dataset="{{key}}" class="{{class_name}}">
-          <td class="dataset" id="{{key}}" data-dataset="{{key}}">
-            <div class="dataset-icon" data-dataset="{{key}}"></div>{{dataset}}
-          </td>
-          <td class="population">{{population}}</td>
-          <td class="num_alt_alleles">{{num_alt_alleles}}<span class="slash">/</span></td>
-          <td class="num_alleles">{{num_alleles}}</td>
-          <td class="frequency">{{frequency}}</td>
-          <td class="frequency-graph">
-            <div class="allele-frequency-graph">
-              <span class="dataset" data-frequency="{{level}}" data-dataset="{{key}}"></span>
-            </div>
-          </td>
-          <td class="num_genotype_alt_homo">{{num_genotype_alt_homo}}</td>
-          <td class="num_genotype_hetero">{{num_genotype_hetero}}</td>
-          <td class="num_genotype_ref_homo">{{num_genotype_ref_homo}}</td>
-          <td class="filter" data-filter="{{filter}}">{{filter}}</td>
-          <td class="quality">{{quality}}</td>
-        </tr>
-      {{/each}}
+        {{#each resultObject}}
+          <tr data-dataset='{{dataset}}' class='{{class_name}}'>
+            <td
+              class='dataset {{class_name}}'
+              id='{{source}}'
+              data-dataset='{{source}}'
+            >
+              <div
+                class='dataset-icon'
+                data-dataset='{{source}}'
+              ></div>{{dataset}}
+            </td>
+            <td
+              class='population {{class_name}}'
+              data-dataset='{{dataset}}'
+              data-layer1='{{layer1}}'
+              data-layer2='{{layer2}}'
+            >
+              {{label}}
+            </td>
+            <td class='num_alt_alleles'>{{ac}}<span class='slash'>
+                {{#if ac}}
+                  /
+                {{/if}}</span></td>
+            <td class='num_alleles'>{{an}}</td>
+            <td class='frequency'>{{frequency}}</td>
+            <td class='frequency-graph'>
+              {{#if level}}
+                <div class='allele-frequency-graph'>
+                  <span
+                    class='dataset'
+                    data-frequency='{{level}}'
+                    data-dataset='{{dataset}}'
+                  ></span>
+                </div>
+              {{/if}}
+            </td>
+            <td class='num_genotype_alt_homo'>{{aac}}</td>
+            <td class='num_genotype_hetero'>{{arc}}</td>
+            <td class='num_genotype_ref_homo'>{{rrc}}</td>
+            <td class='filter' data-filter='{{filter}}'>{{filter}}</td>
+            <td class='quality'>{{quality}}</td>
+          </tr>
+        {{/each}}
       </tbody>
     </table>
   {{/with}}
