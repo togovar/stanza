@@ -3,8 +3,6 @@ import Stanza from "togostanza/stanza";
 // import {DATASETS} from "@/lib/constants";
 import { DATASETS } from "@/lib/constantsTest";
 import { frequency } from "@/lib/display";
-// import { sortBy } from "@/lib/sort";
-import sparqlistTest from "@/stanzas/variant-frequency/assets/sparqlist.json";
 
 export default class VariantSummary extends Stanza {
   async render() {
@@ -14,14 +12,14 @@ export default class VariantSummary extends Stanza {
     this.importWebFontCSS(new URL("./assets/fontello.css", import.meta.url));
 
     // const assembly = this.params.assembly;
-    const { sparqlist: sparqlistBase = "/sparqlist", tgv_id } = this.params;
-    const sparqlist = `${sparqlistBase}/api/variant_frequency?tgv_id=${tgv_id}`;
+    const { "data-url": urlBase, tgv_id } = this.params;
+    const dataURL = `${urlBase}search?term=${tgv_id}&expand_dataset`;
     let resultObject = [];
     let currentLayer1;
 
     try {
-      // sparqlist URL に GET リクエストを送信
-      const response = await fetch(sparqlist, {
+      // dataURL に GET リクエストを送信
+      const response = await fetch(dataURL, {
         method: "GET",
         headers: {
           "Accept": "application/json"
@@ -30,118 +28,117 @@ export default class VariantSummary extends Stanza {
 
       // レスポンスのステータスをチェック
       if (!response.ok) {
-        throw new Error(`${sparqlist} returns status ${response.status}`);
+        throw new Error(`${dataURL} returns status ${response.status}`);
       }
 
       // レスポンスを JSON 形式でパース
-      // const sparqlistDatasets = await response.json();
-      const sparqlistDatasets = sparqlistTest;
+      const responseDatasets = await response.json();
+      const frequenciesDatasets = responseDatasets.data[0].frequencies
       const datasets = Object.values(DATASETS);
 
       // バインディングを処理
-      sparqlistDatasets.forEach(sparqlistData => {
-        const dataset = datasets.find(x => x.id === sparqlistData.source);
+      datasets.forEach(datum => {
+        const frequencyData = frequenciesDatasets.find(x => x.source === datum.source);
 
-        const ac = parseInt(sparqlistData.ac);
-        const freq = parseFloat(sparqlistData.af);
+        if (frequencyData) {
+          const ac = parseInt(frequencyData?.ac);
+          const freq = parseFloat(frequencyData?.af);
 
-        // 数値をロケール形式の文字列に変換する関数
-        const localeString = (v) => v ? parseInt(v).toLocaleString() : null;
+          // 数値をロケール形式の文字列に変換する関数
+          const localeString = (v) => v ? parseInt(v).toLocaleString() : null;
 
-        // バインディングにデータセット情報を追加
-        sparqlistData.dataset = dataset.source;
-        // sparqlistData.dataset = dataset?.dataset(assembly);
-        sparqlistData.layer1 = dataset.layer1;
-        sparqlistData.layer2 = dataset.layer2;
-        sparqlistData.layer3 = dataset.layer3;
-        sparqlistData.ac = localeString(sparqlistData.ac);
-        sparqlistData.an = localeString(sparqlistData.an);
-        sparqlistData.aac = localeString(sparqlistData.aac);
-        sparqlistData.arc = localeString(sparqlistData.arc);
-        sparqlistData.rrc = localeString(sparqlistData.rrc);
+          // バインディングにデータセット情報を追加
+          frequencyData.dataset = datum.dataset;
+          // sparqlistData.dataset = dataset?.dataset(assembly);
+          frequencyData.layer1 = datum.layer1;
+          frequencyData.layer2 = datum.layer2;
+          frequencyData.layer3 = datum.layer3;
+          frequencyData.ac = localeString(frequencyData?.ac);
+          frequencyData.an = localeString(frequencyData?.an);
+          frequencyData.aac = localeString(frequencyData?.aac);
+          frequencyData.arc = localeString(frequencyData?.arc);
+          frequencyData.rrc = localeString(frequencyData?.rrc);
 
-        // frequencyの情報をバインディングに追加
-        Object.assign(sparqlistData, frequency(ac, freq));
+          // frequencyの情報をバインディングに追加
+          Object.assign(frequencyData, frequency(ac, freq));
 
-        // 開閉を行うtoggleを作成するため、クラスを設定
-        let className = 'layer-none';
-        if (sparqlistData.layer1 === 'Total') {
-          className = 'layer-total';
-        }
-        if (
-          ![
-            'gem_j_wga',
-            'jga_ngs',
-            'jga_snp',
-            'tommo',
-            'ncbn',
-            'gnomad_genomes',
-            'gnomad_exomes'
-          ].includes(sparqlistData.source)
-        ) {
-          if (!sparqlistData.layer2) {
-            className = 'layer1-nonchild';
-          } else {
-            className = 'layer2';
-
-            if (sparqlistData.dataset !== 'JGA-SNP') {
-              className = 'layer2-nonchild';
-            }
-            if (sparqlistData.layer3) {
-              className = 'layer3';
-            }
+          // 開閉を行うtoggleを作成するため、クラスを設定
+          let className = 'layer-none';
+          if (frequencyData.layer1 === 'Total') {
+            className = 'layer-total';
           }
-          if (sparqlistData.source === 'ncbn.jpn') {
-            className = 'layer1-haschild';
-          }
-        }
-        sparqlistData.class_name = className
+          if (
+            ![
+              'gem_j_wga',
+              'jga_ngs',
+              'jga_snp',
+              'tommo',
+              'ncbn',
+              'gnomad_genomes',
+              'gnomad_exomes'
+            ].includes(frequencyData.source)
+          ) {
+            if (!frequencyData.layer2) {
+              className = 'layer1-nonchild';
+            } else {
+              className = 'layer2';
 
-        // クラス名によって表示するlayerの変更
-        let label = ""
-        switch (className) {
-          case "layer-none":
-          case "layer-total":
-          case "sub-layer":
-          case "layer1-haschild":
-          case "layer1-nonchild":
-            label = sparqlistData.layer1
-            break;
-          case 'layer2':
-          case 'layer2-nonchild':
-            label = sparqlistData.layer2
-            break;
-          case 'layer3':
-            label = sparqlistData.layer3
-            break;
-          default:
-            break;
-        }
-        sparqlistData.label = label
-
-
-        // JGA-SNPの場合 見出しのdataがないため追加
-        if (sparqlistData.dataset === 'JGA-SNP') {
-          if (currentLayer1 !== sparqlistData.layer1) {
-            if (sparqlistData.layer1 !== 'Total') {
-              let data = {
-                dataset: sparqlistData.dataset,
-                label: sparqlistData.layer1,
-                layer1: sparqlistData.layer1,
-                class_name: 'sub-layer',
-                source: `${sparqlistData.dataset}-title `
-              };
-              resultObject = [...resultObject, data];
+              if (frequencyData.dataset !== 'JGA-SNP') {
+                className = 'layer2-nonchild';
+              }
+              if (frequencyData.layer3) {
+                className = 'layer3';
+              }
+            }
+            if (frequencyData.source === 'ncbn.jpn') {
+              className = 'layer1-haschild';
             }
           }
-          currentLayer1 = sparqlistData.layer1;
-        }
+          frequencyData.class_name = className
 
-        resultObject = [...resultObject, sparqlistData];
+          // クラス名によって表示するlayerの変更
+          let label = ""
+          switch (className) {
+            case "layer-none":
+            case "layer-total":
+            case "sub-layer":
+            case "layer1-haschild":
+            case "layer1-nonchild":
+              label = frequencyData.layer1
+              break;
+            case 'layer2':
+            case 'layer2-nonchild':
+              label = frequencyData.layer2
+              break;
+            case 'layer3':
+              label = frequencyData.layer3
+              break;
+            default:
+              break;
+          }
+          frequencyData.label = label
+
+
+          // JGA-SNPの場合 見出しのdataがないため追加
+          if (frequencyData.dataset === 'JGA-SNP') {
+            if (currentLayer1 !== frequencyData.layer1) {
+              if (frequencyData.layer1 !== 'Total') {
+                let data = {
+                  dataset: frequencyData.dataset,
+                  label: frequencyData.layer1,
+                  layer1: frequencyData.layer1,
+                  class_name: 'sub-layer',
+                  source: `${frequencyData.dataset}-title `
+                };
+                resultObject = [...resultObject, data];
+              }
+            }
+            currentLayer1 = frequencyData.layer1;
+          }
+
+          resultObject = [...resultObject, frequencyData];
+        }
       })
-
-      // バインディングをソースのインデックス順にソート
-      // sortBy(sparqlistDatasets, x => datasets.find(y => y.source === x.source)?.idx);
 
       // 結果をレンダリング
       this.renderTemplate({
