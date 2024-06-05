@@ -535,7 +535,7 @@ ul {
     box-shadow: 0 0 0 1px $COLOR_DATASET_JGA;
   }
 
-  &[data-dataset="tommo"],&[data-dataset="ToMMo"] {
+  &[data-dataset="tommo"],&[data-dataset^="ToMMo"] {
     background-color: $COLOR_DATASET_TOMMO;
     box-shadow: 0 0 0 1px $COLOR_DATASET_TOMMO;
   }
