@@ -1,7 +1,6 @@
 import Stanza from "togostanza/stanza";
 
-// import {DATASETS} from "@/lib/constants";
-import { DATASETS } from "@/lib/constantsTest";
+import { DATASETS } from "@/lib/constants";
 import { frequency } from "@/lib/display";
 
 export default class VariantSummary extends Stanza {
@@ -11,7 +10,7 @@ export default class VariantSummary extends Stanza {
     // database icon
     this.importWebFontCSS(new URL("./assets/fontello.css", import.meta.url));
 
-    // const assembly = this.params.assembly;
+    const assembly = this.params.assembly;
     const { "data-url": urlBase, tgv_id } = this.params;
     const dataURL = `${urlBase}search?term=${tgv_id}&expand_dataset`;
     let resultObject = [];
@@ -41,15 +40,14 @@ export default class VariantSummary extends Stanza {
         const frequencyData = frequenciesDatasets.find(x => x.source === datum.source);
 
         if (frequencyData) {
-          const ac = parseInt(frequencyData?.ac);
-          const freq = parseFloat(frequencyData?.af);
+          const ac = parseInt(frequencyData.ac);
+          const freq = parseFloat(frequencyData.af);
 
           // 数値をロケール形式の文字列に変換する関数
           const localeString = (v) => v ? parseInt(v).toLocaleString() : null;
 
           // バインディングにデータセット情報を追加
-          frequencyData.dataset = datum.dataset;
-          // sparqlistData.dataset = dataset?.dataset(assembly);
+          frequencyData.dataset = datum.dataset(assembly);
           frequencyData.layer1 = datum.layer1;
           frequencyData.layer2 = datum.layer2;
           frequencyData.layer3 = datum.layer3;
