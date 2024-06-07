@@ -22,6 +22,12 @@
       "stanza:required": true
     },
     {
+      "stanza:key": "assembly",
+      "stanza:example": "GRCh38",
+      "stanza:description": "assembly: \"GRCh37\" or \"GRCh38\"",
+      "stanza:required": true
+    },
+    {
       "stanza:key": "sparqlist",
       "stanza:example": "https://grch38.togovar.org/sparqlist",
       "stanza:description": "SPARQList URL",

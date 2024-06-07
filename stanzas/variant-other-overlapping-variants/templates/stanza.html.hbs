@@ -7,8 +7,9 @@
       <tr>
         <th>TogoVar ID</th>
         <th>RefSNP ID</th>
-        <th>Variant type</th>
+        <th>Position</th>
         <th>Ref / Alt</th>
+        <th>Variant type</th>
         <th>Alt frequency</th>
         <th>Consequence</th>
         <th>SIFT</th>
@@ -29,13 +30,19 @@
               {{dbsnp}}
             </a>
           </td>
-          <td class="type">{{type}}</td>
+          <td class="position">
+            <div class="chromosome-position">
+              <div class="chromosome">{{chromosome}}</div>
+              <div class="coordinate">{{position}}</div>
+            </div>
+          </td>
           <td>
             <div class="ref-alt">
               <span class='ref' data-sum='{{ref_length}}'>{{ref}}</span><span class='arrow'></span><span
                 class='alt' data-sum='{{alt_length}}'>{{alt}}</span>
             </div>
           </td>
+          <td class="type">{{type}}</td>
           <td>
             <div class="frequency-graph">
               {{#each frequencies}}

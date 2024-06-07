@@ -23,4 +23,21 @@
   &.clinical_significance_wrapper {
     position: relative;
   }
+
+  &.position {
+    .chromosome-position {
+      & > .chromosome {
+        display: inline;
+        font-weight: 700;
+
+        &:after {
+          content: ": ";
+        }
+      }
+
+      & > .coordinate {
+        display: inline;
+      }
+    }
+  }
 }

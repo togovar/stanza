@@ -21,7 +21,7 @@ export default class VariantSummary extends Stanza {
     }).then(json => {
       let records = json.data ? json.data.filter(x => x.id !== this.params.tgv_id) : [];
 
-      records.forEach(record => transformRecord(record));
+      records.forEach(record => transformRecord(record, this.params.assembly));
 
       return {result: {data: records}};
     }).catch(e => ({error: {message: e.message}}));
