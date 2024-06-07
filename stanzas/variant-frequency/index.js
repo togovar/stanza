@@ -32,12 +32,12 @@ export default class VariantSummary extends Stanza {
 
       // レスポンスを JSON 形式でパース
       const responseDatasets = await response.json();
-      const frequenciesDatasets = responseDatasets.data[0].frequencies
+      const frequenciesDatasets = responseDatasets.data[0]?.frequencies
       const datasets = Object.values(DATASETS);
 
       // バインディングを処理
       datasets.forEach(datum => {
-        const frequencyData = frequenciesDatasets.find(x => x.source === datum.source);
+        const frequencyData = frequenciesDatasets?.find(x => x.source === datum.source);
 
         if (frequencyData) {
           const ac = parseInt(frequencyData.ac);
