@@ -202,6 +202,10 @@
             color: $COLOR_SIGN_SAFE;
           }
         }
+
+        &.nodata-message {
+          text-align: center;
+        }
       }
     }
   }

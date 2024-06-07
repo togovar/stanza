@@ -24,50 +24,54 @@
       </thead>
 
       <tbody>
-        {{#each resultObject}}
-          <tr data-dataset='{{dataset}}' class='{{class_name}}'>
-            <td
-              class='dataset {{class_name}}'
-              id='{{source}}'
-              data-dataset='{{source}}'
-            >
-              <div
-                class='dataset-icon'
+        {{#if resultObject}}
+          {{#each resultObject}}
+            <tr data-dataset='{{dataset}}' class='{{class_name}}'>
+              <td
+                class='dataset {{class_name}}'
+                id='{{source}}'
                 data-dataset='{{source}}'
-              ></div>{{dataset}}
-            </td>
-            <td
-              class='population {{class_name}}'
-              data-dataset='{{dataset}}'
-              data-layer1='{{layer1}}'
-              data-layer2='{{layer2}}'
-            >
-              {{label}}
-            </td>
-            <td class='num_alt_alleles'>{{ac}}<span class='slash'>
-                {{#if ac}}
-                  /
-                {{/if}}</span></td>
-            <td class='num_alleles'>{{an}}</td>
-            <td class='frequency'>{{frequency}}</td>
-            <td class='frequency-graph'>
-              {{#if level}}
-                <div class='allele-frequency-graph'>
-                  <span
-                    class='dataset'
-                    data-frequency='{{level}}'
-                    data-dataset='{{dataset}}'
-                  ></span>
-                </div>
-              {{/if}}
-            </td>
-            <td class='num_genotype_alt_homo'>{{aac}}</td>
-            <td class='num_genotype_hetero'>{{arc}}</td>
-            <td class='num_genotype_ref_homo'>{{rrc}}</td>
-            <td class='filter' data-filter='{{filter}}'>{{filter}}</td>
-            <td class='quality'>{{quality}}</td>
-          </tr>
-        {{/each}}
+              >
+                <div
+                  class='dataset-icon'
+                  data-dataset='{{source}}'
+                ></div>{{dataset}}
+              </td>
+              <td
+                class='population {{class_name}}'
+                data-dataset='{{dataset}}'
+                data-layer1='{{layer1}}'
+                data-layer2='{{layer2}}'
+              >
+                {{label}}
+              </td>
+              <td class='num_alt_alleles'>{{ac}}<span class='slash'>
+                  {{#if ac}}
+                    /
+                  {{/if}}</span></td>
+              <td class='num_alleles'>{{an}}</td>
+              <td class='frequency'>{{frequency}}</td>
+              <td class='frequency-graph'>
+                {{#if level}}
+                  <div class='allele-frequency-graph'>
+                    <span
+                      class='dataset'
+                      data-frequency='{{level}}'
+                      data-dataset='{{dataset}}'
+                    ></span>
+                  </div>
+                {{/if}}
+              </td>
+              <td class='num_genotype_alt_homo'>{{aac}}</td>
+              <td class='num_genotype_hetero'>{{arc}}</td>
+              <td class='num_genotype_ref_homo'>{{rrc}}</td>
+              <td class='filter' data-filter='{{filter}}'>{{filter}}</td>
+              <td class='quality'>{{quality}}</td>
+            </tr>
+          {{/each}}
+        {{else}}
+          <tr><td colspan="11" class="nodata-message">{{../params.no_data_message}}</td></tr>
+        {{/if}}
       </tbody>
     </table>
   {{/with}}
