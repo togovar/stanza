@@ -28,6 +28,11 @@
       "stanza:required": true
     },
     {
+      "stanza:key": "data-url",
+      "stanza:example": "https://stg-grch38.togovar.org",
+      "stanza:description": "URL"
+    },
+    {
       "stanza:key": "no_data_message",
       "stanza:example": "No data found.",
       "stanza:description": "Message displayed when there are zero data"
