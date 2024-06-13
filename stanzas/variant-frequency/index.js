@@ -10,9 +10,9 @@ export default class VariantSummary extends Stanza {
     // database icon
     this.importWebFontCSS(new URL("./assets/fontello.css", import.meta.url));
 
-    const assembly = this.params.assembly;
-    const { "data-url": urlBase, tgv_id } = this.params;
-    const dataURL = `${urlBase}search?quality=0&term=${tgv_id}&expand_dataset`;
+    const { assembly, tgv_id } = this.params;
+    const assemblyNum = assembly.match(/\d+/)
+    const dataURL = `https://stg-grch${assemblyNum}.togovar.org/search?quality=0&term=${tgv_id}&expand_dataset`;
     let resultObject = [];
     let currentLayer1;
 
