@@ -12,7 +12,7 @@ export default class VariantSummary extends Stanza {
 
     const assembly = this.params.assembly;
     const { "data-url": urlBase, tgv_id } = this.params;
-    const dataURL = `${urlBase}search?term=${tgv_id}&expand_dataset`;
+    const dataURL = `${urlBase}search?quality=0&term=${tgv_id}&expand_dataset`;
     let resultObject = [];
     let currentLayer1;
 
@@ -37,25 +37,31 @@ export default class VariantSummary extends Stanza {
 
       // バインディングを処理
       datasets.forEach(datum => {
-        const frequencyData = frequenciesDatasets?.find(x => x.source === datum.source);
+        const frequencyData = frequenciesDatasets?.find(x => x.source === datum.value);
 
         if (frequencyData) {
           const ac = parseInt(frequencyData.ac);
           const freq = parseFloat(frequencyData.af);
 
           // 数値をロケール形式の文字列に変換する関数
-          const localeString = (v) => v ? parseInt(v).toLocaleString() : null;
+          const localeString = (v) => v !== undefined ? parseInt(v).toLocaleString() : null;
 
           // バインディングにデータセット情報を追加
           frequencyData.dataset = datum.dataset(assembly);
           frequencyData.layer1 = datum.layer1;
           frequencyData.layer2 = datum.layer2;
           frequencyData.layer3 = datum.layer3;
-          frequencyData.ac = localeString(frequencyData?.ac);
-          frequencyData.an = localeString(frequencyData?.an);
-          frequencyData.aac = localeString(frequencyData?.aac);
-          frequencyData.arc = localeString(frequencyData?.arc);
-          frequencyData.rrc = localeString(frequencyData?.rrc);
+
+          // Alt
+          frequencyData.ac = localeString(frequencyData.ac);
+          // Total
+          frequencyData.an = localeString(frequencyData.an);
+          // Alt/Alt
+          frequencyData.aac = localeString(frequencyData.aac);
+          // Alt/Ref
+          frequencyData.arc = localeString(frequencyData.arc);
+          // Ref/Ref
+          frequencyData.rrc = localeString(frequencyData.rrc);
 
           // frequencyの情報をバインディングに追加
           Object.assign(frequencyData, frequency(ac, freq));
