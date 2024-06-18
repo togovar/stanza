@@ -29,7 +29,7 @@
     },
     {
       "stanza:key": "data-url",
-      "stanza:example": "https://stg-grch38.togovar.org",
+      "stanza:example": "https://grch38.togovar.org",
       "stanza:description": "URL"
     },
     {
