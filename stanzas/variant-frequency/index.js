@@ -14,6 +14,7 @@ export default class VariantSummary extends Stanza {
     const dataURL = `${urlBase}/search?quality=0&term=${tgv_id}&expand_dataset`;
     let resultObject = [];
     let currentLayer1;
+    let hasHemizygote = false;
 
     try {
       // dataURL に GET リクエストを送信
@@ -61,6 +62,10 @@ export default class VariantSummary extends Stanza {
           frequencyData.arc = localeString(frequencyData.arc);
           // Ref/Ref
           frequencyData.rrc = localeString(frequencyData.rrc);
+
+          if (!hasHemizygote &&(frequencyData.hemi_alt || frequencyData.hemi_ref)) {
+            hasHemizygote = true;
+          }
 
           // frequencyの情報をバインディングに追加
           Object.assign(frequencyData, frequency(ac, freq));
@@ -148,7 +153,8 @@ export default class VariantSummary extends Stanza {
         template: "stanza.html.hbs",
         parameters: {
           params: this.params,
-          result: { resultObject }
+          result: { resultObject },
+          hasHemizygote,
         }
       });
 
