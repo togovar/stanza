@@ -1,0 +1,53 @@
+{
+  "@context": {
+    "stanza": "http://togostanza.org/resource/stanza#"
+  },
+  "@id": "gene-protein-structure",
+  "stanza:label": "Gene / Protein structure",
+  "stanza:definition": "Display variant position in protein structures",
+  "stanza:type": "Stanza",
+  "stanza:display": "Other",
+  "stanza:provider": "Togovar",
+  "stanza:license": "MIT",
+  "stanza:author": "Yuki Moriya",
+  "stanza:contributor": [],
+  "stanza:created": "2024-09-26",
+  "stanza:updated": "2024-09-26",
+  "stanza:parameter": [
+    {
+      "stanza:key": "hgnc_id",
+      "stanza:example": "404",
+      "stanza:description": "HGNC ID",
+      "stanza:required": true
+    },
+    {
+      "stanza:key": "sparqlist",
+      "stanza:example": "https://grch38.togovar.org/sparqlist",
+      "stanza:description": "SPARQList URL",
+      "stanza:required": false
+    },
+    {
+      "stanza:key": "molmil",
+      "stanza:example": "https://sparql-support.dbcls.jp/molmil/",
+      "stanza:description": "Molmil embedding URL",
+      "stanza:required": false
+    }
+  ],
+  "stanza:menu-placement": "bottom-right",
+  "stanza:style": [
+    {
+      "stanza:key": "--togostanza-iframe-width",
+      "stanza:type": "number",
+      "stanza:default": 600,
+      "stanza:description": "Width for entire stanza"
+    },
+    {
+      "stanza:key": "--togostanza-iframe-height",
+      "stanza:type": "number",
+      "stanza:default": 600,
+      "stanza:description": "Canvas height"
+    }
+  ],
+  "stanza:incomingEvent": [],
+  "stanza:outgoingEvent": []
+}
