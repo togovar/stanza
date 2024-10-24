@@ -55,8 +55,11 @@ export default class GeneStructure extends Stanza {
 
     const pdb_refine_text = (pdb_j) => {
       let url = "https://pdbj.org/mine/resources/";
-      if (pdb_j.pdb == "AlphaFold") url = "https://alphafold.ebi.ac.uk/entry/";
-      let info = ["<a href='" + url + pdb_j.uniprot + "'>" + pdb_j.pdb + "</a>"];
+      let info = ["<a href='" + url + pdb_j.pdb + "'>" + pdb_j.pdb + "</a>"];
+      if (pdb_j.pdb == "AlphaFold") {
+        url = "https://alphafold.ebi.ac.uk/entry/";
+        info = ["<a href='" + url + pdb_j.uniprot + "'>" + pdb_j.pdb + "</a>"];
+      }
       if (pdb_j.resolution) info.push("Resolution: " + pdb_j.resolution + " Å");
       if (pdb_j.rfree) info.push("R-free: " + pdb_j.rfree);
       if (pdb_j.rwork) info.push("Rwork: " + pdb_j.rwork);
