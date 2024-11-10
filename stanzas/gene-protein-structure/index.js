@@ -2,7 +2,7 @@ import Stanza from 'togostanza/stanza';
 
 export default class GeneStructure extends Stanza {
   async render() {
-    const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/gene_pdb_mappping?hgnc_id=${this.params.hgnc_id}`);
+    const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/gene_pdb_mapping?hgnc_id=${this.params.hgnc_id}`);
     
     const res = await fetch(sparqlist, {method: "get", headers: {"Accept": "application/json"}}).then(res => res.json());
     
