@@ -11,6 +11,7 @@
     "togostanza": "3.0.0-beta.55"
   },
   "devDependencies": {
+    "d3-hierarchy": "^3.1.2",
     "eslint": "^8.13.0",
     "eslint-config-prettier": "^8.5.0",
     "postcss-cssnext": "^3.1.1",
