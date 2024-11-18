@@ -1,0 +1,42 @@
+{{#with error}}
+  <div class='alert alert-danger'>{{message}}</div>
+{{else}}
+  <table id='target' class='table'>
+    <thead>
+      <tr>
+        <th>tgvid</th>
+        <th>rs</th>
+        <th>position</th>
+        <th>Title</th>
+        <th>Clinical significance</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {{#each result}}
+        <tr>
+          <td class='tgvid'>
+            <a href='/variant/{{tgvid}}'>{{tgvid}}</a>
+          </td>
+          <td class='rs'>
+            <a href='https://www.ncbi.nlm.nih.gov/snp/{{rs}}'>{{rs}}</a>
+          </td>
+          <td class='position'>{{position}}</td>
+          <td class='title'>
+            <a href='{{xref}}'>{{title}}</a>
+          </td>
+          <td class='clinical-significance-col'>
+            <span
+              class='clinical-significance-full'
+              data-sign='{{interpretation_class}}'
+            >{{interpretation}}</span>
+          </td>
+        </tr>
+      {{else}}
+        <tr>
+          <td class='text-center' colspan='3'>No data</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+{{/with}}
