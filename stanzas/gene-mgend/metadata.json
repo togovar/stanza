@@ -1,0 +1,33 @@
+{
+  "@context": {
+    "stanza": "http://togostanza.org/resource/stanza#"
+  },
+  "@id": "gene-mgend",
+  "stanza:label": "Gene / MGeND",
+  "stanza:definition": "Display MGeND annotations of the gene",
+  "stanza:type": "Stanza",
+  "stanza:display": "Table",
+  "stanza:provider": "TogoVar",
+  "stanza:license": "MIT",
+  "stanza:author": "PENQE",
+  "stanza:address": "",
+  "stanza:contributor": [],
+  "stanza:created": "2024-11-14",
+  "stanza:updated": "2024-11-14",
+  "stanza:parameter": [
+    {
+      "stanza:key": "terms",
+      "stanza:type": "number",
+      "stanza:example": 6298,
+      "stanza:description": "TogoVar terms",
+      "stanza:required": true
+    },
+    {
+      "stanza:key": "data-url",
+      "stanza:example": "https://stg-grch38.togovar.org/api/search/variant",
+      "stanza:description": "URL"
+    }
+  ],
+  "stanza:about-link-placement": "bottom-right",
+  "stanza:style": []
+}
