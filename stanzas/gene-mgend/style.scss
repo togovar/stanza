@@ -1,5 +1,10 @@
 @use "@/assets/css/common";
 
+main {
+  max-height: calc(var(--togostanza-canvas-height) * 1px);
+  overflow: scroll;
+}
+
 .table > tbody > tr {
   > td {
     vertical-align: baseline;
