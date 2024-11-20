@@ -33,7 +33,7 @@
     {
       "stanza:key": "--togostanza-canvas-height",
       "stanza:type": "number",
-      "stanza:default": 300,
+      "stanza:default": 500,
       "stanza:description": "Canvas height"
     }
   ]
