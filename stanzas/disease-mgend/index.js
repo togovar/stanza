@@ -66,14 +66,14 @@ export default class DiseaseMGeND extends Stanza {
 
     // データのバインディングを整形
     function extractConditions(data) {
-      const result = [];
+      const results = [];
 
       data.data.forEach(item => {
         const significance = item.significance;
         significance.forEach(entry => {
           if (entry.conditions && Array.isArray(entry.conditions)) {
             if (entry.source === "mgend") {
-              result.push({
+              results.push({
                 tgvid: item.id,
                 rs: item.existing_variations,
                 position: `chr${item.chromosome}:${item.position}`,
@@ -87,8 +87,7 @@ export default class DiseaseMGeND extends Stanza {
         });
       });
 
-
-      return result;
+      return sortAndGroupByInterpretationClass(results)
     }
 
     function getPropertyNameByKey(key) {
@@ -96,6 +95,34 @@ export default class DiseaseMGeND extends Stanza {
         ([, value]) => value.key === key
       );
       return entry ? entry[0] : null; // プロパティ名（キー名）を返す
+    }
+
+    function sortAndGroupByInterpretationClass(results) {
+      // グループ化
+      const grouped = results.reduce((acc, item) => {
+        const key = item.interpretation_class;
+        if (!acc[key]) {
+          acc[key] = [];
+        }
+        acc[key].push(item);
+        return acc;
+      }, {});
+
+      // 各グループを大文字・小文字で並び替え
+      Object.keys(grouped).forEach(key => {
+        grouped[key] = grouped[key]
+          .sort((a, b) => {
+            const titleA = a.title;
+            const titleB = b.title;
+            return titleA.localeCompare(titleB, undefined, { sensitivity: "base" });
+          })
+          .filter((item, index, array) => {
+            return array.findIndex(i => i.tgvid === item.tgvid) === index;
+          });
+      });
+
+      // グループ化を解除して並び替えたデータを平坦化
+      return Object.values(grouped).flat();
     }
   }
 }

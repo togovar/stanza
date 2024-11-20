@@ -66,7 +66,7 @@ export default class GeneMGeND extends Stanza {
 
     // データのバインディングを整形
     function extractConditions(data) {
-      const result = [];
+      const results = [];
 
       data.data.forEach(item => {
         const significance = item.significance;
@@ -85,13 +85,14 @@ export default class GeneMGeND extends Stanza {
               }
 
               if (entry.source === "mgend") {
-                result.push({
+                results.push({
                   tgvid: item.id,
                   rs: item.existing_variations,
                   position: `chr${item.chromosome}:${item.position}`,
                   title: item.external_link.mgend[0].title,
                   xref: item.external_link.mgend[0].xref,
                   conditionHtml: conditionHtml,
+                  name: condition.name || "others",
                   medgen: condition.medgen,
                   interpretation_class: entry.interpretations[0],
                   interpretation: getPropertyNameByKey(entry.interpretations[0]),
@@ -103,7 +104,7 @@ export default class GeneMGeND extends Stanza {
       });
 
 
-      return result;
+      return sortAndGroupByInterpretationClass(results);
     }
 
     function getPropertyNameByKey(key) {
@@ -111,6 +112,31 @@ export default class GeneMGeND extends Stanza {
         ([, value]) => value.key === key
       );
       return entry ? entry[0] : null; // プロパティ名（キー名）を返す
+    }
+
+    function sortAndGroupByInterpretationClass(results) {
+      // グループ化
+      const grouped = results.reduce((acc, item) => {
+        const key = item.interpretation_class;
+        if (!acc[key]) {
+          acc[key] = [];
+        }
+        acc[key].push(item);
+        return acc;
+      }, {});
+
+      // 各グループを大文字・小文字で並び替え
+      Object.keys(grouped).forEach(key => {
+        grouped[key] = grouped[key]
+          .sort((a, b) => {
+            const nameA = a.name;
+            const nameB = b.name;
+            return nameA.localeCompare(nameB, undefined, { sensitivity: "base" });
+          })
+      });
+
+      // グループ化を解除して並び替えたデータを平坦化
+      return Object.values(grouped).flat();
     }
   }
 }
