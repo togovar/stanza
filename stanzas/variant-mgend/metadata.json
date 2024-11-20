@@ -17,7 +17,7 @@
   "stanza:parameter": [
     {
       "stanza:key": "tgv_id",
-      "stanza:example": "tgv245211477",
+      "stanza:example": "tgv6784522",
       "stanza:description": "TogoVar ID",
       "stanza:required": true
     },

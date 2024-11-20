@@ -54,13 +54,9 @@
     border-bottom: 1px solid #dee2e6;
 
     >tr {
-
-      &.sub-layer,
-      &.layer1-nonchild,
-      &.layer1-haschild,
-      &.layer2,
-      &.layer2-nonchild,
-      &.layer3 {
+      &[data-depth="1"],
+      &[data-depth="2"],
+      &[data-depth="3"] {
         display: none;
       }
 
@@ -82,50 +78,42 @@
           white-space: nowrap;
           padding-left: 14px;
 
-          &.layer-none {
+          &[data-depth="0"][data-has-child="false"] {
             border-top: 1px solid #dee2e6;
           }
 
-          &.layer-total {
+          &[data-depth="0"][data-has-child="true"] {
             border-top: 1px solid #dee2e6;
             border-bottom: none;
           }
 
-          &.sub-layer,
-          &.layer1-haschild,
-          &.layer1-nonchild,
-          &.layer2,
-          &.layer2-nonchild,
-          &.layer3 {
+          &[data-depth="1"],
+          &[data-depth="2"],
+          &[data-depth="3"] {
             visibility: hidden;
             border: none;
           }
         }
 
         &.population {
-          &.layer-total {
+          &[data-depth="0"][data-has-child="true"] {
             padding-left: 12px;
           }
-
-          &.sub-layer,
-          &.layer1-haschild,
-          &.layer1-nonchild {
+          &[data-depth="1"] {
             padding-left: 28px;
           }
 
-          &.layer2,
-          &.layer2-nonchild {
+          &[data-depth="2"] {
             padding-left: 44px;
           }
 
-          &.layer3 {
+          &[data-depth="3"] {
             padding-left: 60px;
           }
 
-          &.layer-total,
-          &.sub-layer,
-          &.layer1-haschild,
-          &.layer2 {
+          &[data-has-child="true"] {
+            cursor: pointer;
+
             &::before {
               content: '';
               position: relative;
@@ -147,7 +135,6 @@
                 transform: rotate(45deg);
               }
             }
-
           }
         }
 

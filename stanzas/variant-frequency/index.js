@@ -14,7 +14,6 @@ export default class VariantSummary extends Stanza {
     const dataURL = `${urlBase}/search?quality=0&term=${tgv_id}&expand_dataset`;
     let resultObject = [];
     let currentLayer1;
-    let currentLayer2;
     let hasHemizygote = false;
     let uniqueIdCounter = 0;
 
@@ -38,16 +37,15 @@ export default class VariantSummary extends Stanza {
     function prepareData() {
       const data = DATASETS
       const dataWithIds = addIdsToDataNodes(data);
-
       const hierarchyData = hierarchy({
         id: '-1',
         label: 'root',
         value: '',
         children: dataWithIds,
       });
-
       return hierarchyData;
     }
+    const preparedDatasets = Object.values(prepareData().data.children);
 
     try {
       // dataURL に GET リクエストを送信
@@ -66,217 +64,6 @@ export default class VariantSummary extends Stanza {
       // レスポンスを JSON 形式でパース
       const responseDatasets = await response.json();
       const frequenciesDatasets = responseDatasets.data[0]?.frequencies
-      const datasets = Object.values(prepareData().data.children);
-      console.log("frequenciesDatasets:", frequenciesDatasets);
-      frequenciesDatasets.forEach((data) => { console.log(data.source) });
-      // frequenciesDatasets.forEach((data) => { console.log(data.source) });
-      // const frequenciesDatasets = [
-      //   {
-      //     "ac": "21",
-      //     "af": 0.00023799999326001853,
-      //     "an": "88,412",
-      //     "filter": [
-      //       "PASS"
-      //     ],
-      //     "quality": 4889.330078125,
-      //     "source": "tommo",
-      //     "dataset": "ToMMo 54KJPN",
-      //     "label": "Japanese",
-      //     "aac": null,
-      //     "arc": null,
-      //     "rrc": null,
-      //     "frequency": "2.380e-4",
-      //     "count": 21,
-      //     "level": "<0.001",
-      //     "class_name": "layer-none"
-      //   },
-      //   {
-      //     "ac": "1",
-      //     "af": 0.000040643801185069606,
-      //     "an": "24,604",
-      //     "filter": [
-      //       "PASS"
-      //     ],
-      //     "source": "gnomad_genomes.afr",
-      //     "dataset": "gnomAD Genomes",
-      //     "label": "African/African American",
-      //     "aac": null,
-      //     "arc": null,
-      //     "rrc": null,
-      //     "frequency": "4.064e-5",
-      //     "count": 1,
-      //     "level": "singleton",
-      //     "class_name": "layer1-nonchild"
-      //   },
-      //   {
-      //     "ac": "6",
-      //     "af": 0.0000651239970466122,
-      //     "an": "92,132",
-      //     "filter": [
-      //       "PASS"
-      //     ],
-      //     "source": "gnomad_genomes",
-      //     "dataset": "gnomAD Genomes",
-      //     "label": "Total",
-      //     "aac": null,
-      //     "arc": null,
-      //     "rrc": null,
-      //     "frequency": "6.512e-5",
-      //     "count": 6,
-      //     "level": "<0.0001",
-      //     "class_name": "layer-total"
-      //   },
-      //   {
-      //     "ac": "0",
-      //     "af": 0,
-      //     "an": "506",
-      //     "filter": [
-      //       "PASS"
-      //     ],
-      //     "source": "gnomad_genomes.ami",
-      //     "dataset": "gnomAD Genomes",
-      //     "label": "Amish",
-      //     "aac": null,
-      //     "arc": null,
-      //     "rrc": null,
-      //     "frequency": "0.0",
-      //     "count": 0,
-      //     "level": "monomorphic",
-      //     "class_name": "layer1-nonchild"
-      //   },
-      //   {
-      //     "ac": "0",
-      //     "af": 0,
-      //     "an": "2,954",
-      //     "filter": [
-      //       "NotHighConfidenceRegion"
-      //     ],
-      //     "quality": 125.5,
-      //     "source": "gem_j_wga",
-      //     "dataset": "GEM-J WGA",
-      //     "label": "Japanese",
-      //     "aac": null,
-      //     "arc": null,
-      //     "rrc": null,
-      //     "frequency": "0.0",
-      //     "count": 0,
-      //     "level": "monomorphic",
-      //     "class_name": "layer-none"
-      //   },
-      //   {
-      //     "aac": "1",
-      //     "ac": "2",
-      //     "af": 0.05000000074505806,
-      //     "an": "40",
-      //     "aoc": 0,
-      //     "arc": "0",
-      //     "filter": [
-      //       "PASS"
-      //     ],
-      //     "hac": 0,
-      //     "hoc": 0,
-      //     "ooc": 0,
-      //     "roc": 0,
-      //     "rrc": "19",
-      //     "source": "jga_wgs",
-      //     "dataset": "JGA-WGS",
-      //     "label": "Total",
-      //     "frequency": "0.050",
-      //     "count": 2,
-      //     "level": "<0.5",
-      //     "class_name": "total-no-children"
-      //   },
-      //   {
-      //     "aac": 0,
-      //     "ac": 2,
-      //     "af": 0.0480000004172325,
-      //     "an": 42,
-      //     "aoc": 0,
-      //     "arc": 2,
-      //     "filter": [
-      //       "PASS"
-      //     ],
-      //     "hac": 0,
-      //     "hoc": 0,
-      //     "hrc": 0,
-      //     "ooc": 0,
-      //     "quality": 2385.11010742188,
-      //     "roc": 0,
-      //     "rrc": 19,
-      //     "source": "jga_wgs.jgad000670"
-      //   }
-      // ]
-      console.log("datasets", datasets);
-
-      /** Finds the top-level parent of a given node ID in a nested data structure.
-      * @param {Array<Object>} data - The nested data structure to search.
-      * @param {string} id - The ID of the node to find the top-level parent for.
-      * @returns {Object|null} The top-level parent node or null if not found. */
-      const findTopParent = (data, targetId) => {
-        // 内部で再帰的に探索する関数
-        function recursiveSearch(nodes, targetId, parent = null) {
-          for (const node of nodes) {
-            if (node.id === targetId) {
-              // ターゲットIDが見つかったら、トップレベルの親を返す
-              return parent || node;
-            }
-            if (node.children) {
-              const found = recursiveSearch(node.children, targetId, parent || node);
-              if (found) {
-                return found;
-              }
-            }
-          }
-          return null;
-        }
-        return recursiveSearch(data, targetId);
-      }
-
-      /** Finds the direct parent of a given node ID in a nested data structure.
-      * @param {Array<Object>} data - The nested data structure to search.
-      * @param {string} id - The ID of the node to find the parent for.
-      * @returns {Object|null} The parent node or null if not found. */
-      const findParent = (data, id) => {
-        function recursiveSearch(nodes, targetId, parent = null) {
-          for (const node of nodes) {
-            if (node.id === targetId) {
-              // ターゲットIDが見つかったら、そのノードの親を返す
-              return parent;
-            }
-            if (node.children) {
-              const found = recursiveSearch(node.children, targetId, node);
-              if (found) {
-                return found;
-              }
-            }
-          }
-          return null;
-        }
-        return recursiveSearch(data, id);
-      }
-
-      /** Counts the number of parents for a given node ID in a nested data structure.
-     * @param {Array<Object>} data - The nested data structure to search.
-     * @param {string} id - The ID of the node to count the parents for.
-     * @returns {number|null} The number of parent nodes or null if not found. */
-      const countParents = (data, id) => {
-        function recursiveSearch(nodes, targetId, parentCount = 0) {
-          for (const node of nodes) {
-            if (node.id === targetId) {
-              // ターゲットIDが見つかったら、親の数を返す
-              return parentCount;
-            }
-            if (node.children) {
-              const found = recursiveSearch(node.children, targetId, parentCount + 1);
-              if (found !== null) {
-                return found;
-              }
-            }
-          }
-          return null;
-        }
-        return recursiveSearch(data, id);
-      }
 
       /** Searches for and processes data, updating frequency datasets and result objects.
       * @param {Object} datum - The current dataset object being processed. */
@@ -284,8 +71,17 @@ export default class VariantSummary extends Stanza {
         // 一致するデータを探す
         const frequencyData = frequenciesDatasets?.find(x => x.source === datum.value);
         if (frequencyData) {
+          // ID
+          frequencyData.id = datum.id
           // 深さ
           frequencyData.depth = datum.depth;
+          // 親ID
+          if (datum.depth > 0) {
+            frequencyData.parent_id = findParent(preparedDatasets, datum.id).id;
+          }
+          if (datum.depth > 1) {
+            frequencyData.grandparent_id = findParent(preparedDatasets, findParent(preparedDatasets, datum.id).id).id;
+          }
 
           // バインディングにデータセット情報を追加
           if (datum.value === 'tommo') {
@@ -298,9 +94,10 @@ export default class VariantSummary extends Stanza {
                 break;
             }
           } else {
-            frequencyData.dataset = findTopParent(datasets, datum.id).label
+            frequencyData.dataset = findTopParent(preparedDatasets, datum.id).label
           }
 
+          // Population label
           if (["gem_j_wga", "jga_wes", "tommo", "hgvd"].includes(datum.value)) {
             frequencyData.label = "Japanese";
           } else if (["jga_wgs", "jga_snp", "ncbn", "gnomad_genomes", "gnomad_exomes"].includes(datum.value)) {
@@ -331,77 +128,21 @@ export default class VariantSummary extends Stanza {
           const freq = parseFloat(frequencyData.af);
           Object.assign(frequencyData, frequency(ac, freq));
 
-          // 開閉を行うtoggleを作成するため、クラスを設定
-          let className = 'layer-none';
-          if (frequencyData.label === 'Total') {
-            className = 'layer-total';
-          }
-          if (
-            ![
-              'gem_j_wga',
-              'jga_wgs',
-              'jga_wes',
-              'jga_snp',
-              'tommo',
-              'ncbn',
-              'gnomad_genomes',
-              'gnomad_exomes'
-            ].includes(frequencyData.source)
-          ) {
-            className = 'layer1-nonchild';
-
-            if (frequencyData.dataset === 'JGA-SNP') {
-              if (countParents(datasets, datum.id) === 2) {
-                className = 'layer2';
-              }
-              else {
-                className = 'layer3';
-              }
-            }
-
-            if (frequencyData.dataset === 'NCBN') {
-              if (frequencyData.source === 'ncbn.jpn') {
-                className = 'layer1-haschild';
-              }
-              if (countParents(datasets, datum.id) === 2) {
-                className = 'layer2-nonchild';
-              }
-            }
-          }
-          frequencyData.class_name = className
-
           // JGA-SNPの場合 見出しのdataがないため追加
           if (frequencyData.dataset === 'JGA-SNP') {
-            // 現在のレイヤーが前のラベルと異なる場合に処理を実行
             if (currentLayer1 !== frequencyData.label) {
-              // 2階層目であり、前のレイヤーと異なる親ラベルの場合のみ処理
-              if (datum.depth === 2 && currentLayer1 !== findParent(datasets, datum.id).label) {
-                // 結果オブジェクトに階層データを追加
+              if (frequencyData.depth === 2 && currentLayer1 !== findParent(preparedDatasets, datum.id).label) {
                 let data = {
                   dataset: frequencyData.dataset,
-                  label: findParent(datasets, datum.id).label,
-                  class_name: 'sub-layer',
-                  source: `${frequencyData.dataset}-title`
+                  depth: 1,
+                  label: findParent(preparedDatasets, datum.id).label,
+                  source: `${frequencyData.dataset}-title`,
+                  id: findParent(preparedDatasets, datum.id).id,
+                  parent_id: 7,
+                  has_child: true
                 };
-                resultObject = [...resultObject, data]; // 新たなデータを追加
-                currentLayer1 = findParent(datasets, datum.id).label; // 現在のレイヤーを更新
-              } else if (datum.depth === 3) {
-                console.log("currentLayer2:", currentLayer2);
-                currentLayer2 = findParent(datasets, datum.id).label; // 現在のレイヤーを更新
-              }
-            }
-
-            // 親データのラベルが存在する場合、階層情報を frequencyData に追加
-            const topParentLabel = findParent(datasets, datum.id)?.label;
-            if (topParentLabel) {
-              // 親の数が2つの場合は layer1 に設定
-              if (countParents(datasets, datum.id) === 2) {
-                frequencyData.layer1 = findParent(datasets, datum.id).label;
-              } else {
-                // 親の数が1つの場合、2階層目のラベルとして layer1 と layer2 を設定
-                const grandParentLabel = findParent(datasets, findParent(datasets, datum.id).id).label;
-                frequencyData.layer1 = grandParentLabel;
-                frequencyData.layer2 = topParentLabel;
+                resultObject = [...resultObject, data];
+                currentLayer1 = findParent(preparedDatasets, datum.id).label;
               }
             }
           }
@@ -416,61 +157,10 @@ export default class VariantSummary extends Stanza {
       };
 
       // 各データセットに対して再帰的に探索を開始
-      datasets.forEach(searchData);
-
-      const updateParentClass = (datasets, data) => {
-        datasets.forEach(datum => {
-          const dataNode = data.find(d => d.source === datum.value);
-
-          if (datum.children?.length > 0 && dataNode) {
-            let hasMatchingChildSub = false;
-            let hasMatchingChild = false;
-
-            // 子供のラベルと一致するものがdataのlabelにあるかチェック
-            datum.children.forEach(child => {
-              if (data.some(d => d.source === child.value)) {
-                hasMatchingChild = true;
-              }
-              if (data.some(d => d.label === child.label)) {
-                hasMatchingChildSub = true;
-              }
-            });
-
-            // 一致するものがない場合、クラス名を変更
-            if (!hasMatchingChild) {
-              const changeClass = data.find(d => d.source === datum.value);
-              if (changeClass) {
-                if (changeClass.source !== "jga_snp" && changeClass.class_name === "layer-total") {
-                  changeClass.class_name = "total-no-children";
-                }
-                if (changeClass.class_name === "layer1-haschild") {
-                  changeClass.class_name = "layer1-nonchild";
-                }
-                if (changeClass.class_name === "layer2") {
-                  changeClass.class_name = "layer2-nonchild";
-                }
-              }
-            }
-
-            if (!hasMatchingChildSub) {
-              const changeClass = data.find(d => d.source === datum.value);
-              if (changeClass) {
-                if (changeClass.class_name === "layer-total") {
-                  changeClass.class_name = "total-no-children";
-                }
-              }
-            }
-          }
-
-          // 子供を持つノードに対して再帰的に同じ処理を行う
-          if (datum.children && datum.children.length > 0) {
-            updateParentClass(datum.children, data);
-          }
-        });
-      };
+      preparedDatasets.forEach(searchData);
 
       // クラス名を更新
-      updateParentClass(datasets, resultObject);
+      updateParentClass(preparedDatasets, resultObject);
 
       // 結果をレンダリング
       this.renderTemplate({
@@ -483,33 +173,112 @@ export default class VariantSummary extends Stanza {
       });
 
     } catch (e) {
-      // エラーハンドリング
-      this.renderTemplate({
-        template: "stanza.html.hbs",
-        parameters: {
-          params: this.params,
-          error: { message: e.message }
-        }
-      });
+      ({ error: { message: e.message } })
     }
 
+    /** Finds the top-level parent of a given node ID in a nested data structure.
+ * @param {Array<Object>} data - The nested data structure to search.
+ * @param {string} id - The ID of the node to find the top-level parent for.
+ * @returns {Object|null} The top-level parent node or null if not found. */
+    function findTopParent(data, targetId) {
+      // 内部で再帰的に探索する関数
+      function recursiveSearch(nodes, targetId, parent = null) {
+        for (const node of nodes) {
+          if (node.id === targetId) {
+            // ターゲットIDが見つかったら、トップレベルの親を返す
+            return parent || node;
+          }
+          if (node.children) {
+            const found = recursiveSearch(node.children, targetId, parent || node);
+            if (found) {
+              return found;
+            }
+          }
+        }
+        return null;
+      }
+      return recursiveSearch(data, targetId);
+    }
+
+    /** Finds the direct parent of a given node ID in a nested data structure.
+    * @param {Array<Object>} data - The nested data structure to search.
+    * @param {string} id - The ID of the node to find the parent for.
+    * @returns {Object|null} The parent node or null if not found. */
+    function findParent(data, id) {
+      function recursiveSearch(nodes, targetId, parent = null) {
+        for (const node of nodes) {
+          if (node.id === targetId) {
+            // ターゲットIDが見つかったら、そのノードの親を返す
+            return parent;
+          }
+          if (node.children) {
+            const found = recursiveSearch(node.children, targetId, node);
+            if (found) {
+              return found;
+            }
+          }
+        }
+        return null;
+      }
+      return recursiveSearch(data, id);
+    }
+
+    function updateParentClass(datasets, data) {
+      datasets.forEach(datum => {
+        // 現在のノードに対応するデータを取得
+        const dataNode = data.find(d => d.source === datum.value);
+        if (dataNode) {
+          dataNode.has_child = false;
+        }
+
+        if (datum.children?.length > 0 && dataNode) {
+          // 子供の一致を確認
+          const hasMatchingChild = datum.children.some(child =>
+            data.some(d => d.source === child.value)
+          );
+          const hasMatchingChildSub = datum.children.some(child =>
+            data.some(d => d.label === child.label)
+          );
+
+          if (hasMatchingChild || hasMatchingChildSub) {
+            dataNode.has_child = true;
+          }
+        }
+
+        // 子供を持つノードに対して再帰的に同じ処理を行う
+        if (datum.children && datum.children.length > 0) {
+          updateParentClass(datum.children, data);
+        }
+      });
+    };
+
     // 以下トグルの開閉に関するイベント
-    const layerTotal = this.root.querySelectorAll('.population.layer-total');
-    layerTotal.forEach((layer) =>
+    const depth0Layer = this.root.querySelectorAll('.population[data-depth="0"]');
+    depth0Layer.forEach((layer) =>
       layer.addEventListener('click', (e) => {
         e.target.classList.toggle('open');
 
+        // JGA-WGS
+        if (layer.dataset.dataset === 'JGA-WGS') {
+          const depth1Children = this.root.querySelectorAll(
+            '[data-dataset="JGA-WGS"].population[data-depth="1"]'
+          );
+          depth1Children.forEach((element) => {
+            element.parentElement.classList.toggle('show-by-total');
+          });
+        }
+
         // JGA-SNP
         if (layer.dataset.dataset === 'JGA-SNP') {
-          const subLayer = this.root.querySelectorAll(
-            '[data-dataset="JGA-SNP"].population.sub-layer'
+          const depth1Children = this.root.querySelectorAll(
+            '[data-dataset="JGA-SNP"].population[data-depth="1"]'
           )
-          subLayer.forEach((element) => {
+          depth1Children.forEach((element) => {
             element.parentElement.classList.toggle('show-by-total');
           });
 
-          const layer2 = this.root.querySelectorAll('[data-dataset="JGA-SNP"].population.layer2, [data-dataset="JGA-SNP"].population.layer2-nonchild');
-          layer2.forEach((element) => {
+          const depth2Children = this.root.querySelectorAll('[data-dataset="JGA-SNP"].population[data-depth="2"]');
+          depth2Children.forEach((element) => {
             if (element.parentElement.classList.contains('close-by-total')) {
               element.parentElement.classList.remove('close-by-total');
             } else if (element.parentElement.classList.contains('show-by-sub')) {
@@ -518,8 +287,8 @@ export default class VariantSummary extends Stanza {
           });
 
           // Male or Female
-          const layer3 = this.root.querySelectorAll('[data-dataset="JGA-SNP"].population.layer3');
-          layer3.forEach((element) => {
+          const depth3Children = this.root.querySelectorAll('[data-dataset="JGA-SNP"].population[data-depth="3"]');
+          depth3Children.forEach((element) => {
             if (element.parentElement.classList.contains('close-by-total')) {
               element.parentElement.classList.remove('close-by-total');
             } else if (element.parentElement.classList.contains('show')) {
@@ -530,24 +299,17 @@ export default class VariantSummary extends Stanza {
 
         // NCBN
         if (layer.dataset.dataset === 'NCBN') {
-          const layer1NonChild = this.root.querySelectorAll(
-            '[data-dataset="NCBN"].population.layer1-nonchild'
+          const depth1Children = this.root.querySelectorAll(
+            '[data-dataset="NCBN"].population[data-depth="1"]'
           );
-          layer1NonChild.forEach((element) => {
+          depth1Children.forEach((element) => {
             element.parentElement.classList.toggle('show-by-total');
           });
 
-          const layer1HasChild = this.root.querySelectorAll(
-            '[data-dataset="NCBN"].population.layer1-haschild'
+          const depth2Children = this.root.querySelectorAll(
+            '[data-dataset="NCBN"].population[data-depth="2"]'
           );
-          layer1HasChild.forEach((element) => {
-            element.parentElement.classList.toggle('show-by-total');
-          });
-
-          const layer2 = this.root.querySelectorAll(
-            '[data-dataset="NCBN"].population.layer2-nonchild'
-          );
-          layer2.forEach((element) => {
+          depth2Children.forEach((element) => {
             if (element.parentElement.classList.contains('close-by-total')) {
               element.parentElement.classList.remove('close-by-total');
             } else if (element.parentElement.classList.contains('show')) {
@@ -558,46 +320,45 @@ export default class VariantSummary extends Stanza {
 
         // gnomAD Genomes
         if (layer.dataset.dataset === 'gnomAD Genomes') {
-          const layer1NonChild = this.root.querySelectorAll(
-            '[data-dataset="gnomAD Genomes"].population.layer1-nonchild'
+          const depth1Children = this.root.querySelectorAll(
+            '[data-dataset="gnomAD Genomes"].population[data-depth="1"]'
           );
-          layer1NonChild.forEach((element) => {
+          depth1Children.forEach((element) => {
             element.parentElement.classList.toggle('show-by-total');
           });
         }
 
         // gnomAD Exomes
         if (layer.dataset.dataset === 'gnomAD Exomes') {
-          const layer1NonChild = this.root.querySelectorAll(
-            '[data-dataset="gnomAD Exomes"].population.layer1-nonchild'
+          const depth1Children = this.root.querySelectorAll(
+            '[data-dataset="gnomAD Exomes"].population[data-depth="1"]'
           );
-          layer1NonChild.forEach((element) => {
+          depth1Children.forEach((element) => {
             element.parentElement.classList.toggle('show-by-total');
           });
         }
       })
     );
 
-    const subLayer = this.root.querySelectorAll('.population.sub-layer');
-    subLayer.forEach((layer) =>
+    const depth1Layer = this.root.querySelectorAll('.population[data-depth="1"]');
+    depth1Layer.forEach((layer) =>
       layer.addEventListener('click', (e) => {
         e.target.classList.toggle('open');
 
+        // JGA-SNP
         if (layer.dataset.dataset === 'JGA-SNP') {
-          const layer2 = this.root.querySelectorAll(
-            `[data-dataset="JGA-SNP"][data-layer1="${layer.dataset.label}"].population.layer2,
-            [data-dataset="JGA-SNP"][data-layer1="${layer.dataset.label}"].population.layer2-nonchild`
+          const depth2Children = this.root.querySelectorAll(
+            `[data-dataset="JGA-SNP"].population[data-parent-id="${layer.dataset.id}"][data-depth="2"]`
           );
-
-          layer2.forEach((element) => {
+          depth2Children.forEach((element) => {
             element.parentElement.classList.toggle('show-by-sub');
           });
 
           // Male, Female
-          const layer3 = this.root.querySelectorAll(
-            `[data-dataset="JGA-SNP"][data-layer1="${layer.dataset.label}"].population.layer3`
+          const depth3Children = this.root.querySelectorAll(
+            `[data-dataset="JGA-SNP"].population[data-grandparent-id="${layer.dataset.id}"][data-depth="3"]`
           );
-          layer3.forEach((element) => {
+          depth3Children.forEach((element) => {
             if (element.parentElement.classList.contains('close-by-sub')) {
               element.parentElement.classList.remove('close-by-sub');
             } else if (element.parentElement.classList.contains('show')) {
@@ -605,35 +366,30 @@ export default class VariantSummary extends Stanza {
             }
           });
         }
-      })
-    );
 
-    const layer2 = this.root.querySelectorAll('.population.layer2');
-    layer2.forEach((layer) =>
-      layer.addEventListener('click', (e) => {
-        e.target.classList.toggle('open');
-
-        if (layer.dataset.dataset === 'JGA-SNP') {
-          const layer3 = this.root.querySelectorAll(
-            `[data-dataset="JGA-SNP"][data-layer1="${layer.dataset.layer1}"][data-layer2="${layer.dataset.label}"].population.layer3`
+        // NCBN
+        if (layer.dataset.dataset === 'NCBN') {
+          const depth2Children = this.root.querySelectorAll(
+            '[data-dataset="NCBN"].population[data-depth="2"]'
           );
-          layer3.forEach((element) => {
+          depth2Children.forEach((element) => {
             element.parentElement.classList.toggle('show');
           });
         }
       })
     );
 
-    const layer1HasChild = this.root.querySelectorAll('.population.layer1-haschild');
-    layer1HasChild.forEach((layer) =>
+    const depth2Layer = this.root.querySelectorAll('.population[data-depth="2"]');
+    depth2Layer.forEach((layer) =>
       layer.addEventListener('click', (e) => {
         e.target.classList.toggle('open');
 
-        if (layer.dataset.dataset === 'NCBN') {
-          const layer2 = this.root.querySelectorAll(
-            '[data-dataset="NCBN"].population.layer2-nonchild'
+        // JGA-SNP
+        if (layer.dataset.dataset === 'JGA-SNP') {
+          const depth3Children = this.root.querySelectorAll(
+            `[data-dataset="JGA-SNP"].population[data-parent-id="${layer.dataset.id}"][data-depth="3"]`
           );
-          layer2.forEach((element) => {
+          depth3Children.forEach((element) => {
             element.parentElement.classList.toggle('show');
           });
         }
