@@ -16,9 +16,9 @@
   "stanza:updated": "2024-11-14",
   "stanza:parameter": [
     {
-      "stanza:key": "terms",
-      "stanza:example": "C2936783",
-      "stanza:description": "TogoVar terms",
+      "stanza:key": "term",
+      "stanza:example": "C0677776",
+      "stanza:description": "TogoVar term",
       "stanza:required": true
     },
     {
@@ -32,7 +32,7 @@
     {
       "stanza:key": "--togostanza-canvas-height",
       "stanza:type": "number",
-      "stanza:default": 500,
+      "stanza:default": 280,
       "stanza:description": "Canvas height"
     }
   ]

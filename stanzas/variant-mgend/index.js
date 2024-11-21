@@ -108,7 +108,7 @@ export default class VariantMGeND extends Stanza {
             return nameA.localeCompare(nameB, undefined, { sensitivity: "base" });
           })
           .filter((item, index, array) => {
-            return array.findIndex(i => i.name === item.name) === index;
+            return !item.medgen || array.findIndex(i => i.medgen === item.medgen) === index;
           });
       });
 

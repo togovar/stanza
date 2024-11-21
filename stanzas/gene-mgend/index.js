@@ -7,7 +7,7 @@ export default class GeneMGeND extends Stanza {
   async render() {
     this.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
 
-    const { "data-url": dataURL, terms } = this.params;
+    const { "data-url": dataURL, term } = this.params;
 
     try {
       const response = await fetch(dataURL, {
@@ -23,7 +23,7 @@ export default class GeneMGeND extends Stanza {
                 "gene": {
                   "relation": "eq",
                   "terms": [
-                    terms
+                    term
                   ]
                 }
               },
@@ -88,7 +88,7 @@ export default class GeneMGeND extends Stanza {
                 results.push({
                   tgvid: item.id,
                   rs: item.existing_variations,
-                  position: `chr${item.chromosome}:${item.position}`,
+                  position: `${item.chromosome}:${item.position}`,
                   title: item.external_link.mgend[0].title,
                   xref: item.external_link.mgend[0].xref,
                   conditionHtml: conditionHtml,

@@ -7,7 +7,7 @@ export default class DiseaseMGeND extends Stanza {
   async render() {
     this.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
 
-    const { "data-url": dataURL, terms } = this.params;
+    const { "data-url": dataURL, term } = this.params;
 
     try {
       const response = await fetch(dataURL, {
@@ -23,7 +23,7 @@ export default class DiseaseMGeND extends Stanza {
                 "disease": {
                   "relation": "eq",
                   "terms": [
-                    terms
+                    term
                   ]
                 }
               },
@@ -76,7 +76,7 @@ export default class DiseaseMGeND extends Stanza {
               results.push({
                 tgvid: item.id,
                 rs: item.existing_variations,
-                position: `chr${item.chromosome}:${item.position}`,
+                position: `${item.chromosome}:${item.position}`,
                 title: item.external_link.mgend[0].title,
                 xref: item.external_link.mgend[0].xref,
                 interpretation_class: entry.interpretations[0],
@@ -111,11 +111,6 @@ export default class DiseaseMGeND extends Stanza {
       // 各グループを大文字・小文字で並び替え
       Object.keys(grouped).forEach(key => {
         grouped[key] = grouped[key]
-          .sort((a, b) => {
-            const titleA = a.title;
-            const titleB = b.title;
-            return titleA.localeCompare(titleB, undefined, { sensitivity: "base" });
-          })
           .filter((item, index, array) => {
             return array.findIndex(i => i.tgvid === item.tgvid) === index;
           });
