@@ -16,35 +16,6 @@ export default class VariantSummary extends Stanza {
     let currentLayer1;
     let hasHemizygote = false;
     let uniqueIdCounter = 0;
-
-    function addIdsToDataNodes(dataNodes, currentDepth = 0) {
-      return dataNodes.map((node) => {
-        // 各ノードに一意のIDを設定
-        const newNode = {
-          ...node,
-          id: `${uniqueIdCounter++}`,
-          depth: currentDepth
-        };
-
-        // 子ノードがある場合は再帰的に処理
-        if (newNode.children && newNode.children.length > 0) {
-          newNode.children = addIdsToDataNodes(newNode.children, currentDepth + 1);
-        }
-        return newNode;
-      });
-    }
-
-    function prepareData() {
-      const data = DATASETS
-      const dataWithIds = addIdsToDataNodes(data);
-      const hierarchyData = hierarchy({
-        id: '-1',
-        label: 'root',
-        value: '',
-        children: dataWithIds,
-      });
-      return hierarchyData;
-    }
     const preparedDatasets = Object.values(prepareData().data.children);
 
     try {
@@ -160,7 +131,7 @@ export default class VariantSummary extends Stanza {
       preparedDatasets.forEach(searchData);
 
       // クラス名を更新
-      updateParentClass(preparedDatasets, resultObject);
+      updateHasChild(preparedDatasets, resultObject);
 
       // 結果をレンダリング
       this.renderTemplate({
@@ -175,6 +146,36 @@ export default class VariantSummary extends Stanza {
     } catch (e) {
       ({ error: { message: e.message } })
     }
+
+    function addIdsToDataNodes(dataNodes, currentDepth = 0) {
+      return dataNodes.map((node) => {
+        // 各ノードに一意のIDを設定
+        const newNode = {
+          ...node,
+          id: `${uniqueIdCounter++}`,
+          depth: currentDepth
+        };
+
+        // 子ノードがある場合は再帰的に処理
+        if (newNode.children && newNode.children.length > 0) {
+          newNode.children = addIdsToDataNodes(newNode.children, currentDepth + 1);
+        }
+        return newNode;
+      });
+    }
+
+    function prepareData() {
+      const data = DATASETS
+      const dataWithIds = addIdsToDataNodes(data);
+      const hierarchyData = hierarchy({
+        id: '-1',
+        label: 'root',
+        value: '',
+        children: dataWithIds,
+      });
+      return hierarchyData;
+    }
+
 
     /** Finds the top-level parent of a given node ID in a nested data structure.
  * @param {Array<Object>} data - The nested data structure to search.
@@ -223,7 +224,7 @@ export default class VariantSummary extends Stanza {
       return recursiveSearch(data, id);
     }
 
-    function updateParentClass(datasets, data) {
+    function updateHasChild(datasets, data) {
       datasets.forEach(datum => {
         // 現在のノードに対応するデータを取得
         const dataNode = data.find(d => d.source === datum.value);
@@ -247,7 +248,7 @@ export default class VariantSummary extends Stanza {
 
         // 子供を持つノードに対して再帰的に同じ処理を行う
         if (datum.children && datum.children.length > 0) {
-          updateParentClass(datum.children, data);
+          updateHasChild(datum.children, data);
         }
       });
     };
