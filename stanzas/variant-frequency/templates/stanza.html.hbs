@@ -30,11 +30,11 @@
       <tbody>
         {{#if resultObject}}
           {{#each resultObject}}
-            <tr data-dataset='{{dataset}}' class='{{class_name}}'>
+            <tr data-depth='{{depth}}'>
               <td
-                class='dataset {{class_name}}'
-                id='{{source}}'
-                data-dataset='{{source}}'
+                class='dataset'
+                data-depth='{{depth}}'
+                data-has-child='{{has_child}}'
               >
                 <div
                   class='dataset-icon'
@@ -42,11 +42,13 @@
                 ></div>{{dataset}}
               </td>
               <td
-                class='population {{class_name}}'
+                class='population'
                 data-dataset='{{dataset}}'
-                data-label='{{label}}'
-                data-layer1='{{layer1}}'
-                data-layer2='{{layer2}}'
+                data-id='{{id}}'
+                data-parent-id='{{parent_id}}'
+                data-grandparent-id='{{grandparent_id}}'
+                data-depth='{{depth}}'
+                data-has-child='{{has_child}}'
               >
                 {{label}}
               </td>

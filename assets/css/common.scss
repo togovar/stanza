@@ -395,7 +395,7 @@ ul {
     box-shadow: 0 3px white, 0 6px white, 0 9px white, 0 12px white, 0 15px white;
   }
 
-  &[data-dataset="jga_ngs"],
+  &[data-dataset="jga_wes"],
   &[data-dataset="jga_snp"] {
     background-color: $COLOR_DATASET_JGA;
   }
@@ -527,8 +527,9 @@ ul {
     box-shadow: 0 0 0 1px $COLOR_DATASET_GEM_J;
   }
 
-  &[data-dataset="jga_ngs"],
-  &[data-dataset="JGA-NGS"],
+  &[data-dataset="JGA-WGS"],
+  &[data-dataset="jga_wes"],
+  &[data-dataset="JGA-WES"],
   &[data-dataset="jga_snp"],
   &[data-dataset="JGA-SNP"] {
     background-color: $COLOR_DATASET_JGA;
@@ -631,7 +632,8 @@ ul {
     }
   }
 
-  &[data-dataset="jga_ngs"]:before,
+  &[data-dataset="jga_wgs"]:before,
+  &[data-dataset="jga_wes"]:before,
   &[data-dataset="jga_snp"]:before {
     color: $COLOR_DATASET_JGA;
   }
@@ -673,7 +675,7 @@ ul {
     content: "WGS";
   }
 
-  &[data-dataset="jga_ngs"] > .properties::after,
+  &[data-dataset="jga_wes"] > .properties::after,
   &[data-dataset="hgvd"] > .properties::after,
   &[data-dataset^="gnomad"] > .properties::after {
     content: "WES";

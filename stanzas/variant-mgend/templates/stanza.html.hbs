@@ -1,0 +1,36 @@
+{{#with error}}
+  <div class='alert alert-danger'>{{message}}</div>
+{{else}}
+  <table id='target' class='table'>
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Clinical significance</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {{#each result}}
+        <tr>
+          <td class='title'>
+            <a href='{{xref}}'>{{title}}</a>
+          </td>
+          <td class='clinical-significance-col'>
+            <span
+              class='clinical-significance-full'
+              data-sign='{{interpretation_class}}'
+            >{{interpretation}}</span>
+          </td>
+          <td class='condition'>
+            {{{conditionHtml}}}
+          </td>
+        </tr>
+      {{else}}
+        <tr>
+          <td class='text-center' colspan='3'>No data</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+{{/with}}
