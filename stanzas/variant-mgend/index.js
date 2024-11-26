@@ -36,7 +36,13 @@ export default class VariantMGeND extends Stanza {
         }
       });
     } catch (error) {
-      ({ error: { message: error.message } })
+      console.error(error)
+      this.renderTemplate({
+        template: "stanza.html.hbs",
+        parameters: {
+          params: this.params
+        }
+      });
     }
 
     // テーブルのセルを結合
@@ -50,19 +56,28 @@ export default class VariantMGeND extends Stanza {
         const significance = item.significance;
 
         significance.forEach(entry => {
-          if (entry.conditions && Array.isArray(entry.conditions)) {
-            entry.conditions.forEach(condition => {
+          if (entry.source === "mgend") {
+            if (entry.conditions.length === 0) {
+              results.push({
+                title: item.external_link.mgend[0].title,
+                xref: item.external_link.mgend[0].xref,
+                conditionHtml: "others",
+                name: "others",
+                medgen: "others",
+                interpretation_class: entry.interpretations[0],
+                interpretation: getPropertyNameByKey(entry.interpretations[0]),
+              });
 
-              let conditionHtml;
-              if (condition.medgen && condition.name) {
-                conditionHtml = `<a href='/disease/${condition.medgen}'>${condition.name}</a>`;
-              } else if (condition.name) {
-                conditionHtml = condition.name;
-              } else {
-                conditionHtml = "others";
-              }
-
-              if (entry.source === "mgend") {
+            } else {
+              entry.conditions.forEach(condition => {
+                let conditionHtml;
+                if (condition.medgen && condition.name) {
+                  conditionHtml = `<a href='/disease/${condition.medgen}'>${condition.name}</a>`;
+                } else if (condition.name) {
+                  conditionHtml = condition.name;
+                } else {
+                  conditionHtml = "others";
+                }
                 results.push({
                   title: item.external_link.mgend[0].title,
                   xref: item.external_link.mgend[0].xref,
@@ -72,8 +87,8 @@ export default class VariantMGeND extends Stanza {
                   interpretation_class: entry.interpretations[0],
                   interpretation: getPropertyNameByKey(entry.interpretations[0]),
                 });
-              }
-            });
+              });
+            }
           }
         });
       });
