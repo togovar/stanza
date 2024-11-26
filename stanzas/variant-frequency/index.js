@@ -87,10 +87,16 @@ export default class VariantSummary extends Stanza {
           frequencyData.aac = localeString(frequencyData.aac);
           // Alt/Ref
           frequencyData.arc = localeString(frequencyData.arc);
+          // Alt/OtherAlts(JGA-WGSのみ)
+          frequencyData.aoc = localeString(frequencyData.aoc);
           // Ref/Ref
           frequencyData.rrc = localeString(frequencyData.rrc);
+          // Ref/OtherAlts(JGA-WGSのみ)
+          frequencyData.roc = localeString(frequencyData.roc);
+          // Other_Alts/Other_Alts(JGA-WGSのみ)
+          frequencyData.ooc = localeString(frequencyData.ooc);
 
-          if (!hasHemizygote && (frequencyData.hemi_alt || frequencyData.hemi_ref)) {
+          if (!hasHemizygote && (frequencyData.hemi_alt !== undefined || frequencyData.hemi_ref !== undefined || frequencyData.hemi_others !== undefined)) {
             hasHemizygote = true;
           }
 

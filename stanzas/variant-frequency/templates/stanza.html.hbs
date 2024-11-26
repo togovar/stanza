@@ -8,21 +8,25 @@
           <th rowspan='2'>Dataset</th>
           <th rowspan='2'>Population</th>
           <th colspan='4'>Allele count</th>
-          <th colspan='{{#if ../hasHemizygote}}5{{else}}3{{/if}}'>Genotype count</th>
+          <th colspan='{{#if ../hasHemizygote}}9{{else}}6{{/if}}'>Genotype count</th>
           <th class='filter_status' rowspan='2'>Filter status</th>
           <th rowspan='2'>Quality score</th>
         </tr>
         <tr>
-          <th class='alt'>Alt</th>
-          <th>Total</th>
-          <th class='frequency'>Frequency</th>
+          <th class='alt num-th'>Alt</th>
+          <th class='num-th'>Total</th>
+          <th class='frequency num-th'>Frequency</th>
           <th></th>
-          <th class='num_genotype_alt_homo alt'>Alt / Alt</th>
-          <th class='num_genotype_hetero'>Alt / Ref</th>
-          <th class='num_genotype_ref_homo'>Ref / Ref</th>
+          <th class='num_genotype_alt_homo alt num-th'>Alt / Alt</th>
+          <th class='num_genotype_hetero num-th'>Alt / Ref</th>
+          <th class='num_genotype_alt_otheralts num-th'>Alt/OtherAlts</th>
+          <th class='num_genotype_ref_homo num-th'>Ref / Ref</th>
+          <th class='num_genotype_ref_otheralts num-th'>Ref/OtherAlts</th>
+          <th class='num_genotype_otheralts_otheralts num-th'>Other_Alts/Other_Alts</th>
           {{#if ../hasHemizygote}}
-            <th class='num_genotype_hetero'>Hemi_Alt</th>
-            <th class='num_genotype_ref_homo'>Hemi_Ref</th>
+            <th class='num_genotype_hemi_alt num-th'>Hemi_Alt</th>
+            <th class='num_genotype_hemi_ref num-th'>Hemi_Ref</th>
+            <th class='num_genotype_hemi_otheralts num-th'>Hemi_Other_Alts</th>
           {{/if}}
         </tr>
       </thead>
@@ -69,12 +73,16 @@
                   </div>
                 {{/if}}
               </td>
-              <td class='num_genotype_alt_homo'>{{aac}}</td>
-              <td class='num_genotype_hetero'>{{arc}}</td>
-              <td class='num_genotype_ref_homo'>{{rrc}}</td>
+              <td class='num_genotype_alt_homo num-td'>{{aac}}</td>
+              <td class='num_genotype_hetero num-td'>{{arc}}</td>
+              <td class='num_genotype_alt_otheralts num-td'>{{aoc}}</td>
+              <td class='num_genotype_ref_homo num-td'>{{rrc}}</td>
+              <td class='num_genotype_ref_otheralts num-td'>{{roc}}</td>
+              <td class='num_genotype_otheralts_otheralts num-td'>{{ooc}}</td>
               {{#if ../../hasHemizygote}}
-                <td class='num_genotype_hemi_alt'>{{hemi_alt}}</td>
-                <td class='num_genotype_hemi_ref'>{{hemi_ref}}</td>
+                <td class='num_genotype_hemi_alt num-td'>{{hemi_alt}}</td>
+                <td class='num_genotype_hemi_ref num-td'>{{hemi_ref}}</td>
+                <td class='num_genotype_hemi_otheralts num-td'>{{hemi_others}}</td>
               {{/if}}
               <td class='filter' data-filter='{{filter}}'>{{filter}}</td>
               <td class='quality'>{{quality}}</td>

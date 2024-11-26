@@ -39,12 +39,7 @@
 
     &:nth-of-type(2)>th {
 
-      &.alt,
-      &.alt+th,
-      &.frequency,
-      &.num_genotype_alt_homo,
-      &.num_genotype_hetero,
-      &.num_genotype_ref_homo {
+      &.num-th {
         padding-top: 0;
       }
     }
@@ -163,24 +158,25 @@
           width: 58px;
         }
 
+        &.num-td {
+          text-align: right;
+        }
+
         &.num_genotype_alt_homo {
           border-left: 1px solid #dee2e6;
         }
 
         &.num_genotype_alt_homo,
         &.num_genotype_hemi_alt {
-          text-align: right;
           color: $COLOR_ALT;
         }
 
         &.num_genotype_hetero {
-          text-align: right;
           color: $COLOR_BLACK;
         }
 
         &.num_genotype_ref_homo,
         &.num_genotype_hemi_ref {
-          text-align: right;
           color: $COLOR_KEY_DEEP;
         }
 
