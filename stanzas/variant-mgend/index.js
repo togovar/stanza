@@ -36,7 +36,13 @@ export default class VariantMGeND extends Stanza {
         }
       });
     } catch (error) {
-      ({ error: { message: error.message } })
+      console.error(error)
+      this.renderTemplate({
+        template: "stanza.html.hbs",
+        parameters: {
+          params: this.params
+        }
+      });
     }
 
     // テーブルのセルを結合
