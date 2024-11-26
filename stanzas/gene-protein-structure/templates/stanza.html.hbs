@@ -1,7 +1,12 @@
 <style>
+  # pdb_div_{{params.hgnc_id}} {
+      width: auto;
+  }
   #pdb_iframe_{{params.hgnc_id}} {
-      width: calc(var(--togostanza-iframe-width) * 1px);
-      height: calc(var(--togostanza-iframe-height) * 1px);
+      width: 100%;
+      max-width: calc(var(--togostanza-iframe-max-width) * 1px);
+      min-height: calc(var(--togostanza-iframe-min-height) * 1px);
+      max-height: calc(var(--togostanza-iframe-max-height) * 1px);
   }
   #pdb_select_{{params.hgnc_id}} {
       max-width: 100px;

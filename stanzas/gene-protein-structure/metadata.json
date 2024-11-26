@@ -36,16 +36,22 @@
   "stanza:menu-placement": "bottom-right",
   "stanza:style": [
     {
-      "stanza:key": "--togostanza-iframe-width",
+      "stanza:key": "--togostanza-iframe-max-width",
       "stanza:type": "number",
       "stanza:default": 600,
-      "stanza:description": "Width for entire stanza"
+      "stanza:description": "max width of iframe"
     },
     {
-      "stanza:key": "--togostanza-iframe-height",
+      "stanza:key": "--togostanza-iframe-min-height",
       "stanza:type": "number",
       "stanza:default": 600,
-      "stanza:description": "Canvas height"
+      "stanza:description": "min height of iframe"
+    },
+    {
+      "stanza:key": "--togostanza-iframe-max-height",
+      "stanza:type": "number",
+      "stanza:default": 600,
+      "stanza:description": "max height of iframe"
     }
   ],
   "stanza:incomingEvent": [],
