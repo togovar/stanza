@@ -28,7 +28,7 @@
     },
     {
       "stanza:key": "molmil",
-      "stanza:example": "https://sparql-support.dbcls.jp/molmil/",
+      "stanza:example": "https://grch38.togovar.org/molmil/",
       "stanza:description": "Molmil embedding URL",
       "stanza:required": false
     }
