@@ -1,0 +1,4 @@
+[submodule "assets/vendor/molmil"]
+	path = assets/vendor/molmil
+	url = https://github.com/togovar/molmil.git
+	branch = togovar
