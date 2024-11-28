@@ -6,9 +6,7 @@ export default class GeneStructure extends Stanza {
     
     const res = await fetch(sparqlist, {method: "get", headers: {"Accept": "application/json"}}).then(res => res.json());
     
-    //const molmil= "https://pdbj.org/molmil2/#";  // 本家
-    //const molmil = "https://sparql-support.dbcls.jp/molmil/#";  // 開発
-    const molmil = (this.params?.molmil || "https://sparql-support.dbcls.jp/molmil/") + "#";
+    const molmil = new URL("./assets/vendor/molmil/", import.meta.url) + "#";
     const colors = ["67,122,204", "204,67,149", "177,204,67", "67,204,204", "177,67,204", "204,149,67", "67,204,122", "94,67,204", "204,67,67", "95,204,67"];
     const colors_l = ["204,224,255", "255,204,235", "245,255,204", "204,255,255", "245,204,255", "255,235,204", "204,255,224", "214,204,255", "255,204,204", "214,255,204"];
     

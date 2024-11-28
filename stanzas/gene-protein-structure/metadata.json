@@ -25,12 +25,6 @@
       "stanza:example": "https://grch38.togovar.org/sparqlist",
       "stanza:description": "SPARQList URL",
       "stanza:required": false
-    },
-    {
-      "stanza:key": "molmil",
-      "stanza:example": "https://grch38.togovar.org/molmil/",
-      "stanza:description": "Molmil embedding URL",
-      "stanza:required": false
     }
   ],
   "stanza:menu-placement": "bottom-right",
