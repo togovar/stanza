@@ -132,7 +132,7 @@ var metadata = {
 	},
 	{
 		"stanza:key": "sparqlist",
-		"stanza:example": "https://grch38.togovar.org/sparqlist",
+		"stanza:example": "https://stg-grch38.togovar.org/sparqlist",
 		"stanza:description": "SPARQList URL",
 		"stanza:required": false
 	}
