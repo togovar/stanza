@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Disease / MGeND</title>
+
+    <script type="module" src="./disease-mgend.js" async></script>
+
+    <script type="module">
+      import createHelpApp from './-togostanza/help-app.js';
+
+      const metadata = {"@context":{"stanza":"http://togostanza.org/resource/stanza#"},"@id":"disease-mgend","stanza:label":"Disease / MGeND","stanza:definition":"Display MGeND annotations of the disease","stanza:type":"Stanza","stanza:display":"Table","stanza:provider":"TogoVar","stanza:license":"MIT","stanza:author":"PENQE","stanza:address":"","stanza:contributor":[],"stanza:created":"2024-11-14","stanza:updated":"2024-11-14","stanza:parameter":[{"stanza:key":"term","stanza:example":"C0677776","stanza:description":"TogoVar term","stanza:required":true},{"stanza:key":"data-url","stanza:example":"https://stg-grch38.togovar.org/api/search/variant","stanza:description":"URL"}],"stanza:about-link-placement":"bottom-right","stanza:style":[{"stanza:key":"--togostanza-canvas-height","stanza:type":"number","stanza:default":280,"stanza:description":"Canvas height"}]};
+      const readme   = "<h1 id=\"disease--mgend\">Disease / MGeND</h1>\n<p>Stanza description goes here. Edit <code>stanzas/disease-mgend/README.md</code> to update.</p>\n";
+
+      createHelpApp({metadata, readme}).mount('body');
+    </script>
+  </head>
+
+  <body>
+  </body>
+</html>

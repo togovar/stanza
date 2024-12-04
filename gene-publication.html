@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Gene / Publication</title>
+
+    <script type="module" src="./gene-publication.js" async></script>
+
+    <script type="module">
+      import createHelpApp from './-togostanza/help-app.js';
+
+      const metadata = {"@context":{"stanza":"http://togostanza.org/resource/stanza#"},"@id":"gene-publication","stanza:label":"Gene / Publication","stanza:definition":"Display publications to be related to the gene","stanza:type":"Stanza","stanza:display":"Table","stanza:provider":"TogoVar","stanza:license":"MIT","stanza:author":"Yu Tokunaga","stanza:address":"tokunaga@biosciencedbc.jp","stanza:contributor":[],"stanza:created":"2021-05-27","stanza:updated":"2022-04-15","stanza:parameter":[{"stanza:key":"hgnc_id","stanza:example":"404","stanza:description":"HGNC ID","stanza:required":true},{"stanza:key":"sparqlist","stanza:example":"https://grch38.togovar.org/sparqlist","stanza:description":"SPARQList URL","stanza:required":false}],"stanza:about-link-placement":"bottom-right","stanza:style":[]};
+      const readme   = "<h1 id=\"gene--publication\">Gene / Publication</h1>\n<p>Stanza description goes here. Edit <code>stanzas/gene-publication/README.md</code> to update.</p>\n";
+
+      createHelpApp({metadata, readme}).mount('body');
+    </script>
+  </head>
+
+  <body>
+  </body>
+</html>

@@ -1,0 +1,51 @@
+{
+  "@context": {
+    "stanza": "http://togostanza.org/resource/stanza#"
+  },
+  "@id": "gene-genomic-context",
+  "stanza:label": "Gene / Genomic context",
+  "stanza:definition": "Schematic view of the structure and surroundings of a gene.",
+  "stanza:type": "Stanza",
+  "stanza:display": "Other",
+  "stanza:provider": "TogoVar",
+  "stanza:license": "MIT",
+  "stanza:author": "shuichi tahara",
+  "stanza:address": "stahara@biosciencedbc.jp",
+  "stanza:contributor": [],
+  "stanza:created": "2021-05-24",
+  "stanza:updated": "2022-04-15",
+  "stanza:parameter": [
+    {
+      "stanza:key": "hgnc_id",
+      "stanza:example": "404",
+      "stanza:description": "HGNC ID",
+      "stanza:required": true
+    },
+    {
+      "stanza:key": "assembly",
+      "stanza:example": "GRCh38",
+      "stanza:description": "assembly: \"GRCh37\" or \"GRCh38\"",
+      "stanza:required": true
+    },
+    {
+      "stanza:key": "jbrowse",
+      "stanza:example": "https://grch38.togovar.org/jbrowse",
+      "stanza:description": "JBrowse URL",
+      "stanza:required": false
+    },
+    {
+      "stanza:key": "sparqlist",
+      "stanza:example": "https://grch38.togovar.org/sparqlist",
+      "stanza:description": "SPARQList URL",
+      "stanza:required": false
+    },
+    {
+      "stanza:key": "margin",
+      "stanza:example": 10,
+      "stanza:description": "Margin of front and rear for the gene length (%)",
+      "stanza:required": false
+    }
+  ],
+  "stanza:menu-placement": "bottom-right",
+  "stanza:style": []
+}

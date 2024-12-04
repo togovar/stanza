@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Variant / Summary</title>
+
+    <script type="module" src="./variant-summary.js" async></script>
+
+    <script type="module">
+      import createHelpApp from './-togostanza/help-app.js';
+
+      const metadata = {"@context":{"stanza":"http://togostanza.org/resource/stanza#"},"@id":"variant-summary","stanza:label":"Variant / Summary","stanza:definition":"Display summary information","stanza:type":"Stanza","stanza:display":"Table","stanza:provider":"TogoVar","stanza:license":"MIT","stanza:author":"Daisuke Satoh","stanza:address":"daisuke.satoh@lifematics.co.jp","stanza:contributor":[],"stanza:created":"2019-04-22","stanza:updated":"2022-04-15","stanza:parameter":[{"stanza:key":"tgv_id","stanza:example":"tgv219804","stanza:description":"TogoVar ID","stanza:required":true},{"stanza:key":"sparqlist","stanza:example":"https://grch38.togovar.org/sparqlist","stanza:description":"SPARQList URL","stanza:required":false}],"stanza:about-link-placement":"bottom-right","stanza:style":[]};
+      const readme   = "<h1 id=\"variant--summary\">Variant / Summary</h1>\n<p>Stanza description goes here. Edit <code>stanzas/variant-summary/README.md</code> to update.</p>\n";
+
+      createHelpApp({metadata, readme}).mount('body');
+    </script>
+  </head>
+
+  <body>
+  </body>
+</html>
