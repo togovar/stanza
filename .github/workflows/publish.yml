@@ -29,6 +29,10 @@ jobs:
       - run: npm ci
       - run: npx togostanza build
 
+      - name: Replace endpoint URL
+        run: |
+          find ./dist \( -name "*.html" -or -name "*.js" -or -name "*.json" \) -exec sed -i "s|${{ secrets.TOGOVAR_STANZA_REWRITE_URL }}|g" {} \;
+
       - uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
