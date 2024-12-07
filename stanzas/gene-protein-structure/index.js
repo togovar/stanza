@@ -2,7 +2,8 @@ import Stanza from 'togostanza/stanza';
 
 export default class GeneStructure extends Stanza {
   async render() {
-    const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/gene_pdb_mapping?hgnc_id=${this.params.hgnc_id}`);
+    const togovar_api = encodeURI(location.protocol + "//" + location.hostname + "/api/search/variant");
+    const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/gene_pdb_mapping?hgnc_id=${this.params.hgnc_id}&togovar_api=${togovar_api}`);
     
     const res = await fetch(sparqlist, {method: "get", headers: {"Accept": "application/json"}}).then(res => res.json());
     
@@ -10,10 +11,10 @@ export default class GeneStructure extends Stanza {
     const colors = ["67,122,204", "204,67,149", "177,204,67", "67,204,204", "177,67,204", "204,149,67", "67,204,122", "94,67,204", "204,67,67", "95,204,67"];
     const colors_l = ["204,224,255", "255,204,235", "245,255,204", "204,255,255", "245,204,255", "255,235,204", "204,255,224", "214,204,255", "255,204,204", "214,255,204"];
     
-    res.variant.unshift({tgvid: "All variants with clinical significance", cs_class: true});
-    res.variant.unshift({tgvid: "Colouring by structure"});
-    res.variant.unshift({tgvid: "Colouring by molecule"});
-    res.variant.unshift({tgvid: "Colouring by gradient N- to C-term"});
+    res.variant.unshift({id: "All variants with clinical significance", cs_class: true});
+    res.variant.unshift({id: "Colouring by structure"});
+    res.variant.unshift({id: "Colouring by molecule"});
+    res.variant.unshift({id: "Colouring by gradient N- to C-term"});
 
     // inital url
     let url = molmil + "bg_color white;";
@@ -39,9 +40,9 @@ export default class GeneStructure extends Stanza {
     const change_tgv = (pdb_j) => {
       let disabled = {};
       for (const v of res.variant) {
-	disabled[v.tgvid] = true;
-        if (v.tgvid.match(/^Colouring by/) || v.tgvid == "All variants with clinical significance" || pdb_j.pdb == "AlphaFold" || pdb_j.positions[v.position.toString()]) {
-	  disabled[v.tgvid] = false;
+	disabled[v.id] = true;
+        if (v.id.match(/^Colouring by/) || v.id == "All variants with clinical significance" || pdb_j.pdb == "AlphaFold" || pdb_j.positions[v.position.toString()]) {
+	  disabled[v.id] = false;
 	  continue;
 	}
       }
@@ -55,8 +56,8 @@ export default class GeneStructure extends Stanza {
       let url = "https://pdbj.org/mine/summary/";
       let info = ["<a href='" + url + pdb_j.pdb + "'>" + pdb_j.pdb + "</a>"];
       if (pdb_j.pdb == "AlphaFold") {
-        url = "https://alphafold.ebi.ac.uk/entry/";
-        info = ["<a href='" + url + pdb_j.uniprot + "'>" + pdb_j.pdb + "</a>"];
+	url = "https://alphafold.ebi.ac.uk/entry/";
+	info = ["<a href='" + url + pdb_j.uniprot + "'>" + pdb_j.pdb + "</a>"];
       }
       if (pdb_j.resolution) info.push("Resolution: " + pdb_j.resolution + " Å");
       if (pdb_j.rfree) info.push("R-free: " + pdb_j.rfree);
@@ -66,7 +67,7 @@ export default class GeneStructure extends Stanza {
     
     const change_view = (change_pdb) => {
       const pdb = this.root.querySelector("#pdb_select_" + this.params.hgnc_id).value;
-      const tgvid = this.root.querySelector("#variant_select_" + this.params.hgnc_id).value;
+      const id = this.root.querySelector("#variant_select_" + this.params.hgnc_id).value;
       let pdb_j;
       let tgv_j;
       for (const p of res.structure) {
@@ -76,60 +77,49 @@ export default class GeneStructure extends Stanza {
 	}
       }
       for (const v of res.variant) {
-	if (v.tgvid == tgvid) {
+	if (v.id == id) {
 	  tgv_j = v;
 	  break;
 	}
       }
+      // molmil url 構築
       let url = molmil;
       if (pdb_j.pdb == "AlphaFold") url += "load " + encodeURI(pdb_j.url) + ";";
       else url += "fetch " + pdb + ";";
-      if (tgv_j.tgvid.match(/^Colouring by/)) {
+      if (tgv_j.id.match(/^Colouring by/)) {
 	let type = "group";
-	if (tgv_j.tgvid.match(/structure/)) type = "structure";
+	if (tgv_j.id.match(/structure/)) type = "structure";
 	url += "bg_color white;cartoon_color white, all;";
 	for (const [i, c] of pdb_j.chains.entries()) {
-	  if (tgv_j.tgvid.match(/molecule/)) type = "[" + colors[i % 10] + "]";
+	  if (tgv_j.id.match(/molecule/)) type = "[" + colors[i % 10] + "]";
 	  url += "cartoon_color " + type + ", chain " + c + ";";
 	}
 	url += "turn y,0.5,50;";
       } else {
 	url += "bg_color [130,130,130];cartoon_color [160,160,160], all;";
 	let resi =  tgv_j.position;
-	if (pdb_j.pdb != "AlphaFold" && tgv_j.tgvid != "All variants with clinical significance") resi = pdb_j.positions[tgv_j.position.toString()];
-	let resi_r = [];
-	let resi_o = [];
-	let resi_y= [];
-	let resi_dg = [];
-	let resi_lg = [];
-	let resi_g= [];
-	if (tgv_j.tgvid == "All variants with clinical significance") {
+	if (pdb_j.pdb != "AlphaFold" && tgv_j.id != "All variants with clinical significance") resi = pdb_j.positions[tgv_j.position.toString()];
+	let resi_all = [];
+	for (let i = 0; i <= 8; i++) { resi_all[i] = []; } // 9 color types
+	let resi_color = [];
+	if (tgv_j.id == "All variants with clinical significance") {
 	  for (const v of res.variant) {
-	    if (v.clinical_significance) {
-	      console.log(v.clinical_significance);
-	      if (v.clinical_significance.match(/Low penetrance/)) resi_o.push(v.position);
-	      else if (v.clinical_significance.match(/[Pp]athogenic/)) resi_r.push(v.position);
-	      else if (v.clinical_significance.match(/risk allele/)) resi_y.push(v.position);
-	      else if (v.clinical_significance.match(/Uncertain significance/)) resi_dg.push(v.position);
-	      else if (v.clinical_significance.match(/Likely benign/)) resi_lg.push(v.position);
-	      else resi_g.push(v.position);
+	    if (v.sig) {
+	      resi_all[v.color_num].push(v.position);
+	      resi_color[v.color_num] = v.color;
 	    }
 	  }
 	}
 	for (const [i, c] of pdb_j.chains.entries()) {
 	  let color = colors_l[i % 10];
 	  url += "cartoon_color [" + color + "], chain " + c + ";";
-	  if (tgv_j.tgvid == "All variants with clinical significance") {
-	    if (resi_g[0]) url += "cartoon_color mediumaquamarine, chain " + c + " and resi " + resi_g.join("+") + ";";
-	    if (resi_lg[0]) url += "cartoon_color lightgreen, chain " + c + " and resi " + resi_lg.join("+") + ";";
-	    if (resi_dg[0]) url += "cartoon_color darkkhaki, chain " + c + " and resi " + resi_dg.join("+") + ";";
-	    if (resi_y[0]) url += "cartoon_color gold, chain " + c + " and resi " + resi_y.join("+") + ";";
-	    if (resi_o[0]) url += "cartoon_color darkorange, chain " + c + " and resi " + resi_o.join("+") + ";";
-	    if (resi_r[0]) url += "cartoon_color orangered, chain " + c + " and resi " + resi_r.join("+") + ";";
-	    if (resi_y[0] || resi_o[0] || resi_r[0]) {
-	      const resi = [...new Set(resi_r.concat(resi_o).concat(resi_y))];
-	      url += "show sticks, chain " + c + " and resi " + resi.join("+") + ";";
+	  if (tgv_j.id == "All variants with clinical significance") {
+	    // 弱い significance から塗っていって、同一ポジションに Pathogenic などの強い significance があれば上塗り
+	    for (let i = 8; i >= 0; i--) {
+	      if (resi_all[i][0]) url += "cartoon_color [" + resi_color[i] + "], chain " + c + " and resi " + resi_all[i].join("+") + ";";
 	    }
+	    const resi = [...new Set(resi_all[0].concat(resi_all[1]).concat(resi_all[2]))];
+	    url += "show sticks, chain " + c + " and resi " + resi.join("+") + ";";
 	  } else {
 	    url += "cartoon_color orangered, chain " + c + " and resi " + resi + ";label chain " + c + " and resi " + resi + ", " + tgv_j.label +  ";";
 	  }

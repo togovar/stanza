@@ -25,7 +25,7 @@
 
 <select id="variant_select_{{params.hgnc_id}}">
   {{#each variant}}
-  <option value="{{this.tgvid}}"{{#if this.clinical_significance}} class="cs_{{../params.hgnc_id}}"{{/if}}{{#if this.cs_class}} class="cs_{{../params.hgnc_id}}"{{/if}}>{{tgvid}} {{this.label}}{{#if this.clinical_significance}} {{this.clinical_significance}}{{/if}}</option>
+  <option value="{{this.id}}"{{#if this.sig}} class="cs_{{../params.hgnc_id}}"{{/if}}{{#if this.cs_class}} class="cs_{{../params.hgnc_id}}"{{/if}}>{{id}} {{this.label}}{{#if this.sig}} {{this.sig_label}}{{/if}}</option>
   {{/each}}
 </select>
 <input type="checkbox" id="variant_checkbox_{{params.hgnc_id}}">With clinical significance<br>
@@ -37,4 +37,3 @@
 {{else}}
 <p class="pdb_info">No PDB</p>
 {{/if}}
-
