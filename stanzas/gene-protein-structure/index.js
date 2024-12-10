@@ -2,6 +2,14 @@ import Stanza from 'togostanza/stanza';
 
 export default class GeneStructure extends Stanza {
   async render() {
+    // loading icon
+    this.renderTemplate(
+      {
+        template: 'loading.html.hbs',
+        parameters: {}
+      }
+    );
+    
     const togovar_api = encodeURI(location.protocol + "//" + location.hostname + "/api/search/variant");
     const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/gene_pdb_mapping?hgnc_id=${this.params.hgnc_id}&togovar_api=${togovar_api}`);
     
@@ -25,7 +33,7 @@ export default class GeneStructure extends Stanza {
       url += "cartoon_color group, chain " + c + ";";
     }
     url += "turn y,0.5,50;"
-    
+
     this.renderTemplate(
       {
         template: 'stanza.html.hbs',
