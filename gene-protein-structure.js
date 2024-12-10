@@ -2,7 +2,16 @@ import { S as Stanza, d as defineStanzaElement } from './stanza-33919c9f.js';
 
 class GeneStructure extends Stanza {
   async render() {
-    const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/gene_pdb_mapping?hgnc_id=${this.params.hgnc_id}`);
+    // loading icon
+    this.renderTemplate(
+      {
+        template: 'loading.html.hbs',
+        parameters: {}
+      }
+    );
+    
+    const togovar_api = encodeURI(location.protocol + "//" + location.hostname + "/api/search/variant");
+    const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/gene_pdb_mapping?hgnc_id=${this.params.hgnc_id}&togovar_api=${togovar_api}`);
     
     const res = await fetch(sparqlist, {method: "get", headers: {"Accept": "application/json"}}).then(res => res.json());
     
@@ -10,10 +19,10 @@ class GeneStructure extends Stanza {
     const colors = ["67,122,204", "204,67,149", "177,204,67", "67,204,204", "177,67,204", "204,149,67", "67,204,122", "94,67,204", "204,67,67", "95,204,67"];
     const colors_l = ["204,224,255", "255,204,235", "245,255,204", "204,255,255", "245,204,255", "255,235,204", "204,255,224", "214,204,255", "255,204,204", "214,255,204"];
     
-    res.variant.unshift({tgvid: "All variants with clinical significance", cs_class: true});
-    res.variant.unshift({tgvid: "Colouring by structure"});
-    res.variant.unshift({tgvid: "Colouring by molecule"});
-    res.variant.unshift({tgvid: "Colouring by gradient N- to C-term"});
+    res.variant.unshift({id: "All variants with clinical significance", cs_class: true});
+    res.variant.unshift({id: "Colouring by structure"});
+    res.variant.unshift({id: "Colouring by molecule"});
+    res.variant.unshift({id: "Colouring by gradient N- to C-term"});
 
     // inital url
     let url = molmil + "bg_color white;";
@@ -24,7 +33,7 @@ class GeneStructure extends Stanza {
       url += "cartoon_color group, chain " + c + ";";
     }
     url += "turn y,0.5,50;";
-    
+
     this.renderTemplate(
       {
         template: 'stanza.html.hbs',
@@ -39,9 +48,9 @@ class GeneStructure extends Stanza {
     const change_tgv = (pdb_j) => {
       let disabled = {};
       for (const v of res.variant) {
-	disabled[v.tgvid] = true;
-        if (v.tgvid.match(/^Colouring by/) || v.tgvid == "All variants with clinical significance" || pdb_j.pdb == "AlphaFold" || pdb_j.positions[v.position.toString()]) {
-	  disabled[v.tgvid] = false;
+	disabled[v.id] = true;
+        if (v.id.match(/^Colouring by/) || v.id == "All variants with clinical significance" || pdb_j.pdb == "AlphaFold" || pdb_j.positions[v.position.toString()]) {
+	  disabled[v.id] = false;
 	  continue;
 	}
       }
@@ -55,8 +64,8 @@ class GeneStructure extends Stanza {
       let url = "https://pdbj.org/mine/summary/";
       let info = ["<a href='" + url + pdb_j.pdb + "'>" + pdb_j.pdb + "</a>"];
       if (pdb_j.pdb == "AlphaFold") {
-        url = "https://alphafold.ebi.ac.uk/entry/";
-        info = ["<a href='" + url + pdb_j.uniprot + "'>" + pdb_j.pdb + "</a>"];
+	url = "https://alphafold.ebi.ac.uk/entry/";
+	info = ["<a href='" + url + pdb_j.uniprot + "'>" + pdb_j.pdb + "</a>"];
       }
       if (pdb_j.resolution) info.push("Resolution: " + pdb_j.resolution + " Å");
       if (pdb_j.rfree) info.push("R-free: " + pdb_j.rfree);
@@ -66,7 +75,7 @@ class GeneStructure extends Stanza {
     
     const change_view = (change_pdb) => {
       const pdb = this.root.querySelector("#pdb_select_" + this.params.hgnc_id).value;
-      const tgvid = this.root.querySelector("#variant_select_" + this.params.hgnc_id).value;
+      const id = this.root.querySelector("#variant_select_" + this.params.hgnc_id).value;
       let pdb_j;
       let tgv_j;
       for (const p of res.structure) {
@@ -76,60 +85,49 @@ class GeneStructure extends Stanza {
 	}
       }
       for (const v of res.variant) {
-	if (v.tgvid == tgvid) {
+	if (v.id == id) {
 	  tgv_j = v;
 	  break;
 	}
       }
+      // molmil url 構築
       let url = molmil;
       if (pdb_j.pdb == "AlphaFold") url += "load " + encodeURI(pdb_j.url) + ";";
       else url += "fetch " + pdb + ";";
-      if (tgv_j.tgvid.match(/^Colouring by/)) {
+      if (tgv_j.id.match(/^Colouring by/)) {
 	let type = "group";
-	if (tgv_j.tgvid.match(/structure/)) type = "structure";
+	if (tgv_j.id.match(/structure/)) type = "structure";
 	url += "bg_color white;cartoon_color white, all;";
 	for (const [i, c] of pdb_j.chains.entries()) {
-	  if (tgv_j.tgvid.match(/molecule/)) type = "[" + colors[i % 10] + "]";
+	  if (tgv_j.id.match(/molecule/)) type = "[" + colors[i % 10] + "]";
 	  url += "cartoon_color " + type + ", chain " + c + ";";
 	}
 	url += "turn y,0.5,50;";
       } else {
 	url += "bg_color [130,130,130];cartoon_color [160,160,160], all;";
 	let resi =  tgv_j.position;
-	if (pdb_j.pdb != "AlphaFold" && tgv_j.tgvid != "All variants with clinical significance") resi = pdb_j.positions[tgv_j.position.toString()];
-	let resi_r = [];
-	let resi_o = [];
-	let resi_y= [];
-	let resi_dg = [];
-	let resi_lg = [];
-	let resi_g= [];
-	if (tgv_j.tgvid == "All variants with clinical significance") {
+	if (pdb_j.pdb != "AlphaFold" && tgv_j.id != "All variants with clinical significance") resi = pdb_j.positions[tgv_j.position.toString()];
+	let resi_all = [];
+	for (let i = 0; i <= 8; i++) { resi_all[i] = []; } // 9 color types
+	let resi_color = [];
+	if (tgv_j.id == "All variants with clinical significance") {
 	  for (const v of res.variant) {
-	    if (v.clinical_significance) {
-	      console.log(v.clinical_significance);
-	      if (v.clinical_significance.match(/Low penetrance/)) resi_o.push(v.position);
-	      else if (v.clinical_significance.match(/[Pp]athogenic/)) resi_r.push(v.position);
-	      else if (v.clinical_significance.match(/risk allele/)) resi_y.push(v.position);
-	      else if (v.clinical_significance.match(/Uncertain significance/)) resi_dg.push(v.position);
-	      else if (v.clinical_significance.match(/Likely benign/)) resi_lg.push(v.position);
-	      else resi_g.push(v.position);
+	    if (v.sig) {
+	      resi_all[v.color_num].push(v.position);
+	      resi_color[v.color_num] = v.color;
 	    }
 	  }
 	}
 	for (const [i, c] of pdb_j.chains.entries()) {
 	  let color = colors_l[i % 10];
 	  url += "cartoon_color [" + color + "], chain " + c + ";";
-	  if (tgv_j.tgvid == "All variants with clinical significance") {
-	    if (resi_g[0]) url += "cartoon_color mediumaquamarine, chain " + c + " and resi " + resi_g.join("+") + ";";
-	    if (resi_lg[0]) url += "cartoon_color lightgreen, chain " + c + " and resi " + resi_lg.join("+") + ";";
-	    if (resi_dg[0]) url += "cartoon_color darkkhaki, chain " + c + " and resi " + resi_dg.join("+") + ";";
-	    if (resi_y[0]) url += "cartoon_color gold, chain " + c + " and resi " + resi_y.join("+") + ";";
-	    if (resi_o[0]) url += "cartoon_color darkorange, chain " + c + " and resi " + resi_o.join("+") + ";";
-	    if (resi_r[0]) url += "cartoon_color orangered, chain " + c + " and resi " + resi_r.join("+") + ";";
-	    if (resi_y[0] || resi_o[0] || resi_r[0]) {
-	      const resi = [...new Set(resi_r.concat(resi_o).concat(resi_y))];
-	      url += "show sticks, chain " + c + " and resi " + resi.join("+") + ";";
+	  if (tgv_j.id == "All variants with clinical significance") {
+	    // 弱い significance から塗っていって、同一ポジションに Pathogenic などの強い significance があれば上塗り
+	    for (let i = 8; i >= 0; i--) {
+	      if (resi_all[i][0]) url += "cartoon_color [" + resi_color[i] + "], chain " + c + " and resi " + resi_all[i].join("+") + ";";
 	    }
+	    const resi = [...new Set(resi_all[0].concat(resi_all[1]).concat(resi_all[2]))];
+	    url += "show sticks, chain " + c + " and resi " + resi.join("+") + ";";
 	  } else {
 	    url += "cartoon_color orangered, chain " + c + " and resi " + resi + ";label chain " + c + " and resi " + resi + ", " + tgv_j.label +  ";";
 	  }
@@ -227,7 +225,10 @@ var metadata = {
 };
 
 var templates = [
-  ["stanza.html.hbs", {"1":function(container,depth0,helpers,partials,data,blockParams,depths) {
+  ["loading.html.hbs", {"compiler":[8,">= 4.3.0"],"main":function(container,depth0,helpers,partials,data) {
+    return "<div id=\"loading\"><span id=\"togovar_loading_icon\"></span></div>\n";
+},"useData":true}],
+["stanza.html.hbs", {"1":function(container,depth0,helpers,partials,data,blockParams,depths) {
     var stack1, helper, alias1=container.lambda, alias2=container.escapeExpression, alias3=depth0 != null ? depth0 : (container.nullContext || {}), lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
@@ -276,15 +277,15 @@ var templates = [
     };
 
   return "  <option value=\""
-    + alias2(alias1((depth0 != null ? lookupProperty(depth0,"tgvid") : depth0), depth0))
+    + alias2(alias1((depth0 != null ? lookupProperty(depth0,"id") : depth0), depth0))
     + "\""
-    + ((stack1 = lookupProperty(helpers,"if").call(alias3,(depth0 != null ? lookupProperty(depth0,"clinical_significance") : depth0),{"name":"if","hash":{},"fn":container.program(5, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":28,"column":32},"end":{"line":28,"column":106}}})) != null ? stack1 : "")
-    + ((stack1 = lookupProperty(helpers,"if").call(alias3,(depth0 != null ? lookupProperty(depth0,"cs_class") : depth0),{"name":"if","hash":{},"fn":container.program(5, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":28,"column":106},"end":{"line":28,"column":167}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"if").call(alias3,(depth0 != null ? lookupProperty(depth0,"sig") : depth0),{"name":"if","hash":{},"fn":container.program(5, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":28,"column":29},"end":{"line":28,"column":85}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"if").call(alias3,(depth0 != null ? lookupProperty(depth0,"cs_class") : depth0),{"name":"if","hash":{},"fn":container.program(5, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":28,"column":85},"end":{"line":28,"column":146}}})) != null ? stack1 : "")
     + ">"
-    + alias2(((helper = (helper = lookupProperty(helpers,"tgvid") || (depth0 != null ? lookupProperty(depth0,"tgvid") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(alias3,{"name":"tgvid","hash":{},"data":data,"loc":{"start":{"line":28,"column":168},"end":{"line":28,"column":177}}}) : helper)))
+    + alias2(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(alias3,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":28,"column":147},"end":{"line":28,"column":153}}}) : helper)))
     + " "
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"label") : depth0), depth0))
-    + ((stack1 = lookupProperty(helpers,"if").call(alias3,(depth0 != null ? lookupProperty(depth0,"clinical_significance") : depth0),{"name":"if","hash":{},"fn":container.program(7, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":28,"column":192},"end":{"line":28,"column":264}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"if").call(alias3,(depth0 != null ? lookupProperty(depth0,"sig") : depth0),{"name":"if","hash":{},"fn":container.program(7, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":28,"column":168},"end":{"line":28,"column":210}}})) != null ? stack1 : "")
     + "</option>\n";
 },"5":function(container,depth0,helpers,partials,data,blockParams,depths) {
     var stack1, lookupProperty = container.lookupProperty || function(parent, propertyName) {
@@ -306,7 +307,7 @@ var templates = [
     };
 
   return " "
-    + container.escapeExpression(container.lambda((depth0 != null ? lookupProperty(depth0,"clinical_significance") : depth0), depth0));
+    + container.escapeExpression(container.lambda((depth0 != null ? lookupProperty(depth0,"sig_label") : depth0), depth0));
 },"9":function(container,depth0,helpers,partials,data) {
     return "<p class=\"pdb_info\">No PDB</p>\n";
 },"compiler":[8,">= 4.3.0"],"main":function(container,depth0,helpers,partials,data,blockParams,depths) {
@@ -326,8 +327,7 @@ var templates = [
     + " {\n      max-width: 100px;\n  }\n  #variant_select_"
     + alias2(alias1(((stack1 = (depth0 != null ? lookupProperty(depth0,"params") : depth0)) != null ? lookupProperty(stack1,"hgnc_id") : stack1), depth0))
     + " {\n      max-width: calc((var(--togostanza-iframe-width) - 300) * 1px);\n  }\n</style>\n\n"
-    + ((stack1 = lookupProperty(helpers,"if").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"structure") : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0, blockParams, depths),"inverse":container.program(9, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":19,"column":0},"end":{"line":39,"column":7}}})) != null ? stack1 : "")
-    + "\n";
+    + ((stack1 = lookupProperty(helpers,"if").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"structure") : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0, blockParams, depths),"inverse":container.program(9, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":19,"column":0},"end":{"line":39,"column":7}}})) != null ? stack1 : "");
 },"useData":true,"useDepths":true}]
 ];
 
