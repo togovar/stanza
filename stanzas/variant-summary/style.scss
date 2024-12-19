@@ -1,21 +1,25 @@
 @use "@/assets/css/common";
 
-.table {
-  width: 100%;
-  table-layout: fixed;
+main {
+  min-height: calc(var(--togostanza-canvas-height) * 1px);
 
-  > tbody > tr {
-    > {
-      th {
-        width: 77px;
-        text-align: right;
-      }
+  .table {
+    width: 100%;
+    table-layout: fixed;
 
-      td {
-        padding-left: 12px;
+    > tbody > tr {
+      > {
+        th {
+          width: 77px;
+          text-align: right;
+        }
 
-        .chromosome {
-          font-weight: bold;
+        td {
+          padding-left: 12px;
+
+          .chromosome {
+            font-weight: bold;
+          }
         }
       }
     }
