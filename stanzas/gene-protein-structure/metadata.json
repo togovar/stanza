@@ -30,6 +30,12 @@
   "stanza:menu-placement": "bottom-right",
   "stanza:style": [
     {
+      "stanza:key": "--togostanza-canvas-height",
+      "stanza:type": "number",
+      "stanza:default": 664,
+      "stanza:description": "Canvas height"
+    },
+    {
       "stanza:key": "--togostanza-iframe-max-width",
       "stanza:type": "number",
       "stanza:default": 600,
