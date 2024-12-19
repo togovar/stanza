@@ -1,6 +1,10 @@
 @use "@/assets/css/common";
 
-.table > tbody > tr > td {
+main {
+  min-height: calc(var(--togostanza-canvas-height) * 1px);
+  max-height: calc(var(--togostanza-canvas-height) * 1px);
+
+  .table > tbody > tr > td {
   height: 26px;
 
     > .alphamissense-label,
@@ -10,3 +14,4 @@
       margin-left: 5px;
     }
   }
+}

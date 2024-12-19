@@ -1,42 +1,47 @@
 @use "@/assets/css/common";
 
-.table.other_alternative_alleles > tbody > tr > td {
-  height: 26px;
+main {
+  min-height: calc(var(--togostanza-canvas-height) * 1px);
+  max-height: calc(var(--togostanza-canvas-height) * 1px);
 
-  &.id {
-    padding-left: 14px;
+  .table.other_alternative_alleles > tbody > tr > td {
+    height: 26px;
 
-    > a {
-      font-size: 15px;
-    }
-  }
+    &.id {
+      padding-left: 14px;
 
-  &.type {
-    font-weight: bold;
-  }
-
-  &.consequence {
-    font-size: 12px;
-    position: relative;
-  }
-
-  &.clinical_significance_wrapper {
-    position: relative;
-  }
-
-  &.position {
-    .chromosome-position {
-      & > .chromosome {
-        display: inline;
-        font-weight: 700;
-
-        &:after {
-          content: ": ";
-        }
+      > a {
+        font-size: 15px;
       }
+    }
 
-      & > .coordinate {
-        display: inline;
+    &.type {
+      font-weight: bold;
+    }
+
+    &.consequence {
+      font-size: 12px;
+      position: relative;
+    }
+
+    &.clinical_significance_wrapper {
+      position: relative;
+    }
+
+    &.position {
+      .chromosome-position {
+        & > .chromosome {
+          display: inline;
+          font-weight: 700;
+
+          &:after {
+            content: ": ";
+          }
+        }
+
+        & > .coordinate {
+          display: inline;
+        }
       }
     }
   }
