@@ -134,6 +134,17 @@ main {
               }
             }
           }
+
+          > .lock {
+            &::before {
+              content: $CHAR_LOCK;
+              font-family: FontAwesome;
+              color: $COLOR_BLACK;
+              opacity: .4;
+              font-size: 14px;
+              margin-right: 3px;
+            }
+          }
         }
 
         &.num_alt_alleles {
@@ -146,6 +157,10 @@ main {
             color: $COLOR_BLACK;
             margin-left: 7px;
             margin-right: 4px;
+          }
+
+          .comment {
+            color: $COLOR_BLACK;
           }
         }
 

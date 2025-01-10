@@ -43,7 +43,9 @@
                 <div
                   class='dataset-icon'
                   data-dataset='{{source}}'
-                ></div>{{dataset}}
+                >
+                </div>
+                  {{dataset}}
               </td>
               <td
                 class='population'
@@ -54,12 +56,23 @@
                 data-depth='{{depth}}'
                 data-has-child='{{has_child}}'
               >
+              {{#if need_loading}}
+                <span class="lock"></span>
+              {{/if}}
                 {{label}}
               </td>
-              <td class='num_alt_alleles'>{{ac}}<span class='slash'>
-                  {{#if ac}}
+              <td class='num_alt_alleles'>{{ac}}
+                {{#if ac}}
+                  <span class='slash'>
                     /
-                  {{/if}}</span></td>
+                  </span>
+                {{/if}}
+                {{#if need_loading}}
+                  <span class='comment'>
+                    <a href="/auth/login">Login</a> to view allele and genotype counts
+                  </span>
+                {{/if}}
+              </td>
               <td class='num_alleles'>{{an}}</td>
               <td class='frequency'>{{frequency}}</td>
               <td class='frequency-graph'>
