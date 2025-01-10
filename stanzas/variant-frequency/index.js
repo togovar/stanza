@@ -14,7 +14,7 @@ export default class VariantSummary extends Stanza {
     const dataURL = `${urlBase}/search?quality=0&term=${tgv_id}&expand_dataset`;
     let resultObject = [];
     let jgawgsData = [];
-    let hasjgawgsChildren = [false, false, false, false];
+    const hasjgawgsChildren = [false, false, false, false];
     let jgawgsChildren
     let currentLayer1;
     let hasHemizygote = false;
