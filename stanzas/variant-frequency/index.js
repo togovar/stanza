@@ -13,10 +13,19 @@ export default class VariantSummary extends Stanza {
     const { "data-url": urlBase, assembly, tgv_id } = this.params;
     const dataURL = `${urlBase}/search?quality=0&term=${tgv_id}&expand_dataset`;
     let resultObject = [];
+    let jgawgsData = [];
+    const hasjgawgsChildren = [false, false, false, false];
+    let jgawgsChildren
     let currentLayer1;
     let hasHemizygote = false;
     let uniqueIdCounter = 0;
     const preparedDatasets = Object.values(prepareData().data.children);
+    preparedDatasets.forEach((dataset) => {
+      if (dataset.value === "jga_wgs") {
+        jgawgsChildren = dataset.children;
+      }
+    })
+
 
     try {
       // dataURL に GET リクエストを送信
@@ -115,7 +124,6 @@ export default class VariantSummary extends Stanza {
                   label: findParent(preparedDatasets, datum.id).label,
                   source: `${frequencyData.dataset}-title`,
                   id: findParent(preparedDatasets, datum.id).id,
-                  parent_id: 7,
                   has_child: true
                 };
                 resultObject = [...resultObject, data];
@@ -125,6 +133,20 @@ export default class VariantSummary extends Stanza {
           }
 
           resultObject = [...resultObject, frequencyData];
+
+          if (frequencyData.source === "jga_wgs") {
+            jgawgsChildren.forEach(child => {
+              let data = {
+                dataset: frequencyData.dataset,
+                depth: 1,
+                label: child.label,
+                source: child.value,
+                id: child.id,
+                need_loading: true
+              };
+              jgawgsData = [...jgawgsData, data];
+            })
+          }
         }
 
         // Recursively search children
@@ -135,6 +157,10 @@ export default class VariantSummary extends Stanza {
 
       // 各データセットに対して再帰的に探索を開始
       preparedDatasets.forEach(searchData);
+
+      // JGA-WGSのデータを挿入
+      checkExistence(resultObject, jgawgsChildren);
+      insertObject(resultObject, hasjgawgsChildren, jgawgsData);
 
       // クラス名を更新
       updateHasChild(preparedDatasets, resultObject);
@@ -228,6 +254,30 @@ export default class VariantSummary extends Stanza {
         return null;
       }
       return recursiveSearch(data, id);
+    }
+
+    // 存在確認を関数化
+    function checkExistence(resultObject, jgawgsChildren) {
+      resultObject.forEach((data) => {
+        jgawgsChildren.forEach((child, index) => {
+          if (data.source === child.value) {
+            hasjgawgsChildren[index] = true;
+          }
+        });
+      });
+    }
+
+    // オブジェクト挿入を関数化
+    function insertObject(resultObject, hasChildren, jgawgsData) {
+      hasChildren.forEach((exists, index) => {
+        if (!exists) {
+          resultObject.forEach((data, i) => {
+            if (data.id === (index + 1).toString()) {
+              resultObject.splice(i + 1, 0, jgawgsData[index]);
+            }
+          });
+        }
+      });
     }
 
     function updateHasChild(datasets, data) {
