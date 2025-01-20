@@ -61,7 +61,7 @@ var metadata = {
 	"stanza:parameter": [
 	{
 		"stanza:key": "tgv_id",
-		"stanza:example": "tgv132831",
+		"stanza:example": "tgv122011872",
 		"stanza:description": "TogoVar ID",
 		"stanza:required": true
 	},
@@ -80,6 +80,12 @@ var metadata = {
 ],
 	"stanza:about-link-placement": "bottom-right",
 	"stanza:style": [
+	{
+		"stanza:key": "--togostanza-canvas-height",
+		"stanza:type": "number",
+		"stanza:default": 280,
+		"stanza:description": "Canvas height"
+	}
 ]
 };
 

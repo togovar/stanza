@@ -1264,32 +1264,36 @@ ul.no-bullet {
   width: 100%;
 }
 
-.table.other_alternative_alleles > tbody > tr > td {
+main {
+  min-height: calc(var(--togostanza-canvas-height) * 1px);
+  max-height: calc(var(--togostanza-canvas-height) * 1px);
+}
+main .table.other_alternative_alleles > tbody > tr > td {
   height: 26px;
 }
-.table.other_alternative_alleles > tbody > tr > td.id {
+main .table.other_alternative_alleles > tbody > tr > td.id {
   padding-left: 14px;
 }
-.table.other_alternative_alleles > tbody > tr > td.id > a {
+main .table.other_alternative_alleles > tbody > tr > td.id > a {
   font-size: 15px;
 }
-.table.other_alternative_alleles > tbody > tr > td.type {
+main .table.other_alternative_alleles > tbody > tr > td.type {
   font-weight: bold;
 }
-.table.other_alternative_alleles > tbody > tr > td.consequence {
+main .table.other_alternative_alleles > tbody > tr > td.consequence {
   font-size: 12px;
   position: relative;
 }
-.table.other_alternative_alleles > tbody > tr > td.clinical_significance_wrapper {
+main .table.other_alternative_alleles > tbody > tr > td.clinical_significance_wrapper {
   position: relative;
 }
-.table.other_alternative_alleles > tbody > tr > td.position .chromosome-position > .chromosome {
+main .table.other_alternative_alleles > tbody > tr > td.position .chromosome-position > .chromosome {
   display: inline;
   font-weight: 700;
 }
-.table.other_alternative_alleles > tbody > tr > td.position .chromosome-position > .chromosome:after {
+main .table.other_alternative_alleles > tbody > tr > td.position .chromosome-position > .chromosome:after {
   content: ": ";
 }
-.table.other_alternative_alleles > tbody > tr > td.position .chromosome-position > .coordinate {
+main .table.other_alternative_alleles > tbody > tr > td.position .chromosome-position > .coordinate {
   display: inline;
 }

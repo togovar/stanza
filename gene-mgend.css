@@ -1265,6 +1265,7 @@ ul.no-bullet {
 }
 
 main {
+  min-height: calc(var(--togostanza-canvas-height) * 1px);
   max-height: calc(var(--togostanza-canvas-height) * 1px);
   background-color: white;
 }

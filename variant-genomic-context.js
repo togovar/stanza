@@ -106,6 +106,12 @@ var metadata = {
 ],
 	"stanza:about-link-placement": "bottom-right",
 	"stanza:style": [
+	{
+		"stanza:key": "--togostanza-canvas-height",
+		"stanza:type": "number",
+		"stanza:default": 608,
+		"stanza:description": "Canvas height"
+	}
 ]
 };
 

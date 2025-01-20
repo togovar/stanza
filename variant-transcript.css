@@ -1264,12 +1264,16 @@ ul.no-bullet {
   width: 100%;
 }
 
-.table > tbody > tr > td {
+main {
+  min-height: calc(var(--togostanza-canvas-height) * 1px);
+  max-height: calc(var(--togostanza-canvas-height) * 1px);
+}
+main .table > tbody > tr > td {
   height: 26px;
 }
-.table > tbody > tr > td > .alphamissense-label,
-.table > tbody > tr > td > .sift-label,
-.table > tbody > tr > td > .polyphen-label {
+main .table > tbody > tr > td > .alphamissense-label,
+main .table > tbody > tr > td > .sift-label,
+main .table > tbody > tr > td > .polyphen-label {
   font-size: 12px;
   margin-left: 5px;
 }

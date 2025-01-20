@@ -1264,14 +1264,17 @@ ul.no-bullet {
   width: 100%;
 }
 
-.table > thead > tr > th {
+main {
+  min-height: calc(var(--togostanza-canvas-height) * 1px);
+}
+main .table > thead > tr > th {
   white-space: nowrap;
   padding-right: 4px;
 }
-.table > thead > tr > th[rowspan] {
+main .table > thead > tr > th[rowspan] {
   vertical-align: bottom;
 }
-.table > thead > tr > th[colspan] {
+main .table > thead > tr > th[colspan] {
   font-size: 10px;
   color: #444;
   padding-left: 7px;
@@ -1280,65 +1283,65 @@ ul.no-bullet {
   border: none;
   border-left: 1px solid #dee2e6;
 }
-.table > thead > tr > th.frequency {
+main .table > thead > tr > th.frequency {
   padding-left: 20px;
 }
-.table > thead > tr > th.num_genotype_hetero, .table > thead > tr > th.num_genotype_ref_homo {
+main .table > thead > tr > th.num_genotype_hetero, main .table > thead > tr > th.num_genotype_ref_homo {
   padding-left: 17px;
 }
-.table > thead > tr > th.alt, .table > thead > tr > th.filter_status {
+main .table > thead > tr > th.alt, main .table > thead > tr > th.filter_status {
   padding-left: 7px;
   border-left: 1px solid #dee2e6;
 }
-.table > thead > tr:nth-of-type(2) > th.num-th {
+main .table > thead > tr:nth-of-type(2) > th.num-th {
   padding-top: 0;
 }
-.table > tbody {
+main .table > tbody {
   border-bottom: 1px solid #dee2e6;
 }
-.table > tbody > tr[data-depth="1"], .table > tbody > tr[data-depth="2"], .table > tbody > tr[data-depth="3"] {
+main .table > tbody > tr[data-depth="1"], main .table > tbody > tr[data-depth="2"], main .table > tbody > tr[data-depth="3"] {
   display: none;
 }
-.table > tbody > tr.show-by-total, .table > tbody > tr.show-by-sub, .table > tbody > tr.show {
+main .table > tbody > tr.show-by-total, main .table > tbody > tr.show-by-sub, main .table > tbody > tr.show {
   display: table-row;
 }
-.table > tbody > tr.close-by-total, .table > tbody > tr.close-by-sub {
+main .table > tbody > tr.close-by-total, main .table > tbody > tr.close-by-sub {
   display: none;
 }
-.table > tbody > tr > td {
+main .table > tbody > tr > td {
   padding-right: 5px;
 }
-.table > tbody > tr > td.dataset {
+main .table > tbody > tr > td.dataset {
   white-space: nowrap;
   padding-left: 14px;
 }
-.table > tbody > tr > td.dataset[data-depth="0"][data-has-child=false] {
+main .table > tbody > tr > td.dataset[data-depth="0"][data-has-child=false] {
   border-top: 1px solid #dee2e6;
 }
-.table > tbody > tr > td.dataset[data-depth="0"][data-has-child=true] {
+main .table > tbody > tr > td.dataset[data-depth="0"][data-has-child=true] {
   border-top: 1px solid #dee2e6;
   border-bottom: none;
 }
-.table > tbody > tr > td.dataset[data-depth="1"], .table > tbody > tr > td.dataset[data-depth="2"], .table > tbody > tr > td.dataset[data-depth="3"] {
+main .table > tbody > tr > td.dataset[data-depth="1"], main .table > tbody > tr > td.dataset[data-depth="2"], main .table > tbody > tr > td.dataset[data-depth="3"] {
   visibility: hidden;
   border: none;
 }
-.table > tbody > tr > td.population[data-depth="0"][data-has-child=true] {
+main .table > tbody > tr > td.population[data-depth="0"][data-has-child=true] {
   padding-left: 12px;
 }
-.table > tbody > tr > td.population[data-depth="1"] {
+main .table > tbody > tr > td.population[data-depth="1"] {
   padding-left: 28px;
 }
-.table > tbody > tr > td.population[data-depth="2"] {
+main .table > tbody > tr > td.population[data-depth="2"] {
   padding-left: 44px;
 }
-.table > tbody > tr > td.population[data-depth="3"] {
+main .table > tbody > tr > td.population[data-depth="3"] {
   padding-left: 60px;
 }
-.table > tbody > tr > td.population[data-has-child=true] {
+main .table > tbody > tr > td.population[data-has-child=true] {
   cursor: pointer;
 }
-.table > tbody > tr > td.population[data-has-child=true]::before {
+main .table > tbody > tr > td.population[data-has-child=true]::before {
   content: "";
   position: relative;
   right: 4px;
@@ -1350,56 +1353,67 @@ ul.no-bullet {
   border-bottom: 1px solid #444;
   transform: rotate(-45deg);
 }
-.table > tbody > tr > td.population[data-has-child=true].open::before {
+main .table > tbody > tr > td.population[data-has-child=true].open::before {
   right: 0px;
   bottom: 3px;
   margin-right: 3px;
   transform: rotate(45deg);
 }
-.table > tbody > tr > td.num_alt_alleles {
+main .table > tbody > tr > td.population > .lock::before {
+  content: "\f023";
+  font-family: FontAwesome;
+  color: #444;
+  opacity: 0.4;
+  font-size: 14px;
+  margin-right: 3px;
+}
+main .table > tbody > tr > td.num_alt_alleles {
   text-align: right;
   color: #FF6682;
   border-left: 1px solid #dee2e6;
 }
-.table > tbody > tr > td.num_alt_alleles .slash {
+main .table > tbody > tr > td.num_alt_alleles .slash {
   font-size: 10px;
   color: #444;
   margin-left: 7px;
   margin-right: 4px;
 }
-.table > tbody > tr > td.num_alleles {
+main .table > tbody > tr > td.num_alt_alleles .comment {
+  color: #444;
+}
+main .table > tbody > tr > td.num_alleles {
   color: #444;
   text-align: right;
 }
-.table > tbody > tr > td.frequency {
+main .table > tbody > tr > td.frequency {
   padding-left: 20px;
   box-sizing: content-box;
   text-align: left;
   width: 58px;
 }
-.table > tbody > tr > td.num-td {
+main .table > tbody > tr > td.num-td {
   text-align: right;
 }
-.table > tbody > tr > td.num_genotype_alt_homo {
+main .table > tbody > tr > td.num_genotype_alt_homo {
   border-left: 1px solid #dee2e6;
 }
-.table > tbody > tr > td.num_genotype_alt_homo, .table > tbody > tr > td.num_genotype_hemi_alt {
+main .table > tbody > tr > td.num_genotype_alt_homo, main .table > tbody > tr > td.num_genotype_hemi_alt {
   color: #FF6682;
 }
-.table > tbody > tr > td.num_genotype_hetero {
+main .table > tbody > tr > td.num_genotype_hetero {
   color: #444;
 }
-.table > tbody > tr > td.num_genotype_ref_homo, .table > tbody > tr > td.num_genotype_hemi_ref {
+main .table > tbody > tr > td.num_genotype_ref_homo, main .table > tbody > tr > td.num_genotype_hemi_ref {
   color: #249EB3;
 }
-.table > tbody > tr > td.filter {
+main .table > tbody > tr > td.filter {
   color: #FF5A54;
   padding: 0 0 0 7px;
   border-left: 1px solid #dee2e6;
 }
-.table > tbody > tr > td.filter[data-filter=PASS] {
+main .table > tbody > tr > td.filter[data-filter=PASS] {
   color: #04af58;
 }
-.table > tbody > tr > td.nodata-message {
+main .table > tbody > tr > td.nodata-message {
   text-align: center;
 }

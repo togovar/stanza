@@ -128,7 +128,14 @@ class GeneMGeND extends Stanza {
       const entry = Object.entries(CLINICAL_SIGNIFICANCE).find(
         ([, value]) => value.key === key
       );
-      return entry ? entry[0] : null; // プロパティ名（キー名）を返す
+
+      if (!entry) {
+        return null; // キーが見つからない場合は null を返す
+      }
+
+      // プロパティ名の最初の文字を大文字に変換
+      const capitalizedPropertyName = entry[0].charAt(0).toUpperCase() + entry[0].slice(1);
+      return capitalizedPropertyName;
     }
 
     function sortAndGroupByInterpretationClass(results) {

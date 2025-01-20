@@ -1264,10 +1264,13 @@ ul.no-bullet {
   width: 100%;
 }
 
-.table.gene > tbody > tr > th {
+main {
+  min-height: calc(var(--togostanza-canvas-height) * 1px);
+}
+main .table.gene > tbody > tr > th {
   width: 139px;
   text-align: right;
 }
-.table.gene > tbody > tr > td {
+main .table.gene > tbody > tr > td {
   padding-left: 13px;
 }

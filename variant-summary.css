@@ -1264,17 +1264,20 @@ ul.no-bullet {
   width: 100%;
 }
 
-.table {
+main {
+  min-height: calc(var(--togostanza-canvas-height) * 1px);
+}
+main .table {
   width: 100%;
   table-layout: fixed;
 }
-.table > tbody > tr > th {
+main .table > tbody > tr > th {
   width: 77px;
   text-align: right;
 }
-.table > tbody > tr > td {
+main .table > tbody > tr > td {
   padding-left: 12px;
 }
-.table > tbody > tr > td .chromosome {
+main .table > tbody > tr > td .chromosome {
   font-weight: bold;
 }
