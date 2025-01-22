@@ -714,8 +714,8 @@ var metadata = {
 	stanza: "http://togostanza.org/resource/stanza#"
 },
 	"@id": "gene-protein-browser",
-	"stanza:label": "Protein browser for gene page",
-	"stanza:definition": "Protein browser for gene page",
+	"stanza:label": "Gene / Protein browser",
+	"stanza:definition": "Display protein context",
 	"stanza:license": "MIT",
 	"stanza:author": "moriya_dbcls",
 	"stanza:contributor": [
