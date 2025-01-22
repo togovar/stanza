@@ -15,7 +15,7 @@ export default class VariantSummary extends Stanza {
     let resultObject = [];
     let jgawgsData = [];
     const hasjgawgsChildren = [false, false, false, false];
-    let jgawgsChildren
+    let jgawgsChildren;
     let currentLayer1;
     let hasHemizygote = false;
     let uniqueIdCounter = 0;
@@ -25,6 +25,28 @@ export default class VariantSummary extends Stanza {
         jgawgsChildren = dataset.children;
       }
     })
+    let isLogin = false;
+
+    try {
+      if (window.location.origin === 'http://localhost:8080') {
+        isLogin = false;
+      }
+
+      const timeout = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Request timeout')), 10000)
+      );
+
+      const fetchPromise = fetch(`${window.location.origin}/auth/status`);
+      const response = await Promise.race([fetchPromise, timeout]);
+
+      if (response.status === 401 || response.status === 403) {
+        isLogin = false;
+      } else if (response.status === 200) {
+        isLogin = true;
+      }
+    } catch (error) {
+      console.error('Error fetching auth status or timeout occurred:', error);
+    }
 
 
     try {
@@ -134,18 +156,20 @@ export default class VariantSummary extends Stanza {
 
           resultObject = [...resultObject, frequencyData];
 
-          if (frequencyData.source === "jga_wgs") {
-            jgawgsChildren.forEach(child => {
-              let data = {
-                dataset: frequencyData.dataset,
-                depth: 1,
-                label: child.label,
-                source: child.value,
-                id: child.id,
-                need_loading: true
-              };
-              jgawgsData = [...jgawgsData, data];
-            })
+          if (!isLogin) {
+            if (frequencyData.source === "jga_wgs") {
+              jgawgsChildren.forEach(child => {
+                let data = {
+                  dataset: frequencyData.dataset,
+                  depth: 1,
+                  label: child.label,
+                  source: child.value,
+                  id: child.id,
+                  need_loading: true
+                };
+                jgawgsData = [...jgawgsData, data];
+              })
+            }
           }
         }
 
@@ -159,8 +183,10 @@ export default class VariantSummary extends Stanza {
       preparedDatasets.forEach(searchData);
 
       // JGA-WGSのデータを挿入
-      checkExistence(resultObject, jgawgsChildren);
-      insertObject(resultObject, hasjgawgsChildren, jgawgsData);
+      if (!isLogin) {
+        checkExistence(resultObject, jgawgsChildren);
+        insertObject(resultObject, hasjgawgsChildren, jgawgsData);
+      }
 
       // クラス名を更新
       updateHasChild(preparedDatasets, resultObject);
