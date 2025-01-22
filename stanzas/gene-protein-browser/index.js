@@ -20,7 +20,7 @@ export default class GeneProteinBrowser extends Stanza {
     const togovar_target = this.params.togovar_target;
     const jpost_endpoint = this.params.jpost_endpoint;
     const glycosmos_endpoint = this.params.glycosmos_endpoint;
-    const api = "https://sparql-support.dbcls.jp/rest/api/gene_protein_browser";
+    const api = "https://" + togovar_target + ".togovar.org/sparqlist/api/gene_protein_browser";
     const get_params = "?hgnc_id=" + hgnc_id + "&togovar_target=" + togovar_target + "&jpost_endpoint=" + encodeURI(jpost_endpoint) + "&glycosmos_endpoint=" + encodeURI(glycosmos_endpoint);
 
     let params = {
