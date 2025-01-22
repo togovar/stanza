@@ -1,0 +1,51 @@
+<div id="main">
+  {{#if title}}<h1 class="header">{{title}}</h1>{{/if}}
+  <div id="popup">
+  </div>
+  <div>
+    Show:
+    <span id="show_all" class="ctrl"><input type="radio" name="mode" id="r_all" value="all" checked><span class="show_switch c_x">All level</span></span>
+    <span id="show_a" class="ctrl"><input type="radio" name="mode" id="r_a" value="a"><span id="r_a_label" class="show_switch c_a">Amino acid level</span></span>
+    <span id="show_c" class="ctrl"><input type="radio" name="mode" id="r_c" value="c"><span id="r_c_label" class="show_switch c_c c_na">Coding level</span></span>
+    <span id="show_t" class="ctrl"><input type="radio" name="mode" id="r_t" value="t"><span id="r_t_label" class="show_switch c_t c_na">Transcript level</span></span>
+    <span id="show_g" class="ctrl"><input type="radio" name="mode" id="r_g" value="g"><span id="r_g_label" class="show_switch c_g c_na">Genebody level</span></span>
+    <br>
+    <span id="open_all" class="ctrl show_switch c_x">Open all</span> <span id="reset" class="ctrl show_switch c_x">Reset</span>
+  </div>
+  <div class="viewer">
+    <ul id="root_ul">
+      {{#each hap}}
+      <li class="rank_a" id="{{id_sub}}_li"><span class="open_button" id="{{id_sub}}_button"></span><span class="freq popup" style="background-color: {{color}};" popup_id="{{id_sub}}">  </span><span id="{{id_sub}}" class="hapid">{{id}}</span>: {{#each var_data}}<span class='c_{{type}} v{{#if popup_id}} popup' popup_id='{{popup_id}}{{/if}}'>{{char}}</span>{{/each}}</li>
+      <li class="child_node">
+	<ul id="{{id}}_chld" class="a_chld" style="display:none;">
+	  {{#each child_hap}}
+	  <li class="rank_c" id="{{id_sub}}_li"><span class="open_button" id="{{id_sub}}_button"></span><span class="freq popup" style="background-color: {{color}};" popup_id="{{id_sub}}">  </span><span id="{{id_sub}}" class="hapid">{{id}}</span>: {{#each var_data}}<span class='c_{{type}} v{{#if popup_id}} popup' popup_id='{{popup_id}}{{/if}}'>{{char}}</span>{{/each}}</li>
+	  <li class="child_node">
+	    <ul id="{{id_sub}}_chld" class="c_chld" style="display:none;">
+	      {{#each child_hap}}
+	      <li class="rank_t" id="{{id_sub}}_li"><span class="open_button" id="{{id_sub}}_button"></span><span class="freq popup" style="background-color: {{color}};" popup_id="{{id_sub}}">  </span><span id="{{id_sub}}" class="hapid">{{id}}</span>: {{#each var_data}}<span class='c_{{type}} v{{#if popup_id}} popup' popup_id='{{popup_id}}{{/if}}'>{{char}}</span>{{/each}}</li>
+	      <li class="child_node">
+		<ul id="{{id_sub}}_chld" class="t_chld" style="display:none;">
+		  {{#each child_hap}}
+		  <li class="rank_g" id="{{id_sub}}_li"><span class="no_button" id="{{id_sub}}_button"></span><span class="freq popup" style="background-color: {{color}};" popup_id="{{id_sub}}">  </span><span id="{{id_sub}}" class="hapid">{{id}}</span>: {{#each var_data}}<span class='c_{{type}} v{{#if popup_id}} popup' popup_id='{{popup_id}}{{/if}}'>{{char}}</span>{{/each}}</li>
+		  {{/each}}
+		</ul>
+	      </li>
+	      {{/each}}
+	    </ul>
+	  </li>
+	  {{/each}}
+	</ul>
+      </li>
+      {{/each}}
+    </ul>
+    <ul id="var_freq">
+      {{#each var_freq}}
+      <li class="var_freq_li" id="{{level}}_freq_li"><span class="no_button"></span><span class="freq">  </span><span class="pre id_space">{{space}}</span><span style="color: rgb(255 255 255 / 0)">:</span> {{#each var_data}}<span class='v pre{{#if popup_id}} popup' popup_id='{{popup_id}}{{/if}}' style="background-color: {{color}};"> </span>{{/each}}</li>
+      {{/each}}
+    </ul>
+    <ul id="sort_ul">
+    </ul>
+  </div>
+</div>
+  
