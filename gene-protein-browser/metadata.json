@@ -28,7 +28,7 @@
     {
       "stanza:key": "jpost_endpoint",
       "stanza:type": "string",
-      "stanza:example": "https://db-dev.jpostdb.org/proxy/sparql",
+      "stanza:example": "https://tools.jpostdb.org/proxy/sparql",
       "stanza:description": "jPOST SPARQL endpoint",
       "stanza:required": true
     },
