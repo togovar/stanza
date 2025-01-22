@@ -1,0 +1,50 @@
+{
+  "@context": {
+    "stanza": "http://togostanza.org/resource/stanza#"
+  },
+  "@id": "jogo-haplotype-explorer",
+  "stanza:label": "JoGo haplotype explorer",
+  "stanza:definition": "Display JoGo haplotype",
+  "stanza:license": "MIT",
+  "stanza:author": "Yuki Moriya",
+  "stanza:contributor": [],
+  "stanza:created": "2024-11-06",
+  "stanza:updated": "2024-11-06",
+  "stanza:parameter": [
+    {
+      "stanza:key": "region_name",
+      "stanza:example": "ALDH2_chr12_111761933_111822532",
+      "stanza:description": "Gene region name in JoGo",
+      "stanza:required": false
+    },
+    {
+      "stanza:key": "symbol",
+      "stanza:example": "",
+      "stanza:description": "Gene symbol",
+      "stanza:required": false
+    },
+    {
+      "stanza:key": "togovar_api",
+      "stanza:example": "https://stg-grch38.togovar.org/api/search/variant",
+      "stanza:description": "TogoVar API",
+      "stanza:required": true
+    },
+    {
+      "stanza:key": "hide_header",
+      "stanza:example": 0,
+      "stanza:description": "Display the region name or symbol as the stanza title (0: display, 1: hide)`",
+      "stanza:required": false
+    }
+  ],
+  "stanza:menu-placement": "bottom-right",
+  "stanza:style": [
+    {
+      "stanza:key": "--togostanza-max-height",
+      "stanza:type": "number",
+      "stanza:default": 1000,
+      "stanza:description": "max height"
+    }
+  ],
+  "stanza:incomingEvent": [],
+  "stanza:outgoingEvent": []
+}
