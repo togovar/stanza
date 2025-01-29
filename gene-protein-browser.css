@@ -1335,7 +1335,7 @@ main svg#protein_browser_svg text.protein_browser_label {
 main svg#protein_browser_svg rect.aa_box {
   stroke: #888888;
   stroke-width: 1;
-  fill: none;
+  fill: #ffffff;
 }
 main svg#protein_browser_svg rect.aa_hide {
   stroke: #ffffff;
