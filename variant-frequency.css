@@ -1380,6 +1380,25 @@ main .table > tbody > tr > td.num_alt_alleles .slash {
 }
 main .table > tbody > tr > td.num_alt_alleles .comment {
   color: #444;
+  border-color: #f5a700;
+  background-color: #fff7e6;
+  padding: 3px 6px 3px 23px;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  position: relative;
+  font-size: 12px;
+}
+main .table > tbody > tr > td.num_alt_alleles .comment:before {
+  content: "\f071";
+  font-family: FontAwesome;
+  color: #f5a700;
+  position: absolute;
+  top: 50%;
+  left: 6px;
+  transform: translateY(-50%);
+  margin-right: 4px;
 }
 main .table > tbody > tr > td.num_alleles {
   color: #444;
