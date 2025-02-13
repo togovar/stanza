@@ -2774,7 +2774,7 @@ class GeneProteinBrowser extends Stanza {
 	  
 	  // seq & aa
 	  if(params.scale == params.maxScale){
-	    aaPos = roundFloat((1 - params.start) * params.seqArea / params.seqLen * params.scale + params.marginLeft + 8); // 微調整
+	    aaPos = roundFloat((1 - params.start) * params.seqArea / params.seqLen * params.scale + params.marginLeft + 7); // 微調整
 	  }
 	};
 
