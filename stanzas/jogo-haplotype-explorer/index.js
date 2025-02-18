@@ -22,8 +22,6 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	Authorization: "Basic " + btoa("nagalab:nagalab")
       }
     }
-    if (window.location.hostname == "sparql-support.dbcls.jp"
-	|| window.location.hostname == "stg-grch38.togovar.org") jogo_api = "https://sparql-support.dbcls.jp/api/jogo_api?url=" + encodeURIComponent(jogo_api);
 
     let id_list = {};
     let popup_id2info = {};
