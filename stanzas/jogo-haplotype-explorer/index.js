@@ -6,7 +6,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
     //// variables
     const aa = {Gly: "G", Ala: "A", Leu: "L", Met: "M", Phe: "F", Trp: "W", Lys: "K", Gln: "Q", Glu: "E", Ser: "S", Pro: "P", Val: "V", Ile: "I", Cys: "C", Tyr: "Y", His: "H", Arg: "R", Asn: "N", Asp: "D", Thr: "T", Ter: "X"};
     
-    const tgv_api = this.params.togovar_api
+    const tgv_api = this.params.togovar_api + "?formatter=jogo";
     const tgv_bdy = '{"offset":#offset,"limit":#limit,"query":{"and":[{"gene":{"relation":"eq","terms":[#hgncid]}},{"or":[{"significance":{"relation":"eq","source":["mgend"],"terms":["P","LP","US","LB","B","DR","O","NP"]}},{"significance":{"relation":"eq","source":["clinvar"],"terms":["P","LP","PLP","LPLP","ERA","LRA","URA","US","LB","B","CI","DR","CS","RF","A","PR","AF","O","NP","AN"]}}]}]}}';
     let tgv_opt = {method: 'POST', headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}}
 
@@ -22,7 +22,8 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	Authorization: "Basic " + btoa("nagalab:nagalab")
       }
     }
-    
+    if (window.location.hostname == "sparql-support.dbcls.jp"
+	|| window.location.hostname == "stg-grch38.togovar.org") jogo_api = "https://sparql-support.dbcls.jp/api/jogo_api?url=" + encodeURIComponent(jogo_api);
 
     let id_list = {};
     let popup_id2info = {};
@@ -428,17 +429,20 @@ export default class JogoHaplotypeExplorer extends Stanza {
     let filtered = false;
     const limit = 1000;
     let offset = 0;
+    let count = 0;
     let clin_sig = {};
-    while (!filtered || filtered > offset) {
+    while (!filtered || filtered > count) {
       tgv_opt.body = tgv_bdy.replace(/#hgncid/, hgncid).replace(/#offset/, offset).replace(/#limit/, limit);
       const togovar = await fetch(tgv_api, tgv_opt).then(res => res.json());
-      filtered = togovar.statistics.filtered;
+      if (togovar.statistics) filtered = togovar.statistics.filtered;
+      else filtered = 1; // for 'formatter=jogo' option in TogoVar API (w/o offset-limit scroll)
       if (togovar.data) {
 	for (const d of togovar.data) {
 	  clin_sig[ d.reference + d.position + d.alternate] = d.significance;
 	}
       }
-      offset += limit;
+      offset = '["' + togovar.data[togovar.data.length - 1].chromosome + '","' + togovar.data[togovar.data.length - 1].vcf.position + '","' + togovar.data[togovar.data.length - 1].vcf.reference + '","' + togovar.data[togovar.data.length - 1].vcf.alternate + '"]';
+      count += limit;
     }
     for (let i = 0; i < variant.length; i++) {
       const v =  variant[i].ref + variant[i].pos + variant[i].alt;
