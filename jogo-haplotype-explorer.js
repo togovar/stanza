@@ -6,7 +6,7 @@ class JogoHaplotypeExplorer extends Stanza {
     //// variables
     const aa = {Gly: "G", Ala: "A", Leu: "L", Met: "M", Phe: "F", Trp: "W", Lys: "K", Gln: "Q", Glu: "E", Ser: "S", Pro: "P", Val: "V", Ile: "I", Cys: "C", Tyr: "Y", His: "H", Arg: "R", Asn: "N", Asp: "D", Thr: "T", Ter: "X"};
     
-    const tgv_api = this.params.togovar_api;
+    const tgv_api = this.params.togovar_api + "?formatter=jogo";
     const tgv_bdy = '{"offset":#offset,"limit":#limit,"query":{"and":[{"gene":{"relation":"eq","terms":[#hgncid]}},{"or":[{"significance":{"relation":"eq","source":["mgend"],"terms":["P","LP","US","LB","B","DR","O","NP"]}},{"significance":{"relation":"eq","source":["clinvar"],"terms":["P","LP","PLP","LPLP","ERA","LRA","URA","US","LB","B","CI","DR","CS","RF","A","PR","AF","O","NP","AN"]}}]}]}}';
     let tgv_opt = {method: 'POST', headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}};
 
@@ -22,7 +22,8 @@ class JogoHaplotypeExplorer extends Stanza {
 	Authorization: "Basic " + btoa("nagalab:nagalab")
       }
     };
-    
+    if (window.location.hostname == "sparql-support.dbcls.jp"
+	|| window.location.hostname == "stg-grch38.togovar.org") jogo_api = "https://sparql-support.dbcls.jp/api/jogo_api?url=" + encodeURIComponent(jogo_api);
 
     let id_list = {};
     let popup_id2info = {};
@@ -428,17 +429,20 @@ class JogoHaplotypeExplorer extends Stanza {
     let filtered = false;
     const limit = 1000;
     let offset = 0;
+    let count = 0;
     let clin_sig = {};
-    while (!filtered || filtered > offset) {
+    while (!filtered || filtered > count) {
       tgv_opt.body = tgv_bdy.replace(/#hgncid/, hgncid).replace(/#offset/, offset).replace(/#limit/, limit);
       const togovar = await fetch(tgv_api, tgv_opt).then(res => res.json());
-      filtered = togovar.statistics.filtered;
+      if (togovar.statistics) filtered = togovar.statistics.filtered;
+      else filtered = 1; // for 'formatter=jogo' option in TogoVar API (w/o offset-limit scroll)
       if (togovar.data) {
 	for (const d of togovar.data) {
 	  clin_sig[ d.reference + d.position + d.alternate] = d.significance;
 	}
       }
-      offset += limit;
+      offset = '["' + togovar.data[togovar.data.length - 1].chromosome + '","' + togovar.data[togovar.data.length - 1].vcf.position + '","' + togovar.data[togovar.data.length - 1].vcf.reference + '","' + togovar.data[togovar.data.length - 1].vcf.alternate + '"]';
+      count += limit;
     }
     for (let i = 0; i < variant.length; i++) {
       const v =  variant[i].ref + variant[i].pos + variant[i].alt;
@@ -739,7 +743,7 @@ var templates = [
     + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"var_data") : depth0),{"name":"each","hash":{},"fn":container.program(4, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":18,"column":244},"end":{"line":18,"column":366}}})) != null ? stack1 : "")
     + "</li>\n      <li class=\"child_node\">\n	<ul id=\""
     + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":20,"column":9},"end":{"line":20,"column":15}}}) : helper)))
-    + "_chld\" class=\"a_chld\" style=\"display:none;\">\n"
+    + "_chld\" class=\"a_chld\">\n"
     + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"child_hap") : depth0),{"name":"each","hash":{},"fn":container.program(7, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":21,"column":3},"end":{"line":37,"column":12}}})) != null ? stack1 : "")
     + "	</ul>\n      </li>\n";
 },"4":function(container,depth0,helpers,partials,data) {
@@ -791,7 +795,7 @@ var templates = [
     + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"var_data") : depth0),{"name":"each","hash":{},"fn":container.program(4, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":22,"column":241},"end":{"line":22,"column":363}}})) != null ? stack1 : "")
     + "</li>\n	  <li class=\"child_node\">\n	    <ul id=\""
     + alias4(((helper = (helper = lookupProperty(helpers,"id_sub") || (depth0 != null ? lookupProperty(depth0,"id_sub") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id_sub","hash":{},"data":data,"loc":{"start":{"line":24,"column":13},"end":{"line":24,"column":23}}}) : helper)))
-    + "_chld\" class=\"c_chld\" style=\"display:none;\">\n"
+    + "_chld\" class=\"c_chld\">\n"
     + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"child_hap") : depth0),{"name":"each","hash":{},"fn":container.program(8, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":25,"column":7},"end":{"line":34,"column":16}}})) != null ? stack1 : "")
     + "	    </ul>\n	  </li>\n";
 },"8":function(container,depth0,helpers,partials,data) {
@@ -818,7 +822,7 @@ var templates = [
     + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"var_data") : depth0),{"name":"each","hash":{},"fn":container.program(4, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":26,"column":245},"end":{"line":26,"column":367}}})) != null ? stack1 : "")
     + "</li>\n	      <li class=\"child_node\">\n		<ul id=\""
     + alias4(((helper = (helper = lookupProperty(helpers,"id_sub") || (depth0 != null ? lookupProperty(depth0,"id_sub") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id_sub","hash":{},"data":data,"loc":{"start":{"line":28,"column":10},"end":{"line":28,"column":20}}}) : helper)))
-    + "_chld\" class=\"t_chld\" style=\"display:none;\">\n"
+    + "_chld\" class=\"t_chld\">\n"
     + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"child_hap") : depth0),{"name":"each","hash":{},"fn":container.program(9, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":29,"column":4},"end":{"line":31,"column":13}}})) != null ? stack1 : "")
     + "		</ul>\n	      </li>\n";
 },"9":function(container,depth0,helpers,partials,data) {
@@ -882,7 +886,7 @@ var templates = [
 
   return "<div id=\"main\">\n  "
     + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"title") : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":2,"column":2},"end":{"line":2,"column":55}}})) != null ? stack1 : "")
-    + "\n  <div id=\"popup\">\n  </div>\n  <div>\n    Show:\n    <span id=\"show_all\" class=\"ctrl\"><input type=\"radio\" name=\"mode\" id=\"r_all\" value=\"all\" checked><span class=\"show_switch c_x\">All level</span></span>\n    <span id=\"show_a\" class=\"ctrl\"><input type=\"radio\" name=\"mode\" id=\"r_a\" value=\"a\"><span id=\"r_a_label\" class=\"show_switch c_a\">Amino acid level</span></span>\n    <span id=\"show_c\" class=\"ctrl\"><input type=\"radio\" name=\"mode\" id=\"r_c\" value=\"c\"><span id=\"r_c_label\" class=\"show_switch c_c c_na\">Coding level</span></span>\n    <span id=\"show_t\" class=\"ctrl\"><input type=\"radio\" name=\"mode\" id=\"r_t\" value=\"t\"><span id=\"r_t_label\" class=\"show_switch c_t c_na\">Transcript level</span></span>\n    <span id=\"show_g\" class=\"ctrl\"><input type=\"radio\" name=\"mode\" id=\"r_g\" value=\"g\"><span id=\"r_g_label\" class=\"show_switch c_g c_na\">Genebody level</span></span>\n    <br>\n    <span id=\"open_all\" class=\"ctrl show_switch c_x\">Open all</span> <span id=\"reset\" class=\"ctrl show_switch c_x\">Reset</span>\n  </div>\n  <div class=\"viewer\">\n    <ul id=\"root_ul\">\n"
+    + "\n  <div id=\"popup\">\n  </div>\n  <div>\n    Show:\n    <span id=\"show_all\" class=\"ctrl\"><input type=\"radio\" name=\"mode\" id=\"r_all\" value=\"all\" checked><span class=\"show_switch c_x\">All level</span></span>\n    <span id=\"show_a\" class=\"ctrl\"><input type=\"radio\" name=\"mode\" id=\"r_a\" value=\"a\"><span id=\"r_a_label\" class=\"show_switch c_a\">Amino acid level</span></span>\n    <span id=\"show_c\" class=\"ctrl\"><input type=\"radio\" name=\"mode\" id=\"r_c\" value=\"c\"><span id=\"r_c_label\" class=\"show_switch c_c\">Coding level</span></span>\n    <span id=\"show_t\" class=\"ctrl\"><input type=\"radio\" name=\"mode\" id=\"r_t\" value=\"t\"><span id=\"r_t_label\" class=\"show_switch c_t\">Transcript level</span></span>\n    <span id=\"show_g\" class=\"ctrl\"><input type=\"radio\" name=\"mode\" id=\"r_g\" value=\"g\"><span id=\"r_g_label\" class=\"show_switch c_g\">Genebody level</span></span>\n    <br>\n    <span id=\"open_all\" class=\"ctrl show_switch c_x\">Open all</span> <span id=\"reset\" class=\"ctrl show_switch c_x\">Close all</span>\n  </div>\n  <div class=\"viewer\">\n    <ul id=\"root_ul\">\n"
     + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"hap") : depth0),{"name":"each","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":17,"column":6},"end":{"line":40,"column":15}}})) != null ? stack1 : "")
     + "    </ul>\n    <ul id=\"var_freq\">\n"
     + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"var_freq") : depth0),{"name":"each","hash":{},"fn":container.program(11, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":43,"column":6},"end":{"line":45,"column":15}}})) != null ? stack1 : "")
