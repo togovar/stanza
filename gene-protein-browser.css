@@ -1349,7 +1349,7 @@ main svg#protein_browser_svg rect.button_on, main svg#protein_browser_svg path.b
   stroke: #0F6272;
   stroke-width: 1;
   fill: #BDD1D5;
-  rx: 7;
+  rx: 7px;
 }
 main svg#protein_browser_svg text.button_on {
   fill: #0F6272;
@@ -1359,7 +1359,7 @@ main svg#protein_browser_svg rect.button_off {
   stroke: #95928E;
   stroke-width: 1;
   fill: #ffffff;
-  rx: 7;
+  rx: 7px;
 }
 main svg#protein_browser_svg text.button_off {
   fill: #95928E;
@@ -1376,47 +1376,47 @@ main svg#protein_browser_svg .pin_symbol_bg {
 main svg#protein_browser_svg .ptm_p_S {
   stroke: #ffc31e;
   fill: #ffc31e;
-  rx: 9;
+  rx: 9px;
 }
 main svg#protein_browser_svg .ptm_p_T {
   stroke: #ff831e;
   fill: #ff831e;
-  rx: 9;
+  rx: 9px;
 }
 main svg#protein_browser_svg .ptm_p_Y {
   stroke: #ff5a1e;
   fill: #ff5a1e;
-  rx: 9;
+  rx: 9px;
 }
 main svg#protein_browser_svg .ptm_a {
   stroke: #00ce1e;
   fill: #00ce1e;
-  rx: 9;
+  rx: 9px;
 }
 main svg#protein_browser_svg .ptm_m {
   stroke: #00ce7f;
   fill: #00ce7f;
-  rx: 9;
+  rx: 9px;
 }
 main svg#protein_browser_svg .ptm_c {
   stroke: #00c7ce;
   fill: #00c7ce;
-  rx: 9;
+  rx: 9px;
 }
 main svg#protein_browser_svg .ptm_s {
   stroke: #007bce;
   fill: #007bce;
-  rx: 9;
+  rx: 9px;
 }
 main svg#protein_browser_svg .ptm_g {
   stroke: #8c6cc6;
   fill: #8c6cc6;
-  rx: 9;
+  rx: 9px;
 }
 main svg#protein_browser_svg .ptm_other {
   stroke: #936a76;
   fill: #936a76;
-  rx: 9;
+  rx: 9px;
 }
 main svg#protein_browser_svg .sig_P, main svg#protein_browser_svg .sig_LP {
   stroke: #ff5a54;
