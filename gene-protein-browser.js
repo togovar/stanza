@@ -2702,7 +2702,7 @@ class GeneProteinBrowser extends Stanza {
       lineHeight: 18,   // const
       boxSize: 19,      // const
       scale: 1,
-      start: 1,
+      start: 0,
       freqLineY: 0,
       mouseX: 0,
       mouseY: 0,
@@ -2741,7 +2741,7 @@ class GeneProteinBrowser extends Stanza {
 	let i = 0;
 	while (i * interval < params.seqLen) {
 	  let axis = { l: i * interval, d: "none" };
-	  let x = roundFloat((i * interval - params.start + 1) * params.seqArea / params.seqLen * params.scale);
+	  let x = roundFloat((i * interval - params.start) * params.seqArea / params.seqLen * params.scale);
 	  if (x >= 0 && x <= params.seqArea) {
 	    axis.x = x + params.marginLeft;
 	    if ((i * interval) % 100 == 0
@@ -2774,7 +2774,7 @@ class GeneProteinBrowser extends Stanza {
 	  
 	  // seq & aa
 	  if(params.scale == params.maxScale){
-	    aaPos = roundFloat((1 - params.start) * params.seqArea / params.seqLen * params.scale + params.marginLeft + 7); // 微調整
+	    aaPos = roundFloat((0 - params.start) * params.seqArea / params.seqLen * params.scale + params.marginLeft + 9); // 微調整
 	  }
 	};
 
@@ -2955,7 +2955,7 @@ class GeneProteinBrowser extends Stanza {
 	
       const setData = () => {
 	for (let i = 0; i < data.length; i++) {
-	  const x = roundFloat((data[i].position - params.start + 0.5) * params.seqArea / params.seqLen * params.scale - params.boxSize / 2); // '+ 0.5' = align center
+	  const x = roundFloat((data[i].position - params.start - 1.5) * params.seqArea / params.seqLen * params.scale + params.marginLeft); // '- 0.5' = align center
 	  if (x + params.boxSize >= 0 && x <= params.seqArea) {
 	    data[i].x = x + params.marginLeft;
 	    data[i].d = "block";
@@ -3116,7 +3116,7 @@ class GeneProteinBrowser extends Stanza {
 	
       const setData = () => {
 	for (let i = 0; i < data.length; i++) {
-	  const x = roundFloat((data[i].position - params.start + 0.5) * params.seqArea / params.seqLen * params.scale - params.boxSize / 2); // '+ 0.5' = align center
+	  const x = roundFloat((data[i].position - params.start - 1.5) * params.seqArea / params.seqLen * params.scale + params.marginLeft); // '- 0.5' = align center
 	  if (x + params.boxSize >= 0 && x <= params.seqArea) {
 	    data[i].x = x + params.marginLeft;
 	    data[i].d = "block";
@@ -3230,8 +3230,8 @@ class GeneProteinBrowser extends Stanza {
       let setTimeoutId = null; // scroll stop timer
       
       const setParamsStart = () => {
-	if (params.start < 1) params.start = 1;
-	if ((params.seqLen - params.start - 1) * params.scale < params.seqLen) params.start = params.seqLen * (params.scale - 1) / params.scale + 1;
+	if (params.start < 0) params.start = 0;
+	if ((params.seqLen - params.start) * params.scale < params.seqLen) params.start = (params.seqLen - 1) * (params.scale - 1) / params.scale + 1;
       };
 	
       // drag = [mouseDown + mouseMove + mouseUp] 	
@@ -3278,10 +3278,8 @@ class GeneProteinBrowser extends Stanza {
 	    params.scale /= 1.03;
 	    if(params.scale < 1) params.scale = 1;
 	  }
-	  params.scale = Math.round(params.scale * 100) / 100;
 	  const newPosition = (params.mouseX - params.marginLeft) * params.seqLen / params.seqArea / params.scale;	
 	  params.start += position - newPosition;
-	  params.start = Math.round(params.start * 100) / 100;
 	  setParamsStart();
 	  setData();
 	  plot();
@@ -3358,7 +3356,7 @@ class GeneProteinBrowser extends Stanza {
     params.seqSp = data.seq.replace(/(\w)/g, "$1 ").replace(/ $/, "");
     params.seqLen = data.seq.length;
     params.fontWidth = params.fontScaleX * 10 * 2; // font 依存
-    params.maxScale = Math.round(params.seqLen / params.seqArea * params.fontWidth * 100) / 100;
+    params.maxScale = params.seqLen / params.seqArea * params.fontWidth;
     
     track_init(svg, params);
     if (data.variant[0]) track_pin(svg, params, data.variant, "Missense variants", "track_variant");
