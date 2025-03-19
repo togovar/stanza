@@ -664,6 +664,9 @@ export default class GeneProteinBrowser extends Stanza {
       if (root.offsetWidth < popup.offsetWidth + params.mouseX + 20) {
         popup.style.left = (parseInt(params.mouseX - popup.offsetWidth) - 20) + "px"; // popup on the left
       }
+      if (root.offsetHeight < popup.offsetHeight + params.mouseY + 5) {
+        popup.style.top = (parseInt(root.offsetHeight - popup.offsetHeight) - 10) + "px"; // offset popup bottom
+      }
       const guide = this.root.querySelector('#guide_line');
       let dw = roundFloat(params.scale / params.maxScale * params.fontWidth);
       let dx = 4;
