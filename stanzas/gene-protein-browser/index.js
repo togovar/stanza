@@ -34,6 +34,7 @@ export default class GeneProteinBrowser extends Stanza {
       fontScaleX: 1.4,  // const
       lineHeight: 18,   // const
       boxSize: 19,      // const
+      minuteAdjust: 9,  // const (SVG x 座標微調整用)
       scale: 1,
       start: 0,
       freqLineY: 0,
@@ -107,7 +108,7 @@ export default class GeneProteinBrowser extends Stanza {
 	  
 	  // seq & aa
 	  if(params.scale == params.maxScale){
-	    aaPos = roundFloat((0 - params.start) * params.seqArea / params.seqLen * params.scale + params.marginLeft + 9); // 微調整
+	    aaPos = roundFloat((0 - params.start) * params.seqArea / params.seqLen * params.scale + params.minuteAdjust);
 	  }
 	};
 
@@ -125,7 +126,7 @@ export default class GeneProteinBrowser extends Stanza {
 	// seq & aa & back (各トラックの aaseq を一括管理)
 	if(params.scale == params.maxScale){
 	  svg.selectAll("g.seq")
-	    .attr("transform", "translate(" + aaPos + ",0)")
+	    .attr("transform", "translate(" + (aaPos + params.marginLeft) + ",0)")
 	    .attr("display", "block");
 /*	  svg.selectAll("rect.x_axis_bg")
 	    .data(xAxisBg)
@@ -288,7 +289,7 @@ export default class GeneProteinBrowser extends Stanza {
 	
       const setData = () => {
 	for (let i = 0; i < data.length; i++) {
-	  const x = roundFloat((data[i].position - params.start - 1.5) * params.seqArea / params.seqLen * params.scale + params.marginLeft); // '- 0.5' = align center
+	  const x = roundFloat((data[i].position - params.start - 0.5 - (params.minuteAdjust / params.fontWidth)) * params.seqArea / params.seqLen * params.scale); // '- 0.5' = align center
 	  if (x + params.boxSize >= 0 && x <= params.seqArea) {
 	    data[i].x = x + params.marginLeft;
 	    data[i].d = "block";
@@ -449,7 +450,7 @@ export default class GeneProteinBrowser extends Stanza {
 	
       const setData = () => {
 	for (let i = 0; i < data.length; i++) {
-	  const x = roundFloat((data[i].position - params.start - 1.5) * params.seqArea / params.seqLen * params.scale + params.marginLeft); // '- 0.5' = align center
+	  const x = roundFloat((data[i].position - params.start - 0.5 - (params.minuteAdjust / params.fontWidth)) * params.seqArea / params.seqLen * params.scale); // '- 0.5' = align center
 	  if (x + params.boxSize >= 0 && x <= params.seqArea) {
 	    data[i].x = x + params.marginLeft;
 	    data[i].d = "block";
