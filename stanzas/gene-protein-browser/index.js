@@ -17,11 +17,10 @@ export default class GeneProteinBrowser extends Stanza {
     );
 
     const hgnc_id= this.params.hgnc_id;
-    const togovar_target = this.params.togovar_target;
     const jpost_endpoint = this.params.jpost_endpoint;
     const glycosmos_endpoint = this.params.glycosmos_endpoint;
-    const api = "https://" + togovar_target + ".togovar.org/sparqlist/api/gene_protein_browser";
-    const get_params = "?hgnc_id=" + hgnc_id + "&togovar_target=" + togovar_target + "&jpost_endpoint=" + encodeURI(jpost_endpoint) + "&glycosmos_endpoint=" + encodeURI(glycosmos_endpoint);
+    const api = (this.params?.sparqlist || "/sparqlist") + "/api/gene_protein_browser";
+    const get_params = "?hgnc_id=" + hgnc_id + "&jpost_endpoint=" + encodeURI(jpost_endpoint) + "&glycosmos_endpoint=" + encodeURI(glycosmos_endpoint);
 
     let params = {
       svgWidth: this.root.querySelector("main").offsetWidth,  // const
@@ -34,7 +33,7 @@ export default class GeneProteinBrowser extends Stanza {
       fontScaleX: 1.4,  // const
       lineHeight: 18,   // const
       boxSize: 19,      // const
-      minuteAdjust: 9,  // const (SVG x 座標微調整用)
+      minuteAdjust: 9,  // const (SVG x-pos 座標微調整用 'left margin of AA-sequence-text-element')
       scale: 1,
       start: 0,
       freqLineY: 0,
