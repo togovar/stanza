@@ -706,6 +706,10 @@ ul {
       color: $COLOR_KEY_DEEP;
     }
 
+    &[data-stars="0"] {
+      width: 0%;
+    }
+
     &[data-stars="1"] {
       width: 25%;
     }

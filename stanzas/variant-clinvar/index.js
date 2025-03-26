@@ -24,7 +24,8 @@ export default class VariantSummary extends Stanza {
       let bindings = unwrapValueFromBinding(json);
 
       bindings.forEach(function (binding) {
-        binding.stars = REVIEW_STATUS[binding.review_status]?.stars || 0;
+        binding.vcv_stars = REVIEW_STATUS[binding.vcv_review_status]?.stars || 0;
+        binding.rcv_stars = REVIEW_STATUS[binding.rcv_review_status]?.stars || 0;
         binding.significance_class = CLINICAL_SIGNIFICANCE[binding.interpretation?.toLowerCase()]?.key;
         binding.condition = {
           label: binding.condition,

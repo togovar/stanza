@@ -5,7 +5,8 @@
     <thead>
       <tr>
         <th>Title</th>
-        <th>Review status</th>
+        <th>VCV review status</th>
+        <th>RCV review status</th>
         <th>Clinical significance</th>
         <th>Last evaluated</th>
         <th>Condition(s)</th>
@@ -20,21 +21,28 @@
           </td>
           <td class='review-status'>
             <span class='star-rating'>
-              <span data-stars='{{stars}}' class='star-rating-item'></span>
+              <span data-stars='{{vcv_stars}}' class='star-rating-item'></span>
             </span>
             <br />
-            <span class='status-description'>{{review_status}}</span>
+            <span class='status-description'>{{vcv_review_status}}</span>
           </td>
-          <td class='clinical-significance-col'>
+          <td class='review-status rowspan-ignore'>
+            <span class='star-rating'>
+              <span data-stars='{{rcv_stars}}' class='star-rating-item'></span>
+            </span>
+            <br />
+            <span class='status-description'>{{rcv_review_status}}</span>
+          </td>
+          <td class='clinical-significance-col rowspan-ignore'>
             <span
               class='clinical-significance-full'
               data-sign='{{significance_class}}'
             >{{interpretation}}</span>
           </td>
-          <td class='last-evaluated'>
+          <td class='last-evaluated rowspan-ignore'>
             {{last_evaluated}}
           </td>
-          <td class='condition'>
+          <td class='condition rowspan-ignore'>
             <a href='{{condition.url}}'>{{condition.label}}</a>
           </td>
         </tr>
