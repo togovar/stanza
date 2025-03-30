@@ -19,13 +19,6 @@
       "stanza:required": true
     },
     {
-      "stanza:key": "togovar_target",
-      "stanza:type": "string",
-      "stanza:example": "stg-grch38",
-      "stanza:description": "TogoVar target stage",
-      "stanza:required": true
-    },
-    {
       "stanza:key": "jpost_endpoint",
       "stanza:type": "string",
       "stanza:example": "https://tools.jpostdb.org/proxy/sparql",
@@ -38,6 +31,12 @@
       "stanza:example": "https://ts.glycosmos.org/sparql",
       "stanza:description": "GlyCosmos SPARQL endpoint",
       "stanza:required": true
+    },
+    {
+      "stanza:key": "sparqlist",
+      "stanza:example": "https://stg-grch38.togovar.org/sparqlist",
+      "stanza:description": "SPARQList URL",
+      "stanza:required": false
     }
   ],
   "stanza:menu-placement": "bottom-right",

@@ -2684,11 +2684,10 @@ class GeneProteinBrowser extends Stanza {
     );
 
     const hgnc_id= this.params.hgnc_id;
-    const togovar_target = this.params.togovar_target;
     const jpost_endpoint = this.params.jpost_endpoint;
     const glycosmos_endpoint = this.params.glycosmos_endpoint;
-    const api = "https://" + togovar_target + ".togovar.org/sparqlist/api/gene_protein_browser";
-    const get_params = "?hgnc_id=" + hgnc_id + "&togovar_target=" + togovar_target + "&jpost_endpoint=" + encodeURI(jpost_endpoint) + "&glycosmos_endpoint=" + encodeURI(glycosmos_endpoint);
+    const api = (this.params?.sparqlist || "/sparqlist") + "/api/gene_protein_browser";
+    const get_params = "?hgnc_id=" + hgnc_id + "&jpost_endpoint=" + encodeURI(jpost_endpoint) + "&glycosmos_endpoint=" + encodeURI(glycosmos_endpoint);
 
     let params = {
       svgWidth: this.root.querySelector("main").offsetWidth,  // const
@@ -2701,6 +2700,7 @@ class GeneProteinBrowser extends Stanza {
       fontScaleX: 1.4,  // const
       lineHeight: 18,   // const
       boxSize: 19,      // const
+      minuteAdjust: 9,  // const (SVG x-pos 座標微調整用 'left margin of AA-sequence-text-element')
       scale: 1,
       start: 0,
       freqLineY: 0,
@@ -2774,7 +2774,7 @@ class GeneProteinBrowser extends Stanza {
 	  
 	  // seq & aa
 	  if(params.scale == params.maxScale){
-	    aaPos = roundFloat((0 - params.start) * params.seqArea / params.seqLen * params.scale + params.marginLeft + 9); // 微調整
+	    aaPos = roundFloat((0 - params.start) * params.seqArea / params.seqLen * params.scale + params.minuteAdjust);
 	  }
 	};
 
@@ -2792,7 +2792,7 @@ class GeneProteinBrowser extends Stanza {
 	// seq & aa & back (各トラックの aaseq を一括管理)
 	if(params.scale == params.maxScale){
 	  svg.selectAll("g.seq")
-	    .attr("transform", "translate(" + aaPos + ",0)")
+	    .attr("transform", "translate(" + (aaPos + params.marginLeft) + ",0)")
 	    .attr("display", "block");
 /*	  svg.selectAll("rect.x_axis_bg")
 	    .data(xAxisBg)
@@ -2955,7 +2955,7 @@ class GeneProteinBrowser extends Stanza {
 	
       const setData = () => {
 	for (let i = 0; i < data.length; i++) {
-	  const x = roundFloat((data[i].position - params.start - 1.5) * params.seqArea / params.seqLen * params.scale + params.marginLeft); // '- 0.5' = align center
+	  const x = roundFloat((data[i].position - params.start - 0.5 - (params.minuteAdjust / params.fontWidth)) * params.seqArea / params.seqLen * params.scale); // '- 0.5' = align center
 	  if (x + params.boxSize >= 0 && x <= params.seqArea) {
 	    data[i].x = x + params.marginLeft;
 	    data[i].d = "block";
@@ -3116,7 +3116,7 @@ class GeneProteinBrowser extends Stanza {
 	
       const setData = () => {
 	for (let i = 0; i < data.length; i++) {
-	  const x = roundFloat((data[i].position - params.start - 1.5) * params.seqArea / params.seqLen * params.scale + params.marginLeft); // '- 0.5' = align center
+	  const x = roundFloat((data[i].position - params.start - 0.5 - (params.minuteAdjust / params.fontWidth)) * params.seqArea / params.seqLen * params.scale); // '- 0.5' = align center
 	  if (x + params.boxSize >= 0 && x <= params.seqArea) {
 	    data[i].x = x + params.marginLeft;
 	    data[i].d = "block";
@@ -3327,6 +3327,9 @@ class GeneProteinBrowser extends Stanza {
       if (root.offsetWidth < popup.offsetWidth + params.mouseX + 20) {
         popup.style.left = (parseInt(params.mouseX - popup.offsetWidth) - 20) + "px"; // popup on the left
       }
+      if (root.offsetHeight < popup.offsetHeight + params.mouseY + 5) {
+        popup.style.top = (parseInt(root.offsetHeight - popup.offsetHeight) - 10) + "px"; // offset popup bottom
+      }
       const guide = this.root.querySelector('#guide_line');
       let dw = roundFloat(params.scale / params.maxScale * params.fontWidth);
       let dx = 4;
@@ -3397,13 +3400,6 @@ var metadata = {
 		"stanza:required": true
 	},
 	{
-		"stanza:key": "togovar_target",
-		"stanza:type": "string",
-		"stanza:example": "stg-grch38",
-		"stanza:description": "TogoVar target stage",
-		"stanza:required": true
-	},
-	{
 		"stanza:key": "jpost_endpoint",
 		"stanza:type": "string",
 		"stanza:example": "https://tools.jpostdb.org/proxy/sparql",
@@ -3416,6 +3412,12 @@ var metadata = {
 		"stanza:example": "https://ts.glycosmos.org/sparql",
 		"stanza:description": "GlyCosmos SPARQL endpoint",
 		"stanza:required": true
+	},
+	{
+		"stanza:key": "sparqlist",
+		"stanza:example": "https://stg-grch38.togovar.org/sparqlist",
+		"stanza:description": "SPARQList URL",
+		"stanza:required": false
 	}
 ],
 	"stanza:menu-placement": "bottom-right",
