@@ -26,15 +26,8 @@ export default class VariantSummary extends Stanza {
 
       if (binding) {
         [binding.chr, binding.assembly] = binding.reference.split("/").slice(-2);
-        if (binding.stop) {
-          binding.position = `${binding.start}-${binding.stop}`;
-        } else {
-          binding.position = `${binding.start}`;
-        }
 
         Object.assign(binding, display.refAlt(binding.ref, binding.alt));
-
-        binding.hgvs = uniq(grouping(bindings, "hgvs").filter(v => v));
       }
 
       return {result: {...binding}};
