@@ -1,6 +1,5 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-33919c9f.js';
-import { u as unwrapValueFromBinding, g as grouping } from './utils-6f61a843.js';
-import { u as uniq } from './uniq-f80b7f40.js';
+import { u as unwrapValueFromBinding } from './utils-6f61a843.js';
 import { r as refAlt } from './display-8f29f2e3.js';
 import './constants-f43484af.js';
 
@@ -26,15 +25,8 @@ class VariantSummary extends Stanza {
 
       if (binding) {
         [binding.chr, binding.assembly] = binding.reference.split("/").slice(-2);
-        if (binding.stop) {
-          binding.position = `${binding.start}-${binding.stop}`;
-        } else {
-          binding.position = `${binding.start}`;
-        }
 
         Object.assign(binding, refAlt(binding.ref, binding.alt));
-
-        binding.hgvs = uniq(grouping(bindings, "hgvs").filter(v => v));
       }
 
       return {result: {...binding}};
@@ -118,10 +110,10 @@ var templates = [
     };
 
   return "  <div>\n    <table class=\"table -horizontalkeyvalue\">\n"
-    + ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"result") : depth0),{"name":"with","hash":{},"fn":container.program(4, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":6,"column":6},"end":{"line":36,"column":15}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"result") : depth0),{"name":"with","hash":{},"fn":container.program(4, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":6,"column":6},"end":{"line":28,"column":15}}})) != null ? stack1 : "")
     + "    </table>\n  </div>\n";
 },"4":function(container,depth0,helpers,partials,data) {
-    var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=container.hooks.helperMissing, alias3="function", alias4=container.escapeExpression, lookupProperty = container.lookupProperty || function(parent, propertyName) {
+    var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=container.hooks.helperMissing, alias3="function", alias4=container.escapeExpression, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
         }
@@ -144,13 +136,7 @@ var templates = [
     + alias4(((helper = (helper = lookupProperty(helpers,"position") || (depth0 != null ? lookupProperty(depth0,"position") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"position","hash":{},"data":data,"loc":{"start":{"line":22,"column":75},"end":{"line":22,"column":87}}}) : helper)))
     + "</span> <span\n              class='assembly'>("
     + alias4(((helper = (helper = lookupProperty(helpers,"assembly") || (depth0 != null ? lookupProperty(depth0,"assembly") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"assembly","hash":{},"data":data,"loc":{"start":{"line":23,"column":32},"end":{"line":23,"column":44}}}) : helper)))
-    + ")</span>\n          </td>\n          <th>hgvs</th>\n          <td>\n            <ul class=\"no-bullet\">\n"
-    + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"hgvs") : depth0),{"name":"each","hash":{},"fn":container.program(5, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":28,"column":14},"end":{"line":32,"column":23}}})) != null ? stack1 : "")
-    + "            </ul>\n          </td>\n        </tr>\n";
-},"5":function(container,depth0,helpers,partials,data) {
-    return "                <li>\n                  "
-    + container.escapeExpression(container.lambda(depth0, depth0))
-    + "\n                </li>\n";
+    + ")</span>\n          </td>\n          <th></th>\n          <td></td>\n        </tr>\n";
 },"compiler":[8,">= 4.3.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
@@ -159,7 +145,7 @@ var templates = [
         return undefined
     };
 
-  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"error") : depth0),{"name":"with","hash":{},"fn":container.program(1, data, 0),"inverse":container.program(3, data, 0),"data":data,"loc":{"start":{"line":1,"column":0},"end":{"line":39,"column":9}}})) != null ? stack1 : "");
+  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"error") : depth0),{"name":"with","hash":{},"fn":container.program(1, data, 0),"inverse":container.program(3, data, 0),"data":data,"loc":{"start":{"line":1,"column":0},"end":{"line":31,"column":9}}})) != null ? stack1 : "");
 },"useData":true}]
 ];
 
