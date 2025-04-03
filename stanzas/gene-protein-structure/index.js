@@ -159,5 +159,15 @@ export default class GeneStructure extends Stanza {
     this.root.querySelector("#pdb_select_" + this.params.hgnc_id).addEventListener("change", e => { change_view(true);})
     this.root.querySelector("#variant_select_" + this.params.hgnc_id).addEventListener("change", e => { change_view(false); })
     this.root.querySelector("#variant_checkbox_" + this.params.hgnc_id).addEventListener("change", e => { change_var_select(e); })
+
+    // mouse event control
+    let iframe = this.root.querySelector("#pdb_div_" + this.params.hgnc_id);
+    let block_div = this.root.querySelector("#mouse_event_block");
+    block_div.style.top = iframe.offsetTop + "px";
+    block_div.style.left = iframe.offsetLeft + "px";
+    block_div.style.height = iframe.offsetHeight + "px";
+    block_div.style.width = iframe.offsetWidth + "px";
+    block_div.addEventListener("click", e => {this.root.querySelector("#mouse_event_block").style.zIndex = "-1"});
+    this.root.querySelector("main").addEventListener("mouseleave", e => {this.root.querySelector("#mouse_event_block").style.zIndex = "0"});
   }
 }
