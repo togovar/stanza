@@ -217,8 +217,7 @@ export default class GeneProteinBrowser extends Stanza {
       setData();
       render();
       plot();
-      
-      mouse_event_check(svg, params);
+
       add_mouse_event(svg, params, setData, plot);
     }
 
@@ -550,14 +549,6 @@ export default class GeneProteinBrowser extends Stanza {
       
       add_mouse_event(svg, params, setData, plot);
     }
-
-
-    //// mouse event
-    const mouse_event_check = (svg, params) => {
-      params.mouseOnElement = false;
-      svg.on("mouseover", function(){ params.mouseOnElement = true;});
-      svg.on("mouseout", function(){ params.mouseOnElement = false;});
-    }
 	  
     const add_mouse_event = (svg, params, setData, plot) => {
       let setTimeoutId = null; // scroll stop timer
@@ -635,9 +626,20 @@ export default class GeneProteinBrowser extends Stanza {
 	  if(params.mouseOnElement) window.onwheel = true;
 	}
       }
+
+      const mouseEventOn = () => {
+	params.mouseOnElement = true;
+      }
       
+      const mouseEventOff = () => {
+	params.mouseOnElement = false;
+      }
+
+      params.mouseOnElement = false;
+      svg.on("mouseover", mouseEventOn, false);
+      svg.on("mouseleave", mouseEventOff, false);
       svg.on("mousedown", mouseDownEvent, false);	
-      d3.select(window).on("mouseup", mouseUpEvent, false);
+      svg.on("mouseup", mouseUpEvent, false);
       const mousewheel = "onwheel" in document ? "wheel" : "onmousewheel" in document ? "mousewheel" : "DOMMouseScroll";
       document.addEventListener (mousewheel,  scrollEvent, {passive: false});
       // svg.on("mousemove", mouseMoveEventDraw, false);                        // 最後に指定したイベントのみ
