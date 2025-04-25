@@ -159,6 +159,16 @@ class GeneStructure extends Stanza {
     this.root.querySelector("#pdb_select_" + this.params.hgnc_id).addEventListener("change", e => { change_view(true);});
     this.root.querySelector("#variant_select_" + this.params.hgnc_id).addEventListener("change", e => { change_view(false); });
     this.root.querySelector("#variant_checkbox_" + this.params.hgnc_id).addEventListener("change", e => { change_var_select(e); });
+
+    // mouse event control
+    let iframe = this.root.querySelector("#pdb_div_" + this.params.hgnc_id);
+    let block_div = this.root.querySelector("#mouse_event_block");
+    block_div.style.top = iframe.offsetTop + "px";
+    block_div.style.left = iframe.offsetLeft + "px";
+    block_div.style.height = iframe.offsetHeight + "px";
+    block_div.style.width = iframe.offsetWidth + "px";
+    block_div.addEventListener("click", e => {this.root.querySelector("#mouse_event_block").style.zIndex = "-1";});
+    this.root.querySelector("main").addEventListener("mouseleave", e => {this.root.querySelector("#mouse_event_block").style.zIndex = "0";});
   }
 }
 
@@ -258,7 +268,7 @@ var templates = [
     + alias2(((helper = (helper = lookupProperty(helpers,"url") || (depth0 != null ? lookupProperty(depth0,"url") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(alias3,{"name":"url","hash":{},"data":data,"loc":{"start":{"line":34,"column":15},"end":{"line":34,"column":22}}}) : helper)))
     + "\" id=\"pdb_iframe_"
     + alias2(alias1(((stack1 = (depth0 != null ? lookupProperty(depth0,"params") : depth0)) != null ? lookupProperty(stack1,"hgnc_id") : stack1), depth0))
-    + "\" width=\"800\" height=\"500\"></iframe>\n</div>\n<p class=\"pdb_info\" id=\"pdb_refine_"
+    + "\" width=\"800\" height=\"500\"></iframe>\n</div>\n<div id=\"mouse_event_block\"></div>\n<p class=\"pdb_info\" id=\"pdb_refine_"
     + alias2(alias1(((stack1 = (depth0 != null ? lookupProperty(depth0,"params") : depth0)) != null ? lookupProperty(stack1,"hgnc_id") : stack1), depth0))
     + "\"></p>\n";
 },"2":function(container,depth0,helpers,partials,data) {
@@ -333,7 +343,7 @@ var templates = [
     + " {\n      max-width: 100px;\n  }\n  #variant_select_"
     + alias2(alias1(((stack1 = (depth0 != null ? lookupProperty(depth0,"params") : depth0)) != null ? lookupProperty(stack1,"hgnc_id") : stack1), depth0))
     + " {\n      max-width: calc((var(--togostanza-iframe-width) - 300) * 1px);\n  }\n</style>\n\n"
-    + ((stack1 = lookupProperty(helpers,"if").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"structure") : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0, blockParams, depths),"inverse":container.program(9, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":19,"column":0},"end":{"line":39,"column":7}}})) != null ? stack1 : "");
+    + ((stack1 = lookupProperty(helpers,"if").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"structure") : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0, blockParams, depths),"inverse":container.program(9, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":19,"column":0},"end":{"line":40,"column":7}}})) != null ? stack1 : "");
 },"useData":true,"useDepths":true}]
 ];
 

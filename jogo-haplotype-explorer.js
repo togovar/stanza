@@ -439,7 +439,7 @@ class JogoHaplotypeExplorer extends Stanza {
 	  clin_sig[ d.reference + d.position + d.alternate] = d.significance;
 	}
       }
-      offset = '["' + togovar.data[togovar.data.length - 1].chromosome + '","' + togovar.data[togovar.data.length - 1].vcf.position + '","' + togovar.data[togovar.data.length - 1].vcf.reference + '","' + togovar.data[togovar.data.length - 1].vcf.alternate + '"]';
+      offset = '["' + togovar.data[togovar.data.length - 1].chromosome + '","' + togovar.data[togovar.data.length - 1].position + '","' + togovar.data[togovar.data.length - 1].reference + '","' + togovar.data[togovar.data.length - 1].alternate + '"]';
       count += limit;
     }
     for (let i = 0; i < variant.length; i++) {
