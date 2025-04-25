@@ -1251,6 +1251,9 @@ ul.no-bullet {
   content: "★★★★";
   color: #249EB3;
 }
+.star-rating > .star-rating-item[data-stars="0"] {
+  width: 0%;
+}
 .star-rating > .star-rating-item[data-stars="1"] {
   width: 25%;
 }

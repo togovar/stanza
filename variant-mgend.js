@@ -1,6 +1,6 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-33919c9f.js';
 import { C as CLINICAL_SIGNIFICANCE } from './constants-f43484af.js';
-import { r as rowSpanize } from './table-6800e3de.js';
+import { r as rowSpanize } from './table-dac50f51.js';
 
 class VariantMGeND extends Stanza {
   async render() {

@@ -26,7 +26,7 @@ function processCellsForRowspan(table, lastSeenCells) {
 }
 
 function shouldCombine(lastSeenCells, index, html, td) {
-  return typeof lastSeenCells[index] !== "undefined" && lastSeenCells[index].html === html && !td.classList.contains("clinical-significance-col");
+  return typeof lastSeenCells[index] !== "undefined" && lastSeenCells[index].html === html && !td.classList.contains("clinical-significance-col") && !td.classList.contains("rowspan-ignore");
 }
 function getCurrentRowspan(element) {
   return parseInt(element.getAttribute("data-rowspan")) || 1;
@@ -46,4 +46,4 @@ function removeExtraCells(table) {
 }
 
 export { rowSpanize as r };
-//# sourceMappingURL=table-6800e3de.js.map
+//# sourceMappingURL=table-dac50f51.js.map
