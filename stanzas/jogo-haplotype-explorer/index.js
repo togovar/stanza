@@ -205,14 +205,20 @@ export default class JogoHaplotypeExplorer extends Stanza {
     const add_var_event = (el) => {
       el.addEventListener("mouseover", (e) => {
 	const popup_id = e.target.getAttribute("popup_id");
-	const root_el = this.root.querySelector("main");
+	const root_el  = this.root.querySelector("main");
+	const view_el  = this.root.querySelector("#haplotype_view");
 	const popup_el = this.root.querySelector("#popup");
+	const scale = view_el.scale ? parseFloat(view_el.scale) : 1;
+	const headerHeight = view_el.offsetTop - root_el.offsetTop;
 	popup_el.innerHTML = popup_id2info[popup_id];
 	popup_el.style.display = "block";
-	popup_el.style.top = (parseInt(e.target.offsetTop - root_el.scrollTop) + 20) + "px";
-	popup_el.style.left = (parseInt(e.target.offsetLeft - root_el.scrollLeft) + 30) + "px"; // popup on the right
-	if (root_el.offsetWidth < popup_el.offsetWidth + e.target.offsetLeft - root_el.scrollLeft + 30) {
-	  popup_el.style.left = (parseInt(e.target.offsetLeft - root_el.scrollLeft - popup_el.offsetWidth) - 20) + "px"; // popup on the left
+	popup_el.style.top = (parseInt(e.target.offsetTop * scale + headerHeight) + 20) + "px";  // popup on the bottom
+	popup_el.style.left = (parseInt(e.target.offsetLeft * scale) + 30) + "px"; // popup on the right
+	if (root_el.offsetHeight < popup_el.offsetHeight + (e.target.offsetTop - root_el.scrollTop) * scale + 30) {
+	  popup_el.style.top = (parseInt((e.target.offsetTop - popup_el.offsetHeight) * scale) - 20) + "px"; // popup on the upper
+	}
+	if (root_el.offsetWidth < popup_el.offsetWidth + (e.target.offsetLeft - root_el.scrollLeft) * scale + 30) {
+	  popup_el.style.left = (parseInt((e.target.offsetLeft - popup_el.offsetWidth) * scale) - 20) + "px"; // popup on the left
 	}
       })
       el.addEventListener("mouseout", (e) => {
@@ -380,7 +386,6 @@ export default class JogoHaplotypeExplorer extends Stanza {
     }
 
     ////// main
-    // paese html
     const jogo_json = await fetch(jogo_api, jogo_basic).then(res => res.json());
     // console.log(jogo_json);
     const hgncid = jogo_json.maneinfo.hgncid;
@@ -388,6 +393,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
     const strand = jogo_json.maneinfo.strand;
     const region = jogo_json.maneinfo.regionname5000;
     let variant = [];
+    let scale = 1;
     
     id_list.a = ext_id_list(jogo_json.ahaplotypesummary, "ahapid");
     id_list.c = ext_id_list(jogo_json.chaplotypesummary, "chapid");
@@ -642,6 +648,40 @@ export default class JogoHaplotypeExplorer extends Stanza {
     // variant event
     this.root.querySelectorAll(".popup").forEach((el) => {
       add_var_event(el);
-    });	
+    });
+    // scale
+    const scale_button = this.root.querySelector("#scale_button");
+    const scale_button_rect = scale_button.getBoundingClientRect();
+    const haplotype_div = this.root.querySelector("#haplotype_view");
+    const haplotype_div_rect = haplotype_div.getBoundingClientRect();
+    const main_div = this.root.querySelector("#main");
+    const button_bg_width = this.root.querySelector("#scale_button_bg").getBoundingClientRect().width; // style.scss
+    const button_width = scale_button_rect.width;                                                      // style.scss
+    const mv_width = button_bg_width - button_width - 2;
+    let button_flag = false;
+    let button_left = mv_width;
+    const min_scale = 0.2;
+    scale_button.style.left = button_left + "px";
+    scale_button.addEventListener("mousedown", e => {
+      button_flag = true;
+    });
+    main_div.addEventListener("mousemove", e => {
+      if (button_flag) {
+	button_left = e.clientX - scale_button_rect.left - scale_button_rect.width / 2;
+	if (button_left <= 0) button_left = 0;
+	else if (button_left >= mv_width) button_left = mv_width;
+	scale_button.style.left = button_left + "px";
+      }
+    });
+    main_div.addEventListener("mouseup", e => {
+      button_flag = false;
+      if (button_left >= 0 && button_left <= mv_width) {
+	scale = (mv_width / (1 - min_scale) - (mv_width - button_left)) / (mv_width / (1 - min_scale));
+	haplotype_div.style.transform = "scale(" + scale + ")";
+	haplotype_div.scale = scale;
+	haplotype_div.style.width = (haplotype_div_rect.width / scale) + "px";
+	haplotype_div.style.height = (haplotype_div_rect.height / scale) + "px";
+      }
+    }); 
   }
 }
