@@ -205,14 +205,20 @@ class JogoHaplotypeExplorer extends Stanza {
     const add_var_event = (el) => {
       el.addEventListener("mouseover", (e) => {
 	const popup_id = e.target.getAttribute("popup_id");
-	const root_el = this.root.querySelector("main");
+	const root_el  = this.root.querySelector("main");
+	const view_el  = this.root.querySelector("#haplotype_view");
 	const popup_el = this.root.querySelector("#popup");
+	const scale = view_el.scale ? parseFloat(view_el.scale) : 1;
+	const headerHeight = view_el.offsetTop - root_el.offsetTop;
 	popup_el.innerHTML = popup_id2info[popup_id];
 	popup_el.style.display = "block";
-	popup_el.style.top = (parseInt(e.target.offsetTop - root_el.scrollTop) + 20) + "px";
-	popup_el.style.left = (parseInt(e.target.offsetLeft - root_el.scrollLeft) + 30) + "px"; // popup on the right
-	if (root_el.offsetWidth < popup_el.offsetWidth + e.target.offsetLeft - root_el.scrollLeft + 30) {
-	  popup_el.style.left = (parseInt(e.target.offsetLeft - root_el.scrollLeft - popup_el.offsetWidth) - 20) + "px"; // popup on the left
+	popup_el.style.top = (parseInt(e.target.offsetTop * scale + headerHeight) + 20) + "px";  // popup on the bottom
+	popup_el.style.left = (parseInt(e.target.offsetLeft * scale) + 30) + "px"; // popup on the right
+	if (root_el.offsetHeight < popup_el.offsetHeight + (e.target.offsetTop - root_el.scrollTop) * scale + 30) {
+	  popup_el.style.top = (parseInt((e.target.offsetTop - popup_el.offsetHeight) * scale) - 20) + "px"; // popup on the upper
+	}
+	if (root_el.offsetWidth < popup_el.offsetWidth + (e.target.offsetLeft - root_el.scrollLeft) * scale + 30) {
+	  popup_el.style.left = (parseInt((e.target.offsetLeft - popup_el.offsetWidth) * scale) - 20) + "px"; // popup on the left
 	}
       });
       el.addEventListener("mouseout", (e) => {
@@ -380,7 +386,6 @@ class JogoHaplotypeExplorer extends Stanza {
     };
 
     ////// main
-    // paese html
     const jogo_json = await fetch(jogo_api, jogo_basic).then(res => res.json());
     // console.log(jogo_json);
     const hgncid = jogo_json.maneinfo.hgncid;
@@ -388,6 +393,7 @@ class JogoHaplotypeExplorer extends Stanza {
     const strand = jogo_json.maneinfo.strand;
     const region = jogo_json.maneinfo.regionname5000;
     let variant = [];
+    let scale = 1;
     
     id_list.a = ext_id_list(jogo_json.ahaplotypesummary, "ahapid");
     id_list.c = ext_id_list(jogo_json.chaplotypesummary, "chapid");
@@ -642,7 +648,41 @@ class JogoHaplotypeExplorer extends Stanza {
     // variant event
     this.root.querySelectorAll(".popup").forEach((el) => {
       add_var_event(el);
-    });	
+    });
+    // scale
+    const scale_button = this.root.querySelector("#scale_button");
+    const scale_button_rect = scale_button.getBoundingClientRect();
+    const haplotype_div = this.root.querySelector("#haplotype_view");
+    const haplotype_div_rect = haplotype_div.getBoundingClientRect();
+    const main_div = this.root.querySelector("#main");
+    const button_bg_width = this.root.querySelector("#scale_button_bg").getBoundingClientRect().width; // style.scss
+    const button_width = scale_button_rect.width;                                                      // style.scss
+    const mv_width = button_bg_width - button_width - 2;
+    let button_flag = false;
+    let button_left = mv_width;
+    const min_scale = 0.2;
+    scale_button.style.left = button_left + "px";
+    scale_button.addEventListener("mousedown", e => {
+      button_flag = true;
+    });
+    main_div.addEventListener("mousemove", e => {
+      if (button_flag) {
+	button_left = e.clientX - scale_button_rect.left - scale_button_rect.width / 2;
+	if (button_left <= 0) button_left = 0;
+	else if (button_left >= mv_width) button_left = mv_width;
+	scale_button.style.left = button_left + "px";
+      }
+    });
+    main_div.addEventListener("mouseup", e => {
+      button_flag = false;
+      if (button_left >= 0 && button_left <= mv_width) {
+	scale = (mv_width / (1 - min_scale) - (mv_width - button_left)) / (mv_width / (1 - min_scale));
+	haplotype_div.style.transform = "scale(" + scale + ")";
+	haplotype_div.scale = scale;
+	haplotype_div.style.width = (haplotype_div_rect.width / scale) + "px";
+	haplotype_div.style.height = (haplotype_div_rect.height / scale) + "px";
+      }
+    }); 
   }
 }
 
@@ -884,7 +924,7 @@ var templates = [
 
   return "<div id=\"main\">\n  "
     + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"title") : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":2,"column":2},"end":{"line":2,"column":55}}})) != null ? stack1 : "")
-    + "\n  <div id=\"popup\">\n  </div>\n  <div>\n    Show:\n    <span id=\"show_all\" class=\"ctrl\"><input type=\"radio\" name=\"mode\" id=\"r_all\" value=\"all\" checked><span class=\"show_switch c_x\">All level</span></span>\n    <span id=\"show_a\" class=\"ctrl\"><input type=\"radio\" name=\"mode\" id=\"r_a\" value=\"a\"><span id=\"r_a_label\" class=\"show_switch c_a\">Amino acid level</span></span>\n    <span id=\"show_c\" class=\"ctrl\"><input type=\"radio\" name=\"mode\" id=\"r_c\" value=\"c\"><span id=\"r_c_label\" class=\"show_switch c_c\">Coding level</span></span>\n    <span id=\"show_t\" class=\"ctrl\"><input type=\"radio\" name=\"mode\" id=\"r_t\" value=\"t\"><span id=\"r_t_label\" class=\"show_switch c_t\">Transcript level</span></span>\n    <span id=\"show_g\" class=\"ctrl\"><input type=\"radio\" name=\"mode\" id=\"r_g\" value=\"g\"><span id=\"r_g_label\" class=\"show_switch c_g\">Genebody level</span></span>\n    <br>\n    <span id=\"open_all\" class=\"ctrl show_switch c_x\">Open all</span> <span id=\"reset\" class=\"ctrl show_switch c_x\">Close all</span>\n  </div>\n  <div class=\"viewer\">\n    <ul id=\"root_ul\">\n"
+    + "\n  <div id=\"popup\">\n  </div>\n  <div>\n    Show:\n    <span id=\"show_all\" class=\"ctrl\"><input type=\"radio\" name=\"mode\" id=\"r_all\" value=\"all\" checked><span class=\"show_switch c_x\">All level</span></span>\n    <span id=\"show_a\" class=\"ctrl\"><input type=\"radio\" name=\"mode\" id=\"r_a\" value=\"a\"><span id=\"r_a_label\" class=\"show_switch c_a\">Amino acid level</span></span>\n    <span id=\"show_c\" class=\"ctrl\"><input type=\"radio\" name=\"mode\" id=\"r_c\" value=\"c\"><span id=\"r_c_label\" class=\"show_switch c_c\">Coding level</span></span>\n    <span id=\"show_t\" class=\"ctrl\"><input type=\"radio\" name=\"mode\" id=\"r_t\" value=\"t\"><span id=\"r_t_label\" class=\"show_switch c_t\">Transcript level</span></span>\n    <span id=\"show_g\" class=\"ctrl\"><input type=\"radio\" name=\"mode\" id=\"r_g\" value=\"g\"><span id=\"r_g_label\" class=\"show_switch c_g\">Genebody level</span></span>\n    <br>\n    <span id=\"open_all\" class=\"ctrl show_switch c_x\">Open all</span> <span id=\"reset\" class=\"ctrl show_switch c_x\">Close all</span> <div id=\"scale_button_bg\"><div id=\"scale_button\" class=\"ctrl\"></div></div>\n  </div>\n  <div class=\"viewer\" id=\"haplotype_view\">\n    <ul id=\"root_ul\">\n"
     + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"hap") : depth0),{"name":"each","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":17,"column":6},"end":{"line":40,"column":15}}})) != null ? stack1 : "")
     + "    </ul>\n    <ul id=\"var_freq\">\n"
     + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"var_freq") : depth0),{"name":"each","hash":{},"fn":container.program(11, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":43,"column":6},"end":{"line":45,"column":15}}})) != null ? stack1 : "")

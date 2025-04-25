@@ -1268,6 +1268,7 @@ ul.no-bullet {
 }
 
 main div#main {
+  position: relative;
   width: auto;
   height: auto;
   max-height: calc(var(--togostanza-max-height) * 1px);
@@ -1279,7 +1280,7 @@ main div#main h1.header {
 }
 main div#main .show_switch {
   padding: 2px 10px 2px 10px;
-  border-radius: 7px;
+  border-radius: 10px;
 }
 main div#main .c_x {
   color: #ffffff;
@@ -1307,6 +1308,29 @@ main div#main .c_na {
 }
 main div#main .hapid, main div#main .open_button, main div#main .ctrl, main div#main .c_a, main div#main .c_c, main div#main .c_t, main div#main .c_g, main div#main .c_as, main div#main .c_cs, main div#main .c_ts, main div#main .c_gs {
   cursor: pointer;
+}
+main div#main #scale_button_bg {
+  display: inline-block;
+  position: relative;
+  width: 160px;
+  height: 20px;
+  border-radius: 10px;
+  top: 2px;
+  margin-left: 2px;
+  background-color: #888888;
+}
+main div#main #scale_button {
+  display: inline-block;
+  position: relative;
+  width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  margin-left: 1px;
+  background-color: #ffffff;
+}
+main div#main div#haplotype_view {
+  position: relative;
+  transform-origin: top left;
 }
 main div#main div.viewer {
   font-family: "Courier New", monospace;
