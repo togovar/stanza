@@ -1267,9 +1267,6 @@ ul.no-bullet {
   width: 100%;
 }
 
-main {
-  min-height: calc(var(--togostanza-canvas-height) * 1px);
-}
 main .table.gene > tbody > tr > th {
   width: 139px;
   text-align: right;

@@ -1268,7 +1268,7 @@ ul.no-bullet {
 }
 
 main {
-  min-height: calc(var(--togostanza-canvas-height) * 1px);
+  max-height: calc(var(--togostanza-canvas-height) * 1px);
 }
 main .table > thead > tr > th {
   white-space: nowrap;

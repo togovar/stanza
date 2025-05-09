@@ -84,12 +84,6 @@ var metadata = {
 ],
 	"stanza:menu-placement": "bottom-right",
 	"stanza:style": [
-	{
-		"stanza:key": "--togostanza-canvas-height",
-		"stanza:type": "number",
-		"stanza:default": 71,
-		"stanza:description": "Canvas height"
-	}
 ]
 };
 

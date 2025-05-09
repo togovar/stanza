@@ -1266,7 +1266,3 @@ ul.no-bullet {
 .star-rating > .star-rating-item[data-stars="4"] {
   width: 100%;
 }
-
-main {
-  min-height: calc(var(--togostanza-canvas-height) * 1px);
-}

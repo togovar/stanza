@@ -25141,10 +25141,11 @@ var devDependencies = {
 	"eslint-config-prettier": "^8.5.0",
 	"postcss-cssnext": "^3.1.1",
 	"postcss-import": "^15.1.0",
-	stylelint: "^13.12.0",
-	"stylelint-config-recommended": "^4.0.0",
-	"stylelint-config-recommended-scss": "^4.2.0",
-	"stylelint-scss": "^3.19.0"
+	"postcss-scss": "^4.0.9",
+	stylelint: "^16.19.1",
+	"stylelint-config-recommended": "^16.0.0",
+	"stylelint-config-recommended-scss": "^14.1.0",
+	"stylelint-scss": "^6.12.0"
 };
 var scripts = {
 	build: "npx togostanza build",
@@ -25227,4 +25228,4 @@ script.render = render;
 script.__file = "node_modules/togostanza/src/components/Layout.vue";
 
 export { unref as A, normalizeStyle as B, Fragment as F, createElementBlock as a, renderList as b, createBlock as c, defineComponent as d, createBaseVNode as e, createCommentVNode as f, createApp as g, ref as h, octicons as i, createTextVNode as j, computed as k, watch as l, mergeProps as m, normalizeProps as n, openBlock as o, guardReactiveProps as p, resolveDynamicComponent as q, resolveComponent as r, script as s, toDisplayString as t, createVNode as u, pushScopeId as v, withCtx as w, popScopeId as x, n as y, normalizeClass as z };
-//# sourceMappingURL=Layout-9e6a1db7.js.map
+//# sourceMappingURL=Layout-e6c09c4c.js.map

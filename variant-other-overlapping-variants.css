@@ -1268,7 +1268,6 @@ ul.no-bullet {
 }
 
 main {
-  min-height: calc(var(--togostanza-canvas-height) * 1px);
   max-height: calc(var(--togostanza-canvas-height) * 1px);
 }
 main .table.other_alternative_alleles > tbody > tr > td {

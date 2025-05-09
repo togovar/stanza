@@ -1267,9 +1267,6 @@ ul.no-bullet {
   width: 100%;
 }
 
-main {
-  min-height: calc(var(--togostanza-canvas-height) * 1px);
-}
 main .table {
   width: 100%;
   table-layout: fixed;

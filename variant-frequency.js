@@ -764,7 +764,7 @@ var metadata = {
 	{
 		"stanza:key": "--togostanza-canvas-height",
 		"stanza:type": "number",
-		"stanza:default": 251,
+		"stanza:default": 250,
 		"stanza:description": "Canvas height"
 	}
 ]
