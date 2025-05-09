@@ -1,7 +1,6 @@
 @use "@/assets/css/common";
 
 main {
-  min-height: calc(var(--togostanza-canvas-height) * 1px);
   max-height: calc(var(--togostanza-canvas-height) * 1px);
 
 .table > tbody > tr {
