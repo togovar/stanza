@@ -23,13 +23,13 @@ export default class VariantSummary extends Stanza {
       }
 
       const chr = binding.reference.split("/").slice(-2)[0];
-      const start = parseInt(binding.start);
-      const stop = binding.stop ? parseInt(binding.stop) : start;
+      const from = parseInt(binding.position);
+      const to = from + Math.max(binding.ref.length - 1, 0);
       const range = parseInt(this.params.margin) || 50;
 
       const src = (this.params.jbrowse ? this.params.jbrowse : "/jbrowse").concat(
-        "/index.html?loc=", encodeURIComponent(`${chr}:${start - range}..${stop + range}`),
-        "&highlight=", encodeURIComponent(`${chr}:${start}..${stop}`));
+        "/index.html?loc=", encodeURIComponent(`${chr}:${from - range}..${to + range}`),
+        "&highlight=", encodeURIComponent(`${chr}:${from}..${to}`));
 
       return {
         result: {
