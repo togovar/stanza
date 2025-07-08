@@ -915,11 +915,11 @@ var templates = [
     };
 
   return "                <td class='num_genotype_hemi_alt num-td'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"hemi_alt") || (depth0 != null ? lookupProperty(depth0,"hemi_alt") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"hemi_alt","hash":{},"data":data,"loc":{"start":{"line":96,"column":57},"end":{"line":96,"column":69}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"hac") || (depth0 != null ? lookupProperty(depth0,"hac") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"hac","hash":{},"data":data,"loc":{"start":{"line":96,"column":57},"end":{"line":96,"column":64}}}) : helper)))
     + "</td>\n                <td class='num_genotype_hemi_ref num-td'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"hemi_ref") || (depth0 != null ? lookupProperty(depth0,"hemi_ref") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"hemi_ref","hash":{},"data":data,"loc":{"start":{"line":97,"column":57},"end":{"line":97,"column":69}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"hrc") || (depth0 != null ? lookupProperty(depth0,"hrc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"hrc","hash":{},"data":data,"loc":{"start":{"line":97,"column":57},"end":{"line":97,"column":64}}}) : helper)))
     + "</td>\n                <td class='num_genotype_hemi_otheralts num-td'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"hemi_others") || (depth0 != null ? lookupProperty(depth0,"hemi_others") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"hemi_others","hash":{},"data":data,"loc":{"start":{"line":98,"column":63},"end":{"line":98,"column":78}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"hoc") || (depth0 != null ? lookupProperty(depth0,"hoc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"hoc","hash":{},"data":data,"loc":{"start":{"line":98,"column":63},"end":{"line":98,"column":70}}}) : helper)))
     + "</td>\n";
 },"23":function(container,depth0,helpers,partials,data,blockParams,depths) {
     var stack1, lookupProperty = container.lookupProperty || function(parent, propertyName) {
