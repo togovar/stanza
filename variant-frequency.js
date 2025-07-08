@@ -359,7 +359,7 @@ class VariantSummary extends Stanza {
           // Other_Alts/Other_Alts(JGA-WGSのみ)
           frequencyData.ooc = localeString(frequencyData.ooc);
 
-          if (!hasHemizygote && (frequencyData.hemi_alt !== undefined || frequencyData.hemi_ref !== undefined || frequencyData.hemi_others !== undefined)) {
+          if (!hasHemizygote && (frequencyData.hac !== undefined || frequencyData.hrc !== undefined || frequencyData.hoc !== undefined)) {
             hasHemizygote = true;
           }
 
