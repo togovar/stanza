@@ -2,34 +2,43 @@ import Stanza from 'togostanza/stanza';
 
 export default class JogoHaplotypeExplorer extends Stanza {
   async render() {
-
+    
+    //=============================================================
     //// variables
     const aa = {Gly: "G", Ala: "A", Leu: "L", Met: "M", Phe: "F", Trp: "W", Lys: "K", Gln: "Q", Glu: "E", Ser: "S", Pro: "P", Val: "V", Ile: "I", Cys: "C", Tyr: "Y", His: "H", Arg: "R", Asn: "N", Asp: "D", Thr: "T", Ter: "X"};
     
     const tgv_api = this.params.togovar_api + "?formatter=jogo";
     const tgv_bdy = '{"offset":#offset,"limit":#limit,"query":{"and":[{"gene":{"relation":"eq","terms":[#hgncid]}},{"or":[{"significance":{"relation":"eq","source":["mgend"],"terms":["P","LP","US","LB","B","DR","O","NP"]}},{"significance":{"relation":"eq","source":["clinvar"],"terms":["P","LP","PLP","LPLP","ERA","LRA","URA","US","LB","B","CI","DR","CS","RF","A","PR","AF","O","NP","AN"]}}]}]}}';
-    let tgv_opt = {method: 'POST', headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}}
+    let tgv_opt = {method: 'POST', headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}};
 
     let jogo_api = "https://jogo.csml.org/gene?format=json&&genename=" + this.params.symbol;
     let stanza_title = this.params.symbol;
     if (this.params.region_name.match(/chr.+_\d+_\d+/)) {
-      jogo_api = "https://jogo.csml.org/genicregion?format=json&regionname=" + this.params.region_name;
+      jogo_api = "https://jogo.csml.org/genicregion?format=json&sections=maneinfo,ahaplotypesummary,chaplotypesummary,thaplotypesummary,ghaplotypesummary,achaplotypesummary,acthaplotypesummary,actghaplotypesummary,avariants,cvariants,tvariants,gvariants&regionname=" + this.params.region_name;
       stanza_title = this.params.region_name;
     }
     if (this.params.hide_header == 1) stanza_title = false;
-    const jogo_basic = {
-      headers: {
-	Authorization: "Basic " + btoa("nagalab:nagalab")
-      }
-    }
+   // if (window.location.hostname == "sparql-support.dbcls.jp") jogo_api = "https://sparql-support.dbcls.jp/api/jogo_api?url=" + encodeURIComponent(jogo_api);
 
+
+    let symbol = this.params.symbol;
+    if (this.params.region_name) symbol = this.params.region_name.match(/^([^_]+)_/)[1];
+    const togoid_api = "https://api.togoid.dbcls.jp/convert?route=hgnc_symbol%2CTIO_000022%2Chgnc&report=target&format=json&ids=" + symbol;
+
+    const init_search_ids = this.params.search_ids;
+    const init_highlight_ids = this.params.highlight_ids;
+    const init_highlight_positions = this.params.highlight_positions;
+    let init_level = this.params.level;
+    if (!init_level) init_level = "act";
+    
+    
     let id_list = {};
     let popup_id2info = {};
     let popup_id2tgv = {};
     let hapid2var = {};
     let prev_order = {};
 
-
+    //=============================================================
     //// construct html
     // make freq. color
     const make_freq_color = (count, total) => {
@@ -61,7 +70,8 @@ export default class JogoHaplotypeExplorer extends Stanza {
       if (v.alt.length > 4) alt_tmp = v.alt[0] + v.alt[1] + v.alt[2] + "...";
       return "<span style='white-space: nowrap;'>chr<span class='chr'>" + chr_tmp + "</span> : " + v.pos + " <div class='ref-alt'><span class='ref' data-sum='" + v.ref.length + "'>" + ref_tmp + "</span><span class='arrow'></span><span class='alt' data-sum='" + v.alt.length + "'>" + alt_tmp + "<span></div></span>";
     }
-    
+
+    //=============================================================
     //// parse jogo json
     // get ids
     const ext_id_list = (hap_sum, id_name) => {
@@ -87,7 +97,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
       for (const v of hap_var) {
 	let id = {};
 	for (const d of v[id_name].split(/,/)) {
-	  id[d] = true;
+	  id[d.match(/([a-z]\d{4})$/)[1]] = true;
 	}
 	let cons = v.snpeff_annotation.replace(/_/g, " ");
 	cons = cons.charAt(0).toUpperCase() + cons.slice(1);
@@ -125,6 +135,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
       return variant;
     }
 
+    //=============================================================
     //// construct haplotype data
     // check nucleotide by strand
     const chk_strand = (nt, strand) => {
@@ -136,23 +147,28 @@ export default class JogoHaplotypeExplorer extends Stanza {
     }
 
     // construct variant array of a haplotype
-    const make_var_char = (id, num, strand, variant, amino) => {
+    const make_var_char = (id, min, max, strand, variant, amino) => {
       let array = [];
+      let ii = 0;
       for (const v of variant) {
-	if (v.type_num < num) {
+	if (min <= v.type_num && v.type_num <= max) {
 	  let char = ".";
 	  let popup_id = "";
-	  if (v.ref.length == 1) char = chk_strand(v.ref);
+	  if (v.ref.length == 1) char = chk_strand(v.ref, strand);
 	  else if (v.hgvsc.match(/del/) && v.ref.length == 2) char = chk_strand(v.ref[1], strand);
 	  if (amino) {
 	    if (v.hgvsp.match(/p\.[A-Z][a-z]{2}\d+/)) char = aa[v.hgvsp.match(/([A-Z][a-z]{2})\d+/)[1]];
 	    else if (v.hgvsp.match(/\*\d+/)) char = "*";
 	  }
 	  let type = "r";
-	  if (v.id[id]
-	      || v.id[id.replace(/:c\d+/, "")] || v.id[id.replace(/:t\d+/, "")] || v.id[id.replace(/:g\d+/, "")]
-	      || v.id[id.replace(/:c\d+:t\d+/, "")] || v.id[id.replace(/:t\d+:g\d+/, "")]
-	      || v.id[id.replace(/:c\d+:t\d+:g\d+/, "")]) {
+	  let flag = false;
+	  for (const d of Object.keys(v.id)) {
+	    if (id.match(d)) {
+	      flag = true;
+	      break;
+	    }
+	  }
+	  if (flag) { //v.id[id]) {
 	    char = "?";
 	    if (amino) {
 	      if (v.hgvsp.match(/\d+[A-Z][a-z]{2}/)) char = aa[v.hgvsp.match(/\d+([A-Z][a-z]{2})/)[1]];
@@ -170,36 +186,36 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	    else if (v.hgvsc.match(/del/)) char = "-";
 	    else if (v.hgvsc.match(/dup/)) char = "d";
 	    type = v.type;
-	    if (v.sig) type += "s";
 	    popup_id = v.ref + v.pos.toString() + v.alt;
 	  }
 	  array.push({
 	    char: char,
-	    type: type,
-	    popup_id: popup_id
+	    type: type == "r" ? false : type,
+//	    significance: v.sig ? true : false,
+	    popup_id: popup_id,
 	  });
 	}
+	ii++;
       }
       return array;
     }
     
     // construct hierarchical haplotype data (a > c > t > g)
-    const construct_data = (d, num, child_hap, total, strand, variant, amino) => {
-      const id_sub =  d.id.replace(/:/g, "_");
-      const var_data = make_var_char(d.id, num, strand, variant, amino);
+    const construct_data = (d, min, max, total, strand, variant, mode, amino) => {
+      const var_data = make_var_char(d.id, min, max, strand, variant, amino);
       let obj = {
 	id: d.id,
+	mode: mode,
 	count: d.count,
-	id_sub: id_sub,
 	var_data: var_data,
 	color: make_freq_color(d.count, total)
       };
-      if (child_hap) obj.child_hap = child_hap;
-      popup_id2info[d.id.replace(/:/g, "_")] = "<span class='hapid'>" + d.id + "</span><br>" + d.count + " / " + total + make_freq_graph(d.pop, true);
+      popup_id2info[d.id] = "<span class='hapid'>" + d.id + "</span><br>" + d.count + " / " + total + make_freq_graph(d.pop, true);
       hapid2var[d.id] = var_data;
       return obj;
     }
 
+    //=============================================================
     //// make DOMs for sort view
     // add event to vaiant
     const add_var_event = (el) => {
@@ -207,22 +223,34 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	const popup_id = e.target.getAttribute("popup_id");
 	const root_el  = this.root.querySelector("main");
 	const view_el  = this.root.querySelector("#haplotype_view");
+	const scroll_el  = this.root.querySelector("#haplotype_view_scroll");
 	const popup_el = this.root.querySelector("#popup");
 	const scale = view_el.scale ? parseFloat(view_el.scale) : 1;
 	const headerHeight = view_el.offsetTop - root_el.offsetTop;
 	popup_el.innerHTML = popup_id2info[popup_id];
-	popup_el.style.display = "block";
-	popup_el.style.top = (parseInt(e.target.offsetTop * scale + headerHeight) + 20) + "px";  // popup on the bottom
-	popup_el.style.left = (parseInt(e.target.offsetLeft * scale) + 30) + "px"; // popup on the right
-	if (root_el.offsetHeight < popup_el.offsetHeight + (e.target.offsetTop - root_el.scrollTop) * scale + 30) {
-	  popup_el.style.top = (parseInt((e.target.offsetTop - popup_el.offsetHeight) * scale) - 20) + "px"; // popup on the upper
+	popup_el.classList.remove("hidden");
+	const scroll_rect = scroll_el.getBoundingClientRect();
+	const target_rect = e.target.getBoundingClientRect();
+	const target_offset_top = target_rect.top - scroll_rect.top;
+	const target_offset_left = target_rect.left - scroll_rect.left;
+	const popup_top = parseInt(target_offset_top + headerHeight) + 20;
+	const popup_left = parseInt(target_offset_left) + 30;
+	const scroll_top = popup_el.offsetHeight + target_offset_top - root_el.scrollTop + 30;
+	const scroll_left = popup_el.offsetWidth + target_offset_left - root_el.scrollLeft + 30;
+	//console.log([popup_top, popup_left]);
+	popup_el.style.top = popup_top + "px";  // popup on the bottom
+	popup_el.style.left = popup_left + "px"; // popup on the right
+	if (popup_top > 200 && root_el.offsetHeight < scroll_top) {
+	  let top = parseInt(target_offset_top - popup_el.offsetHeight) - 20;
+	  if (top < 0) top = 10;
+	  popup_el.style.top = top + "px"; // popup on the upper
 	}
-	if (root_el.offsetWidth < popup_el.offsetWidth + (e.target.offsetLeft - root_el.scrollLeft) * scale + 30) {
-	  popup_el.style.left = (parseInt((e.target.offsetLeft - popup_el.offsetWidth) * scale) - 20) + "px"; // popup on the left
+	if (popup_left > 300 && root_el.offsetWidth < scroll_left) {
+	  popup_el.style.left = (parseInt(target_offset_left - popup_el.offsetWidth) - 20) + "px"; // popup on the left
 	}
       })
       el.addEventListener("mouseout", (e) => {
-	this.root.querySelector("#popup").style.display = "none";
+	this.root.querySelector("#popup").classList.add("hidden");
       })
       el.addEventListener("click", async (e) => {
 	const popup_id = e.target.getAttribute("popup_id");
@@ -268,26 +296,12 @@ export default class JogoHaplotypeExplorer extends Stanza {
     };
 
     // sort same level haplotype (id)
-    const sort_hapid = (mode, id_sub) => {
+    const sort_hapid = (mode, id) => {
       let list = id_list[mode];
       let hapid = [];
       for (const cmp of list) {
-	const cmp_ids = cmp.id.split(/:/);
-	let display = true;
-	for (let i = 0; i < cmp_ids.length - 1; i++) {
-	  let tmp_arr = [];
-	  for (let j = 0; j <= i; j++) {
-	    tmp_arr.push(cmp_ids[j]);
-	  }
-	  if (this.root.querySelector("#" + tmp_arr.join("_") + "_chld").style.display == "none") {
-	    display = false;
-	    break;
-	  }
-	}
-	if (! display) continue;
 	let match = 0;
-	if (id_sub) {
-	  const id = id_sub.replace(/_/g, ":");
+	if (id) {
 	  for (const [i, d] of hapid2var[cmp.id].entries()) {
 	    if (d.type == hapid2var[id][i].type) match++;
 	  }
@@ -297,16 +311,18 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	  match: match
 	})
       }
-      if (id_sub) return hapid.sort((a, b) => b.match - a.match);
-      this.root.querySelectorAll(".var_freq_li").forEach((el) => {
-	el.style.display = "none";
+      if (id) return hapid.sort((a, b) => b.match - a.match);
+      this.root.querySelectorAll(".level_mode_li").forEach((el) => {
+	el.classList.add("hidden");
       })
-      this.root.querySelector("#" + mode + "_freq_li").style.display = "block";
+      this.root.querySelectorAll("." + mode + "_level_mode_li").forEach((el) => {
+	el.classList.remove("hidden");
+      })
       return hapid;
     }
 
     // sort animation
-    const sort_animation = (list, id_sub) => {
+    const sort_animation = (list, id) => {
       const sort_div = this.root.querySelector("#sort_ul");
       sort_div.querySelectorAll("li").forEach((el) => {
 	el.style.position = "relative";
@@ -318,7 +334,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	  count++;
 	  const sort_div = this.root.querySelector("#sort_ul");
 	  for (const [i, d] of list.entries()) {
-	    const id = d.id.replace(/:/g, "_")
+	    const id = d.id;
 	    const dist = prev_order.end[i] - prev_order.dom[id].start;
 	    const unit = dist / frame;
 	    prev_order.dom[id].top += unit;
@@ -327,361 +343,604 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	    el.style.top = prev_order.dom[id].top + "px";
 	  }
 	  if (count == frame + 1) {
-	    sort_li(list, id_sub);
+	    sort_li(list, id);
 	    clearInterval(intervalID);
 	  }
 	}, 20);
     }
 
     // sort same level haplotype (viewer)
-    const sort_li = (list, id_sub) => {
+    const sort_li = (list, id, remove_button) => {
       let sort_div = this.root.querySelector("#sort_ul");
       sort_div.innerHTML = "";
       for (const d of list) {
-	sort_div.appendChild(this.root.querySelector("#" + d.id.replace(/:/g, "_")  + "_li").cloneNode(true));
+	sort_div.appendChild(this.root.querySelector("#" + d.id  + "_li").cloneNode(true));
       }
       sort_div.querySelectorAll("li").forEach((el) => {
-	const id_sub = el.id.replace(/_li/, "");
-	const id_span = el.querySelector("#" + id_sub);
+	const id = el.id.replace(/_li/, "");
+	const id_span = el.querySelector("#" + id);
 	id_span.addEventListener("click", (e) => {
-	  const id_sub = e.target.id;
-	  window.open("https://jogo.csml.org/haplotype_detail?regionname=" + region + "&hapid=" + id_sub.replace(/_/g, "%3A"));
+	  const id = e.target.id;
+	  window.open("https://jogo.csml.org/haplotype_detail?regionname=" + region + "&hapid=" + id);
 	})
-	const button = el.querySelector("#" + id_sub + "_button");
+	const button = el.querySelector("#" + id + "_button");
 	button.classList.remove("opened_button");
 	button.classList.remove("no_button");
 	button.classList.add("open_button");
 	button.classList.add("sort_button");
+	if (remove_button) {
+	  button.classList.remove("open_button");
+	  button.classList.remove("sort_button");
+	  button.classList.add("no_button");
+	}
 	button.setAttribute("title", "sort");
 	button.addEventListener("click", (e) => {
 	  const mode = this.root.querySelector("input:checked[name=mode]").value;
-	  const id_sub = e.target.id.replace(/_button/, "");
-	  const list = sort_hapid(mode, id_sub);
-	  sort_animation(list, id_sub);
+	  const id = e.target.id.replace(/_button/, "");
+	  const list = sort_hapid(mode, id);
+	  sort_animation(list, id);
 	})
 	el.id = el.id + "_clone";
       })
       sort_div.querySelectorAll(".popup").forEach(el => {
 	add_var_event(el);
       })
-      sort_div.style.display = "block";
-      this.root.querySelector("#root_ul").style.display = "none";
+      sort_div.classList.remove("hidden");
+      this.root.querySelector("#root_ul").classList.add("hidden");
       prev_order.end = [];
       prev_order.dom = {};
       for (const d of list) {
-	const top = sort_div.querySelector("#" + d.id.replace(/:/g, "_") + "_li_clone").offsetTop;
-	prev_order.dom[d.id.replace(/:/g, "_")] = {start: top, top: 0};
+	const top = sort_div.querySelector("#" + d.id + "_li_clone").offsetTop;
+	prev_order.dom[d.id] = {start: top, top: 0};
 	prev_order.end.push(top);
       }
     }
 
-    const add_var_freq  = (num, v, total, var_freq) => {
-      for (let i = num; i < 4; i++) {
+    const add_var_freq  = (min, max, level, v, total, var_freq) => {
+      for (let i = min; i <= max; i++) {
 	var_freq[i].var_data.push({
 	  count: v.count,
 	  color: make_freq_color(v.count, total),
-	  popup_id: v.ref + v.pos + v.alt + "_f"
+	  popup_id: v.ref + v.pos + v.alt + "_f",
+	  level: level,
+	  pos: v.pos
 	})
       }
     }
 
+    //=============================================================						   
+    //// Event listener
+    //
+    // attribute change event
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach(m => {
+	if (m.attributeName == "set_search_ids") {
+	  this.root.querySelector("#search_ids").value = m.target.getAttribute("set_search_ids");
+	}
+	if (m.attributeName == "set_level") {
+	  const level = m.target.getAttribute("set_level");
+	  showLevel(level);
+	}
+	if (m.attributeName == "set_highlight_ids") {
+	  this.root.querySelector("#highlight_ids").value = m.target.getAttribute("set_highlight_ids");
+	}
+	if (m.attributeName == "set_highlight_positions") {
+	  this.root.querySelector("#highlight_positions").value = m.target.getAttribute("set_highlight_positions");
+	}
+      });
+      searchIds(true);
+      highlightVar();
+    });
+    
+    const addInitEventListener = () => {
+      // ID click event
+      this.root.querySelectorAll(".hapid").forEach((el) => {
+	el.addEventListener("click", (e) => {
+	  const id = e.target.id;
+	  window.open("https://jogo.csml.org/haplotype_detail?regionname=" + region + "&hapid=" + id);
+	})
+      });
+      // Add click event
+      this.root.querySelectorAll(".show_level").forEach(el => {
+	el.addEventListener("click", e => {
+	  showLevel(e.currentTarget.getAttribute("level"));
+	});
+      });
+      // Variant event
+      this.root.querySelectorAll(".popup").forEach((el) => {
+	add_var_event(el);
+      });
+      // Change ids & highlight textbox event
+      this.root.querySelector("#search_ids").addEventListener("change", () => {
+	searchIds(true);
+      });
+      this.root.querySelector("#highlight_ids").addEventListener("change", () => {
+	searchIds(true);
+      });
+      this.root.querySelector("#highlight_positions").addEventListener("change", () => {
+	highlightVar();
+      });
+      // Show || hide control div
+      this.root.querySelector("#ctrl_show_hide").addEventListener("click", (e) => {
+	if (e.target.classList.contains("ctrl_hide_button")) {
+	  e.target.classList.remove("ctrl_hide_button");
+	  e.target.classList.add("ctrl_show_button");
+	  this.root.querySelector("#ctrl_div").classList.add("hidden");
+	  this.root.querySelector("#haplotype_view_scroll").classList.remove("scroll_height_ctrl_show");
+	  this.root.querySelector("#haplotype_view_scroll").classList.add("scroll_height_ctrl_hide");
+	} else {
+	  e.target.classList.add("ctrl_hide_button");
+	  e.target.classList.remove("ctrl_show_button");
+	  this.root.querySelector("#ctrl_div").classList.remove("hidden");
+	  this.root.querySelector("#haplotype_view_scroll").classList.add("scroll_height_ctrl_show");
+	  this.root.querySelector("#haplotype_view_scroll").classList.remove("scroll_height_ctrl_hide");
+	}
+      });     
+      // Scale change event
+      const scale_button = this.root.querySelector("#scale_button");
+      const haplotype_div = this.root.querySelector("#haplotype_view");
+      const main_div = this.root.querySelector("#main");
+      let min_scale = 0.5;
+      let button_flag = false;
+      let mv_width;
+      let button_left;
+      let button_width;
+      let scroll_width;
+      const reSetMinScale = () => {
+	const view_width = this.root.querySelector("#haplotype_view_scroll").getBoundingClientRect().width;
+	const new_scroll_width = haplotype_div.scrollWidth;
+	if (new_scroll_width > scroll_width) scroll_width = new_scroll_width;
+	min_scale = view_width / scroll_width;
+	if (min_scale > 0.5) min_scale = 0.5;
+	if (haplotype_div.scale < 1) {
+	  if (haplotype_div.scale < min_scale) haplotype_div.scale = min_scale;
+	  button_left = mv_width * (scale - min_scale) / (1 - min_scale);
+	  scale_button.style.left = button_left + "px";
+	  haplotype_div.style.transform = "scale(" + scale + ")";
+	}
+      };
+      scale_button.addEventListener("mousedown", e => {
+	button_flag = true;
+      });
+      main_div.addEventListener("mousemove", e => {
+	if (button_flag) {
+	  const button_bg_left = this.root.querySelector("#scale_button_bg").getBoundingClientRect().left;
+	  button_left = e.clientX - (button_bg_left + 1) - button_width / 2;
+	  if (button_left <= 0) button_left = 0;
+	  else if (button_left >= mv_width) button_left = mv_width;
+	  scale_button.style.left = button_left + "px";
+	}
+      });
+      main_div.addEventListener("mouseup", e => {
+	button_flag = false;
+	if (button_left >= 0 && button_left <= mv_width) {
+	  scale = (mv_width / (1 - min_scale) - (mv_width - button_left)) / (mv_width / (1 - min_scale));
+	  haplotype_div.style.transform = "scale(" + scale + ")";
+	  haplotype_div.scale = scale;
+	  //	this.root.querySelector("#haplotype_view_scroll").style.height = haplotype_div.getBoundingClientRect().height;
+	}
+      });
+      main_div.addEventListener("click", reSetMinScale);
+      // JoGo サイトでは 親要素の display が none で描画されるので、最初に描画されたときにセット
+      // ついでにここで initalize code
+      let setScaleButtton = setInterval(() => {
+	const scroll_div_rect = this.root.querySelector("#haplotype_view_scroll").getBoundingClientRect();
+	if (scroll_div_rect.width) {
+	  const view_width = scroll_div_rect.width;
+	  const button_bg_rect = this.root.querySelector("#scale_button_bg").getBoundingClientRect();
+	  const button_bg_width = button_bg_rect.width; // style.scss
+	  button_width = this.root.querySelector("#scale_button").getBoundingClientRect().width; // style.scss
+	  scroll_width = haplotype_div.scrollWidth;
+	  min_scale = view_width / scroll_width;
+	  if (min_scale > 0.5) min_scale = 0.5;
+	  mv_width = button_bg_width - button_width - 6;
+	  button_left = mv_width;
+	  scale_button.style.left = button_left + "px";
+	  //=============================================================
+	  // set init ids & highlight
+	  if (init_search_ids || init_level || init_highlight_ids || init_highlight_positions) {
+	    if (init_search_ids?.match(/g\d/)) {
+	      this.root.querySelector("#root_ul").querySelectorAll(".t_chld").forEach(ul => {
+		ul.classList.remove("hidden");
+	      });
+	    }
+	    // 優先順位
+	    if      (init_level)                                          showLevel(init_level);
+	    else if (init_search_ids?.match(/a/) && init_ids?.match(/g/)) showLevel("actg");
+	    else if (init_search_ids?.match(/a/) && init_ids?.match(/t/)) showLevel("act");
+	    else if (init_search_ids?.match(/a/) && init_ids?.match(/c/)) showLevel("ac");
+	    else if (init_search_ids?.match(/a/))                         showLevel("a");
+	    else if (init_search_ids?.match(/c/))                         showLevel("c");
+	    else if (init_search_ids?.match(/t/))                         showLevel("t");
+	    else if (init_search_ids?.match(/g/))                         showLevel("g");
+	    if (init_search_ids) this.root.querySelector("#search_ids").value = init_search_ids;
+	    if (init_highlight_ids) this.root.querySelector("#highlight_ids").value = init_highlight_ids;
+	    if (init_highlight_positions) this.root.querySelector("#highlight_positions").value = init_highlight_positions;
+	    if (init_search_ids || init_highlight_ids) {
+	      searchIds(true);
+	    }
+	    observer.observe(this.root.getRootNode().host, {attributes: true});
+	  }
+	  clearInterval(setScaleButtton);
+	  //=============================================================
+	  // set main overflow
+	  this.root.querySelectorAll("main")[0].style.overflow = "visible";
+	}
+      }, 10);
+    }
+
+    //=============================================================
+    ////// Change display (level, search, highlight)
+    //
+    // Change mode event (amino acid, coding, transcript, genebody)
+    const showLevel = (level) => {
+      if (!level && this.lavel) level = this.level;
+      const ulClass = "ul." + level + "_chld";
+      let flag = true;
+      for (let el of this.root.querySelectorAll(ulClass)) {
+	if (!el.classList.contains("hidden")) {
+	  flag = false;
+	  break;
+	}
+      }
+      // level が開いてなかったら
+      if (flag) {
+	this.root.querySelectorAll(ulClass).forEach(ul => {
+	  ul.classList.remove("hidden");
+	});
+      }
+      if (this.root.querySelector("#r_" + level).disabled != true) {
+	this.root.querySelector("#r_" + level).checked = true;
+	const mode = this.root.querySelector("input:checked[name=mode]").value;
+	const list = sort_hapid(mode, false);
+	highlightIds(mode);
+	sort_li(list, false);
+	enableHighlight(true);
+	searchIds(false);
+      }
+    };
+    // search
+    const chk_mode = () => {
+      let mode = "a";
+      if      (this.root.querySelector("#r_c")?.checked)    mode = "c";
+      else if (this.root.querySelector("#r_t")?.checked)    mode = "t";
+      else if (this.root.querySelector("#r_g")?.checked)    mode = "g";
+      else if (this.root.querySelector("#r_ac")?.checked)   mode = "ac";
+      else if (this.root.querySelector("#r_act")?.checked)  mode = "act";
+      else if (this.root.querySelector("#r_actg")?.checked) mode = "actg";
+      return mode;
+    };
+    
+    const parse_ids = (string, mode) => {
+      let ids = [];
+      string.trim().split(/[\s\,]+/).forEach(d => {
+	if (d.match(/a\d{4}/)) {
+	  if (d.match(/a\d{4}(?::c\d{4}(?::t\d{4}(?::g\d{4})?)?)?/)) {
+	    let id = d.replace(/:/g, "");
+	    if (this.root.querySelector("#r_a").checked) id = id.replace(/c.+/, "");
+	    else if (this.root.querySelector("#r_c").checked) id = id.replace(/t.+/, "");
+	    else if (this.root.querySelector("#r_t").checked) id = id.replace(/g.+/, "");
+	    ids.push(id);
+	  }
+	} else if (d.match(/^[actg]0*[1-9]/)) {
+	  if (d.match(/[actg]\d+(?:[ctg]\d+(?:[tg]\d+(?:g\d+)?)?)?/)) {
+	    const parts = d.match(/([actg])(\d+)(?:([ctg])(\d+)(?:([tg])(\d+)(?:(g)(\d+))?)?)?/);
+	    let id = parts[1] + parts[2].toString().padStart(4, "0");
+	    if (parts[4]) id += parts[3] + parts[4].toString().padStart(4, "0");
+	    if (parts[6]) id += parts[5] + parts[6].toString().padStart(4, "0");
+	    if (parts[8]) id += parts[7] + parts[8].toString().padStart(4, "0");
+	    ids.push(id);
+  	  }
+	}
+      });
+      
+      if (ids.length === 0) return [];
+     
+      let new_ids = [];
+      ids.forEach(id => {
+	id_list.actg.forEach(d => {
+	  if (d.id.match(id)) {
+	    if      (mode == "a") new_ids.push(d.id.replace(/c.+/, ""));                      // "a0001"
+	    else if (mode == "c") new_ids.push(d.id.replace(/t.+/, "").replace(/^.*c/, "c")); // "c0001"
+	    else if (mode == "t") new_ids.push(d.id.replace(/g.+/, "").replace(/^.*t/, "t")); // "t0001"
+	    else if (mode == "g") new_ids.push(d.id.replace(/^.*g/, "g"));                    // "g0001"
+	    else if (mode == "ac") new_ids.push(d.id.replace(/t.+/, ""));                     // "a0001c0001"
+	    else if (mode == "act") new_ids.push(d.id.replace(/g.+/, ""));                    // "a0001c0001t0001"
+	    else new_ids.push(d.id);                                                          // "a0001c0001t0001g0001"
+	  }
+	});
+      });
+      return new_ids;
+    };
+    const highlightIds = (mode) => {
+      let highlight_ids = parse_ids(this.root.querySelector("#highlight_ids")?.value, mode);
+      highlight_ids = [...new Set(highlight_ids.filter(d => d !== ""))];
+      //console.log(highlight_ids);
+      this.root.querySelector("#" + mode + "_chld").querySelectorAll(".hap_li").forEach(li => {
+	const seq = li.querySelectorAll(".c_seq")[0];
+	seq.classList.remove("seq_highlighted");
+	for (const id of highlight_ids) {
+	  if (li.id.match(id)) {
+	    seq.classList.add("seq_highlighted");
+	    break;
+	  }
+	}
+      });
+    };
+    const searchIds = (changed_flag) => {
+      const mode = chk_mode();
+      highlightIds(mode);
+      let search_ids = parse_ids(this.root.querySelector("#search_ids")?.value, mode);
+      if (search_ids.length === 0) {       // reset (show all)
+	this.root.querySelectorAll(".hap_li").forEach(li => {
+	  li.classList.remove("hidden");
+	});
+	if (changed_flag) showLevel(mode);
+        else highlightVar();
+	return false;
+      }
+      search_ids = [...new Set(search_ids.filter(d => d !== ""))];
+      let id2weight = {};
+      [...search_ids].reverse().forEach((id, i) => {
+	id2weight[id] = i * 100000;
+      });
+      //console.log(search_ids);
+      let list = [];
+      let count = 10000;
+      this.root.querySelector("#" + mode + "_chld").querySelectorAll(".hap_li").forEach(li => {
+	// add 'hidden' class & check matched ID
+	const seq = li.querySelectorAll(".c_seq")[0];
+	const hapid = li.id.replace(/_li.*/, "");
+	let display_flag = false;
+	let weight;
+	for (const id of search_ids) {
+	  if (li.id.match(id)) {
+	    display_flag = true;
+	    weight = id2weight[id] + count--;
+	    break;
+	  }
+	}
+	if (display_flag) {
+	  list.push({
+	    id: hapid,
+	    weight: weight
+	  });
+	}
+      });
+      list.sort((a,b) => {
+	return b.weight - a.weight;
+      });
+      //console.log(list);
+      sort_li(list, false, true);
+      highlightVar();
+    };
+
+    // highlight
+    const highlightVar = () => {
+      this.root.querySelectorAll(".v_highlight").forEach(el => {
+	el.classList.remove("v_highlighted");
+      });
+      const height = this.root.querySelector("#sort_ul").offsetHeight;
+      this.root.querySelector("#highlight_positions").value.trim().split(/[\s\,]+/).forEach(pos => {
+	this.root.querySelectorAll(".highlight" + pos).forEach(el => {
+	  el.classList.add("v_highlighted");
+	  el.style.height = (height + 20) + "px";
+	});
+      });
+    };
+    const enableHighlight = (flag) => {
+      if (flag) this.root.querySelector("#highlight_positions").disabled = false;
+      else this.root.querySelector("#highlight_positions").disabled = true;
+    };
+    
+    //=============================================================
     ////// main
-    const jogo_json = await fetch(jogo_api, jogo_basic).then(res => res.json());
-    // console.log(jogo_json);
-    const hgncid = jogo_json.maneinfo.hgncid;
+    //
+    // render loding icon
+    this.renderTemplate(
+      {
+        template: 'loading.html.hbs',
+        parameters: {
+        }
+      }
+    );
+    
+    // get clinical significance from TogoVr
+    const getClinSig = async (hgncid) => {
+      let filtered = false;
+      const limit = 1000;
+      let offset = 0;
+      let count = 0;
+      let clin_sig = {};
+      while (filtered === false || filtered > count) {
+	tgv_opt.body = tgv_bdy.replace(/#hgncid/, hgncid).replace(/#offset/, offset).replace(/#limit/, limit);
+	const togovar = await fetch(tgv_api, tgv_opt).then(res => res.json());
+	if (togovar.statistics) filtered = togovar.statistics.filtered;
+	else filtered = 0; // for 'formatter=jogo' option in TogoVar API (w/o offset-limit scroll)
+	if (togovar.data.length > 0) {
+	  for (const d of togovar.data) {
+	    clin_sig[d.reference + d.position + d.alternate] = d.significance;
+	  }
+	  offset = '["' + togovar.data[togovar.data.length - 1].chromosome + '","' + togovar.data[togovar.data.length - 1].position + '","' + togovar.data[togovar.data.length - 1].reference + '","' + togovar.data[togovar.data.length - 1].alternate + '"]';
+	  count += limit;
+	}
+      }
+      return clin_sig;
+    };
+    
+    // 非同期処理
+    //-------------------------------------------------------------
+    // 1) ２つの fetch を同時にスタート
+    //    JoGo でのデータ取得
+    //    TogoID での HGNC ID 取得
+    //-------------------------------------------------------------
+    const togoidPromise = fetch(togoid_api).then(res => res.json());
+    const jogoPromise   = fetch(jogo_api).then(res => res.json());
+    
+    //-------------------------------------------------------------
+    // 2) togoid の応答が来たらすぐ togovar api からのデータ取得 (getClinSig) を始める
+    //    （jogoPromise とは並列で進行）
+    //-------------------------------------------------------------
+    const firstClinSigPromise = (async () => {
+      try {
+	const togoidJson = await togoidPromise;
+	const hgncid = togoidJson?.results?.[0];
+	if (!hgncid) return { hgncid: null, clin_sig: {} };      // 失敗時のフォールバック
+	const sig = await getClinSig(hgncid);
+	return { hgncid, clin_sig: sig };
+      } catch (e) {
+	console.warn("firstClinSigPromise failed:", e);
+	return { hgncid: null, clin_sig: {} };
+      }
+    })();
+
+    //-------------------------------------------------------------
+    // 3) jogo の取得完了を待って、すぐにデータ構築とレンダリング開始（clin_sig は待たない）
+    //-------------------------------------------------------------
+    const jogo_json = await jogoPromise;
+
     const chr    = jogo_json.maneinfo.chr.replace(/^chr/, "");
     const strand = jogo_json.maneinfo.strand;
     const region = jogo_json.maneinfo.regionname5000;
     let variant = [];
+    let var_freq = [];
+    let region_level = [];
+    let haplotype = [];
     let scale = 1;
-    
-    id_list.a = ext_id_list(jogo_json.ahaplotypesummary, "ahapid");
-    id_list.c = ext_id_list(jogo_json.chaplotypesummary, "chapid");
-    id_list.t = ext_id_list(jogo_json.thaplotypesummary, "thapid");
-    id_list.g = ext_id_list(jogo_json.ghaplotypesummary, "ghapid");
 
-    variant = ext_variant(jogo_json.avariants, "ahapids", "a", 0, variant);
-    variant = ext_variant(jogo_json.cvariants, "chapids", "c", 1, variant);
-    variant = ext_variant(jogo_json.tvariants, "thapids", "t", 2, variant);
-    variant = ext_variant(jogo_json.gvariants, "ghapids", "g", 3, variant);
+    // base info for level data construction
+    let level_list = [
+      {level: "a",    min: 0, max: 0, v_max: 3, amino: true,  space: "     "},
+      {level: "ac",   min: 0, max: 1, v_max: 3, amino: false, space: "          "},
+      {level: "act",  min: 0, max: 2, v_max: 3, amino: false, space: "               "},
+      {level: "actg", min: 0, max: 3, v_max: 3, amino: false, space: "                    "},
+      {level: "c",    min: 1, max: 1, v_max: 4, amino: false, space: "     "},
+      {level: "t",    min: 2, max: 2, v_max: 5, amino: false, space: "     "},
+      {level: "g",    min: 3, max: 3, v_max: 6, amino: false, space: "     "}
+    ];
 
+    // get id list
+    level_list.forEach(d => {
+      id_list[d.level] = ext_id_list(jogo_json[d.level + "haplotypesummary"], d.level + "hapid");
+    });
     const total = id_list.a.reduce((a, c) => a + c.count, 0);
 
+    // construct variant data
+    level_list.forEach(d => {
+      if (d.level.length == 1) variant = ext_variant(jogo_json[d.level + "variants"], d.level + "hapids", d.level, d.max, variant);
+    });
     // sort variants arong the gene strand
     if (strand == "+") {
       variant = variant.sort((a,b) => a.pos - b.pos);
     } else {
       variant = variant.sort((a,b) => b.pos - a.pos);
     }
-
-    //construct variant frequency data
-    let var_freq = [
-      {level: "a", space : "     ", var_data: []},
-      {level: "c", space : "           ", var_data: []},
-      {level: "t", space : "                 ", var_data: []},
-      {level: "g", space : "                       ", var_data: []}
-    ];
+    
+    // construct variant frequency data
+    level_list.forEach((d, i) => {
+      var_freq[i] = {level: d.level, space: d.space, var_data: []};
+    });
     for (const v of variant) {
-      if (v.type == "a") add_var_freq(0, v, total, var_freq);
-      else if (v.type == "c") add_var_freq(1, v, total, var_freq);
-      else if (v.type == "t") add_var_freq(2, v, total, var_freq);
-      else if (v.type == "g") add_var_freq(3, v, total, var_freq);
+      level_list.forEach((d, i) => {
+	if (v.type == d.level.slice(-1)) add_var_freq(i, d.v_max, d.level, v, total, var_freq);
+      });
       popup_id2info[v.ref + v.pos + v.alt + "_f"] = make_var_title(v) + "<br>" + v.count + " / " + total + make_freq_graph(v.pop, false);
     }
-      
-    // add clinical significance
-    let filtered = false;
-    const limit = 1000;
-    let offset = 0;
-    let count = 0;
-    let clin_sig = {};
-    while (!filtered || filtered > count) {
-      tgv_opt.body = tgv_bdy.replace(/#hgncid/, hgncid).replace(/#offset/, offset).replace(/#limit/, limit);
-      const togovar = await fetch(tgv_api, tgv_opt).then(res => res.json());
-      if (togovar.statistics) filtered = togovar.statistics.filtered;
-      else filtered = 1; // for 'formatter=jogo' option in TogoVar API (w/o offset-limit scroll)
-      if (togovar.data) {
-	for (const d of togovar.data) {
-	  clin_sig[ d.reference + d.position + d.alternate] = d.significance;
-	}
-      }
-      offset = '["' + togovar.data[togovar.data.length - 1].chromosome + '","' + togovar.data[togovar.data.length - 1].position + '","' + togovar.data[togovar.data.length - 1].reference + '","' + togovar.data[togovar.data.length - 1].alternate + '"]';
-      count += limit;
-    }
-    for (let i = 0; i < variant.length; i++) {
-      const v =  variant[i].ref + variant[i].pos + variant[i].alt;
-      if (clin_sig[v]) {
-	variant[i].sig = clin_sig[v];
-	let sigs = [];
-	clin_sig[v].forEach(d => {
-	  const sig_ico = " <span class='clinical-significance' data-sign='" + d.interpretations[0] + "'></span> ";
-	  //let mgend_ico = "";
-	  //if (d.source == "mgend") mgend_ico = " <span class='icon' data-remains='1' data-mgend='true'></span> ";
-	  for (const c of d.conditions) {
-	    //sigs.push(sig_ico + c.name + mgend_ico);
-	    sigs.push(sig_ico + c.name);
-	  }
-	})
-	const uniq = Array.from(new Set(sigs));
-	popup_id2info[v] += "<br>Clinical significance:<br>" + uniq.join("<br>");
-      }
-    }
-
-    // construct hap data
-    let a_hap = [];
-    for (const a of id_list.a) {
-      let c_hap = [];
-      for (const c of id_list.c) {
-	let t_hap = [];
-	for (const t of id_list.t) {
-	  let g_hap = [];
-	  for (const g of id_list.g) {
-	    const ids = g.id.split(/:/);
-	    if (ids[0] != a.id || ids[0] + ":" + ids[1] != c.id || ids[0] + ":" + ids[1] + ":" + ids[2] != t.id) continue;
-	    g_hap.push(construct_data(g, 4, false, total, strand, variant, false));
-	  }
-	  const ids = t.id.split(/:/);
-	  if (ids[0] != a.id || ids[0] + ":" + ids[1] != c.id) continue;
-	  t_hap.push(construct_data(t, 3, g_hap, total, strand, variant, false));
-	}
-	const ids = c.id.split(/:/);
-	if (ids[0] != a.id) continue;
-	c_hap.push(construct_data(c, 2, t_hap, total, strand, variant, false));
-      }
-      a_hap.push(construct_data(a, 1, c_hap, total, strand, variant, true));
-    }	
     
-    //console.log(a_hap);
+    // construct region-level data
+    for (const [i, level] of var_freq.entries()) {
+      let seq = "";
+      let pre_level = undefined;
+      region_level[i] = {level: var_freq[i].level, space: var_freq[i].space, region_data: []};
+      for (const v of level.var_data) {
+	if (pre_level && pre_level != v.level) {
+	  region_level[i].region_data.push({
+	    seq: seq,
+	    level: pre_level
+	  });
+	  seq = "";
+	}
+	seq += " ";
+	pre_level = v.level;
+      }
+      region_level[i].region_data.push({
+	seq: seq,
+	level: pre_level
+      });
+    }
+    
+    // construct hap data
+    level_list.forEach((d, i) => {
+      haplotype[i] = {id: d.level, hap: []};
+      for (const dat of id_list[d.level]) {
+	haplotype[i].hap.push(construct_data(dat, d.min, d.max, total, strand, variant, d.level, d.amino));
+      }
+    });
+    //console.log(haplotype);
     //console.log(popup_id2info);
     //console.log(hapid2var);
-
-    // render
+    
+    // render explorer
     this.renderTemplate(
       {
         template: 'stanza.html.hbs',
         parameters: {
 	  title: stanza_title,
-	  hap: a_hap,
-	  var_freq: var_freq
+	  hap: haplotype,
+	  var_freq: var_freq,
+	  region: region_level
         }
       }
     );
+    
+    addInitEventListener();
 
-    //// event listener
-    // check display
-    const chk_radio_display = () => {
-      this.root.querySelector("#r_c").disabled = true;
-      this.root.querySelector("#r_t").disabled = true;
-      this.root.querySelector("#r_g").disabled = true;
-      this.root.querySelector("#r_c_label").classList.add("c_na");
-      this.root.querySelector("#r_g_label").classList.add("c_na");
-      this.root.querySelector("#r_t_label").classList.add("c_na");
-      for (const el of this.root.querySelectorAll(".a_chld")) {
-	if (el.style.display != "none") {
-	  this.root.querySelector("#r_c").disabled = false;
-	  this.root.querySelector("#r_c_label").classList.remove("c_na");
-	  break;
-	}
-      }
-      for (const el of this.root.querySelectorAll(".c_chld")) {
-	if (el.style.display != "none"
-	    && this.root.querySelector("#" + el.id.replace(/_c\d+/, "")).style.display != "none") {
-	  this.root.querySelector("#r_t").disabled = false;
-	  this.root.querySelector("#r_t_label").classList.remove("c_na");
-	  break;
-	}
-      }
-      for (const el of this.root.querySelectorAll(".t_chld")) {
-	if (el.style.display != "none"
-	    && this.root.querySelector("#" + el.id.replace(/_t\d+/, "")).style.display != "none"
-	    && this.root.querySelector("#" + el.id.replace(/_c\d+_t\d+/, "")).style.display != "none") {
-	  this.root.querySelector("#r_g").disabled = false;
-	  this.root.querySelector("#r_g_label").classList.remove("c_na");
-	  break;
-	}
-      }
-    }
-    
-    chk_radio_display();
-    
-    // open / close child level haplotype
-    this.root.querySelectorAll(".open_button").forEach((el) => {
-      el.setAttribute("title", "open");
-      el.addEventListener("click", (e) => {
-	const id_sub = e.target.id.replace(/_button/, "");
-	const mode = this.root.querySelector("input:checked[name=mode]").value;
-	const child = this.root.querySelector("#" + id_sub + "_chld");
-	if (child.style.display == "block") child.style.display = "none";
-	else child.style.display = "block";
-	if (el.classList.contains("opened_button")) {
-	  el.classList.remove("opened_button");
-	  el.setAttribute("title", "open");
-	} else {
-	  el.classList.add("opened_button");
-	  el.setAttribute("title", "close");
-	}
-	chk_radio_display();
-      })
-    });
-    this.root.querySelectorAll(".hapid").forEach((el) => {
-      el.addEventListener("click", (e) => {
-	const id_sub = e.target.id;
-	window.open("https://jogo.csml.org/haplotype_detail?regionname=" + region + "&hapid=" + id_sub.replace(/_/g, "%3A"));
-      })
-    });
-    // change mode (all, amino acid, coding, transcript, genebody)
-    this.root.querySelector("#show_all").addEventListener("click", () => {
-      this.root.querySelectorAll("li").forEach(el => {el.style.display = "block";})
-      this.root.querySelectorAll("ul").forEach(el => {el.style.padding = "0px 0px 0px 20px";})
-      this.root.querySelector("#sort_ul").style.display = "none";
-      this.root.querySelector("#root_ul").style.display = "block";
-      this.root.querySelector("#r_all").checked = true;
-      this.root.querySelectorAll(".var_freq_li").forEach((el) => {
-	el.style.display = "none";
-      })
+    //-------------------------------------------------------------
+    // 4) clin_sig 側の取得完了を待ってから、必要なら ID 突き合わせ＆再取得 → 追加描画
+    //-------------------------------------------------------------
+    try {
+      const { hgncid: fromTogoid, clin_sig: sig0 } = await firstClinSigPromise;
+      // jogo 側の HGNC ID
+      const hgncid_jogo = jogo_json?.maneinfo?.hgncid;
+      const asInt = v => (v == null || v === "" ? NaN : parseInt(v, 10));
       
-    });
-    this.root.querySelector("#show_a").addEventListener("click", () => {
-      this.root.querySelector("#r_a").checked = true;
-      const mode = this.root.querySelector("input:checked[name=mode]").value;
-      const list = sort_hapid(mode, false);
-      sort_li(list, false);
-    });
-    this.root.querySelector("#show_c").addEventListener("click", () => {
-      if (this.root.querySelector("#r_c").disabled != true) {
-	this.root.querySelector("#r_c").checked = true;
-	const mode = this.root.querySelector("input:checked[name=mode]").value;
-	const list = sort_hapid(mode, false);
-	sort_li(list, false);
+      let finalClinSig = sig0;
+      
+      // 突き合わせ：食い違えば jogo 側の HGNC ID で取り直し
+      if (!Number.isNaN(asInt(hgncid_jogo)) && !Number.isNaN(asInt(fromTogoid)) &&
+          asInt(hgncid_jogo) !== asInt(fromTogoid)) {
+	try {
+          finalClinSig = await getClinSig(hgncid_jogo);
+	} catch (e) {
+          console.warn("getClinSig(hgncid_jogo) failed:", e);
+	}
       }
-    });
-    this.root.querySelector("#show_t").addEventListener("click", () => {
-      if (this.root.querySelector("#r_t").disabled != true) {
-	this.root.querySelector("#r_t").checked = true;
-	const mode = this.root.querySelector("input:checked[name=mode]").value;
-	const list = sort_hapid(mode, false);
-	sort_li(list, false);
+      
+      // clin_sig で追加レンダリング
+      const clin_sig = finalClinSig || {};
+      // add clinical significance to variant data
+      for (const [i, v] of variant.entries()) {
+	const popup_id =  v.ref + v.pos + v.alt;
+	if (clin_sig[popup_id]) {
+	  this.root.querySelectorAll(".v_" + popup_id).forEach(el => {
+	    el.classList.add('v_bold');
+	  });
+	  let sigs = [];
+	  clin_sig[popup_id].forEach(d => {
+	    const sig_ico = " <span class='clinical-significance' data-sign='" + d.interpretations[0] + "'></span> ";
+	    //let mgend_ico = "";
+	    //if (d.source == "mgend") mgend_ico = " <span class='icon' data-remains='1' data-mgend='true'></span> ";
+	    for (const c of d.conditions) {
+	      //sigs.push(sig_ico + c.name + mgend_ico);
+	      sigs.push(sig_ico + c.name);
+	    }
+	  })
+	  const uniq = Array.from(new Set(sigs));
+	  popup_id2info[popup_id] += "<br>Clinical significance:<br>" + uniq.join("<br>");
+	}
       }
-    });
-    this.root.querySelector("#show_g").addEventListener("click", () => {
-      if (this.root.querySelector("#r_g").disabled != true) {
-	this.root.querySelector("#r_g").checked = true;
-	const mode = this.root.querySelector("input:checked[name=mode]").value;
-	const list = sort_hapid(mode, false);
-	sort_li(list, false);
-      }
-    });
-    // open all level
-    this.root.querySelector("#open_all").addEventListener("click", () => {
-      this.root.querySelectorAll("ul").forEach(el => {el.style.display = "block";})
-      this.root.querySelectorAll("li").forEach(el => {el.style.display = "block";})
-      this.root.querySelector("#sort_ul").style.display = "none";
-      this.root.querySelector("#root_ul").style.display = "block";
-      this.root.querySelector("#r_all").checked = true;
-      this.root.querySelectorAll(".var_freq_li").forEach((el) => {
-	el.style.display = "none";
-      })
-      this.root.querySelectorAll(".open_button").forEach((el) => {
-	el.classList.add("opened_button");
-	el.setAttribute("title", "close");
-      })
-      chk_radio_display();
-    });
-    // reset
-    this.root.querySelector("#reset").addEventListener("click", () => {
-      this.root.querySelectorAll("ul").forEach(el => {el.style.display = "none";})
-      this.root.querySelectorAll("li").forEach(el => {el.style.display = "block";})
-      this.root.querySelector("#root_ul").style.display = "block";
-      this.root.querySelector("#sort_ul").style.display = "none";
-      this.root.querySelector("#root_ul").style.display = "block";
-      this.root.querySelector("#var_freq").style.display = "block";
-      this.root.querySelector("#r_all").checked = true;
-      this.root.querySelectorAll(".var_freq_li").forEach((el) => {
-	el.style.display = "none";
-      })
-      this.root.querySelectorAll(".open_button").forEach((el) => {
-	el.classList.remove("opened_button");
-	el.setAttribute("title", "open");
-      })
-      chk_radio_display();
-    });
-    // variant event
-    this.root.querySelectorAll(".popup").forEach((el) => {
-      add_var_event(el);
-    });
-    // scale
-    const scale_button = this.root.querySelector("#scale_button");
-    const scale_button_rect = scale_button.getBoundingClientRect();
-    const haplotype_div = this.root.querySelector("#haplotype_view");
-    const haplotype_div_rect = haplotype_div.getBoundingClientRect();
-    const main_div = this.root.querySelector("#main");
-    const button_bg_width = this.root.querySelector("#scale_button_bg").getBoundingClientRect().width; // style.scss
-    const button_width = scale_button_rect.width;                                                      // style.scss
-    const mv_width = button_bg_width - button_width - 2;
-    let button_flag = false;
-    let button_left = mv_width;
-    const min_scale = 0.2;
-    scale_button.style.left = button_left + "px";
-    scale_button.addEventListener("mousedown", e => {
-      button_flag = true;
-    });
-    main_div.addEventListener("mousemove", e => {
-      if (button_flag) {
-	button_left = e.clientX - scale_button_rect.left - scale_button_rect.width / 2;
-	if (button_left <= 0) button_left = 0;
-	else if (button_left >= mv_width) button_left = mv_width;
-	scale_button.style.left = button_left + "px";
-      }
-    });
-    main_div.addEventListener("mouseup", e => {
-      button_flag = false;
-      if (button_left >= 0 && button_left <= mv_width) {
-	scale = (mv_width / (1 - min_scale) - (mv_width - button_left)) / (mv_width / (1 - min_scale));
-	haplotype_div.style.transform = "scale(" + scale + ")";
-	haplotype_div.scale = scale;
-	haplotype_div.style.width = (haplotype_div_rect.width / scale) + "px";
-	haplotype_div.style.height = (haplotype_div_rect.height / scale) + "px";
-      }
-    }); 
+    } catch (e) {
+      console.warn("clin_sig post-processing failed:", e);
+    }
   }
 }

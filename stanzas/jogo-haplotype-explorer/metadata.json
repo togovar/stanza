@@ -3,8 +3,8 @@
     "stanza": "http://togostanza.org/resource/stanza#"
   },
   "@id": "jogo-haplotype-explorer",
-  "stanza:label": "JoGo haplotype explorer",
-  "stanza:definition": "Display JoGo haplotype",
+  "stanza:label": "Jogo haplotype",
+  "stanza:definition": "Display jogo haplotype",
   "stanza:license": "MIT",
   "stanza:author": "Yuki Moriya",
   "stanza:contributor": [],
@@ -24,8 +24,32 @@
       "stanza:required": false
     },
     {
+      "stanza:key": "search_ids",
+      "stanza:example": "",
+      "stanza:description": "Initial search IDs (e.g. a0001c0001t0001 a2c1t1 t1)",
+      "stanza:required": false
+    },
+    {
+      "stanza:key": "highlight_ids",
+      "stanza:example": "",
+      "stanza:description": "Initial hilighted IDs (e.g. a0001c0001t0001 a2c1t1 t1)",
+      "stanza:required": false
+    },
+    {
+      "stanza:key": "highlight_positions",
+      "stanza:example": "",
+      "stanza:description": "Initial highlighted positions (e.g. 111810388,111811182)",
+      "stanza:required": false
+    },
+    {
+      "stanza:key": "level",
+      "stanza:example": "",
+      "stanza:description": "Initial view level (a, c, t, g)",
+      "stanza:required": false
+    },
+    {
       "stanza:key": "togovar_api",
-      "stanza:example": "https://stg-grch38.togovar.org/api/search/variant",
+      "stanza:example": "https://grch38.togovar.org/api/search/variant",
       "stanza:description": "TogoVar API",
       "stanza:required": true
     },

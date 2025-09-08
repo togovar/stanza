@@ -1,51 +1,73 @@
 <div id="main">
   {{#if title}}<h1 class="header">{{title}}</h1>{{/if}}
-  <div id="popup">
+  <div class="ctrl_show_hide_div"><span id="ctrl_show_hide" class="open_button ctrl_hide_button"></span></div>
+  <div id="popup" class="hidden">
   </div>
-  <div>
-    Show:
-    <span id="show_all" class="ctrl"><input type="radio" name="mode" id="r_all" value="all" checked><span class="show_switch c_x">All level</span></span>
-    <span id="show_a" class="ctrl"><input type="radio" name="mode" id="r_a" value="a"><span id="r_a_label" class="show_switch c_a">Amino acid level</span></span>
-    <span id="show_c" class="ctrl"><input type="radio" name="mode" id="r_c" value="c"><span id="r_c_label" class="show_switch c_c">Coding level</span></span>
-    <span id="show_t" class="ctrl"><input type="radio" name="mode" id="r_t" value="t"><span id="r_t_label" class="show_switch c_t">Transcript level</span></span>
-    <span id="show_g" class="ctrl"><input type="radio" name="mode" id="r_g" value="g"><span id="r_g_label" class="show_switch c_g">Genebody level</span></span>
+  <div id="ctrl_div">
+    <span id="show_a" class="ctrl show_level" level="a"><input type="radio" name="mode" id="r_a" value="a">
+      <span id="r_a_label" class="show_switch w120 color_a">Amino acid</span>
+    </span>
+    <span id="show_c" class="ctrl show_level" level="c"><input type="radio" name="mode" id="r_c" value="c">
+      <span id="r_c_label" class="show_switch w120 color_c">Coding</span>
+    </span>
+    <span id="show_t" class="ctrl show_level" level="t"><input type="radio" name="mode" id="r_t" value="t">
+      <span id="r_t_label" class="show_switch w120 color_t">Transcript</span>
+    </span>
+    <span id="show_g" class="ctrl show_level" level="g"><input type="radio" name="mode" id="r_g" value="g">
+      <span id="r_g_label" class="show_switch w120 color_g">Genebody</span>
+    </span>
     <br>
-    <span id="open_all" class="ctrl show_switch c_x">Open all</span> <span id="reset" class="ctrl show_switch c_x">Close all</span> <div id="scale_button_bg"><div id="scale_button" class="ctrl"></div></div>
+    <span id="show_ac" class="ctrl show_level" level="ac"><input type="radio" name="mode" id="r_ac" value="ac">
+      <span id="r_a_label" class="show_switch w60 b_l color_a">A</span><span id="r_c_label" class="show_switch w60 b_r color_c">C</span>
+    </span>
+    <span id="show_act" class="ctrl show_level" level="act"><input type="radio" name="mode" id="r_act" value="act">
+      <span id="r_a_label" class="show_switch w40 b_l color_a">A</span><span id="r_c_label" class="show_switch w40 b_c color_c">C</span><span id="r_t_label" class="show_switch w40 b_r color_t">T</span>
+    </span>
+    <span id="show_actg" class="ctrl show_level" level="actg"><input type="radio" name="mode" id="r_actg" value="actg">
+      <span id="r_a_label" class="show_switch w30 b_l color_a">A</span><span id="r_c_label" class="show_switch w30 b_c color_c">C</span><span id="r_t_label" class="show_switch w30 b_c color_t">T</span><span id="r_g_label" class="show_switch w30 b_r color_g">G</span>
+    </span>
+    <br>
+    <label class="ctrl_label">Search IDs:</label> <input type="text" class="ctrl_txt" id="search_ids" size="60" placeholder="e.g. a0001c0001t0001 a2c1t1 t1">
+    <br>
+    <label class="ctrl_label">Highlight IDs:</label> <input type="text" class="ctrl_txt" id="highlight_ids" size="60" placeholder="e.g. a0001c0001t0001 a2c1t1 t1">
+    <br>
+    <label class="ctrl_label">Highlight positions:</label> <input type="text" class="ctrl_txt" id="highlight_positions" size="60" placeholder="e.g. 111810388,111811182">
+    <br>
+    <label class="ctrl_label">Change scale:</label> <div id="scale_button_bg"> <div id="scale_button" class="ctrl"></div></div>
   </div>
-  <div class="viewer" id="haplotype_view">
-    <ul id="root_ul">
-      {{#each hap}}
-      <li class="rank_a" id="{{id_sub}}_li"><span class="open_button" id="{{id_sub}}_button"></span><span class="freq popup" style="background-color: {{color}};" popup_id="{{id_sub}}">  </span><span id="{{id_sub}}" class="hapid">{{id}}</span>: {{#each var_data}}<span class='c_{{type}} v{{#if popup_id}} popup' popup_id='{{popup_id}}{{/if}}'>{{char}}</span>{{/each}}</li>
-      <li class="child_node">
-	<ul id="{{id}}_chld" class="a_chld">
-	  {{#each child_hap}}
-	  <li class="rank_c" id="{{id_sub}}_li"><span class="open_button" id="{{id_sub}}_button"></span><span class="freq popup" style="background-color: {{color}};" popup_id="{{id_sub}}">  </span><span id="{{id_sub}}" class="hapid">{{id}}</span>: {{#each var_data}}<span class='c_{{type}} v{{#if popup_id}} popup' popup_id='{{popup_id}}{{/if}}'>{{char}}</span>{{/each}}</li>
-	  <li class="child_node">
-	    <ul id="{{id_sub}}_chld" class="c_chld">
-	      {{#each child_hap}}
-	      <li class="rank_t" id="{{id_sub}}_li"><span class="open_button" id="{{id_sub}}_button"></span><span class="freq popup" style="background-color: {{color}};" popup_id="{{id_sub}}">  </span><span id="{{id_sub}}" class="hapid">{{id}}</span>: {{#each var_data}}<span class='c_{{type}} v{{#if popup_id}} popup' popup_id='{{popup_id}}{{/if}}'>{{char}}</span>{{/each}}</li>
-	      <li class="child_node">
-		<ul id="{{id_sub}}_chld" class="t_chld">
-		  {{#each child_hap}}
-		  <li class="rank_g" id="{{id_sub}}_li"><span class="no_button" id="{{id_sub}}_button"></span><span class="freq popup" style="background-color: {{color}};" popup_id="{{id_sub}}">  </span><span id="{{id_sub}}" class="hapid">{{id}}</span>: {{#each var_data}}<span class='c_{{type}} v{{#if popup_id}} popup' popup_id='{{popup_id}}{{/if}}'>{{char}}</span>{{/each}}</li>
-		  {{/each}}
-		</ul>
-	      </li>
-	      {{/each}}
-	    </ul>
-	  </li>
+  <div class="scroll scroll_height_ctrl_show" id="haplotype_view_scroll">
+    <div class="viewer" id="haplotype_view">
+      <ul id="root_ul">
+	{{#each hap}}
+	<li class="child_node">
+	  <ul id="{{id}}_chld" class="a_chld">
+	  {{#each hap}}
+	  <li class="hap_li rank_{{mode}} hidden" id="{{id}}_li"><span class="open_button opened_button" id="{{id}}_button"></span><span class="freq popup" style="background-color: {{color}};" popup_id="{{id}}">  </span><span id="{{id}}" class="hapid">{{id}}</span>: <span class="c_seq">{{#each var_data}}{{#if type}}<span class='c_{{type}} v{{#if popup_id}} popup v_{{popup_id}}' popup_id='{{popup_id}}{{/if}}'>{{/if}}{{char}}{{#if type}}</span>{{/if}}{{/each}}</span></li>
 	  {{/each}}
-	</ul>
-      </li>
-      {{/each}}
-    </ul>
-    <ul id="var_freq">
-      {{#each var_freq}}
-      <li class="var_freq_li" id="{{level}}_freq_li"><span class="no_button"></span><span class="freq">  </span><span class="pre id_space">{{space}}</span><span style="color: rgb(255 255 255 / 0)">:</span> {{#each var_data}}<span class='v pre{{#if popup_id}} popup' popup_id='{{popup_id}}{{/if}}' style="background-color: {{color}};"> </span>{{/each}}</li>
-      {{/each}}
-    </ul>
-    <ul id="sort_ul">
-    </ul>
+	  </ul>
+	</li>
+	{{/each}}
+      </ul>
+      <div id="var_info">
+        <ul id="var_freq" class="var_info_ul">
+	  {{#each var_freq}}
+   	  <li class="var_freq_li level_mode_li {{level}}_level_mode_li hidden" id="{{level}}_freq_li"><span class="no_button"></span><span class="freq">  </span><span class="pre id_space">{{space}}</span><span style="color: rgb(255 255 255 / 0)">:</span> {{#each var_data}}<span class='v_freq pre pre_r{{#if popup_id}} popup' popup_id='{{popup_id}}{{/if}}' style="background-color: {{color}};"> </span>{{/each}}</li>
+	  {{/each}}
+        </ul>
+        <ul id="region_level" class="var_info_ul">
+	  {{#each region}}
+	  <li class="region_li level_mode_li {{level}}_level_mode_li hidden" id="{{level}}_region_li"><span class="no_button"></span><span class="freq">  </span><span class="pre id_space">{{space}}</span><span style="color: rgb(255 255 255 / 0)">:</span><span class="mv-2_seq"> {{#each region_data}}<span class='r_{{level}} pre'>{{seq}}</span>{{/each}}</span></li>
+	  {{/each}}
+        </ul>
+        <ul id="var_highlight" class="var_info_ul">
+	  {{#each var_freq}}
+   	  <li class="var_highlight_li level_mode_li {{level}}_level_mode_li hidden" id="{{level}}_freq_li"><span class="no_button"></span><span class="freq">  </span><span class="pre id_space">{{space}}</span><span style="color: rgb(255 255 255 / 0)">:</span><span class="mv-2_seq"> {{#each var_data}}<span class='v_highlight pre pre_r highlight{{pos}}'> </span>{{/each}}</span></li>
+	  {{/each}}
+        </ul>
+      </div>
+      <ul id="sort_ul" class="hidden">
+      </ul>
+    </div>
   </div>
 </div>
   
