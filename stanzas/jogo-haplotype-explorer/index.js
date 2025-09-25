@@ -108,7 +108,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	    {label: "EUR", count: 0},
 	    {label: "SAS", count: 0}
 	];
-	for (const d of id_list.g) {
+	for (const d of id_list.actg) {
 	  if (v.ghapids.match(d.id)) {
 	    for (const [i ,p] of d.pop.entries()) {
 	      pop[i].count += d.pop[i].count;
