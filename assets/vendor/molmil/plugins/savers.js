@@ -70,9 +70,9 @@ molmil.saveJSO = function(soup, atomSelection, modelId, file) {
 molmil.savePDB = function(soup, atomSelection, modelId, file) {
   if (! window.saveAs && ! molmil.configBox.customSaveFunction) return molmil.loadPlugin(molmil.settings.src+"lib/FileSaver.js", molmil.savePDB, molmil, [soup, atomSelection, modelId, file]); 
   var info = new Set(atomSelection);
-  var saveMapping = {};
+  var saveMapping = {}, ccmapper = {};
   
-  var s, c, a, atom, aid = 1, out = "", gname, aname, rname, cname, rid, x, y, z, prevChain = null, b;
+  var s, c, a, atom, aid = 1, out = "", gname, aname, rname, cname, rid, x, y, z, prevChain = null, b, occupancy, label_alt_id, Bfactor;
   var saveModel = function(modelId_) {
     for (s=0; s<soup.structures.length; s++) {
       for (c=0; c<soup.structures[s].chains.length; c++) {
@@ -91,6 +91,15 @@ molmil.savePDB = function(soup, atomSelection, modelId, file) {
 
           aname = atom.atomName.substr(0,4);
           rname = atom.molecule.name;
+          if (rname.length > 3) {
+            if (ccmapper[rname]) rname = ccmapper[rname];
+            else {
+              if (Object.keys(ccmapper).length == 0) rname = "LG0";
+              else if (Object.keys(ccmapper).length > 9) rname = "L"+Object.keys(ccmapper).length; // doesn't support more than 100 ligands, once it gets to that, the user should stop using the pdb format
+              else rname = "LG"+Object.keys(ccmapper).length;
+              ccmapper[atom.molecule.name] = rname;
+            }
+          }
           
           if (aname != rname && ! isNumber(aname[0]) && aname.length < 4) aname = ' ' + aname;
     
@@ -101,8 +110,11 @@ molmil.savePDB = function(soup, atomSelection, modelId, file) {
           x = atom.chain.modelsXYZ[modelId_][atom.xyz].toFixed(3);
           y = atom.chain.modelsXYZ[modelId_][atom.xyz+1].toFixed(3);
           z = atom.chain.modelsXYZ[modelId_][atom.xyz+2].toFixed(3);
+          occupancy = (atom.occupancy||1).toFixed(2);
+          label_alt_id = atom.label_alt_id || " ";
+          Bfactor = (atom.Bfactor||0).toFixed(2);
     
-          out += gname + (aid+'').padStart(5) + " " + aname.padEnd(4) + " " + rname.padStart(3) + cname.padStart(2) + (rid+'').padStart(4) + "    " + (x+'').padStart(8) + (y+'').padStart(8) + (z+'').padStart(8) + ('1.00').padStart(6) + ('0.00').padStart(6) + "          " + atom.element.toUpperCase().padStart(2) + "\n";
+          out += gname + (aid+'').padStart(5) + " " + aname.padEnd(4) + label_alt_id + rname.padStart(3) + cname.padStart(2) + (rid+'').padStart(4) + "    " + (x+'').padStart(8) + (y+'').padStart(8) + (z+'').padStart(8) + (occupancy+'').padStart(6) + (Bfactor+'').padStart(6) + "          " + atom.element.toUpperCase().padStart(2) + "\n";
           saveMapping[atom.AID] = aid;
           aid++;
         }

@@ -15,6 +15,7 @@ molmil.commandLine.prototype.bindPymolInterface = function() {
     "stop-anim": molmil.commandLines.pyMol.stopAnimCommand,
     translate: molmil.commandLines.pyMol.translateCommand,
     fetch: molmil.commandLines.pyMol.fetchCommand,
+    afdb: molmil.commandLines.pyMol.afdbCommand,
     "fetch-cc": molmil.commandLines.pyMol.fetchCCCommand,
     "fetch-chain": molmil.commandLines.pyMol.fetchChainCommand,
     efsite: molmil.commandLines.pyMol.efsiteCommand,
@@ -42,6 +43,7 @@ molmil.commandLine.prototype.bindPymolInterface = function() {
     repr: molmil.commandLines.pyMol.reprCommand,
     "style-if": molmil.commandLines.pyMol.styleifCommand,
     align: molmil.commandLines.pyMol.alignCommand,
+    hbonds: molmil.commandLines.pyMol.hbondsCommand,
     reinitialize: molmil.commandLines.pyMol.reinitializeCommand,
     quit: molmil.commandLines.pyMol.quitCommand
   };
@@ -193,6 +195,13 @@ molmil.commandLines.pyMol.styleifCommand = function(env, command) {
 molmil.commandLines.pyMol.reinitializeCommand = function(env, command) {
   var canvas = molmil.fetchCanvas();
   molmil.clear(canvas);
+  return true;
+}
+
+molmil.commandLines.pyMol.hbondsCommand = function(env, command) {
+  command = command.match(/hbonds[\s]+(.*)[\s]*(,[\s]*(.*)*)?/);
+  try {molmil.commandLines.pyMol.hbonds.apply(env, [command[1], command[2]]);}
+  catch (e) {console.error(e); return false;}
   return true;
 }
 
@@ -352,6 +361,23 @@ molmil.commandLines.pyMol.translateCommand = function(env, command) {
   if (cmd != null) {
     try {molmil.commandLines.pyMol.translate.apply(env, [[parseFloat(cmd[1]), parseFloat(cmd[2]), parseFloat(cmd[3])], cmd[4]]);}
     catch (e) {console.error(e); return false;}
+  }
+  else return false;
+  return true;
+}
+
+molmil.commandLines.pyMol.afdbCommand = function(env, command) {
+  var cmd = command.match(/afdb[\s]+([a-zA-Z0-9]*)/);
+  if (cmd != null) {
+    var parts = cmd[1].match(/.{1,2}/g);
+    var loc = parts.slice(0,3).join("/")+"/";
+    molmil.configBox.inverseBfacClr=true;
+    molmil.loadFile("https://bsma.pdbj.org/afdb/"+loc+cmd[1]+".json", "mmjson", function(soup, struc) {
+      molmil.displayEntry(struc, 1);
+      molmil.configBox.inverseBfacClr = true;
+      molmil.colorBfactor(struc.chains[0].atoms, soup);
+      molmil.orient(struc.chains[0].atoms, soup);
+    });
   }
   else return false;
   return true;
@@ -544,7 +570,7 @@ molmil.quickSelect = molmil.commandLines.pyMol.select = molmil.commandLines.pyMo
   if (! molmil.isBalancedStatement(expr)) throw "Incorrect statement"; // safety check
   
   var new_expr = [];
-  var word = "", key, ss_conv = {h: 3, s: 2, l: 1}, tmp, i, j, NOT = false, operator;
+  var word = "", key, ss_conv = {h: 3, s: 2, l: 1}, tmp, i, j;
   var toUpper = false, toUpper_, toLower = false, toLower_, ss = false, ss_;
   
   this.soupObject = this.soupObject || molmil.cli_soup || soup || this.cli_soup;
@@ -625,31 +651,30 @@ molmil.quickSelect = molmil.commandLines.pyMol.select = molmil.commandLines.pyMo
         continue;
       }
       toUpper_ = false, ss_ = false;
-      //operator = NOT ? "!=" : "=="; NOT = false;
-      operator = "==";
-      if (word == "name") {key = "this.soupObject.atomRef[a].atomName "+operator+" '%s'"; toUpper_ = true;}
-      else if (word == "index") key = "this.soupObject.atomRef[a].AID "+operator+" %s";
-      else if (word == "symbol") key = "this.soupObject.atomRef[a].element "+operator+" '%s'";
-      else if (word == "resn") {key = "this.soupObject.atomRef[a].molecule.name.toLowerCase() "+operator+" '%s'"; toLower_ = true;}
-      else if (word == "resi") key = "this.soupObject.atomRef[a].molecule.RSID "+operator+" %s";
-      else if (word == "resid") key = "this.soupObject.atomRef[a].molecule.id "+operator+" %s";
-      else if (word == "ss") {key = "this.soupObject.atomRef[a].molecule.sndStruc "+operator+" %s"; ss_ = true;}
-      else if (word == "entity") key = "this.soupObject.atomRef[a].molecule.chain.entity_id "+operator+" %s";
-      else if (word == "chain_auth") key = "this.soupObject.atomRef[a].molecule.chain.authName "+operator+" '%s'";
+      if (word == "name") {key = "(this.soupObject.atomRef[a].atomName == '%s')"; toUpper_ = true;}
+      else if (word == "index") key = "(this.soupObject.atomRef[a].AID == %s)";
+      else if (word == "symbol") key = "(this.soupObject.atomRef[a].element == '%s')";
+      else if (word == "resn") {key = "(this.soupObject.atomRef[a].molecule.name.toLowerCase() == '%s')"; toLower_ = true;}
+      else if (word == "resi") key = "(this.soupObject.atomRef[a].molecule.RSID == %s)";
+      else if (word == "resid") key = "(this.soupObject.atomRef[a].molecule.id == %s)";
+      else if (word == "ss") {key = "(this.soupObject.atomRef[a].molecule.sndStruc == %s)"; ss_ = true;}
+      else if (word == "entity") key = "(this.soupObject.atomRef[a].molecule.chain.entity_id == %s)";
+      else if (word == "chain_auth") key = "(this.soupObject.atomRef[a].molecule.chain.authName == '%s')";
       else if (word == "chain") {
-        if (this.cif_use_auth) key = "this.soupObject.atomRef[a].molecule.chain.authName "+operator+" '%s'";
-        else key = "this.soupObject.atomRef[a].molecule.chain.name "+operator+" '%s'";
+        if (this.cif_use_auth) key = "(this.soupObject.atomRef[a].molecule.chain.authName == '%s')";
+        else key = "(this.soupObject.atomRef[a].molecule.chain.name == '%s')";
       }
-      else if (word == "b") key = "this.soupObject.atomRef[a].Bfactor %s %s";
-      else if (word == "hydro") new_expr.push("this.soupObject.atomRef[a].molecule.water "+operator+" true");
-      else if (word == "disulf") new_expr.push("(this.soupObject.atomRef[a].molecule.name "+operator+" 'CYS' && this.soupObject.atomRef[a].molecule.weirdAA)");
-      else if (word == "hetatm") new_expr.push("this.soupObject.atomRef[a].molecule.ligand "+operator+" true");
-      else if (word == "snfg") new_expr.push("this.soupObject.atomRef[a].molecule.SNFG "+operator+" true");
-      else if (word == "altloc") {key = "this.soupObject.atomRef[a].label_alt_id "+operator+" '%s'";}
+      else if (word == "b") key = "(this.soupObject.atomRef[a].Bfactor %s %s)";
+      else if (word == "hydro") new_expr.push("(this.soupObject.atomRef[a].molecule.water == true)");
+      else if (word == "visible") new_expr.push("(this.soupObject.atomRef[a].displayMode != 0)");
+      else if (word == "disulf") new_expr.push("(this.soupObject.atomRef[a].molecule.name == 'CYS' && this.soupObject.atomRef[a].molecule.weirdAA)");
+      else if (word == "hetatm") new_expr.push("(this.soupObject.atomRef[a].molecule.ligand == true)");
+      else if (word == "snfg") new_expr.push("(this.soupObject.atomRef[a].molecule.SNFG == true)");
+      else if (word == "altloc") {key = "(this.soupObject.atomRef[a].label_alt_id == '%s')";}
       else if (word == "model") {
         // two modes, by name & by number (1-...)
-        if (expr[i+1] == "#") key = "this.soupObject.atomRef[a].chain.entry.meta.idnr "+operator+" '%s'";
-        else {key = "(this.soupObject.atomRef[a].chain.entry.meta.id || this.soupObject.atomRef[a].chain.entry.meta.filename).toLowerCase() "+operator+" '%s'"; toLower_ = true;}
+        if (expr[i+1] == "#") key = "(this.soupObject.atomRef[a].chain.entry.meta.idnr == '%s')";
+        else {key = "((this.soupObject.atomRef[a].chain.entry.meta.id || this.soupObject.atomRef[a].chain.entry.meta.filename).toLowerCase() == '%s')"; toLower_ = true;}
       }
       else if (word == "around") {
         var atomList = []
@@ -672,7 +697,6 @@ molmil.quickSelect = molmil.commandLines.pyMol.select = molmil.commandLines.pyMo
         TEMPLIST.push(atomList);
         new_expr.push("TEMPLIST["+(TEMPLIST.length-1)+"].indexOf(this.soupObject.atomRef[a]) != -1");
       }
-      //else if (word.toLowerCase() == "not" || word == "!") NOT = true;
       else if (word.toLowerCase() == "not" || word == "!") new_expr.push("!");
       else if (word == "and") new_expr.push("&&");
       else if (word == "or") new_expr.push("||");
@@ -729,11 +753,10 @@ molmil.quickSelect = molmil.commandLines.pyMol.select = molmil.commandLines.pyMo
     }
     
     else if (expr[i] == "(" || expr[i] == ")") new_expr.push(expr[i]);
-    //else if (expr[i] == "!") NOT = true;
     else if (expr[i] == "!") new_expr.push("!");
     else word += expr[i];
   }
-  
+
   return executeExpr.apply(this, [new_expr.join(" ")]);
 }
 
@@ -1022,6 +1045,32 @@ molmil.commandLines.pyMol.styleif = function(cmds) {
   if (! this.cli_soup.canvas.setupDone) return molmil_dep.asyncStart(molmil.commandLines.pyMol.styleif, [cmds], this, 100);
   cmds = cmds ? cmds.split(",").map(function(x){return x.trim()}) : ["structure"];
   this.cli_soup.UI.styleif(cmds[0], cmds.slice(1));
+}
+
+molmil.commandLines.pyMol.hbonds = function(atoms1, atoms2) {
+  if (typeof atoms1 != "object" && atoms1 != null) {
+    if (this.hasOwnProperty(atoms1)) atoms1 = this[atoms1];
+    else atoms1 = molmil.commandLines.pyMol.select.apply(this, [atoms1]);
+    atoms1 = molmil.atoms2residues(atoms1);
+  }
+
+  var soup = this.cli_soup || molmil.cli_soup;
+
+  if (atoms2 === undefined) {
+    atoms2 = [];
+    for (var chain of soup.chains) {
+      for (var mol of chain.molecules) if (!mol.water) atoms2.push(mol);
+    }
+  }
+  else {
+    if (typeof atoms2 != "object" && atoms2 != null) {
+      if (this.hasOwnProperty(atoms2)) atoms2 = this[atoms2];
+      else atoms2 = molmil.commandLines.pyMol.select.apply(this, [atoms2]);
+    }
+    atoms2 = molmil.atoms2residues(atoms2);
+  }
+  
+  molmil.calcHbonds(atoms1, atoms2, {type: "dotted-cylinder", rgba: [0, 0, 0, 255]}, soup);
 }
 
 molmil.commandLines.pyMol.align = function(name1, name2) {
@@ -1481,7 +1530,7 @@ molmil.commandLines.pyMol.turn = function(axis, degrees, interval, frames) {
   this.animObjects = this.animObjects || [];
   this.animObjects.push(obj);
   
-  if (canvas.renderer.onRenderFinish !== undefined) canvas.molmilViewer.downloadInProgress++;
+  if (molmil.configBox.autoPauseExec) canvas.molmilViewer.downloadInProgress++;
   
   var update = function() {
     if (axis == "x") camera.pitchAngle += parseFloat(degrees) || 0;
@@ -1498,7 +1547,7 @@ molmil.commandLines.pyMol.turn = function(axis, degrees, interval, frames) {
       }
       obj[0] = setTimeout(update, interval);
     }
-    else if (canvas.renderer.onRenderFinish !== undefined) canvas.molmilViewer.downloadInProgress--;
+    else if (molmil.configBox.autoPauseExec) canvas.molmilViewer.downloadInProgress--;
   };
   update();
   
@@ -1514,6 +1563,8 @@ molmil.commandLines.pyMol.move = function(axis, amount, interval, frames) {
   this.animObjects = this.animObjects || [];
   this.animObjects.push(obj);
   
+  if (molmil.configBox.autoPauseExec) canvas.molmilViewer.downloadInProgress++;
+  
   var update = function() {
     if (axis == "x") camera.x += parseFloat(amount) || 0;
     else if (axis == "y") camera.y += parseFloat(amount) || 0;
@@ -1522,6 +1573,7 @@ molmil.commandLines.pyMol.move = function(axis, amount, interval, frames) {
     canvas.update = true;
     fid++;
     if (interval > 0 && fid != frames) obj[0] = setTimeout(update, interval);
+    else if (molmil.configBox.autoPauseExec) canvas.molmilViewer.downloadInProgress--;
   };
   update();
   
@@ -1529,7 +1581,10 @@ molmil.commandLines.pyMol.move = function(axis, amount, interval, frames) {
 }
 
 molmil.commandLines.pyMol.stopAnim = function() {
-  this.animObjects.forEach(function (x) {clearTimeout(x);});
+  this.animObjects.forEach(function (x) {
+    clearTimeout(x);
+    if (molmil.configBox.autoPauseExec) canvas.molmilViewer.downloadInProgress--;
+  });
   return;
 }
 
@@ -1697,11 +1752,11 @@ molmil.commandLines.pyMol.set = function(key, value, atoms, quiet) {
     molmil.configBox.connect_cutoff = parseFloat(value);
   }
   else if (key == "transparency") {
-    for (var i=0; i<selection.length; i++) selection[i].molecule.rgba = [selection[i].molecule.rgba[0], selection[i].molecule.rgba[2], selection[i].molecule.rgba[1], (1-value)*255];
+    for (var i=0; i<selection.length; i++) selection[i].molecule.rgba = [selection[i].molecule.rgba[0], selection[i].molecule.rgba[1], selection[i].molecule.rgba[2], (1-value)*255];
     this.cli_soup.renderer.rebuildRequired = true;
   }
   else if (key == "transparency_sticks") {
-    for (var i=0; i<selection.length; i++) selection[i].rgba = [selection[i].rgba[0], selection[i].rgba[2], selection[i].rgba[1], (1-value)*255];
+    for (var i=0; i<selection.length; i++) selection[i].rgba = [selection[i].rgba[0], selection[i].rgba[1], selection[i].rgba[2], (1-value)*255];
     this.cli_soup.renderer.rebuildRequired = true;
   }
 

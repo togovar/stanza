@@ -23,12 +23,13 @@ molmil.ignoreBlackList = false;
 molmil.vrDisplay = null;
 molmil.vrPose = [0, 0, 0];
 molmil.vrOrient = [0, 0, 0, 0];
-molmil.pdbj_data = "https://data.pdbjlc1.pdbj.org/";
+molmil.pdbj_data = "https://data.pdbj.org/";
 
 // switch PDBj URLs to newweb file service
 molmil.settings_default = {
   src: document.currentScript ? document.currentScript.src.split("/").slice(0, -1).join("/")+"/" : "https://pdbj.org/molmil2/",
   pdb_url: molmil.pdbj_data+"pdbjplus/data/pdb/mmjson/__ID__.json",
+  mmcif_url: molmil.pdbj_data+"pub/pdb/data/structures/all/mmCIF/__ID__.cif",
   pdb_chain_url: molmil.pdbj_data+"pdbjplus/data/pdb/mmjson-chain/__ID__-chain.json",
   comp_url: molmil.pdbj_data+"pdbjplus/data/cc/mmjson/__ID__.json",
   data_url: molmil.pdbj_data,
@@ -609,6 +610,11 @@ molmil.labelObject = function(soup) {
 }
 
 // ** object controlling animation (multiple models & trajectories) **
+
+molmil.fetch = function(resource, options) {
+  if (window.fetch === undefined) throw "Browser too old";
+  return window.fetch(resource, options);
+}
 
 molmil.fetchCanvas = function() {
   for (var i=0; i<molmil.canvasList.length; i++) if (molmil.canvasList[i].molmilViewer) return molmil.canvasList[i];
@@ -1283,7 +1289,7 @@ molmil.viewer.prototype.buildAminoChain = function(chain) {
           }
         }
       }
-      else if (chain.molecules[m1].CA && chain.molecules[m2].CA && m2 == m1+1) { // only allow sequential
+      else if (chain.molecules[m1].CA && chain.molecules[m2].CA && m2 == m1+1 && !chain.molecules[m1].xna) { // only allow sequential
         xyz1 = chain.molecules[m1].CA.xyz;
         xyz2 = chain.molecules[m2].CA.xyz;
         dx = xyzRef[xyz1]-xyzRef[xyz2]; dx *= dx;
@@ -1660,6 +1666,7 @@ ihm_starting_model_coord
     var auth_asym_id = atom_site.auth_asym_id || label_asym_id; // chain name
   
     var label_alt_id = atom_site.label_alt_id || [];
+    var occupancy = atom_site.occupancy || [];
   
     var auth_atom_id = atom_site.auth_atom_id || atom_site.atom_id || []; // atom name
     var label_atom_id = atom_site.label_atom_id || []; // atom name
@@ -1749,6 +1756,7 @@ ihm_starting_model_coord
       else isHet = false;
 
       atom.label_alt_id = label_alt_id[a] || "";
+      atom.occupancy = occupancy[a] || 1;
       if (currentMol.water) currentChain.display = this.showWaters;
       if (atom.element == "H") atom.display = this.showHydrogens;
       else if (atom.display) {
@@ -3135,9 +3143,8 @@ molmil.geometry.initChains = function(chains, render, detail_or) {
     }
     
     if (chain.displayMode == 3 && chain.molecules.length && chain.molecules[0].xna) { // default?
-      
       for (var m=0; m<chain.molecules.length; m++) {
-        if (chain.molecules[0].displayMode == 3 && chain.molecules[m].outer && chain.molecules[m].CA) xna2draw.push([chain.molecules[m].CA, chain.molecules[m].outer]);
+        if (chain.molecules[0].displayMode == 3 && chain.molecules[m].outer && chain.molecules[m].CA && chain.molecules[m].CA.displayMode == 0) xna2draw.push([chain.molecules[m].CA, chain.molecules[m].outer]);
       }
     }
     
@@ -4099,8 +4106,8 @@ molmil.geometry.generateSurfaces = function(chains, soup) {
 
 // ** build cartoon representation **
 molmil.geometry.generateCartoon = function() {
-  var chains = this.cartoonChains, c, b, b2, m, chain, line, tangents, binormals, normals, rgba, aid, ref, i, TG, BN, N, t = 0, normal, binormal, vec = [0, 0, 0], delta = 0.0001, t_ranges, BNs, currentBlock;
-  var noi = this.noi;
+  var chains = this.cartoonChains, c, b, b2, m, chain, line, tangents, binormals, normals, rgba, aid, ref, i, TG, BN, N, t = 0, normal, binormal, vec = [0, 0, 0], delta = 0.0001, t_ranges, BNs, currentBlock, colorNext;
+  var noi = this.noi, noiHWP = Math.round(this.noi*.5)+1;
   var novpr = this.novpr;
   
   var nowp, wp, tmp, rotationMatrix, identityMatrix, theta, smallest;
@@ -4170,8 +4177,14 @@ molmil.geometry.generateCartoon = function() {
       else {
         for (m=0; m<currentBlock.molecules.length-1; m++) {
           molmil.hermiteInterpolate(currentBlock.xyz[m], currentBlock.xyz[m+1], currentBlock.tangents[m], currentBlock.tangents[m+1], noi, line, tangents);
-          for (i=0; i<noi+1; i++) {
+          colorNext = currentBlock.molecules[m+1] ? currentBlock.molecules[m+1].rgba : colorThis;
+          for (i=0; i<noiHWP; i++) {
             rgba[wp] = currentBlock.molecules[m].rgba;
+            aid[wp] = currentBlock.molecules[m].CA.AID;
+            wp++;
+          }
+          for (i=noiHWP; i<noi+1; i++) {
+            rgba[wp] = colorNext;
             aid[wp] = currentBlock.molecules[m].CA.AID;
             wp++;
           }
@@ -5752,7 +5765,7 @@ molmil.render.prototype.initGL = function(canvas, width, height) {
     canvas.bindMouseTouch();
     canvas.addEventListener("webglcontextlost", function(event) {event.preventDefault();}, false);
     canvas.addEventListener("webglcontextrestored", function() {
-      this.reinitRenderer();
+      this.renderer.reinitRenderer();
     }, false);
   }
   
@@ -5911,7 +5924,7 @@ molmil.render.prototype.initGL = function(canvas, width, height) {
 };
 
 molmil.render.prototype.reinitRenderer = function() {
-  this.initGL(this);
+  this.initGL(this.canvas);
   // we need to recompile the shaders (in case the GPU changed...)
   molmil.shaderEngine.recompile(this);
   this.buffers.atomSelectionBuffer = undefined;
@@ -8215,47 +8228,13 @@ molmil.loadFile = function(loc, format, cb, async, soup) {
   }, {async: async ? true : false});
 };
 
-molmil.loadPDBlite = function(pdbid, cb, async, soup) {
-  molmil.configBox.liteMode = true;
-  soup = soup || molmil.cli_soup || molmil.fetchCanvas().molmilViewer;
-  
-  var requestA = new molmil_dep.CallRemote("GET"), async = true; requestA.ASYNC = async;
-  requestA.OnDone = function() {this.atom_data = JSON.parse(this.request.responseText);}
-  requestA.OnError = function() {
-    this.error = true;
-    soup.loadStructure(molmil.settings.pdb_url.replace("__ID__", pdbid), 1, cb || function(target, struc) {
-      struc.meta.pdbid = pdbid;
-      delete target.pdbxData;
-      molmil.displayEntry(struc, molmil.displayMode_Default);
-      molmil.displayEntry(struc, molmil.displayMode_CartoonRocket);
-      molmil.colorEntry(struc, 1, null, true, soup);
-    }, {async: async ? true : false});
-    
-    
-  };
-  requestA.Send(molmil.settings.pdb_url.replace("format=mmjson-all", "format=mmjson-lite").replace("__ID__", pdbid));
-  var requestB = new molmil_dep.CallRemote("GET"), async = true; requestB.ASYNC = async; requestB.target = this; requestB.requestA = requestA; 
-  requestB.OnDone = function() {
-    if (this.requestA.error) return;
-    if (! this.requestA.atom_data) return molmil_dep.asyncStart(this.OnDone, [], this, 100);
-    var jso = JSON.parse(this.request.responseText);
-    jso["data_"+pdbid.toUpperCase()]["atom_site"] = this.requestA.atom_data["data_"+pdbid.toUpperCase()]["atom_site"];
-    soup.loadStructureData(jso, "mmjson", pdbid+".json", cb || function(target, struc) { // later switch this to use the new lite mmjson files...
-      struc.meta.pdbid = pdbid;
-      delete target.pdbxData;
-      molmil.displayEntry(struc, molmil.displayMode_Default);
-      molmil.displayEntry(struc, molmil.displayMode_CartoonRocket);
-      molmil.colorEntry(struc, 1, null, true, soup);
-    });
-  };
-  requestB.Send(molmil.settings.pdb_url.replace("__ID__", pdbid).replace("format=mmjson-all", "format=mmjson-plus-noatom"));
-};
-
 molmil.loadPDB = function(pdbid, cb, async, soup) {
   var tmp = molmil.configBox.skipComplexBondSearch;
   molmil.configBox.skipComplexBondSearch = true;
   soup = soup || molmil.cli_soup || molmil.fetchCanvas().molmilViewer;
-  soup.loadStructure(molmil.settings.pdb_url.replace("__ID__", pdbid.toLowerCase()), 1, cb || function(target, struc) {
+  
+  var isBig = pdbid.toLowerCase() == "9fqr";
+  soup.loadStructure((isBig ? molmil.settings.mmcif_url : molmil.settings.pdb_url).replace("__ID__", pdbid.toLowerCase()), isBig ? 2 : 1, cb || function(target, struc) {
     struc.meta.pdbid = pdbid;
     if (soup.AID > 1e5 || (soup.AID > 150000 && (navigator.userAgent.toLowerCase().indexOf("mobile") != -1 || navigator.userAgent.toLowerCase().indexOf("android") != -1 || window.navigator.msMaxTouchPoints))) molmil.displayEntry(struc, molmil.displayMode_Wireframe);
     else molmil.displayEntry(struc, 1);
@@ -8841,7 +8820,8 @@ molmil.commandLine.prototype.wait4Download = function() {
 };
 
 molmil.commandLine.prototype.runCommand = function(command) { // note the /this/ stuff will not work properly... if there are many functions and internal /var/s...
-  if (command.match(/\bfunction\b/)) command = command.replace(/(\b|;)function\s+(\w+)/g, "$1global.$2 = function"); // make sure that functions are stored in /this/ and not in the local scope...
+  if (command.match(/\basync function\b/)) command = command.replace(/(\b|;)async function\s+(\w+)/g, "$1global.$2 = async function"); // make sure that functions are stored in /this/ and not in the local scope...
+  else if (command.match(/\bfunction\b/)) command = command.replace(/(\b|;)function\s+(\w+)/g, "$1global.$2 = function"); // make sure that functions are stored in /this/ and not in the local scope...
   else command = (' '+command).replace(/(\s|;)var\s+(\w+)\s*=/g, "$1global.$2 ="); // make sure that variables are stored in /this/ and not in the local scope...
   command = command.replace(/(\s|;)return\sthis;/g, "$1return window;"); // make sure that it is impossible to get back the real window object
   try {with (this) {eval(command);}}
@@ -9268,13 +9248,14 @@ molmil.mergeStructuresToModels = function(entries) { // merges multiple structur
 molmil.splitModelsToStructures = function(entry) { // splits multiple models into separate structures
 }
 
-molmil.showNearbyResidues = function(obj, r, soup) {
+molmil.showNearbyResidues = function(obj, r, soup, drawMode) {
+  drawMode = drawMode || displayMode_Stick;
   var atomList = molmil.fetchNearbyAtoms(obj, r, null, soup);
   var processed = [], res;
   for (var i=0; i<atomList.length; i++) {
     res = atomList[i].molecule;
     if (processed.indexOf(res) != -1) continue;
-    molmil.displayEntry(res, molmil.displayMode_Stick);
+    molmil.displayEntry(res, drawMode);
     processed.push(res);
   }
   soup.renderer.initBuffers();
@@ -9572,20 +9553,10 @@ molmil.autoSetup = function(options, canvas) {
   if (! canvas.molmilViewer) molmil.createViewer(canvas);
   if (canvas.setupDone) return;
   
-  
-  if (options.enable.includes("cli") && ! canvas.commandLine) {
+  if (! canvas.commandLine) {
     var cli = new molmil.commandLine(canvas);
     if (options.environment) {for (var e in options.environment) cli.environment[e] = options.environment[e];}
-  
-    if (options.enable.includes("cli-hash")) {
-      var hash = window.location.hash ? window.location.hash.substr(1) : "";
-      if (hash) cli.environment.console.runCommand(decodeURIComponent(hash));
-
-      window.onhashchange = function() {
-        var hash = window.location.hash ? window.location.hash.substr(1) : "";
-        if (hash) {molmil.clear(canvas); cli.environment.console.runCommand(decodeURIComponent(hash));}
-      }
-    }
+    cli.consoleBox.style.display = "none";
     
     if (window.onkeyup == null) {
       var lastPress = 0;
@@ -9598,19 +9569,22 @@ molmil.autoSetup = function(options, canvas) {
       }
     }
   }
-  else if (options.enable.includes("cli-hash") && ! canvas.commandLine) {
-    var hash = window.location.hash ? window.location.hash.substr(1) : "";
-    if (hash) {
-      var cli = new molmil.commandLine(canvas);
-      if (options.environment) {for (var e in options.environment) cli.environment[e] = options.environment[e];}
-      cli.environment.console.runCommand(decodeURIComponent(hash));
-      cli.consoleBox.style.display = "none";
-    }
-  }
-  
+  else var cli = canvas.commandLine;
+
   var wait = false;
   if (options.enable.includes("ui") && ! molmil.UI) {wait = true; molmil.loadPlugin(molmil.settings.src+"plugins/UI.js", null, null, null, true);}
   if (wait) return molmil_dep.asyncStart(molmil.autoSetup, [options, canvas], this, 10);
+
+  if (options.enable.includes("cli-hash")) {
+    var hash = window.location.hash ? window.location.hash.substr(1) : "";
+    if (hash) cli.environment.console.runCommand(decodeURIComponent(hash));
+
+    window.onhashchange = function() {
+      var hash = window.location.hash ? window.location.hash.substr(1) : "";
+      if (hash) {molmil.clear(canvas); cli.environment.console.runCommand(decodeURIComponent(hash));}
+    }
+  }
+  if (options.enable.includes("cli")) cli.consoleBox.style.display = "";
   
   if (options.enable.includes("ui")) {
     canvas.molmilViewer.UI = new molmil.UI(canvas.molmilViewer);
@@ -10198,6 +10172,18 @@ molmil.initVR = function(soup, callback) {
     if (soup) molmil.startWebVR(soup);
     if (callback) callback();
   }
+}
+
+molmil.arrayMin = function(arr) {
+  return arr.reduce(function (p, v) {
+    return ( p < v ? p : v );
+  });
+}
+
+molmil.arrayMax = function(arr) {
+  return arr.reduce(function (p, v) {
+    return ( p > v ? p : v );
+  });
 }
 
 molmil.initSettings();
