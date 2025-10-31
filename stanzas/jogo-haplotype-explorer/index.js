@@ -33,6 +33,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
     
     
     let id_list = {};
+    let popup_id2title = {};
     let popup_id2info = {};
     let popup_id2tgv = {};
     let hapid2var = {};
@@ -129,7 +130,8 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	  count: v.haplotypeid_count,
 	  pop: pop
 	});
-	popup_id2info[v.ref + v.pos + v.alt] = make_var_title(v) + "<br>" + cons + "<br>HGVSc: " + v.snpeff_hgvs_c;
+	popup_id2title[v.ref + v.pos + v.alt] = make_var_title(v) + "<br>";
+	popup_id2info[v.ref + v.pos + v.alt] = cons + "<br>HGVSc: " + v.snpeff_hgvs_c;
 	if (v.snpeff_hgvs_p) popup_id2info[v.ref + v.pos + v.alt] += "<br>HGVSp: " + v.snpeff_hgvs_p;
       }
       return variant;
@@ -210,7 +212,8 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	var_data: var_data,
 	color: make_freq_color(d.count, total)
       };
-      popup_id2info[d.id] = "<span class='hapid'>" + d.id + "</span><br>" + d.count + " / " + total + make_freq_graph(d.pop, true);
+      popup_id2title[d.id] = "<span class='hapid'>" + d.id + "</span><br>";
+      popup_id2info[d.id] = d.count + " / " + total + make_freq_graph(d.pop, true);
       hapid2var[d.id] = var_data;
       return obj;
     }
@@ -218,6 +221,45 @@ export default class JogoHaplotypeExplorer extends Stanza {
     //=============================================================
     //// make DOMs for sort view
     // add event to vaiant
+    
+    // clinical significance の無い varitn の TogoVar 情報を追加取得
+    const get_additional_tgv = async (popup_id, popup_el) => {
+      let [, ref, pos, alt] = popup_id.match(/([A-Z]+)(\d+)([A-Z]+)/);
+      if (ref[0] == alt[0]) {
+	ref = ref.slice(1);
+	alt = alt.slice(1);
+	pos++;
+      }
+      tgv_opt.body = '{"offset":0,"query":{"location":{"chromosome":"' + chr + '","position":' + pos + '}}}'
+      const togovar = await fetch(tgv_api, tgv_opt).then(res => res.json());
+      let f = true;
+      if (togovar.data) {
+	for (const v of togovar.data) {
+	  if (v.reference == ref && v.alternate == alt) {
+	    if (v.existing_variations) {
+	      popup_id2info[popup_id] = "dbSNP: " + v.existing_variations.join(", ") + "<br>" + popup_id2info[popup_id];
+	    }
+	    if (v.id) {
+	      window.open("https://grch38.togovar.org/variant/" + v.id, "jogo_tgv");
+	      popup_id2tgv[popup_id] = v.id;
+	      popup_id2info[popup_id] = "TogoVar: " + v.id + "<br>" + popup_id2info[popup_id];
+	      f = false;
+	      break;
+	    }
+	  }
+	}
+      } else if (togovar.error) {
+	this.root.querySelector("#popup").innerHTML = "<span class='c_a'>API error</span><br>" + popup_id2info[popup_id];
+	f = false;
+      }
+      if (f) {
+	popup_id2tgv[popup_id] = "NF";
+	popup_id2info[popup_id] = "TogoVar: <span class='c_c'>Not found</span><br>" + popup_id2info[popup_id];
+	this.root.querySelector("#popup").innerHTML = popup_id2info[popup_id];
+      }
+      popup_el.innerHTML = popup_id2title[popup_id] + popup_id2info[popup_id];     
+    }
+    
     const add_var_event = (el) => {
       el.addEventListener("mouseover", (e) => {
 	const popup_id = e.target.getAttribute("popup_id");
@@ -227,7 +269,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	const popup_el = this.root.querySelector("#popup");
 	const scale = view_el.scale ? parseFloat(view_el.scale) : 1;
 	const headerHeight = view_el.offsetTop - root_el.offsetTop;
-	popup_el.innerHTML = popup_id2info[popup_id];
+	popup_el.innerHTML = popup_id2title[popup_id] + popup_id2info[popup_id];
 	popup_el.classList.remove("hidden");
 	const scroll_rect = scroll_el.getBoundingClientRect();
 	const target_rect = e.target.getBoundingClientRect();
@@ -248,6 +290,10 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	if (popup_left > 300 && root_el.offsetWidth < scroll_left) {
 	  popup_el.style.left = (parseInt(target_offset_left - popup_el.offsetWidth) - 20) + "px"; // popup on the left
 	}
+	if (!popup_id2tgv[popup_id] && popup_id.match(/[A-Z]+\d+[A-Z]+$/)) {
+	  popup_id2tgv[popup_id] = "NF";
+	  get_additional_tgv(popup_id, popup_el);
+	}	  
       })
       el.addEventListener("mouseout", (e) => {
 	this.root.querySelector("#popup").classList.add("hidden");
@@ -256,40 +302,9 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	const popup_id = e.target.getAttribute("popup_id");
 	if (popup_id2tgv[popup_id]) {
 	  if (popup_id2tgv[popup_id] == "NF") {
-	    this.root.querySelector("#popup").innerHTML = popup_id2info[popup_id];
+	    this.root.querySelector("#popup").innerHTML = popup_id2title[popup_id] + popup_id2info[popup_id];
 	  } else {
 	    window.open("https://grch38.togovar.org/variant/" + popup_id2tgv[popup_id], "jogo_tgv");
-	  }
-	} else if (popup_id.match(/[A-Z]+\d+[A-Z]+$/)) {
-	  let [, ref, pos, alt] = popup_id.match(/([A-Z]+)(\d+)([A-Z]+)/);
-	  if (ref[0] == alt[0]) {
-	    ref = ref.slice(1);
-	    alt = alt.slice(1);
-	    pos++;
-	  }
-	  tgv_opt.body = '{"offset":0,"query":{"location":{"chromosome":"' + chr + '","position":' + pos + '}}}'
-	  const togovar = await fetch(tgv_api, tgv_opt).then(res => res.json());
-	  let f = true;
-	  if (togovar.data) {
-	    for (const v of togovar.data) {
-	      if (v.reference == ref && v.alternate == alt) {
-		if (v.id) {
-		  window.open("https://grch38.togovar.org/variant/" + v.id, "jogo_tgv");
-		  popup_id2tgv[popup_id] = v.id;
-		  popup_id2info[popup_id] = "TogoVar: " + v.id + "<br>" + popup_id2info[popup_id];
-		  f = false;
-		  break;
-		}
-	      }
-	    }
-	  } else if (togovar.error) {
-	    this.root.querySelector("#popup").innerHTML = "<span class='c_a'>API error</span><br>" + popup_id2info[popup_id];
-	    f = false;
-	  }
-	  if (f) {
-	    popup_id2tgv[popup_id] = "NF";
-	    popup_id2info[popup_id] = "TogoVar: <span class='c_c'>Not found</span><br>" + popup_id2info[popup_id];
-	    this.root.querySelector("#popup").innerHTML = popup_id2info[popup_id];
 	  }
 	}
       })
@@ -759,7 +774,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	else filtered = 0; // for 'formatter=jogo' option in TogoVar API (w/o offset-limit scroll)
 	if (togovar.data.length > 0) {
 	  for (const d of togovar.data) {
-	    clin_sig[d.reference + d.position + d.alternate] = d.significance;
+	    clin_sig[d.reference + d.position + d.alternate] = d;
 	  }
 	  offset = '["' + togovar.data[togovar.data.length - 1].chromosome + '","' + togovar.data[togovar.data.length - 1].position + '","' + togovar.data[togovar.data.length - 1].reference + '","' + togovar.data[togovar.data.length - 1].alternate + '"]';
 	  count += limit;
@@ -824,6 +839,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
       id_list[d.level] = ext_id_list(jogo_json[d.level + "haplotypesummary"], d.level + "hapid");
     });
     const total = id_list.a.reduce((a, c) => a + c.count, 0);
+   // console.log(level_list);
 
     // construct variant data
     level_list.forEach(d => {
@@ -844,7 +860,8 @@ export default class JogoHaplotypeExplorer extends Stanza {
       level_list.forEach((d, i) => {
 	if (v.type == d.level.slice(-1)) add_var_freq(i, d.v_max, d.level, v, total, var_freq);
       });
-      popup_id2info[v.ref + v.pos + v.alt + "_f"] = make_var_title(v) + "<br>" + v.count + " / " + total + make_freq_graph(v.pop, false);
+      popup_id2title[v.ref + v.pos + v.alt + "_f"] = make_var_title(v) + "<br>";
+      popup_id2info[v.ref + v.pos + v.alt + "_f"] = v.count + " / " + total + make_freq_graph(v.pop, false);
     }
     
     // construct region-level data
@@ -922,11 +939,13 @@ export default class JogoHaplotypeExplorer extends Stanza {
       for (const [i, v] of variant.entries()) {
 	const popup_id =  v.ref + v.pos + v.alt;
 	if (clin_sig[popup_id]) {
+	  const tgv = clin_sig[popup_id];
+	  console.log(tgv);
 	  this.root.querySelectorAll(".v_" + popup_id).forEach(el => {
 	    el.classList.add('v_bold');
 	  });
 	  let sigs = [];
-	  clin_sig[popup_id].forEach(d => {
+	  tgv.significance.forEach(d => {
 	    const sig_ico = " <span class='clinical-significance' data-sign='" + d.interpretations[0] + "'></span> ";
 	    //let mgend_ico = "";
 	    //if (d.source == "mgend") mgend_ico = " <span class='icon' data-remains='1' data-mgend='true'></span> ";
@@ -936,6 +955,13 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	    }
 	  })
 	  const uniq = Array.from(new Set(sigs));
+	  if (tgv.existing_variations) {
+	    popup_id2info[popup_id] = "dbSNP: " + tgv.existing_variations.join(", ") + "<br>" + popup_id2info[popup_id];
+	  }
+	  if (tgv.id) {
+	    popup_id2tgv[popup_id] = tgv.id;
+	    popup_id2info[popup_id] = "TogoVar: " + tgv.id + "<br>" + popup_id2info[popup_id];
+	  }
 	  popup_id2info[popup_id] += "<br>Clinical significance:<br>" + uniq.join("<br>");
 	}
       }
