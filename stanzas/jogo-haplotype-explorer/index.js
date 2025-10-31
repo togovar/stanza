@@ -460,6 +460,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
       this.root.querySelectorAll(".show_level").forEach(el => {
 	el.addEventListener("click", e => {
 	  showLevel(e.currentTarget.getAttribute("level"));
+	  this.root.querySelector("#popup").classList.add("hidden");
 	});
       });
       // Variant event
