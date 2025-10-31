@@ -940,7 +940,6 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	const popup_id =  v.ref + v.pos + v.alt;
 	if (clin_sig[popup_id]) {
 	  const tgv = clin_sig[popup_id];
-	  console.log(tgv);
 	  this.root.querySelectorAll(".v_" + popup_id).forEach(el => {
 	    el.classList.add('v_bold');
 	  });
