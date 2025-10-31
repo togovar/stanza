@@ -295,7 +295,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	  popup_el.style.left = (parseInt(target_offset_left - popup_el.offsetWidth) - 20) + "px"; // popup on the left
 	}
 	if (!popup_id2tgv[popup_id] && popup_id.match(/[A-Z]+\d+[A-Z]+$/)) {
-	  popup_id2tgv[popup_id] = "NF";
+	  popup_id2tgv[popup_id] = "-";
 	  get_additional_tgv(popup_id, popup_el);
 	}	  
       })
