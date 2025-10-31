@@ -303,7 +303,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	if (popup_id2tgv[popup_id]) {
 	  if (popup_id2tgv[popup_id] == "NF") {
 	    this.root.querySelector("#popup").innerHTML = popup_id2title[popup_id] + popup_id2info[popup_id];
-	  } else {
+	  } else if (popup_id2tgv[popup_id].match(/^tgv/)) {
 	    window.open(togovar_url + popup_id2tgv[popup_id], popup_id2tgv[popup_id]);
 	  }
 	}
