@@ -234,6 +234,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
       tgv_opt.body = '{"offset":0,"query":{"location":{"chromosome":"' + chr + '","position":' + pos + '}}}'
       const togovar = await fetch(tgv_api, tgv_opt).then(res => res.json());
       let f = true;
+      let error = "";
       if (togovar.data) {
 	for (const v of togovar.data) {
 	  if (v.reference == ref && v.alternate == alt) {
@@ -251,15 +252,14 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	  }
 	}
       } else if (togovar.error) {
-	this.root.querySelector("#popup").innerHTML = "<span class='c_a'>API error</span><br>" + popup_id2info[popup_id];
+	error = "<span class='c_a'>API error</span><br>";
 	f = false;
       }
       if (f) {
 	popup_id2tgv[popup_id] = "NF";
 	popup_id2info[popup_id] = "TogoVar: <span class='c_c'>Not found</span><br>" + popup_id2info[popup_id];
-	this.root.querySelector("#popup").innerHTML = popup_id2info[popup_id];
       }
-      if (popup_id_current == popup_id) popup_el.innerHTML = popup_id2title[popup_id] + popup_id2info[popup_id];     
+      if (popup_id_current == popup_id) popup_el.innerHTML = popup_id2title[popup_id] + error + popup_id2info[popup_id];     
     }
     
     // add event to vaiant
