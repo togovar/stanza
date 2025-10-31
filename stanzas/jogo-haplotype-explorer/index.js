@@ -243,7 +243,6 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	      popup_id2info[popup_id] = "dbSNP: " + rss.join(", ") + "<br>" + popup_id2info[popup_id];
 	    }
 	    if (v.id) {
-	      window.open("https://grch38.togovar.org/variant/" + v.id, "jogo_tgv");
 	      popup_id2tgv[popup_id] = v.id;
 	      popup_id2info[popup_id] = "TogoVar: <a href='" + togovar_url + v.id + "' target='" + v.id + "'>" + v.id + "</a><br>" + popup_id2info[popup_id];
 	      f = false;
