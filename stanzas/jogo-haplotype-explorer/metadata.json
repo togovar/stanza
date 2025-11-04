@@ -38,7 +38,7 @@
     {
       "stanza:key": "highlight_positions",
       "stanza:example": "",
-      "stanza:description": "Initial highlighted positions (e.g. 111810388,111811182)",
+      "stanza:description": "Initial highlighted positions (e.g. 111810388,111811182-C-CA)",
       "stanza:required": false
     },
     {

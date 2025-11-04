@@ -495,7 +495,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
       //Popup hidden event
       this.root.querySelector("#popup").addEventListener("mouseleave", (e) => {
 	e.target.classList.add("hidden");
-	popup_id_currnt = false;
+	popup_id_current = false;
       });
       // Scale change event
       const scale_button = this.root.querySelector("#scale_button");
@@ -577,7 +577,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	    if (init_search_ids) this.root.querySelector("#search_ids").value = init_search_ids;
 	    if (init_highlight_ids) this.root.querySelector("#highlight_ids").value = init_highlight_ids;
 	    if (init_highlight_positions) this.root.querySelector("#highlight_positions").value = init_highlight_positions;
-	    if (init_search_ids || init_highlight_ids) {
+	    if (init_search_ids || init_highlight_ids || init_highlight_positions) {
 	      searchIds(true);
 	    }
 	    observer.observe(this.root.getRootNode().host, {attributes: true});
@@ -743,10 +743,19 @@ export default class JogoHaplotypeExplorer extends Stanza {
       });
       const height = this.root.querySelector("#sort_ul").offsetHeight;
       this.root.querySelector("#highlight_positions").value.trim().split(/[\s\,]+/).forEach(pos => {
-	this.root.querySelectorAll(".highlight" + pos).forEach(el => {
-	  el.classList.add("v_highlighted");
-	  el.style.height = (height + 20) + "px";
-	});
+	if (pos.match(/^\d+$/)) {
+	  this.root.querySelectorAll(".highlight" + pos).forEach(el => {
+	    el.classList.add("v_highlighted");
+	    el.style.height = (height + 20) + "px";
+	  });
+	} else if (pos.match(/\d-/)) {
+	  const tmp = pos.split(/-/);
+	  const el = this.root.querySelector("#highlight" + tmp[1] + tmp[0] + tmp[2] + "_f");
+	  if (el) {
+	    el.classList.add("v_highlighted");
+	    el.style.height = (height + 20) + "px";
+	  }
+	}
       });
     };
     const enableHighlight = (flag) => {

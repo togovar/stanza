@@ -61,7 +61,7 @@
         </ul>
         <ul id="var_highlight" class="var_info_ul">
 	  {{#each var_freq}}
-   	  <li class="var_highlight_li level_mode_li {{level}}_level_mode_li hidden" id="{{level}}_freq_li"><span class="no_button"></span><span class="freq">  </span><span class="pre id_space">{{space}}</span><span style="color: rgb(255 255 255 / 0)">:</span><span class="mv-2_seq"> {{#each var_data}}<span class='v_highlight pre pre_r highlight{{pos}}'> </span>{{/each}}</span></li>
+   	  <li class="var_highlight_li level_mode_li {{level}}_level_mode_li hidden" id="{{level}}_freq_li"><span class="no_button"></span><span class="freq">  </span><span class="pre id_space">{{space}}</span><span style="color: rgb(255 255 255 / 0)">:</span><span class="mv-2_seq"> {{#each var_data}}<span class='v_highlight pre pre_r highlight{{pos}}' id='highlight{{popup_id}}'> </span>{{/each}}</span></li>
 	  {{/each}}
         </ul>
       </div>
