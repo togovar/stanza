@@ -24,6 +24,12 @@
       "stanza:required": false
     },
     {
+      "stanza:key": "hgnc_id",
+      "stanza:example": "",
+      "stanza:description": "HGNC ID",
+      "stanza:required": false
+    },
+    {
       "stanza:key": "search_ids",
       "stanza:example": "",
       "stanza:description": "Initial search IDs (e.g. a0001c0001t0001 a2c1t1 t1)",

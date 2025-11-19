@@ -11,19 +11,28 @@ export default class JogoHaplotypeExplorer extends Stanza {
     const tgv_bdy = '{"offset":#offset,"limit":#limit,"query":{"and":[{"gene":{"relation":"eq","terms":[#hgncid]}},{"or":[{"significance":{"relation":"eq","source":["mgend"],"terms":["P","LP","US","LB","B","DR","O","NP"]}},{"significance":{"relation":"eq","source":["clinvar"],"terms":["P","LP","PLP","LPLP","ERA","LRA","URA","US","LB","B","CI","DR","CS","RF","A","PR","AF","O","NP","AN"]}}]}]}}';
     let tgv_opt = {method: 'POST', headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}};
 
-    let jogo_api = "https://jogo.csml.org/gene?format=json&&genename=" + this.params.symbol;
-    let stanza_title = this.params.symbol;
-    if (this.params.region_name.match(/chr.+_\d+_\d+/)) {
+    let symbol = this.params.symbol;
+    let hgncid = this.params.hgnc_id;
+    let jogo_api = false;
+    let stanza_title = false;
+    if (this.params.region_name.match(/chr.+_\d+_\d+/)) { // Init by JoGo region name
       jogo_api = "https://jogo.csml.org/genicregion?format=json&sections=maneinfo,ahaplotypesummary,chaplotypesummary,thaplotypesummary,ghaplotypesummary,achaplotypesummary,acthaplotypesummary,actghaplotypesummary,avariants,cvariants,tvariants,gvariants&regionname=" + this.params.region_name;
+      symbol = this.params.region_name.match(/^([^_]+)_/)[1];
       stanza_title = this.params.region_name;
+    } else if (symbol) { // Init by  gene symbol
+      jogo_api = "https://jogo.csml.org/gene?format=json&&genename=" + symbol;
+      stanza_title = symbol;
+    } else if (hgncid) { // Init by HGNC ID (for TogoVar)
+      const togoid_api = "https://api.togoid.dbcls.jp/convert?route=hgnc%2Chgnc_symbol&report=target&format=json&ids=" + hgncid;
+      const res = await fetch(togoid_api).then(res => res.json());
+      symbol = res?.results?.[0];
+      jogo_api = "https://jogo.csml.org/gene?format=json&&genename=" + symbol;
+      stanza_title = symbol;
     }
     if (this.params.hide_header == 1) stanza_title = false;
    // if (window.location.hostname == "sparql-support.dbcls.jp") jogo_api = "https://sparql-support.dbcls.jp/api/jogo_api?url=" + encodeURIComponent(jogo_api);
 
-
-    let symbol = this.params.symbol;
-    if (this.params.region_name) symbol = this.params.region_name.match(/^([^_]+)_/)[1];
-    const togoid_api = "https://api.togoid.dbcls.jp/convert?route=hgnc_symbol%2CTIO_000022%2Chgnc&report=target&format=json&ids=" + symbol;
+    const togoid_api = "https://api.togoid.dbcls.jp/convert?route=hgnc_symbol%2Chgnc&report=target&format=json&ids=" + symbol;
 
     const init_search_ids = this.params.search_ids;
     const init_highlight_ids = this.params.highlight_ids;
@@ -813,9 +822,11 @@ export default class JogoHaplotypeExplorer extends Stanza {
     //-------------------------------------------------------------
     const firstClinSigPromise = (async () => {
       try {
-	const togoidJson = await togoidPromise;
-	const hgncid = togoidJson?.results?.[0];
-	if (!hgncid) return { hgncid: null, clin_sig: {} };      // 失敗時のフォールバック
+	if (!hgncid) {
+	  const togoidJson = await togoidPromise;
+	  hgncid = togoidJson?.results?.[0];
+	  if (!hgncid) return { hgncid: null, clin_sig: {} };      // 失敗時のフォールバック
+	}
 	const sig = await getClinSig(hgncid);
 	return { hgncid, clin_sig: sig };
       } catch (e) {
