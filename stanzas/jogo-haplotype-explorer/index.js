@@ -11,11 +11,12 @@ export default class JogoHaplotypeExplorer extends Stanza {
     const tgv_bdy = '{"offset":#offset,"limit":#limit,"query":{"and":[{"gene":{"relation":"eq","terms":[#hgncid]}},{"or":[{"significance":{"relation":"eq","source":["mgend"],"terms":["P","LP","US","LB","B","DR","O","NP"]}},{"significance":{"relation":"eq","source":["clinvar"],"terms":["P","LP","PLP","LPLP","ERA","LRA","URA","US","LB","B","CI","DR","CS","RF","A","PR","AF","O","NP","AN"]}}]}]}}';
     let tgv_opt = {method: 'POST', headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}};
 
+    let region_name = this.params.region_name;
     let symbol = this.params.symbol;
     let hgncid = this.params.hgnc_id;
     let jogo_api = false;
     let stanza_title = false;
-    if (this.params.region_name.match(/chr.+_\d+_\d+/)) { // Init by JoGo region name
+    if (region_name?.match(/chr.+_\d+_\d+/)) { // Init by JoGo region name
       jogo_api = "https://jogo.csml.org/genicregion?format=json&sections=maneinfo,ahaplotypesummary,chaplotypesummary,thaplotypesummary,ghaplotypesummary,achaplotypesummary,acthaplotypesummary,actghaplotypesummary,avariants,cvariants,tvariants,gvariants&regionname=" + this.params.region_name;
       symbol = this.params.region_name.match(/^([^_]+)_/)[1];
       stanza_title = this.params.region_name;
