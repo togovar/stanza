@@ -11,10 +11,14 @@ import {
 export default class VariantFrequency extends Stanza {
   constructor() {
     super(...arguments);
-    this.data = null;
+    this.data = [];
   }
 
   menu() {
+    if (!this.data || this.data.length === 0) {
+      return [];
+    }
+
     return [
       downloadJSONMenuItem(this, "variant-frequency", this.data),
       downloadCSVMenuItem(this, "variant-frequency", this.data),
