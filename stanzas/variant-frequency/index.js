@@ -85,7 +85,7 @@ export default class VariantFrequency extends Stanza {
       const responseDatasets = await response.json();
       const frequenciesDatasets = responseDatasets.data[0]?.frequencies
 
-      // データをインスタンスプロパティに保存
+      // Save data to instance property
       this.data = frequenciesDatasets;
 
       /** Searches for and processes data, updating frequency datasets and result objects.
