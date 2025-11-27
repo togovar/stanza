@@ -2,8 +2,26 @@ import Stanza from "togostanza/stanza";
 import { hierarchy } from 'd3-hierarchy';
 import { DATASETS } from "@/lib/constants";
 import { frequency } from "@/lib/display";
+import {
+  downloadCSVMenuItem,
+  downloadJSONMenuItem,
+  downloadTSVMenuItem,
+} from "togostanza-utils";
 
-export default class VariantSummary extends Stanza {
+export default class VariantFrequency extends Stanza {
+  constructor() {
+    super(...arguments);
+    this.data = null;
+  }
+
+  menu() {
+    return [
+      downloadJSONMenuItem(this, "variant-frequency", this.data),
+      downloadCSVMenuItem(this, "variant-frequency", this.data),
+      downloadTSVMenuItem(this, "variant-frequency", this.data),
+    ];
+  }
+
   async render() {
     // font: Roboto Condensed
     this.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
@@ -66,6 +84,9 @@ export default class VariantSummary extends Stanza {
       // レスポンスを JSON 形式でパース
       const responseDatasets = await response.json();
       const frequenciesDatasets = responseDatasets.data[0]?.frequencies
+
+      // データをインスタンスプロパティに保存
+      this.data = frequenciesDatasets;
 
       /** Searches for and processes data, updating frequency datasets and result objects.
       * @param {Object} datum - The current dataset object being processed. */
