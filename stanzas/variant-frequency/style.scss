@@ -2,8 +2,6 @@
 @use "@/assets/css/foundation/variables" as *;
 
 main {
-  max-height: calc(var(--togostanza-canvas-height) * 1px);
-
 .table> {
   thead>tr {
     >th {
