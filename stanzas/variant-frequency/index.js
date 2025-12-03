@@ -89,9 +89,6 @@ export default class VariantFrequency extends Stanza {
       const responseDatasets = await response.json();
       const frequenciesDatasets = responseDatasets.data[0]?.frequencies
 
-      // Save data to instance property
-      this.data = frequenciesDatasets;
-
       /** Searches for and processes data, updating frequency datasets and result objects.
       * @param {Object} datum - The current dataset object being processed. */
       const searchData = (datum) => {
@@ -215,6 +212,9 @@ export default class VariantFrequency extends Stanza {
 
       // クラス名を更新
       updateHasChild(preparedDatasets, resultObject);
+
+    // Prepare download data
+    this.data = this.createDownloadData(resultObject, responseDatasets.data[0], hasHemizygote);
 
       // 結果をレンダリング
       this.renderTemplate({
@@ -503,5 +503,39 @@ export default class VariantFrequency extends Stanza {
         }
       })
     );
+  }
+
+  createDownloadData(resultObject, variantData, hasHemizygote) {
+    return resultObject.map(freq => {
+      return {
+        id: freq.id,
+        depth: freq.depth,
+        tgvid: variantData.id,
+        rsid: variantData.existing_variations?.join(',') || '',
+        chrom: variantData.chromosome,
+        pos: variantData.position,
+        ref: variantData.reference,
+        alt: variantData.alternate,
+        dataset: freq.dataset,
+        population: freq.label,
+        source: freq.source,
+        ac: freq.ac,
+        an: freq.an,
+        af: freq.frequency,
+        "alt/alt": freq.aac,
+        "alt/ref": freq.arc,
+        "ref/otheralts": freq.aoc,
+        "ref/ref": freq.rrc,
+        "ref/otheralt": freq.roc,
+        "otheralt/otheralt": freq.ooc,
+        ...(hasHemizygote && {
+          hemi_alt: freq.hac,
+          hemi_ref: freq.hrc,
+          hemi_other_alts: freq.hoc,
+        }),
+        filter: Array.isArray(freq.filter) ? freq.filter.join(',') : freq.filter,
+        quality: freq.quality,
+      };
+    });
   }
 }
