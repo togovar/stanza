@@ -169,9 +169,9 @@ export default class VariantFrequency extends Stanza {
 
           if (
             !hasHemizygote &&
-            (frequencyData.hac !== undefined ||
-              frequencyData.hrc !== undefined ||
-              frequencyData.hoc !== undefined)
+            (frequencyData.hac > 0 ||
+              frequencyData.hrc > 0 ||
+              frequencyData.hoc > 0)
           ) {
             hasHemizygote = true;
           }
@@ -553,38 +553,46 @@ export default class VariantFrequency extends Stanza {
   }
 
   createDownloadData(resultObject, variantData, hasHemizygote) {
-    return resultObject.map((freq) => {
-      return {
-        id: freq.id,
-        depth: freq.depth,
-        tgvid: variantData.id,
-        rsid: variantData.existing_variations?.join(",") || "",
-        chrom: variantData.chromosome,
-        pos: variantData.position,
-        ref: variantData.reference,
-        alt: variantData.alternate,
-        dataset: freq.dataset,
-        population: freq.label,
-        source: freq.source,
-        ac: freq.ac,
-        an: freq.an,
-        af: freq.frequency,
-        "alt/alt": freq.aac,
-        "alt/ref": freq.arc,
-        "ref/otheralts": freq.aoc,
-        "ref/ref": freq.rrc,
-        "ref/otheralt": freq.roc,
-        "otheralt/otheralt": freq.ooc,
-        ...(hasHemizygote && {
-          hemi_alt: freq.hac,
-          hemi_ref: freq.hrc,
-          hemi_other_alts: freq.hoc,
-        }),
-        filter: Array.isArray(freq.filter)
-          ? freq.filter.join(",")
-          : freq.filter,
-        quality: freq.quality,
-      };
-    });
+    return resultObject
+      .filter((freq) => {
+        return (
+          !freq.source?.includes("-title") && // タイトル行でない
+          !freq.need_loading && // ダミーデータでない
+          freq.af !== undefined // 頻度データが存在する
+        );
+      })
+      .map((freq) => {
+        return {
+          id: freq.id,
+          depth: freq.depth,
+          tgvid: variantData.id,
+          rsid: variantData.existing_variations?.join(",") || "",
+          chrom: variantData.chromosome,
+          pos: variantData.position,
+          ref: variantData.reference,
+          alt: variantData.alternate,
+          dataset: freq.dataset,
+          population: freq.label,
+          source: freq.source,
+          ac: freq.ac,
+          an: freq.an,
+          af: freq.frequency,
+          "alt/alt": freq.aac,
+          "alt/ref": freq.arc,
+          "ref/otheralts": freq.aoc,
+          "ref/ref": freq.rrc,
+          "ref/otheralt": freq.roc,
+          "otheralt/otheralt": freq.ooc,
+          ...(hasHemizygote && {
+            hemi_alt: freq.hac,
+            hemi_ref: freq.hrc,
+            hemi_other_alts: freq.hoc,
+          }),
+          filter: Array.isArray(freq.filter)
+            ? freq.filter.join(",")
+            : freq.filter,
+          quality: freq.quality,
+        };
+      });
   }
 }
