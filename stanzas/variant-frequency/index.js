@@ -169,12 +169,15 @@ export default class VariantFrequency extends Stanza {
 
           if (
             !hasHemizygote &&
-            (frequencyData.hac > 0 ||
-              frequencyData.hrc > 0 ||
-              frequencyData.hoc > 0)
+            (Number(frequencyData.hac) > 0 ||
+              Number(frequencyData.hrc) > 0 ||
+              Number(frequencyData.hoc) > 0)
           ) {
             hasHemizygote = true;
           }
+          frequencyData.hac = localeString(frequencyData.hac);
+          frequencyData.hrc = localeString(frequencyData.hrc);
+          frequencyData.hoc = localeString(frequencyData.hoc);
 
           // frequencyの情報をバインディングに追加
           const ac = parseInt(frequencyData.ac);
