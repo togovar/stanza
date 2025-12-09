@@ -39,13 +39,5 @@
       "stanza:description": "Message displayed when there are zero data"
     }
   ],
-  "stanza:about-link-placement": "bottom-right",
-  "stanza:style": [
-    {
-      "stanza:key": "--togostanza-canvas-height",
-      "stanza:type": "number",
-      "stanza:default": 250,
-      "stanza:description": "Canvas height"
-    }
-  ]
+  "stanza:about-link-placement": "bottom-right"
 }

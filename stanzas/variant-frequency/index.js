@@ -1,5 +1,5 @@
 import Stanza from "togostanza/stanza";
-import { hierarchy } from 'd3-hierarchy';
+import { hierarchy } from "d3-hierarchy";
 import { DATASETS } from "@/lib/constants";
 import { frequency } from "@/lib/display";
 import {
@@ -28,7 +28,9 @@ export default class VariantFrequency extends Stanza {
 
   async render() {
     // font: Roboto Condensed
-    this.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
+    this.importWebFontCSS(
+      "https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900"
+    );
     // database icon
     this.importWebFontCSS(new URL("./assets/fontello.css", import.meta.url));
 
@@ -46,16 +48,16 @@ export default class VariantFrequency extends Stanza {
       if (dataset.value === "jga_wgs") {
         jgawgsChildren = dataset.children;
       }
-    })
+    });
     let isLogin = false;
 
     try {
-      if (window.location.origin === 'http://localhost:8080') {
+      if (window.location.origin === "http://localhost:8080") {
         isLogin = false;
       }
 
       const timeout = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Request timeout')), 10000)
+        setTimeout(() => reject(new Error("Request timeout")), 10000)
       );
 
       const fetchPromise = fetch(`${window.location.origin}/auth/status`);
@@ -67,17 +69,16 @@ export default class VariantFrequency extends Stanza {
         isLogin = true;
       }
     } catch (error) {
-      console.error('Error fetching auth status or timeout occurred:', error);
+      console.error("Error fetching auth status or timeout occurred:", error);
     }
-
 
     try {
       // dataURL に GET リクエストを送信
       const response = await fetch(dataURL, {
         method: "GET",
         headers: {
-          "Accept": "application/json"
-        }
+          Accept: "application/json",
+        },
       });
 
       // レスポンスのステータスをチェック
@@ -87,19 +88,18 @@ export default class VariantFrequency extends Stanza {
 
       // レスポンスを JSON 形式でパース
       const responseDatasets = await response.json();
-      const frequenciesDatasets = responseDatasets.data[0]?.frequencies
-
-      // Save data to instance property
-      this.data = frequenciesDatasets;
+      const frequenciesDatasets = responseDatasets.data[0]?.frequencies;
 
       /** Searches for and processes data, updating frequency datasets and result objects.
-      * @param {Object} datum - The current dataset object being processed. */
+       * @param {Object} datum - The current dataset object being processed. */
       const searchData = (datum) => {
         // 一致するデータを探す
-        const frequencyData = frequenciesDatasets?.find(x => x.source === datum.value);
+        const frequencyData = frequenciesDatasets?.find(
+          (x) => x.source === datum.value
+        );
         if (frequencyData) {
           // ID
-          frequencyData.id = datum.id
+          frequencyData.id = datum.id;
           // 深さ
           frequencyData.depth = datum.depth;
           // 親ID
@@ -107,11 +107,14 @@ export default class VariantFrequency extends Stanza {
             frequencyData.parent_id = findParent(preparedDatasets, datum.id).id;
           }
           if (datum.depth > 1) {
-            frequencyData.grandparent_id = findParent(preparedDatasets, findParent(preparedDatasets, datum.id).id).id;
+            frequencyData.grandparent_id = findParent(
+              preparedDatasets,
+              findParent(preparedDatasets, datum.id).id
+            ).id;
           }
 
           // バインディングにデータセット情報を追加
-          if (datum.value === 'tommo') {
+          if (datum.value === "tommo") {
             switch (assembly) {
               case "GRCh37":
                 frequencyData.dataset = "ToMMo 8.3KJPN";
@@ -121,20 +124,32 @@ export default class VariantFrequency extends Stanza {
                 break;
             }
           } else {
-            frequencyData.dataset = findTopParent(preparedDatasets, datum.id).label
+            frequencyData.dataset = findTopParent(
+              preparedDatasets,
+              datum.id
+            ).label;
           }
 
           // Population label
           if (["gem_j_wga", "jga_wes", "tommo", "hgvd"].includes(datum.value)) {
             frequencyData.label = "Japanese";
-          } else if (["jga_wgs", "jga_snp", "ncbn", "gnomad_genomes", "gnomad_exomes"].includes(datum.value)) {
+          } else if (
+            [
+              "jga_wgs",
+              "jga_snp",
+              "ncbn",
+              "gnomad_genomes",
+              "gnomad_exomes",
+            ].includes(datum.value)
+          ) {
             frequencyData.label = "Total";
           } else {
             frequencyData.label = datum.label;
           }
 
           // 数値をロケール形式の文字列に変換する関数
-          const localeString = (v) => v !== undefined ? parseInt(v).toLocaleString() : null;
+          const localeString = (v) =>
+            v !== undefined ? parseInt(v).toLocaleString() : null;
           // Alt
           frequencyData.ac = localeString(frequencyData.ac);
           // Total
@@ -152,9 +167,17 @@ export default class VariantFrequency extends Stanza {
           // Other_Alts/Other_Alts(JGA-WGSのみ)
           frequencyData.ooc = localeString(frequencyData.ooc);
 
-          if (!hasHemizygote && (frequencyData.hac !== undefined || frequencyData.hrc !== undefined || frequencyData.hoc !== undefined)) {
+          if (
+            !hasHemizygote &&
+            (Number(frequencyData.hac) > 0 ||
+              Number(frequencyData.hrc) > 0 ||
+              Number(frequencyData.hoc) > 0)
+          ) {
             hasHemizygote = true;
           }
+          frequencyData.hac = localeString(frequencyData.hac);
+          frequencyData.hrc = localeString(frequencyData.hrc);
+          frequencyData.hoc = localeString(frequencyData.hoc);
 
           // frequencyの情報をバインディングに追加
           const ac = parseInt(frequencyData.ac);
@@ -162,16 +185,19 @@ export default class VariantFrequency extends Stanza {
           Object.assign(frequencyData, frequency(ac, freq));
 
           // JGA-SNPの場合 見出しのdataがないため追加
-          if (frequencyData.dataset === 'JGA-SNP') {
+          if (frequencyData.dataset === "JGA-SNP") {
             if (currentLayer1 !== frequencyData.label) {
-              if (frequencyData.depth === 2 && currentLayer1 !== findParent(preparedDatasets, datum.id).label) {
+              if (
+                frequencyData.depth === 2 &&
+                currentLayer1 !== findParent(preparedDatasets, datum.id).label
+              ) {
                 let data = {
                   dataset: frequencyData.dataset,
                   depth: 1,
                   label: findParent(preparedDatasets, datum.id).label,
                   source: `${frequencyData.dataset}-title`,
                   id: findParent(preparedDatasets, datum.id).id,
-                  has_child: true
+                  has_child: true,
                 };
                 resultObject = [...resultObject, data];
                 currentLayer1 = findParent(preparedDatasets, datum.id).label;
@@ -183,17 +209,17 @@ export default class VariantFrequency extends Stanza {
 
           if (!isLogin) {
             if (frequencyData.source === "jga_wgs") {
-              jgawgsChildren.forEach(child => {
+              jgawgsChildren.forEach((child) => {
                 let data = {
                   dataset: frequencyData.dataset,
                   depth: 1,
                   label: child.label,
                   source: child.value,
                   id: child.id,
-                  need_loading: true
+                  need_loading: true,
                 };
                 jgawgsData = [...jgawgsData, data];
-              })
+              });
             }
           }
         }
@@ -216,6 +242,13 @@ export default class VariantFrequency extends Stanza {
       // クラス名を更新
       updateHasChild(preparedDatasets, resultObject);
 
+      // Prepare download data
+      this.data = this.createDownloadData(
+        resultObject,
+        responseDatasets.data[0],
+        hasHemizygote
+      );
+
       // 結果をレンダリング
       this.renderTemplate({
         template: "stanza.html.hbs",
@@ -223,11 +256,10 @@ export default class VariantFrequency extends Stanza {
           params: this.params,
           result: { resultObject },
           hasHemizygote,
-        }
+        },
       });
-
     } catch (e) {
-      ({ error: { message: e.message } })
+      ({ error: { message: e.message } });
     }
 
     function addIdsToDataNodes(dataNodes, currentDepth = 0) {
@@ -236,34 +268,36 @@ export default class VariantFrequency extends Stanza {
         const newNode = {
           ...node,
           id: `${uniqueIdCounter++}`,
-          depth: currentDepth
+          depth: currentDepth,
         };
 
         // 子ノードがある場合は再帰的に処理
         if (newNode.children && newNode.children.length > 0) {
-          newNode.children = addIdsToDataNodes(newNode.children, currentDepth + 1);
+          newNode.children = addIdsToDataNodes(
+            newNode.children,
+            currentDepth + 1
+          );
         }
         return newNode;
       });
     }
 
     function prepareData() {
-      const data = DATASETS
+      const data = DATASETS;
       const dataWithIds = addIdsToDataNodes(data);
       const hierarchyData = hierarchy({
-        id: '-1',
-        label: 'root',
-        value: '',
+        id: "-1",
+        label: "root",
+        value: "",
         children: dataWithIds,
       });
       return hierarchyData;
     }
 
-
     /** Finds the top-level parent of a given node ID in a nested data structure.
- * @param {Array<Object>} data - The nested data structure to search.
- * @param {string} id - The ID of the node to find the top-level parent for.
- * @returns {Object|null} The top-level parent node or null if not found. */
+     * @param {Array<Object>} data - The nested data structure to search.
+     * @param {string} id - The ID of the node to find the top-level parent for.
+     * @returns {Object|null} The top-level parent node or null if not found. */
     function findTopParent(data, targetId) {
       // 内部で再帰的に探索する関数
       function recursiveSearch(nodes, targetId, parent = null) {
@@ -273,7 +307,11 @@ export default class VariantFrequency extends Stanza {
             return parent || node;
           }
           if (node.children) {
-            const found = recursiveSearch(node.children, targetId, parent || node);
+            const found = recursiveSearch(
+              node.children,
+              targetId,
+              parent || node
+            );
             if (found) {
               return found;
             }
@@ -285,9 +323,9 @@ export default class VariantFrequency extends Stanza {
     }
 
     /** Finds the direct parent of a given node ID in a nested data structure.
-    * @param {Array<Object>} data - The nested data structure to search.
-    * @param {string} id - The ID of the node to find the parent for.
-    * @returns {Object|null} The parent node or null if not found. */
+     * @param {Array<Object>} data - The nested data structure to search.
+     * @param {string} id - The ID of the node to find the parent for.
+     * @returns {Object|null} The parent node or null if not found. */
     function findParent(data, id) {
       function recursiveSearch(nodes, targetId, parent = null) {
         for (const node of nodes) {
@@ -332,20 +370,20 @@ export default class VariantFrequency extends Stanza {
     }
 
     function updateHasChild(datasets, data) {
-      datasets.forEach(datum => {
+      datasets.forEach((datum) => {
         // 現在のノードに対応するデータを取得
-        const dataNode = data.find(d => d.source === datum.value);
+        const dataNode = data.find((d) => d.source === datum.value);
         if (dataNode) {
           dataNode.has_child = false;
         }
 
         if (datum.children?.length > 0 && dataNode) {
           // 子供の一致を確認
-          const hasMatchingChild = datum.children.some(child =>
-            data.some(d => d.source === child.value)
+          const hasMatchingChild = datum.children.some((child) =>
+            data.some((d) => d.source === child.value)
           );
-          const hasMatchingChildSub = datum.children.some(child =>
-            data.some(d => d.label === child.label)
+          const hasMatchingChildSub = datum.children.some((child) =>
+            data.some((d) => d.label === child.label)
           );
 
           if (hasMatchingChild || hasMatchingChildSub) {
@@ -358,108 +396,118 @@ export default class VariantFrequency extends Stanza {
           updateHasChild(datum.children, data);
         }
       });
-    };
+    }
 
     // 以下トグルの開閉に関するイベント
-    const depth0Layer = this.root.querySelectorAll('.population[data-depth="0"]');
+    const depth0Layer = this.root.querySelectorAll(
+      '.population[data-depth="0"]'
+    );
     depth0Layer.forEach((layer) =>
-      layer.addEventListener('click', (e) => {
-        e.target.classList.toggle('open');
+      layer.addEventListener("click", (e) => {
+        e.target.classList.toggle("open");
 
         // JGA-WGS
-        if (layer.dataset.dataset === 'JGA-WGS') {
+        if (layer.dataset.dataset === "JGA-WGS") {
           const depth1Children = this.root.querySelectorAll(
             '[data-dataset="JGA-WGS"].population[data-depth="1"]'
           );
           depth1Children.forEach((element) => {
-            element.parentElement.classList.toggle('show-by-total');
+            element.parentElement.classList.toggle("show-by-total");
           });
         }
 
         // JGA-SNP
-        if (layer.dataset.dataset === 'JGA-SNP') {
+        if (layer.dataset.dataset === "JGA-SNP") {
           const depth1Children = this.root.querySelectorAll(
             '[data-dataset="JGA-SNP"].population[data-depth="1"]'
-          )
+          );
           depth1Children.forEach((element) => {
-            element.parentElement.classList.toggle('show-by-total');
+            element.parentElement.classList.toggle("show-by-total");
           });
 
-          const depth2Children = this.root.querySelectorAll('[data-dataset="JGA-SNP"].population[data-depth="2"]');
+          const depth2Children = this.root.querySelectorAll(
+            '[data-dataset="JGA-SNP"].population[data-depth="2"]'
+          );
           depth2Children.forEach((element) => {
-            if (element.parentElement.classList.contains('close-by-total')) {
-              element.parentElement.classList.remove('close-by-total');
-            } else if (element.parentElement.classList.contains('show-by-sub')) {
-              element.parentElement.classList.add('close-by-total');
+            if (element.parentElement.classList.contains("close-by-total")) {
+              element.parentElement.classList.remove("close-by-total");
+            } else if (
+              element.parentElement.classList.contains("show-by-sub")
+            ) {
+              element.parentElement.classList.add("close-by-total");
             }
           });
 
           // Male or Female
-          const depth3Children = this.root.querySelectorAll('[data-dataset="JGA-SNP"].population[data-depth="3"]');
+          const depth3Children = this.root.querySelectorAll(
+            '[data-dataset="JGA-SNP"].population[data-depth="3"]'
+          );
           depth3Children.forEach((element) => {
-            if (element.parentElement.classList.contains('close-by-total')) {
-              element.parentElement.classList.remove('close-by-total');
-            } else if (element.parentElement.classList.contains('show')) {
-              element.parentElement.classList.add('close-by-total');
+            if (element.parentElement.classList.contains("close-by-total")) {
+              element.parentElement.classList.remove("close-by-total");
+            } else if (element.parentElement.classList.contains("show")) {
+              element.parentElement.classList.add("close-by-total");
             }
           });
         }
 
         // NCBN
-        if (layer.dataset.dataset === 'NCBN') {
+        if (layer.dataset.dataset === "NCBN") {
           const depth1Children = this.root.querySelectorAll(
             '[data-dataset="NCBN"].population[data-depth="1"]'
           );
           depth1Children.forEach((element) => {
-            element.parentElement.classList.toggle('show-by-total');
+            element.parentElement.classList.toggle("show-by-total");
           });
 
           const depth2Children = this.root.querySelectorAll(
             '[data-dataset="NCBN"].population[data-depth="2"]'
           );
           depth2Children.forEach((element) => {
-            if (element.parentElement.classList.contains('close-by-total')) {
-              element.parentElement.classList.remove('close-by-total');
-            } else if (element.parentElement.classList.contains('show')) {
-              element.parentElement.classList.add('close-by-total');
+            if (element.parentElement.classList.contains("close-by-total")) {
+              element.parentElement.classList.remove("close-by-total");
+            } else if (element.parentElement.classList.contains("show")) {
+              element.parentElement.classList.add("close-by-total");
             }
           });
         }
 
         // gnomAD Genomes
-        if (layer.dataset.dataset === 'gnomAD Genomes') {
+        if (layer.dataset.dataset === "gnomAD Genomes") {
           const depth1Children = this.root.querySelectorAll(
             '[data-dataset="gnomAD Genomes"].population[data-depth="1"]'
           );
           depth1Children.forEach((element) => {
-            element.parentElement.classList.toggle('show-by-total');
+            element.parentElement.classList.toggle("show-by-total");
           });
         }
 
         // gnomAD Exomes
-        if (layer.dataset.dataset === 'gnomAD Exomes') {
+        if (layer.dataset.dataset === "gnomAD Exomes") {
           const depth1Children = this.root.querySelectorAll(
             '[data-dataset="gnomAD Exomes"].population[data-depth="1"]'
           );
           depth1Children.forEach((element) => {
-            element.parentElement.classList.toggle('show-by-total');
+            element.parentElement.classList.toggle("show-by-total");
           });
         }
       })
     );
 
-    const depth1Layer = this.root.querySelectorAll('.population[data-depth="1"]');
+    const depth1Layer = this.root.querySelectorAll(
+      '.population[data-depth="1"]'
+    );
     depth1Layer.forEach((layer) =>
-      layer.addEventListener('click', (e) => {
-        e.target.classList.toggle('open');
+      layer.addEventListener("click", (e) => {
+        e.target.classList.toggle("open");
 
         // JGA-SNP
-        if (layer.dataset.dataset === 'JGA-SNP') {
+        if (layer.dataset.dataset === "JGA-SNP") {
           const depth2Children = this.root.querySelectorAll(
             `[data-dataset="JGA-SNP"].population[data-parent-id="${layer.dataset.id}"][data-depth="2"]`
           );
           depth2Children.forEach((element) => {
-            element.parentElement.classList.toggle('show-by-sub');
+            element.parentElement.classList.toggle("show-by-sub");
           });
 
           // Male, Female
@@ -467,41 +515,87 @@ export default class VariantFrequency extends Stanza {
             `[data-dataset="JGA-SNP"].population[data-grandparent-id="${layer.dataset.id}"][data-depth="3"]`
           );
           depth3Children.forEach((element) => {
-            if (element.parentElement.classList.contains('close-by-sub')) {
-              element.parentElement.classList.remove('close-by-sub');
-            } else if (element.parentElement.classList.contains('show')) {
-              element.parentElement.classList.add('close-by-sub');
+            if (element.parentElement.classList.contains("close-by-sub")) {
+              element.parentElement.classList.remove("close-by-sub");
+            } else if (element.parentElement.classList.contains("show")) {
+              element.parentElement.classList.add("close-by-sub");
             }
           });
         }
 
         // NCBN
-        if (layer.dataset.dataset === 'NCBN') {
+        if (layer.dataset.dataset === "NCBN") {
           const depth2Children = this.root.querySelectorAll(
             '[data-dataset="NCBN"].population[data-depth="2"]'
           );
           depth2Children.forEach((element) => {
-            element.parentElement.classList.toggle('show');
+            element.parentElement.classList.toggle("show");
           });
         }
       })
     );
 
-    const depth2Layer = this.root.querySelectorAll('.population[data-depth="2"]');
+    const depth2Layer = this.root.querySelectorAll(
+      '.population[data-depth="2"]'
+    );
     depth2Layer.forEach((layer) =>
-      layer.addEventListener('click', (e) => {
-        e.target.classList.toggle('open');
+      layer.addEventListener("click", (e) => {
+        e.target.classList.toggle("open");
 
         // JGA-SNP
-        if (layer.dataset.dataset === 'JGA-SNP') {
+        if (layer.dataset.dataset === "JGA-SNP") {
           const depth3Children = this.root.querySelectorAll(
             `[data-dataset="JGA-SNP"].population[data-parent-id="${layer.dataset.id}"][data-depth="3"]`
           );
           depth3Children.forEach((element) => {
-            element.parentElement.classList.toggle('show');
+            element.parentElement.classList.toggle("show");
           });
         }
       })
     );
+  }
+
+  createDownloadData(resultObject, variantData, hasHemizygote) {
+    return resultObject
+      .filter((freq) => {
+        return (
+          !freq.source?.includes("-title") && // タイトル行でない
+          !freq.need_loading && // ダミーデータでない
+          freq.af !== undefined // 頻度データが存在する
+        );
+      })
+      .map((freq) => {
+        return {
+          id: freq.id,
+          depth: freq.depth,
+          tgvid: variantData.id,
+          rsid: variantData.existing_variations?.join(",") || "",
+          chrom: variantData.chromosome,
+          pos: variantData.position,
+          ref: variantData.reference,
+          alt: variantData.alternate,
+          dataset: freq.dataset,
+          population: freq.label,
+          source: freq.source,
+          ac: freq.ac,
+          an: freq.an,
+          af: freq.frequency,
+          "alt/alt": freq.aac,
+          "alt/ref": freq.arc,
+          "ref/otheralts": freq.aoc,
+          "ref/ref": freq.rrc,
+          "ref/otheralt": freq.roc,
+          "otheralt/otheralt": freq.ooc,
+          ...(hasHemizygote && {
+            hemi_alt: freq.hac,
+            hemi_ref: freq.hrc,
+            hemi_other_alts: freq.hoc,
+          }),
+          filter: Array.isArray(freq.filter)
+            ? freq.filter.join(",")
+            : freq.filter,
+          quality: freq.quality,
+        };
+      });
   }
 }
