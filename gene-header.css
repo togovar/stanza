@@ -1,4 +1,11 @@
 @charset "UTF-8";
+:host {
+  --z-index-sticky-table-header: 10;
+  --z-index-togostanza-menu: 10000;
+  --char-lock: "";
+  --char-excramation-triangle: "";
+}
+
 .badge {
   font-size: 10px;
   border: solid 1px #94928D;
@@ -691,7 +698,7 @@ table.dataTable, table.dataTable th, table.dataTable td {
   position: sticky;
   top: 0;
   background-color: white;
-  z-index: 10;
+  z-index: var(--z-index-sticky-table-header);
 }
 .within-sticky-table-header .table > thead > tr > th::before {
   content: "";
@@ -709,14 +716,14 @@ main {
 }
 
 a {
-  color: #256D80;
+  color: #256d80;
 }
 a:link {
-  color: #256D80;
+  color: #256d80;
   text-decoration: underline;
 }
 a:active, a:hover {
-  color: #249EB3;
+  color: #249eb3;
 }
 
 label > input {
@@ -799,34 +806,34 @@ ul.no-bullet {
   content: attr(data-sum) "bp";
 }
 .ref-alt > .ref {
-  border-left: solid 1px #249EB3;
-  border-top: solid 1px #249EB3;
-  border-bottom: solid 1px #249EB3;
+  border-left: solid 1px #249eb3;
+  border-top: solid 1px #249eb3;
+  border-bottom: solid 1px #249eb3;
   border-top-left-radius: 3px;
   border-bottom-left-radius: 3px;
-  color: #249EB3;
+  color: #249eb3;
   background-color: #d8f0f4;
   position: relative;
   padding-right: 4px;
 }
 .ref-alt > .ref[data-sum]:after {
-  background-color: #249EB3;
+  background-color: #249eb3;
 }
 .ref-alt > .ref[data-sum="0"]:after, .ref-alt > .ref[data-sum="1"]:after, .ref-alt > .ref[data-sum="2"]:after, .ref-alt > .ref[data-sum="3"]:after, .ref-alt > .ref[data-sum="4"]:after {
   display: none;
 }
 .ref-alt > .alt {
-  border-right: solid 1px #FF6682;
-  border-top: solid 1px #FF6682;
-  border-bottom: solid 1px #FF6682;
+  border-right: solid 1px #ff6682;
+  border-top: solid 1px #ff6682;
+  border-bottom: solid 1px #ff6682;
   border-top-right-radius: 3px;
   border-bottom-right-radius: 3px;
-  color: #FF6682;
+  color: #ff6682;
   background-color: #fde2e7;
   padding-left: 9px;
 }
 .ref-alt > .alt[data-sum]:after {
-  background-color: #FF6682;
+  background-color: #ff6682;
 }
 .ref-alt > .alt[data-sum="0"]:after, .ref-alt > .alt[data-sum="1"]:after, .ref-alt > .alt[data-sum="2"]:after, .ref-alt > .alt[data-sum="3"]:after, .ref-alt > .alt[data-sum="4"]:after {
   display: none;
@@ -842,7 +849,7 @@ ul.no-bullet {
 .ref-alt > .arrow:before {
   border-top: 9px solid transparent;
   border-bottom: 9px solid transparent;
-  border-left: 6px solid #249EB3;
+  border-left: 6px solid #249eb3;
   top: 0;
   right: -6px;
 }
@@ -864,13 +871,13 @@ ul.no-bullet {
   background-color: #04af58;
 }
 .variant-function[data-function=LB] {
-  background-color: #9DCF3A;
+  background-color: #9dcf3a;
 }
 .variant-function[data-function=POSSD], .variant-function[data-function=LP] {
-  background-color: #FFAE00;
+  background-color: #ffae00;
 }
 .variant-function[data-function=D], .variant-function[data-function=PROBD] {
-  background-color: #FF5A54;
+  background-color: #ff5a54;
 }
 .variant-function[data-function=U] {
   color: #444;
@@ -896,23 +903,23 @@ ul.no-bullet {
   vertical-align: top;
 }
 .clinical-significance[data-sign=P]:before {
-  color: #FF5A54;
-  border-color: #FF5A54;
+  color: #ff5a54;
+  border-color: #ff5a54;
   background-color: #ffeeed;
 }
 .clinical-significance[data-sign=LP]:before {
-  color: #FFAE00;
-  border-color: #FFAE00;
+  color: #ffae00;
+  border-color: #ffae00;
   background-color: #fff7e6;
 }
 .clinical-significance[data-sign=US]:before {
-  color: #94928D;
-  border-color: #94928D;
+  color: #94928d;
+  border-color: #94928d;
   background-color: #eaeae9;
 }
 .clinical-significance[data-sign=LB]:before {
-  color: #9DCF3A;
-  border-color: #9DCF3A;
+  color: #9dcf3a;
+  border-color: #9dcf3a;
   background-color: #f3f9e6;
 }
 .clinical-significance[data-sign=B]:before {
@@ -921,46 +928,46 @@ ul.no-bullet {
   background-color: #e5fbe7;
 }
 .clinical-significance[data-sign=CI]:before {
-  color: #C654FF;
-  border-color: #C654FF;
+  color: #c654ff;
+  border-color: #c654ff;
   background-color: #f9edff;
 }
 .clinical-significance[data-sign=DR]:before, .clinical-significance[data-sign=A]:before, .clinical-significance[data-sign=RF]:before, .clinical-significance[data-sign=PR]:before, .clinical-significance[data-sign=AF]:before, .clinical-significance[data-sign=O]:before {
-  color: #9C8200;
-  border-color: #9C8200;
+  color: #9c8200;
+  border-color: #9c8200;
   background-color: #fff7cf;
 }
 .clinical-significance[data-sign=NP]:before, .clinical-significance[data-sign=AN]:before {
   color: #444;
-  border-color: #94928D;
+  border-color: #94928d;
   background-color: white;
 }
 
 .clinical-significance-full {
   font-size: 12px;
   font-weight: bold;
-  border: 1px solid;
+  border: 1px solid transparent;
   border-radius: 8.5px;
   padding: 0 7px;
 }
 .clinical-significance-full[data-sign=P] {
-  color: #FF5A54;
-  border-color: #FF5A54;
+  color: #ff5a54;
+  border-color: #ff5a54;
   background-color: #ffeeed;
 }
 .clinical-significance-full[data-sign=LP] {
-  color: #FFAE00;
-  border-color: #FFAE00;
+  color: #ffae00;
+  border-color: #ffae00;
   background-color: #fff7e6;
 }
 .clinical-significance-full[data-sign=US] {
-  color: #94928D;
-  border-color: #94928D;
+  color: #94928d;
+  border-color: #94928d;
   background-color: #eaeae9;
 }
 .clinical-significance-full[data-sign=LB] {
-  color: #9DCF3A;
-  border-color: #9DCF3A;
+  color: #9dcf3a;
+  border-color: #9dcf3a;
   background-color: #f3f9e6;
 }
 .clinical-significance-full[data-sign=B] {
@@ -969,18 +976,18 @@ ul.no-bullet {
   background-color: #e5fbe7;
 }
 .clinical-significance-full[data-sign=CI] {
-  color: #C654FF;
-  border-color: #C654FF;
+  color: #c654ff;
+  border-color: #c654ff;
   background-color: #f9edff;
 }
 .clinical-significance-full[data-sign=DR], .clinical-significance-full[data-sign=A], .clinical-significance-full[data-sign=RF], .clinical-significance-full[data-sign=PR], .clinical-significance-full[data-sign=AF], .clinical-significance-full[data-sign=O] {
-  color: #9C8200;
-  border-color: #9C8200;
+  color: #9c8200;
+  border-color: #9c8200;
   background-color: #fff7cf;
 }
 .clinical-significance-full[data-sign=NP], .clinical-significance-full[data-sign=AN] {
   color: #444;
-  border-color: #94928D;
+  border-color: #94928d;
   background-color: white;
 }
 
@@ -992,7 +999,7 @@ ul.no-bullet {
   box-sizing: border-box;
   position: relative;
   margin-right: 1px;
-  background-color: #249EB3;
+  background-color: #249eb3;
   vertical-align: middle;
 }
 .frequency-graph > .dataset:before {
@@ -1014,19 +1021,19 @@ ul.no-bullet {
   box-shadow: 0 3px white, 0 6px white, 0 9px white, 0 12px white, 0 15px white;
 }
 .frequency-graph > .dataset[data-dataset=jga_wes], .frequency-graph > .dataset[data-dataset=jga_snp] {
-  background-color: #46B9CC;
+  background-color: #46b9cc;
 }
 .frequency-graph > .dataset[data-dataset=tommo] {
   background-color: #ca678d;
 }
 .frequency-graph > .dataset[data-dataset=gem_j_wga] {
-  background-color: #DC2828;
+  background-color: #dc2828;
 }
 .frequency-graph > .dataset[data-dataset=hgvd] {
-  background-color: #005B80;
+  background-color: #005b80;
 }
 .frequency-graph > .dataset[data-dataset^=gnomad] {
-  background-color: #94928D;
+  background-color: #94928d;
 }
 .frequency-graph > .dataset[data-frequency=na] {
   background-color: rgba(234, 234, 233, 0.6);
@@ -1072,7 +1079,7 @@ ul.no-bullet {
 }
 .frequency-detail > tbody > tr > td.alt {
   font-weight: bold;
-  color: #FF6682;
+  color: #ff6682;
 }
 .frequency-detail > tbody > tr > td.alt:after {
   content: "/";
@@ -1092,7 +1099,7 @@ ul.no-bullet {
   box-shadow: 0 0 0 1px #dfdedd;
   position: relative;
   margin-right: 1px;
-  background-color: #249EB3;
+  background-color: #249eb3;
   vertical-align: middle;
   box-sizing: border-box;
 }
@@ -1114,27 +1121,27 @@ ul.no-bullet {
   box-shadow: 5px 0 white, 10px 0 white, 15px 0 white, 20px 0 white, 25px 0 white, 30px 0 white;
 }
 .allele-frequency-graph > .dataset[data-dataset=gem_j_wga], .allele-frequency-graph > .dataset[data-dataset="GEM-J WGA"] {
-  background-color: #DC2828;
-  box-shadow: 0 0 0 1px #DC2828;
+  background-color: #dc2828;
+  box-shadow: 0 0 0 1px #dc2828;
 }
 .allele-frequency-graph > .dataset[data-dataset=JGA-WGS], .allele-frequency-graph > .dataset[data-dataset=jga_wes], .allele-frequency-graph > .dataset[data-dataset=JGA-WES], .allele-frequency-graph > .dataset[data-dataset=jga_snp], .allele-frequency-graph > .dataset[data-dataset=JGA-SNP] {
-  background-color: #46B9CC;
-  box-shadow: 0 0 0 1px #46B9CC;
+  background-color: #46b9cc;
+  box-shadow: 0 0 0 1px #46b9cc;
 }
 .allele-frequency-graph > .dataset[data-dataset=tommo], .allele-frequency-graph > .dataset[data-dataset^=ToMMo] {
   background-color: #ca678d;
   box-shadow: 0 0 0 1px #ca678d;
 }
 .allele-frequency-graph > .dataset[data-dataset=ncbn], .allele-frequency-graph > .dataset[data-dataset=NCBN] {
-  background-color: #234B7C;
-  box-shadow: 0 0 0 1px #234B7C;
+  background-color: #234b7c;
+  box-shadow: 0 0 0 1px #234b7c;
 }
 .allele-frequency-graph > .dataset[data-dataset=hgvd] {
-  background-color: #005B80;
-  box-shadow: 0 0 0 1px #005B80;
+  background-color: #005b80;
+  box-shadow: 0 0 0 1px #005b80;
 }
 .allele-frequency-graph > .dataset[data-dataset^=gnomad], .allele-frequency-graph > .dataset[data-dataset^=gnomAD] {
-  background-color: #94928D;
+  background-color: #94928d;
 }
 .allele-frequency-graph > .dataset[data-frequency=na] {
   background-color: rgba(234, 234, 233, 0.6);
@@ -1201,28 +1208,28 @@ ul.no-bullet {
   height: 10px;
 }
 .dataset-icon[data-dataset=jga_wgs]:before, .dataset-icon[data-dataset=jga_wes]:before, .dataset-icon[data-dataset=jga_snp]:before {
-  color: #46B9CC;
+  color: #46b9cc;
 }
 .dataset-icon[data-dataset=tommo]:before {
   color: #ca678d;
 }
 .dataset-icon[data-dataset=ncbn]:before {
-  color: #234B7C;
+  color: #234b7c;
 }
 .dataset-icon[data-dataset=hgvd]:before, .dataset-icon[data-dataset=mgend]:before {
-  color: #005B80;
+  color: #005b80;
 }
 .dataset-icon[data-dataset=gem_j_wga]:before {
-  color: #DC2828;
+  color: #dc2828;
 }
 .dataset-icon[data-dataset=bbj]:before {
-  color: #FF993F;
+  color: #ff993f;
 }
 .dataset-icon[data-dataset=clinvar]:before, .dataset-icon[data-dataset^=gnomad]:before {
-  color: #94928D;
+  color: #94928d;
 }
 .dataset-icon[data-dataset=clinvar] > .properties::before, .dataset-icon[data-dataset=mgend] > .properties::before {
-  color: #FF5A54;
+  color: #ff5a54;
   content: "Disease";
 }
 .dataset-icon[data-dataset=tommo] > .properties::after, .dataset-icon[data-dataset=gem_j_wga] > .properties::after {
@@ -1250,7 +1257,7 @@ ul.no-bullet {
 }
 .star-rating > .star-rating-item:before {
   content: "★★★★";
-  color: #249EB3;
+  color: #249eb3;
 }
 .star-rating > .star-rating-item[data-stars="0"] {
   width: 0%;
@@ -1269,14 +1276,12 @@ ul.no-bullet {
 }
 
 togostanza--menu {
-  position: sticky;
-  background-color: white;
-  opacity: 0.8;
-  bottom: 0;
-  right: 10px;
+  position: relative;
+  z-index: var(--z-index-togostanza-menu);
   display: block;
   margin-left: auto;
-  width: fit-content;
+  padding: 2px;
+  cursor: pointer;
 }
 
 .gene-header .pagetype {

@@ -5861,7 +5861,7 @@ var templates = [
         return undefined
     };
 
-  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"result") : depth0),{"name":"with","hash":{},"fn":container.program(4, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":4,"column":2},"end":{"line":109,"column":11}}})) != null ? stack1 : "");
+  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"result") : depth0),{"name":"with","hash":{},"fn":container.program(4, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":4,"column":2},"end":{"line":110,"column":11}}})) != null ? stack1 : "");
 },"4":function(container,depth0,helpers,partials,data,blockParams,depths) {
     var stack1, alias1=depth0 != null ? depth0 : (container.nullContext || {}), lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
@@ -5870,13 +5870,13 @@ var templates = [
         return undefined
     };
 
-  return "    <table class='table frequency-detail'>\n      <thead>\n        <tr>\n          <th rowspan='2'>Dataset</th>\n          <th rowspan='2'>Population</th>\n          <th colspan='4'>Allele count</th>\n          <th colspan='"
-    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depths[1] != null ? lookupProperty(depths[1],"hasHemizygote") : depths[1]),{"name":"if","hash":{},"fn":container.program(5, data, 0, blockParams, depths),"inverse":container.program(7, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":11,"column":23},"end":{"line":11,"column":64}}})) != null ? stack1 : "")
+  return "    <div class='variant-frequency-scroll'>\n      <table class='table frequency-detail'>\n      <thead>\n        <tr>\n          <th rowspan='2'>Dataset</th>\n          <th rowspan='2'>Population</th>\n          <th colspan='4'>Allele count</th>\n          <th colspan='"
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depths[1] != null ? lookupProperty(depths[1],"hasHemizygote") : depths[1]),{"name":"if","hash":{},"fn":container.program(5, data, 0, blockParams, depths),"inverse":container.program(7, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":12,"column":23},"end":{"line":12,"column":64}}})) != null ? stack1 : "")
     + "'>Genotype count</th>\n          <th class='filter_status' rowspan='2'>Filter status</th>\n          <th rowspan='2'>Quality score</th>\n        </tr>\n        <tr>\n          <th class='alt num-th'>Alt</th>\n          <th class='num-th'>Total</th>\n          <th class='frequency num-th'>Frequency</th>\n          <th></th>\n          <th class='num_genotype_alt_homo alt num-th'>Alt / Alt</th>\n          <th class='num_genotype_hetero num-th'>Alt / Ref</th>\n          <th class='num_genotype_alt_otheralts num-th'>Alt/OtherAlts</th>\n          <th class='num_genotype_ref_homo num-th'>Ref / Ref</th>\n          <th class='num_genotype_ref_otheralts num-th'>Ref/OtherAlts</th>\n          <th class='num_genotype_otheralts_otheralts num-th'>Other_Alts/Other_Alts</th>\n"
-    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depths[1] != null ? lookupProperty(depths[1],"hasHemizygote") : depths[1]),{"name":"if","hash":{},"fn":container.program(9, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":26,"column":10},"end":{"line":30,"column":17}}})) != null ? stack1 : "")
-    + "        </tr>\n      </thead>\n\n      <tbody>\n"
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depths[1] != null ? lookupProperty(depths[1],"hasHemizygote") : depths[1]),{"name":"if","hash":{},"fn":container.program(9, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":27,"column":10},"end":{"line":31,"column":17}}})) != null ? stack1 : "")
+    + "        </tr>\n      </thead>\n      <tbody>\n"
     + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"resultObject") : depth0),{"name":"if","hash":{},"fn":container.program(11, data, 0, blockParams, depths),"inverse":container.program(23, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":35,"column":8},"end":{"line":106,"column":15}}})) != null ? stack1 : "")
-    + "      </tbody>\n    </table>\n";
+    + "      </tbody>\n      </table>\n    </div>\n";
 },"5":function(container,depth0,helpers,partials,data) {
     return "9";
 },"7":function(container,depth0,helpers,partials,data) {
@@ -6011,7 +6011,7 @@ var templates = [
         return undefined
     };
 
-  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"error") : depth0),{"name":"with","hash":{},"fn":container.program(1, data, 0, blockParams, depths),"inverse":container.program(3, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":1,"column":0},"end":{"line":110,"column":9}}})) != null ? stack1 : "");
+  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"error") : depth0),{"name":"with","hash":{},"fn":container.program(1, data, 0, blockParams, depths),"inverse":container.program(3, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":1,"column":0},"end":{"line":111,"column":9}}})) != null ? stack1 : "");
 },"useData":true,"useDepths":true}]
 ];
 
