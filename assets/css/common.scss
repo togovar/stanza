@@ -732,11 +732,9 @@ ul {
 
 togostanza--menu {
   position: sticky;
-  background-color: white;
-  opacity: 0.8;
-  bottom: 0;
-  right: 10px;
+  z-index: 10000;
+  right: 20px;
   display: block;
   margin-left: auto;
-  width: fit-content;
+  cursor: pointer;
 }

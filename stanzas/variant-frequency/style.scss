@@ -253,3 +253,18 @@ main {
     }
   }
 }
+
+togostanza--menu {
+  width: 45px;
+
+  &::after {
+    content: "\f019";
+    font-family: "FontAwesome";
+    color: #000;
+    pointer-events: none;
+    font-size: 16px;
+    position: relative;
+    top: -21px;
+    left: 26px;
+  }
+}
