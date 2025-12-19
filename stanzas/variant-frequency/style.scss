@@ -15,7 +15,7 @@ main {
       > thead {
         position: sticky;
         top: -1px;
-        z-index: 10;
+        z-index: $Z_INDEX_STICKY_TABLE_HEADER;
         background-color: white;
       }
     }

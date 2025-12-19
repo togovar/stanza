@@ -1,4 +1,5 @@
 @use "@/assets/css/common";
+@use "@/assets/css/foundation/variables" as *;
 
 main {
   max-height: calc(var(--togostanza-canvas-height) * 1px);
@@ -12,7 +13,7 @@ main {
     > thead {
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: $Z_INDEX_STICKY_TABLE_HEADER;
       background-color: white;
       border-bottom: 1px solid #444444;
     }
@@ -21,7 +22,7 @@ main {
       > tr {
         > td {
           vertical-align: baseline;
-  
+
           &.title {
             padding-left: 14px;
           }

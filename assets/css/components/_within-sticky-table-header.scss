@@ -1,3 +1,5 @@
+@use "@/assets/css/foundation/variables" as *;
+
 .within-sticky-table-header {
   overflow: auto;
   max-height: 300px;
@@ -8,7 +10,7 @@
           position: sticky;
           top: 0;
           background-color: white;
-          z-index: 10;
+          z-index: $Z_INDEX_STICKY_TABLE_HEADER;
           &::before {
             content: "";
             width: 100%;
