@@ -301,7 +301,7 @@ ul {
 .clinical-significance-full {
   font-size: 12px;
   font-weight: bold;
-  border: 1px solid;
+  border: 1px solid transparent;
   border-radius: 8.5px;
   padding: 0 7px;
 
@@ -731,12 +731,10 @@ ul {
 }
 
 togostanza--menu {
-  position: sticky;
-  background-color: white;
-  opacity: 0.8;
-  bottom: 0;
-  right: 10px;
+  position: relative;
+  z-index: var(--z-index-togostanza-menu);
   display: block;
   margin-left: auto;
-  width: fit-content;
+  padding: 2px;
+  cursor: pointer;
 }

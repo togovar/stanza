@@ -3,6 +3,28 @@
 @use "sass:color";
 
 main {
+  .variant-frequency-scroll {
+    overflow: auto;
+    resize: vertical;
+    background-color: white;
+
+    .table {
+      border-collapse: separate;
+      border-spacing: 0;
+
+      > thead {
+        position: sticky;
+        top: -1px;
+        z-index: var(--z-index-sticky-table-header);
+        background-color: white;
+      }
+    }
+  }
+
+  .frequency-detail {
+    width: 100%;
+  }
+
   .table > {
     thead > tr {
       > th {
@@ -47,9 +69,8 @@ main {
     }
 
     tbody {
-      border-bottom: 1px solid #dee2e6;
-
       > tr {
+        border-bottom: 1px solid #dee2e6;
         &[data-depth="1"],
         &[data-depth="2"],
         &[data-depth="3"] {
@@ -74,13 +95,9 @@ main {
             white-space: nowrap;
             padding-left: 14px;
 
-            &[data-depth="0"][data-has-child="false"] {
-              border-top: 1px solid #dee2e6;
-            }
-
+            &[data-depth="0"][data-has-child="false"],
             &[data-depth="0"][data-has-child="true"] {
-              border-top: 1px solid #dee2e6;
-              border-bottom: none;
+              border-top: none;
             }
 
             &[data-depth="1"],
@@ -135,7 +152,7 @@ main {
 
             > .lock {
               &::before {
-                content: $CHAR_LOCK;
+                content: var(--char-lock);
                 font-family: "FontAwesome";
                 color: $COLOR_BLACK;
                 opacity: 0.4;
@@ -172,7 +189,7 @@ main {
               position: relative;
               font-size: 12px;
               &:before {
-                content: $CHAR_EXCRAMATION_TRIANGLE;
+                content: var(--char-excramation-triangle);
                 font-family: FontAwesome;
                 color: color.adjust($COLOR_SIGN_WARNING, $lightness: -2%);
                 position: absolute;
@@ -234,5 +251,20 @@ main {
         }
       }
     }
+  }
+}
+
+togostanza--menu {
+  width: 45px;
+
+  &::after {
+    content: "\f019";
+    font-family: "FontAwesome";
+    color: #000;
+    pointer-events: none;
+    font-size: 16px;
+    position: relative;
+    top: -22px;
+    left: 26px;
   }
 }
