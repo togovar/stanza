@@ -731,10 +731,10 @@ ul {
 }
 
 togostanza--menu {
-  position: sticky;
+  position: relative;
   z-index: 10000;
-  right: 20px;
   display: block;
   margin-left: auto;
+  padding: 2px;
   cursor: pointer;
 }
