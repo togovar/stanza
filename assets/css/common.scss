@@ -732,7 +732,7 @@ ul {
 
 togostanza--menu {
   position: relative;
-  z-index: $Z_INDEX_TOGOSTANZA_MENU;
+  z-index: var(--z-index-togostanza-menu);
   display: block;
   margin-left: auto;
   padding: 2px;

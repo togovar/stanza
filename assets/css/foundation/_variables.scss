@@ -33,10 +33,13 @@ $COLOR_SIGN_MODIFIER: #c654ff;
 $COLOR_SIGN_OTHER: #9c8200;
 $COLOR_SIGN_UNKNOWN: #bbba7e;
 
-$Z_INDEX_STICKY_TABLE_HEADER: 10;
-$Z_INDEX_TOGOSTANZA_MENU: 10000;
+:host {
+  // z-index
+  --z-index-sticky-table-header: 10;
+  --z-index-togostanza-menu: 10000;
 
-// charactor
-// FontAwesome
-$CHAR_LOCK: "\f023";
-$CHAR_EXCRAMATION_TRIANGLE: "\f071";
+  // charactor
+  // FontAwesome
+  --char-lock: "\f023";
+  --char-excramation-triangle: "\f071";
+}

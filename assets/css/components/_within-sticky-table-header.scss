@@ -10,7 +10,7 @@
           position: sticky;
           top: 0;
           background-color: white;
-          z-index: $Z_INDEX_STICKY_TABLE_HEADER;
+          z-index: var(--z-index-sticky-table-header);
           &::before {
             content: "";
             width: 100%;

@@ -13,7 +13,7 @@ main {
     > thead {
       position: sticky;
       top: 0;
-      z-index: $Z_INDEX_STICKY_TABLE_HEADER;
+      z-index: var(--z-index-sticky-table-header);
       background-color: white;
       border-bottom: 1px solid #444444;
     }

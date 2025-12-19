@@ -15,7 +15,7 @@ main {
       > thead {
         position: sticky;
         top: -1px;
-        z-index: $Z_INDEX_STICKY_TABLE_HEADER;
+        z-index: var(--z-index-sticky-table-header);
         background-color: white;
       }
     }
@@ -152,7 +152,7 @@ main {
 
             > .lock {
               &::before {
-                content: $CHAR_LOCK;
+                content: var(--char-lock);
                 font-family: "FontAwesome";
                 color: $COLOR_BLACK;
                 opacity: 0.4;
@@ -189,7 +189,7 @@ main {
               position: relative;
               font-size: 12px;
               &:before {
-                content: $CHAR_EXCRAMATION_TRIANGLE;
+                content: var(--char-excramation-triangle);
                 font-family: FontAwesome;
                 color: color.adjust($COLOR_SIGN_WARNING, $lightness: -2%);
                 position: absolute;
