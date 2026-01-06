@@ -5,6 +5,7 @@
 @use "components/table";
 @use "components/variant-function";
 @use "components/within-sticky-table-header";
+@use "sass:color";
 
 main {
   font-family: "Roboto Condensed", sans-serif;
@@ -27,7 +28,7 @@ a {
 }
 
 label > input {
-  margin-right: .3em;
+  margin-right: 0.3em;
 }
 
 ul {
@@ -41,13 +42,13 @@ ul {
 }
 
 .table {
-  > thead>tr>th {
-    +th {
+  > thead > tr > th {
+    + th {
       padding-left: 10px;
     }
   }
 
-  >tbody>tr>td {
+  > tbody > tr > td {
     padding-left: 10px;
   }
 }
@@ -66,16 +67,16 @@ ul {
   border-radius: 4px;
 
   &.alert-danger {
-    border-color: darken($COLOR_SIGN_DANGEROUS, 2%);
-    background-color: lighten($COLOR_SIGN_DANGEROUS, 30%);
+    border-color: color.adjust($COLOR_SIGN_DANGEROUS, $lightness: -2%);
+    background-color: color.adjust($COLOR_SIGN_DANGEROUS, $lightness: 30%);
   }
   &.alert-warning {
-    border-color: darken($COLOR_SIGN_WARNING, 2%);
-    background-color: lighten($COLOR_SIGN_WARNING, 45%);
+    border-color: color.adjust($COLOR_SIGN_WARNING, $lightness: -2%);
+    background-color: color.adjust($COLOR_SIGN_WARNING, $lightness: 45%);
   }
   &.alert-info {
-    border-color: darken($COLOR_SIGN_NORMAL, 2%);
-    background-color: lighten($COLOR_SIGN_NORMAL, 42%);
+    border-color: color.adjust($COLOR_SIGN_NORMAL, $lightness: -2%);
+    background-color: color.adjust($COLOR_SIGN_NORMAL, $lightness: 42%);
   }
 }
 
@@ -92,7 +93,8 @@ ul {
   font-weight: bold;
 
   > {
-    .ref, .alt {
+    .ref,
+    .alt {
       display: inline-block;
       line-height: 18px;
       height: 18px;
@@ -116,26 +118,6 @@ ul {
     }
 
     .ref {
-      &[data-sum="0"]:after,
-      &[data-sum="1"]:after,
-      &[data-sum="2"]:after,
-      &[data-sum="3"]:after,
-      &[data-sum="4"]:after {
-        display: none;
-      }
-    }
-
-    .alt {
-      &[data-sum="0"]:after,
-      &[data-sum="1"]:after,
-      &[data-sum="2"]:after,
-      &[data-sum="3"]:after,
-      &[data-sum="4"]:after {
-        display: none;
-      }
-    }
-
-    .ref {
       border-left: solid 1px $COLOR_REF;
       border-top: solid 1px $COLOR_REF;
       border-bottom: solid 1px $COLOR_REF;
@@ -148,6 +130,13 @@ ul {
 
       &[data-sum]:after {
         background-color: $COLOR_REF;
+      }
+      &[data-sum="0"]:after,
+      &[data-sum="1"]:after,
+      &[data-sum="2"]:after,
+      &[data-sum="3"]:after,
+      &[data-sum="4"]:after {
+        display: none;
       }
     }
 
@@ -163,6 +152,13 @@ ul {
 
       &[data-sum]:after {
         background-color: $COLOR_ALT;
+      }
+      &[data-sum="0"]:after,
+      &[data-sum="1"]:after,
+      &[data-sum="2"]:after,
+      &[data-sum="3"]:after,
+      &[data-sum="4"]:after {
+        display: none;
       }
     }
 
@@ -305,7 +301,7 @@ ul {
 .clinical-significance-full {
   font-size: 12px;
   font-weight: bold;
-  border: 1px solid;
+  border: 1px solid transparent;
   border-radius: 8.5px;
   padding: 0 7px;
 
@@ -389,10 +385,11 @@ ul {
     position: absolute;
     width: 7px;
     background-color: white;
-    opacity: .75;
+    opacity: 0.75;
     height: 1px;
     top: 1px;
-    box-shadow: 0 3px white, 0 6px white, 0 9px white, 0 12px white, 0 15px white;
+    box-shadow: 0 3px white, 0 6px white, 0 9px white, 0 12px white,
+      0 15px white;
   }
 
   &[data-dataset="jga_wes"],
@@ -462,7 +459,7 @@ ul {
     .dataset-icon {
       display: inline-block;
       vertical-align: middle;
-      margin-right: .2em;
+      margin-right: 0.2em;
     }
 
     &.alt,
@@ -479,7 +476,7 @@ ul {
         content: "/";
         font-size: 10px;
         color: $COLOR_BLACK;
-        margin-left: .5em;
+        margin-left: 0.5em;
       }
     }
 
@@ -501,7 +498,8 @@ ul {
   vertical-align: middle;
   box-sizing: border-box;
 
-  &:before, &:after {
+  &:before,
+  &:after {
     content: "";
     display: block;
     position: absolute;
@@ -514,11 +512,12 @@ ul {
   }
 
   &:after {
-    opacity: .75;
+    opacity: 0.75;
     width: 1px;
     top: 0;
     left: -1px;
-    box-shadow: 5px 0 white, 10px 0 white, 15px 0 white, 20px 0 white, 25px 0 white, 30px 0 white;
+    box-shadow: 5px 0 white, 10px 0 white, 15px 0 white, 20px 0 white,
+      25px 0 white, 30px 0 white;
   }
 
   &[data-dataset="gem_j_wga"],
@@ -536,12 +535,14 @@ ul {
     box-shadow: 0 0 0 1px $COLOR_DATASET_JGA;
   }
 
-  &[data-dataset="tommo"],&[data-dataset^="ToMMo"] {
+  &[data-dataset="tommo"],
+  &[data-dataset^="ToMMo"] {
     background-color: $COLOR_DATASET_TOMMO;
     box-shadow: 0 0 0 1px $COLOR_DATASET_TOMMO;
   }
 
-  &[data-dataset="ncbn"],&[data-dataset="NCBN"] {
+  &[data-dataset="ncbn"],
+  &[data-dataset="NCBN"] {
     background-color: $COLOR_DATASET_NCBN;
     box-shadow: 0 0 0 1px $COLOR_DATASET_NCBN;
   }
@@ -626,7 +627,8 @@ ul {
     -webkit-transform: scale(0.9);
     transform: scale(0.9);
 
-    &::before, &::after {
+    &::before,
+    &::after {
       display: block;
       height: 10px;
     }
@@ -728,3 +730,11 @@ ul {
   }
 }
 
+togostanza--menu {
+  position: relative;
+  z-index: var(--z-index-togostanza-menu);
+  display: block;
+  margin-left: auto;
+  padding: 2px;
+  cursor: pointer;
+}

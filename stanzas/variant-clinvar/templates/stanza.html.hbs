@@ -1,7 +1,7 @@
 {{#with error}}
-  <div class='alert alert-danger'>{{message}}</div>
+  <div class="alert alert-danger">{{message}}</div>
 {{else}}
-  <table id='target' class='table'>
+  <table id="target" class="table">
     <thead>
       <tr>
         <th>Title</th>
@@ -16,39 +16,39 @@
     <tbody>
       {{#each result}}
         <tr>
-          <td class='title'>
-            <a href='{{clinvar}}'>{{title}}</a>
+          <td class="title">
+            <a href="{{clinvar}}">{{title}}</a>
           </td>
-          <td class='review-status'>
-            <span class='star-rating'>
-              <span data-stars='{{vcv_stars}}' class='star-rating-item'></span>
+          <td class="review-status">
+            <span class="star-rating">
+              <span data-stars="{{vcv_stars}}" class="star-rating-item"></span>
             </span>
             <br />
-            <span class='status-description'>{{vcv_review_status}}</span>
+            <span class="status-description">{{vcv_review_status}}</span>
           </td>
-          <td class='review-status rowspan-ignore'>
-            <span class='star-rating'>
-              <span data-stars='{{rcv_stars}}' class='star-rating-item'></span>
+          <td class="review-status rowspan-ignore">
+            <span class="star-rating">
+              <span data-stars="{{rcv_stars}}" class="star-rating-item"></span>
             </span>
             <br />
-            <span class='status-description'>{{rcv_review_status}}</span>
+            <span class="status-description">{{rcv_review_status}}</span>
           </td>
-          <td class='clinical-significance-col rowspan-ignore'>
+          <td class="clinical-significance-col rowspan-ignore">
             <span
-              class='clinical-significance-full'
-              data-sign='{{significance_class}}'
+              class="clinical-significance-full"
+              data-sign="{{significance_class}}"
             >{{interpretation}}</span>
           </td>
-          <td class='last-evaluated rowspan-ignore'>
+          <td class="last-evaluated rowspan-ignore">
             {{last_evaluated}}
           </td>
-          <td class='condition rowspan-ignore'>
-            <a href='{{condition.url}}'>{{condition.label}}</a>
+          <td class="condition rowspan-ignore">
+            <a href="{{condition.url}}">{{condition.label}}</a>
           </td>
         </tr>
       {{else}}
         <tr>
-          <td class='text-center' colspan='5'>No data</td>
+          <td class="text-center" colspan="6">No data</td>
         </tr>
       {{/each}}
     </tbody>

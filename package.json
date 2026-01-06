@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "d3": "^7.9.0",
-    "togostanza": "3.0.0-beta.55"
+    "togostanza": "3.0.0-beta.55",
+    "togostanza-utils": "github:togostanza/togostanza-utils"
   },
   "devDependencies": {
     "d3-hierarchy": "^3.1.2",

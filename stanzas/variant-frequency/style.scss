@@ -1,237 +1,270 @@
 @use "@/assets/css/common";
 @use "@/assets/css/foundation/variables" as *;
+@use "sass:color";
 
 main {
-  max-height: calc(var(--togostanza-canvas-height) * 1px);
+  .variant-frequency-scroll {
+    overflow: auto;
+    resize: vertical;
+    background-color: white;
 
-.table> {
-  thead>tr {
-    >th {
-      white-space: nowrap;
-      padding-right: 4px;
+    .table {
+      border-collapse: separate;
+      border-spacing: 0;
 
-      &[rowspan] {
-        vertical-align: bottom;
-      }
-
-      &[colspan] {
-        font-size: 10px;
-        color: $COLOR_BLACK;
-        padding-left: 7px;
-        padding-top: 3px;
-        padding-bottom: 0;
-        border: none;
-        border-left: 1px solid #dee2e6;
-      }
-
-      &.frequency {
-        padding-left: 20px;
-      }
-
-      &.num_genotype_hetero,
-      &.num_genotype_ref_homo {
-        padding-left: 17px;
-      }
-
-      &.alt,
-      &.filter_status {
-        padding-left: 7px;
-        border-left: 1px solid #dee2e6;
-      }
-    }
-
-    &:nth-of-type(2)>th {
-
-      &.num-th {
-        padding-top: 0;
+      > thead {
+        position: sticky;
+        top: -1px;
+        z-index: var(--z-index-sticky-table-header);
+        background-color: white;
       }
     }
   }
 
-  tbody {
-    border-bottom: 1px solid #dee2e6;
+  .frequency-detail {
+    width: 100%;
+  }
 
-    >tr {
-      &[data-depth="1"],
-      &[data-depth="2"],
-      &[data-depth="3"] {
-        display: none;
-      }
+  .table > {
+    thead > tr {
+      > th {
+        white-space: nowrap;
+        padding-right: 4px;
 
-      &.show-by-total,
-      &.show-by-sub,
-      &.show {
-        display: table-row;
-      }
-
-      &.close-by-total,
-      &.close-by-sub {
-        display: none;
-      }
-
-      >td {
-        padding-right: 5px;
-
-        &.dataset {
-          white-space: nowrap;
-          padding-left: 14px;
-
-          &[data-depth="0"][data-has-child="false"] {
-            border-top: 1px solid #dee2e6;
-          }
-
-          &[data-depth="0"][data-has-child="true"] {
-            border-top: 1px solid #dee2e6;
-            border-bottom: none;
-          }
-
-          &[data-depth="1"],
-          &[data-depth="2"],
-          &[data-depth="3"] {
-            visibility: hidden;
-            border: none;
-          }
+        &[rowspan] {
+          vertical-align: bottom;
         }
 
-        &.population {
-          &[data-depth="0"][data-has-child="true"] {
-            padding-left: 12px;
-          }
-          &[data-depth="1"] {
-            padding-left: 28px;
-          }
-
-          &[data-depth="2"] {
-            padding-left: 44px;
-          }
-
-          &[data-depth="3"] {
-            padding-left: 60px;
-          }
-
-          &[data-has-child="true"] {
-            cursor: pointer;
-
-            &::before {
-              content: '';
-              position: relative;
-              right: 4px;
-              bottom: 2px;
-              display: inline-block;
-              width: 6px;
-              height: 6px;
-              border-right: 1px solid $COLOR_BLACK;
-              border-bottom: 1px solid $COLOR_BLACK;
-              transform: rotate(-45deg);
-            }
-
-            &.open {
-              &::before {
-                right: 0px;
-                bottom: 3px;
-                margin-right: 3px;
-                transform: rotate(45deg);
-              }
-            }
-          }
-
-          > .lock {
-            &::before {
-              content: $CHAR_LOCK;
-              font-family: FontAwesome;
-              color: $COLOR_BLACK;
-              opacity: .4;
-              font-size: 14px;
-              margin-right: 3px;
-            }
-          }
-        }
-
-        &.num_alt_alleles {
-          text-align: right;
-          color: $COLOR_ALT;
-          border-left: 1px solid #dee2e6;
-
-          .slash {
-            font-size: 10px;
-            color: $COLOR_BLACK;
-            margin-left: 7px;
-            margin-right: 4px;
-          }
-
-          .comment {
-            color: $COLOR_BLACK;
-            border-color: darken($COLOR_SIGN_WARNING, 2%);
-            background-color: lighten($COLOR_SIGN_WARNING, 45%);
-            padding: 3px 6px 3px 23px;
-            border-width: 1px;
-            border-style: solid;
-            border-radius: 4px;
-            margin-bottom: 4px;
-            position: relative;
-            font-size: 12px;
-            &:before{
-              content: $CHAR_EXCRAMATION_TRIANGLE;
-              font-family: FontAwesome;
-              color: darken($COLOR_SIGN_WARNING, 2%);
-              position: absolute;
-              top: 50%;
-              left: 6px;
-              transform: translateY(-50%);
-              margin-right: 4px;
-            }
-          }
-        }
-
-        &.num_alleles {
+        &[colspan] {
+          font-size: 10px;
           color: $COLOR_BLACK;
-          text-align: right;
+          padding-left: 7px;
+          padding-top: 3px;
+          padding-bottom: 0;
+          border: none;
+          border-left: 1px solid #dee2e6;
         }
 
         &.frequency {
           padding-left: 20px;
-          box-sizing: content-box;
-          text-align: left;
-          width: 58px;
         }
 
-        &.num-td {
-          text-align: right;
+        &.num_genotype_hetero,
+        &.num_genotype_ref_homo {
+          padding-left: 17px;
         }
 
-        &.num_genotype_alt_homo {
+        &.alt,
+        &.filter_status {
+          padding-left: 7px;
           border-left: 1px solid #dee2e6;
         }
+      }
 
-        &.num_genotype_alt_homo,
-        &.num_genotype_hemi_alt {
-          color: $COLOR_ALT;
+      &:nth-of-type(2) > th {
+        &.num-th {
+          padding-top: 0;
+        }
+      }
+    }
+
+    tbody {
+      > tr {
+        border-bottom: 1px solid #dee2e6;
+        &[data-depth="1"],
+        &[data-depth="2"],
+        &[data-depth="3"] {
+          display: none;
         }
 
-        &.num_genotype_hetero {
-          color: $COLOR_BLACK;
+        &.show-by-total,
+        &.show-by-sub,
+        &.show {
+          display: table-row;
         }
 
-        &.num_genotype_ref_homo,
-        &.num_genotype_hemi_ref {
-          color: $COLOR_KEY_DEEP;
+        &.close-by-total,
+        &.close-by-sub {
+          display: none;
         }
 
-        &.filter {
-          color: $COLOR_SIGN_DANGEROUS;
-          padding: 0 0 0 7px;
-          border-left: 1px solid #dee2e6;
+        > td {
+          padding-right: 5px;
 
-          &[data-filter="PASS"] {
-            color: $COLOR_SIGN_SAFE;
+          &.dataset {
+            white-space: nowrap;
+            padding-left: 14px;
+
+            &[data-depth="0"][data-has-child="false"],
+            &[data-depth="0"][data-has-child="true"] {
+              border-top: none;
+            }
+
+            &[data-depth="1"],
+            &[data-depth="2"],
+            &[data-depth="3"] {
+              visibility: hidden;
+              border: none;
+            }
           }
-        }
 
-        &.nodata-message {
-          text-align: center;
+          &.population {
+            &[data-depth="0"][data-has-child="true"] {
+              padding-left: 12px;
+            }
+            &[data-depth="1"] {
+              padding-left: 28px;
+            }
+
+            &[data-depth="2"] {
+              padding-left: 44px;
+            }
+
+            &[data-depth="3"] {
+              padding-left: 60px;
+            }
+
+            &[data-has-child="true"] {
+              cursor: pointer;
+
+              &::before {
+                content: "";
+                position: relative;
+                right: 4px;
+                bottom: 2px;
+                display: inline-block;
+                width: 6px;
+                height: 6px;
+                border-right: 1px solid $COLOR_BLACK;
+                border-bottom: 1px solid $COLOR_BLACK;
+                transform: rotate(-45deg);
+              }
+
+              &.open {
+                &::before {
+                  right: 0px;
+                  bottom: 3px;
+                  margin-right: 3px;
+                  transform: rotate(45deg);
+                }
+              }
+            }
+
+            > .lock {
+              &::before {
+                content: var(--char-lock);
+                font-family: "FontAwesome";
+                color: $COLOR_BLACK;
+                opacity: 0.4;
+                font-size: 14px;
+                margin-right: 3px;
+              }
+            }
+          }
+
+          &.num_alt_alleles {
+            text-align: right;
+            color: $COLOR_ALT;
+            border-left: 1px solid #dee2e6;
+
+            .slash {
+              font-size: 10px;
+              color: $COLOR_BLACK;
+              margin-left: 7px;
+              margin-right: 4px;
+            }
+
+            .comment {
+              color: $COLOR_BLACK;
+              border-color: color.adjust($COLOR_SIGN_WARNING, $lightness: -2%);
+              background-color: color.adjust(
+                $COLOR_SIGN_WARNING,
+                $lightness: 45%
+              );
+              padding: 3px 6px 3px 23px;
+              border-width: 1px;
+              border-style: solid;
+              border-radius: 4px;
+              margin-bottom: 4px;
+              position: relative;
+              font-size: 12px;
+              &:before {
+                content: var(--char-excramation-triangle);
+                font-family: FontAwesome;
+                color: color.adjust($COLOR_SIGN_WARNING, $lightness: -2%);
+                position: absolute;
+                top: 50%;
+                left: 6px;
+                transform: translateY(-50%);
+                margin-right: 4px;
+              }
+            }
+          }
+
+          &.num_alleles {
+            color: $COLOR_BLACK;
+            text-align: right;
+          }
+
+          &.frequency {
+            padding-left: 20px;
+            box-sizing: content-box;
+            text-align: left;
+            width: 58px;
+          }
+
+          &.num-td {
+            text-align: right;
+          }
+
+          &.num_genotype_alt_homo {
+            border-left: 1px solid #dee2e6;
+          }
+
+          &.num_genotype_alt_homo,
+          &.num_genotype_hemi_alt {
+            color: $COLOR_ALT;
+          }
+
+          &.num_genotype_hetero {
+            color: $COLOR_BLACK;
+          }
+
+          &.num_genotype_ref_homo,
+          &.num_genotype_hemi_ref {
+            color: $COLOR_KEY_DEEP;
+          }
+
+          &.filter {
+            color: $COLOR_SIGN_DANGEROUS;
+            padding: 0 0 0 7px;
+            border-left: 1px solid #dee2e6;
+
+            &[data-filter="PASS"] {
+              color: $COLOR_SIGN_SAFE;
+            }
+          }
+
+          &.nodata-message {
+            text-align: center;
+          }
         }
       }
     }
   }
 }
+
+togostanza--menu {
+  width: 45px;
+
+  &::after {
+    content: "\f019";
+    font-family: "FontAwesome";
+    color: #000;
+    pointer-events: none;
+    font-size: 16px;
+    position: relative;
+    top: -22px;
+    left: 26px;
+  }
 }

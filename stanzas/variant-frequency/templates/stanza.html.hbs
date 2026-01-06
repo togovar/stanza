@@ -2,7 +2,8 @@
   <div class='alert alert-danger'>{{message}}</div>
 {{else}}
   {{#with result}}
-    <table class='table frequency-detail'>
+    <div class='variant-frequency-scroll'>
+      <table class='table frequency-detail'>
       <thead>
         <tr>
           <th rowspan='2'>Dataset</th>
@@ -30,7 +31,6 @@
           {{/if}}
         </tr>
       </thead>
-
       <tbody>
         {{#if resultObject}}
           {{#each resultObject}}
@@ -105,6 +105,7 @@
           <tr><td colspan="11" class="nodata-message">{{../params.no_data_message}}</td></tr>
         {{/if}}
       </tbody>
-    </table>
+      </table>
+    </div>
   {{/with}}
 {{/with}}
