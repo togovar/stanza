@@ -2,54 +2,45 @@
   <div class="alert alert-danger">{{message}}</div>
 {{else}}
   {{#with result}}
-    <table class="table gene -horizontalkeyvalue">
-      <tr>
-        <th>HGNC/Approved name</th>
-        <td>
-          {{#if hgnc_url}}
-            <a href="{{hgnc_url}}" target="_blank">{{approved_name}}</a>
-          {{else}}
-            {{approved_name}}
-          {{/if}}
-        </td>
+    <dl class="gene-info">
+      <dt>HGNC/Approved name</dt>
+      <dd>
+        {{#if hgnc_url}}
+          <a href="{{hgnc_url}}" target="_blank">{{approved_name}}</a>
+        {{else}}
+          {{approved_name}}
+        {{/if}}
+      </dd>
+      <dt>Ensembl</dt>
+      <dd>
+        {{#if ensembl_url}}
+          <a href="{{ensembl_url}}" target="_blank">{{ensembl}}</a>
+        {{else}}
+          {{ensembl}}
+        {{/if}}
+      </dd>
 
-        <th>Ensembl</th>
-        <td>
-          {{#if ensembl_url}}
-            <a href="{{ensembl_url}}" target="_blank">{{ensembl}}</a>
-          {{else}}
-            {{ensembl}}
-          {{/if}}
-        </td>
-      </tr>
+      <dt>Alias</dt>
+      <dd>{{alias}}</dd>
+      <dt>NCBI Gene</dt>
+      <dd>
+        {{#if ncbi_gene_url}}
+          <a href="{{ncbi_gene_url}}" target="_blank">{{ncbi_gene}}</a>
+        {{else}}
+          {{ncbi_gene}}
+        {{/if}}
+      </dd>
 
-      <tr>
-        <th>Alias</th>
-        <td>{{alias}}</td>
-
-        <th>NCBI Gene</th>
-        <td>
-          {{#if ncbi_gene_url}}
-            <a href="{{ncbi_gene_url}}" target="_blank">{{ncbi_gene}}</a>
-          {{else}}
-            {{ncbi_gene}}
-          {{/if}}
-        </td>
-      </tr>
-
-      <tr>
-        <th>Chromosomal Location</th>
-        <td>{{location}}</td>
-
-        <th>RefSeq</th>
-        <td>
-          {{#if refseq_url}}
-            <a href="{{refseq_url}}" target="_blank">{{refseq}}</a>
-          {{else}}
-            {{refseq}}
-          {{/if}}
-        </td>
-      </tr>
-    </table>
+      <dt>Chromosomal Location</dt>
+      <dd>{{location}}</dd>
+      <dt>RefSeq</dt>
+      <dd>
+        {{#if refseq_url}}
+          <a href="{{refseq_url}}" target="_blank">{{refseq}}</a>
+        {{else}}
+          {{refseq}}
+        {{/if}}
+      </dd>
+    </dl>
   {{/with}}
 {{/with}}

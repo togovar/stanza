@@ -9,13 +9,14 @@ main {
     position: relative;
     border-collapse: separate;
     border-spacing: 0;
+    border-bottom: var(--border-table-bottom);
 
     > thead {
       position: sticky;
       top: 0;
       z-index: var(--z-index-sticky-table-header);
       background-color: white;
-      border-bottom: 1px solid #444444;
+      border-bottom: var(--border-table-bottom);
     }
 
     > tbody {
@@ -25,6 +26,10 @@ main {
 
           &.title {
             padding-left: 14px;
+          }
+
+          &.extends-to-last-row {
+            border-bottom: none;
           }
         }
       }

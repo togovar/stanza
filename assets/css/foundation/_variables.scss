@@ -34,6 +34,18 @@ $COLOR_SIGN_OTHER: #9c8200;
 $COLOR_SIGN_UNKNOWN: #bbba7e;
 
 :host {
+  // Key colors
+  --color-key-dark: #256d80;
+
+  // Font colors
+  --color-black: #444;
+
+  // Border colors
+  --color-table-border: #dee2e6;
+
+  // Table
+  --border-table-bottom: 0.5px solid #444;
+
   // z-index
   --z-index-sticky-table-header: 10;
   --z-index-togostanza-menu: 10000;
