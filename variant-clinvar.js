@@ -1,7 +1,7 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-33919c9f.js';
 import { u as unwrapValueFromBinding } from './utils-6f61a843.js';
 import { R as REVIEW_STATUS, C as CLINICAL_SIGNIFICANCE } from './constants-f43484af.js';
-import { r as rowSpanize } from './table-dac50f51.js';
+import { r as rowSpanize } from './table-1f1dea97.js';
 
 class VariantSummary extends Stanza {
   async render() {

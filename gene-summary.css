@@ -1,5 +1,9 @@
 @charset "UTF-8";
 :host {
+  --color-key-dark: #256d80;
+  --color-black: #444;
+  --color-table-border: #dee2e6;
+  --border-table-bottom: 0.5px solid #444;
   --z-index-sticky-table-header: 10;
   --z-index-togostanza-menu: 10000;
   --char-lock: "";
@@ -490,7 +494,11 @@ table.dataTable, table.dataTable th, table.dataTable td {
   margin: 0 4px 0 0;
 }
 #dataTable_wrapper > #dataTable_length > label > select {
+  font-family: "Roboto Condensed", sans-serif;
   padding: 0;
+}
+#dataTable_wrapper > #dataTable_length > label > select > option {
+  font-family: "Roboto Condensed", sans-serif;
 }
 #dataTable_wrapper > #dataTable {
   width: auto !important;
@@ -502,14 +510,14 @@ table.dataTable, table.dataTable th, table.dataTable td {
 }
 #dataTable_wrapper > #dataTable > thead > tr > th {
   font-size: 12px;
-  color: #94928d;
-  font-weight: 500;
+  color: var(--color-black);
+  font-weight: bold;
   vertical-align: baseline;
   text-align: left;
   padding-top: 4px;
   padding-bottom: 4px;
   padding-left: 14px;
-  border-bottom: 1px solid #444444;
+  border-bottom: var(--border-table-bottom);
   white-space: nowrap;
 }
 #dataTable_wrapper > #dataTable > thead > tr > th[aria-label=PMID] {
@@ -640,7 +648,8 @@ table.dataTable, table.dataTable th, table.dataTable td {
   border-collapse: collapse;
   font-family: "Roboto Condensed", sans-serif;
 }
-.table th, .table td {
+.table th,
+.table td {
   padding: 3px 0;
   vertical-align: middle;
   border-bottom: 1px solid #dee2e6;
@@ -648,8 +657,8 @@ table.dataTable, table.dataTable th, table.dataTable td {
 }
 .table th {
   font-size: 12px;
-  color: #94928d;
-  font-weight: 500;
+  color: var(--color-black);
+  font-weight: bold;
 }
 .table td {
   font-size: 14px;
@@ -663,18 +672,20 @@ table.dataTable, table.dataTable th, table.dataTable td {
   text-align: left;
   padding-top: 6px;
   padding-bottom: 4px;
-  border-bottom: 1px solid #444444;
+  border-bottom: 0.5px solid #4e5059;
 }
 .table > thead > tr > th:first-child {
-  padding-left: 14px;
+  padding-left: 10px;
 }
 .table > tbody > tr > td.ref-alt {
   display: flex;
 }
-.table > tbody > tr:last-child > th, .table > tbody > tr:last-child > td {
+.table > tbody > tr:last-child > th,
+.table > tbody > tr:last-child > td {
   border-bottom: none;
 }
-.table > tbody > tr:last-of-type > th, .table > tbody > tr:last-of-type > td {
+.table > tbody > tr:last-of-type > th,
+.table > tbody > tr:last-of-type > td {
   border: none;
 }
 .table.-horizontalkeyvalue > tbody > tr th {
@@ -745,9 +756,9 @@ ul.no-bullet {
 .table > tbody > tr > td {
   padding-left: 10px;
 }
-
-.text-center {
+.table > tbody > tr > td.text-center {
   text-align: center;
+  padding: 14px 0 0;
 }
 
 .alert {
@@ -1284,7 +1295,40 @@ togostanza--menu {
   cursor: pointer;
 }
 
-main .table {
-  width: 100%;
-  table-layout: fixed;
+main .gene-info {
+  min-width: 600px;
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr auto 1fr;
+}
+main .gene-info dt,
+main .gene-info dd {
+  padding: 3px 0;
+  line-height: 1.2;
+  border-bottom: 1px solid var(--color-table-border);
+  vertical-align: middle;
+  margin: 0;
+}
+main .gene-info dt {
+  font-size: 12px;
+  color: var(--color-black);
+  font-weight: bold;
+  text-align: right;
+  padding-left: 8px;
+  padding-right: 12px;
+}
+main .gene-info dt:nth-child(4n+3) {
+  padding-left: 20px;
+}
+main .gene-info dd {
+  font-size: 14px;
+  color: var(--color-black);
+  word-break: break-word;
+}
+main .gene-info dd a {
+  color: var(--color-key-dark);
+}
+main .gene-info dt:nth-last-child(-n+4),
+main .gene-info dd:nth-last-child(-n+4) {
+  border-bottom: none;
 }
