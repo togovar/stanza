@@ -1,4 +1,4 @@
-@use 'assets/vendor/datatables/1.10.24/datatables.min.css';
+@use "assets/vendor/datatables/1.10.24/datatables.min.css";
 
 #dataTable_wrapper {
   padding-top: 30px;
@@ -19,27 +19,31 @@
       font-size: 12px;
       margin: 0 4px 0 0;
       > select {
+        font-family: "Roboto Condensed", sans-serif;
         padding: 0;
+        > option {
+          font-family: "Roboto Condensed", sans-serif;
+        }
       }
     }
   }
-  
+
   > #dataTable {
     width: auto !important;
     border-collapse: collapse;
-    font-family: 'Roboto Condensed', sans-serif;
+    font-family: "Roboto Condensed", sans-serif;
     > thead {
       padding-top: 2px;
       > tr > th {
         font-size: 12px;
-        color: #94928d;
-        font-weight: 500;
+        color: var(--color-black);
+        font-weight: bold;
         vertical-align: baseline;
         text-align: left;
         padding-top: 4px;
         padding-bottom: 4px;
         padding-left: 14px;
-        border-bottom: 1px solid #444444;
+        border-bottom: var(--border-table-bottom);
         white-space: nowrap;
         &[aria-label="PMID"] {
           width: 10% !important;
@@ -63,13 +67,12 @@
           background-position: 100% 50%;
         }
       }
-      
+
       &:first-child {
         padding-left: 14px;
       }
-      
     }
-    
+
     > tbody > tr > td {
       padding: 6px 10px;
       font-size: 14px;
@@ -93,9 +96,8 @@
         width: 25% !important;
       }
     }
-    
   }
-  
+
   > .dataTables_paginate {
     padding: 10px;
     float: unset;
@@ -128,13 +130,13 @@
         border: none;
       }
     }
-    
+
     > .paginate_button {
       text-indent: 100vw;
       white-space: nowrap;
       overflow: hidden;
       display: inline-block;
-      content: '';
+      content: "";
       width: 15px;
       height: 15px;
       background-repeat: no-repeat;
@@ -161,15 +163,13 @@
           background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAIAAAC0Ujn1AAAACXBIWXMAABYlAAAWJQFJUiTwAAACMUlEQVRIib2Wv2/aQBSAr8ZxFApGMlWw5ASE1CAcFKUsRIn6Y/KA1AlV6sCQDp1ZM5SRJSt/QTKwZosYMkZKBAtZiBGqhFrVFVUVSz1cUGwSKmILE599PUqab7LuPX8+Pd+9uyej0Qh4oGj9ky8/Tr52ZfVXTx9OkoIMLXIhKcpLsYgQ8Lu/DIC7WlZhqdasd6+QiJMMHy5upUSORSKIGupGudE+vOwgmTh21+OFdIJlFjzVUDfy1fOWCjEWL5IcW8luT9upB/ECAFoqzFfPoW441XN6Xe2WutxoY7wixzrq6EVLheVG21bLKsT8N3FcxB1HHTEcXnbku1mO1aVa0zsTVLI7QYZG/xIGU0gpWh+/fkt168Pk9nr3StH6vo38x1PlJxK1kVWo/B5IUR4A8Gxp8c3K8nHn+/XNLZJ4DyHg9z19+17RBkhoXvv1za2Pzr7TsUkTe88wXgvLhHaoG9R038Fz0Owcff5mpvy17j19SCGDOPZOL8jts6lnYjb1/qsXuecr5jPaNJyzDjI0MujOh1Sc3BtkaErkQsi4C7m11U+ZFKH3rj2EKHO14smtre6/3CT3AgCkKE9JsQgyfo9/8I7VsQglBPwZPoyEbIqz1MEkw4eFgH+8QopbKSRqk6+e9fQhuXcitM7GUq2Jb9mKNiD07q7HTbW1rgvpRNLtwDeRVUjoTXJsIZ0wny01yyxUstsYO6F3euvbu3FOO9pSHuuKM+G/XMymmec6CQD4AzDtVR8kQhMvAAAAAElFTkSuQmCC");
         }
       }
-      
+
       &:focus {
         outline: none;
       }
-      
     }
-    
   }
-  
+
   caption {
     caption-side: bottom;
     text-align: left;
@@ -178,6 +178,4 @@
     color: #6c757d;
     padding: 8px 14px 0;
   }
-  
 }
-

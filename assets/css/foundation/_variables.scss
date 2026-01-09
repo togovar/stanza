@@ -38,10 +38,13 @@ $COLOR_SIGN_UNKNOWN: #bbba7e;
   --color-key-dark: #256d80;
 
   // Font colors
-  --color-black: #4e5059;
+  --color-black: #444;
 
   // Border colors
   --color-table-border: #dee2e6;
+
+  // Table
+  --border-table-bottom: 0.5px solid #444;
 
   // z-index
   --z-index-sticky-table-header: 10;
