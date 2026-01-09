@@ -256,6 +256,7 @@ main {
 
 togostanza--menu {
   width: 45px;
+  padding: 0;
 
   &::after {
     content: "\f019";
@@ -263,8 +264,8 @@ togostanza--menu {
     color: #000;
     pointer-events: none;
     font-size: 16px;
-    position: relative;
-    top: -22px;
+    position: absolute;
+    top: 0px;
     left: 26px;
   }
 }
