@@ -1303,7 +1303,6 @@ main .table {
   position: relative;
   border-collapse: separate;
   border-spacing: 0;
-  border-bottom: var(--border-table-bottom);
 }
 main .table > thead {
   position: sticky;
