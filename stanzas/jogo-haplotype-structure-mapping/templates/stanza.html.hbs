@@ -1,0 +1,29 @@
+<style>
+  # pdb_div_{{params.region_name}} {
+      width: auto;
+  }
+  #alphafold_iframe_{{params.region_name}} {
+      width: 100%;
+      min-width: 500px;
+      min-height: 500px;
+  }
+  #pdb_select_{{params.region_name}} {
+      max-width: 100px;
+  }
+  #variant_select_{{params.region_name}} {
+      max-width: calc((var(--togostanza-iframe-width) - 300) * 1px);
+  }
+</style>
+
+A level haplotype ID: <select id="haplotype_select_{{params.region_name}}" style="font-size: 16px;">
+  {{#each haplotypes}}
+  <option value="{{this.id}}">{{this.id}}: {{this.count}} variants</option>
+  {{/each}}
+</select>
+<input type="checkbox" id="molmil_mode_{{params.region_name}}">Spheres 
+<input type="checkbox" id="molmil_turn_{{params.region_name}}">Rotate<br>
+
+<div id="structure_div_{{params.region_name}}">
+  <iframe src="{{url}}" id="alphafold_iframe_{{params.region_name}}"></iframe>
+</div>
+

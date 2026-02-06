@@ -1,0 +1,38 @@
+{
+  "@context": {
+    "stanza": "http://togostanza.org/resource/stanza#"
+  },
+  "@id": "jogo-haplotype-structure-mapping",
+  "stanza:label": "JoGo haplotype structure mapping",
+  "stanza:definition": "Display JoGo haplotypes in the protein structure",
+  "stanza:license": "MIT",
+  "stanza:author": "Yuki Moriya",
+  "stanza:contributor": [],
+  "stanza:created": "2024-09-26",
+  "stanza:updated": "2024-09-26",
+  "stanza:parameter": [
+    {
+      "stanza:key": "region_name",
+      "stanza:example": "APOBEC3G_chr22_39072275_39092743",
+      "stanza:description": "Gene region name in JoGo",
+      "stanza:required": true
+    }
+  ],
+  "stanza:menu-placement": "bottom-right",
+  "stanza:style": [
+    {
+      "stanza:key": "--togostanza-iframe-width",
+      "stanza:type": "number",
+      "stanza:default": 600,
+      "stanza:description": "Width for entire stanza"
+    },
+    {
+      "stanza:key": "--togostanza-iframe-height",
+      "stanza:type": "number",
+      "stanza:default": 600,
+      "stanza:description": "Canvas height"
+    }
+  ],
+  "stanza:incomingEvent": [],
+  "stanza:outgoingEvent": []
+}
