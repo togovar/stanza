@@ -60,7 +60,7 @@ export default class JogoHaplotypeStructureMapping extends Stanza {
     const make_molmil_url = (positions, cif_url, turn_change) => {
       const sphere = this.root.querySelector("#molmil_mode_" + this.params.region_name)?.checked;
       const turn = this.root.querySelector("#molmil_turn_" + this.params.region_name)?.checked;
-      const molmil = "https://sparql-support.dbcls.jp/molmil/#";
+      const molmil = "https://grch38.togovar.org/stanza/assets/vendor/molmil/#";
       const alphafold = cif_url.replace(".cif", ".pdb");
       let url = molmil + "load " + encodeURI(alphafold) + ";";
       url += "bg_color [120,120,120];";
