@@ -147,6 +147,11 @@ export default class VariantFrequency extends Stanza {
             frequencyData.label = datum.label;
           }
 
+          // frequencyの情報をバインディングに追加（localeString変換前の数値で計算する）
+          const ac = parseInt(frequencyData.ac);
+          const freq = parseFloat(frequencyData.af);
+          Object.assign(frequencyData, frequency(ac, freq));
+
           // 数値をロケール形式の文字列に変換する関数
           const localeString = (v) =>
             v !== undefined ? parseInt(v).toLocaleString() : null;
@@ -178,11 +183,6 @@ export default class VariantFrequency extends Stanza {
           frequencyData.hac = localeString(frequencyData.hac);
           frequencyData.hrc = localeString(frequencyData.hrc);
           frequencyData.hoc = localeString(frequencyData.hoc);
-
-          // frequencyの情報をバインディングに追加
-          const ac = parseInt(frequencyData.ac);
-          const freq = parseFloat(frequencyData.af);
-          Object.assign(frequencyData, frequency(ac, freq));
 
           // JGA-SNPの場合 見出しのdataがないため追加
           if (frequencyData.dataset === "JGA-SNP") {
