@@ -540,157 +540,115 @@ export default class VariantFrequency extends Stanza {
     // トグル（開閉）イベントの設定
     // ============================================================
 
+    /**
+     * セレクタに一致する要素の parentElement に対してクラスをトグルする。
+     * querySelectorAll → forEach → parentElement.classList.toggle の繰り返しを共通化。
+     */
+    const toggleChildren = (selector: string, cls: string) => {
+      this.root.querySelectorAll<HTMLElement>(selector).forEach((el) =>
+        el.parentElement?.classList.toggle(cls),
+      );
+    };
+
+    /**
+     * セレクタに一致する要素の parentElement に対して条件付きでクラスを付け外しする。
+     * - closeClass を既に持つ場合 → closeClass を削除（元に戻す）
+     * - showClass を持つ場合    → closeClass を追加（展開中を閉じる）
+     * このパターンは depth=0 のトグル時に下位レイヤーの状態を同期するために使う。
+     */
+    const conditionalClose = (
+      selector: string,
+      closeClass: string,
+      showClass: string,
+    ) => {
+      this.root.querySelectorAll<HTMLElement>(selector).forEach((el) => {
+        const parent = el.parentElement!;
+        if (parent.classList.contains(closeClass)) {
+          parent.classList.remove(closeClass);
+        } else if (parent.classList.contains(showClass)) {
+          parent.classList.add(closeClass);
+        }
+      });
+    };
+
     // ---- depth=0（データセット行）のクリックイベント ----
-    const depth0Layer = this.root.querySelectorAll<HTMLElement>(
-      '.population[data-depth="0"]',
-    );
-    depth0Layer.forEach((layer) =>
-      layer.addEventListener("click", (e) => {
-        (e.target as HTMLElement).classList.toggle("open");
+    this.root
+      .querySelectorAll<HTMLElement>('.population[data-depth="0"]')
+      .forEach((layer) =>
+        layer.addEventListener("click", (e) => {
+          (e.target as HTMLElement).classList.toggle("open");
+          const ds = layer.dataset.dataset;
 
-        if (layer.dataset.dataset === "JGA-WGS") {
-          const depth1Children = this.root.querySelectorAll<HTMLElement>(
-            '[data-dataset="JGA-WGS"].population[data-depth="1"]',
-          );
-          depth1Children.forEach((el) =>
-            el.parentElement?.classList.toggle("show-by-total"),
-          );
-        }
+          // JGA-WGS / gnomAD Genomes / gnomAD Exomes:
+          // depth=1 の子行をトグルするだけ
+          if (ds === "JGA-WGS" || ds === "gnomAD Genomes" || ds === "gnomAD Exomes") {
+            toggleChildren(`[data-dataset="${ds}"].population[data-depth="1"]`, "show-by-total");
+          }
 
-        if (layer.dataset.dataset === "JGA-SNP") {
-          const depth1Children = this.root.querySelectorAll<HTMLElement>(
-            '[data-dataset="JGA-SNP"].population[data-depth="1"]',
-          );
-          depth1Children.forEach((el) =>
-            el.parentElement?.classList.toggle("show-by-total"),
-          );
+          // JGA-SNP: depth=1 をトグルしつつ、下位レイヤーの展開状態も同期
+          if (ds === "JGA-SNP") {
+            toggleChildren('[data-dataset="JGA-SNP"].population[data-depth="1"]', "show-by-total");
+            // depth=2: show-by-sub で展開中のものを閉じる（または元に戻す）
+            conditionalClose('[data-dataset="JGA-SNP"].population[data-depth="2"]', "close-by-total", "show-by-sub");
+            // depth=3 (Male/Female): show で展開中のものを閉じる（または元に戻す）
+            conditionalClose('[data-dataset="JGA-SNP"].population[data-depth="3"]', "close-by-total", "show");
+          }
 
-          const depth2Children = this.root.querySelectorAll<HTMLElement>(
-            '[data-dataset="JGA-SNP"].population[data-depth="2"]',
-          );
-          depth2Children.forEach((el) => {
-            const parent = el.parentElement!;
-            if (parent.classList.contains("close-by-total")) {
-              parent.classList.remove("close-by-total");
-            } else if (parent.classList.contains("show-by-sub")) {
-              parent.classList.add("close-by-total");
-            }
-          });
-
-          // Male / Female
-          const depth3Children = this.root.querySelectorAll<HTMLElement>(
-            '[data-dataset="JGA-SNP"].population[data-depth="3"]',
-          );
-          depth3Children.forEach((el) => {
-            const parent = el.parentElement!;
-            if (parent.classList.contains("close-by-total")) {
-              parent.classList.remove("close-by-total");
-            } else if (parent.classList.contains("show")) {
-              parent.classList.add("close-by-total");
-            }
-          });
-        }
-
-        if (layer.dataset.dataset === "NCBN") {
-          const depth1Children = this.root.querySelectorAll<HTMLElement>(
-            '[data-dataset="NCBN"].population[data-depth="1"]',
-          );
-          depth1Children.forEach((el) =>
-            el.parentElement?.classList.toggle("show-by-total"),
-          );
-
-          const depth2Children = this.root.querySelectorAll<HTMLElement>(
-            '[data-dataset="NCBN"].population[data-depth="2"]',
-          );
-          depth2Children.forEach((el) => {
-            const parent = el.parentElement!;
-            if (parent.classList.contains("close-by-total")) {
-              parent.classList.remove("close-by-total");
-            } else if (parent.classList.contains("show")) {
-              parent.classList.add("close-by-total");
-            }
-          });
-        }
-
-        if (layer.dataset.dataset === "gnomAD Genomes") {
-          const depth1Children = this.root.querySelectorAll<HTMLElement>(
-            '[data-dataset="gnomAD Genomes"].population[data-depth="1"]',
-          );
-          depth1Children.forEach((el) =>
-            el.parentElement?.classList.toggle("show-by-total"),
-          );
-        }
-
-        if (layer.dataset.dataset === "gnomAD Exomes") {
-          const depth1Children = this.root.querySelectorAll<HTMLElement>(
-            '[data-dataset="gnomAD Exomes"].population[data-depth="1"]',
-          );
-          depth1Children.forEach((el) =>
-            el.parentElement?.classList.toggle("show-by-total"),
-          );
-        }
-      }),
-    );
+          // NCBN: depth=1 をトグルしつつ、depth=2 の展開状態も同期
+          if (ds === "NCBN") {
+            toggleChildren('[data-dataset="NCBN"].population[data-depth="1"]', "show-by-total");
+            conditionalClose('[data-dataset="NCBN"].population[data-depth="2"]', "close-by-total", "show");
+          }
+        }),
+      );
 
     // ---- depth=1（集団行）のクリックイベント ----
-    const depth1Layer = this.root.querySelectorAll<HTMLElement>(
-      '.population[data-depth="1"]',
-    );
-    depth1Layer.forEach((layer) =>
-      layer.addEventListener("click", (e) => {
-        (e.target as HTMLElement).classList.toggle("open");
+    this.root
+      .querySelectorAll<HTMLElement>('.population[data-depth="1"]')
+      .forEach((layer) =>
+        layer.addEventListener("click", (e) => {
+          (e.target as HTMLElement).classList.toggle("open");
+          const ds = layer.dataset.dataset;
+          const id = layer.dataset.id;
 
-        if (layer.dataset.dataset === "JGA-SNP") {
-          const depth2Children = this.root.querySelectorAll<HTMLElement>(
-            `[data-dataset="JGA-SNP"].population[data-parent-id="${layer.dataset.id}"][data-depth="2"]`,
-          );
-          depth2Children.forEach((el) =>
-            el.parentElement?.classList.toggle("show-by-sub"),
-          );
+          // JGA-SNP: depth=2 をトグルしつつ、depth=3 (Male/Female) の状態も同期
+          if (ds === "JGA-SNP") {
+            toggleChildren(
+              `[data-dataset="JGA-SNP"].population[data-parent-id="${id}"][data-depth="2"]`,
+              "show-by-sub",
+            );
+            conditionalClose(
+              `[data-dataset="JGA-SNP"].population[data-grandparent-id="${id}"][data-depth="3"]`,
+              "close-by-sub",
+              "show",
+            );
+          }
 
-          // Male / Female
-          const depth3Children = this.root.querySelectorAll<HTMLElement>(
-            `[data-dataset="JGA-SNP"].population[data-grandparent-id="${layer.dataset.id}"][data-depth="3"]`,
-          );
-          depth3Children.forEach((el) => {
-            const parent = el.parentElement!;
-            if (parent.classList.contains("close-by-sub")) {
-              parent.classList.remove("close-by-sub");
-            } else if (parent.classList.contains("show")) {
-              parent.classList.add("close-by-sub");
-            }
-          });
-        }
-
-        if (layer.dataset.dataset === "NCBN") {
-          const depth2Children = this.root.querySelectorAll<HTMLElement>(
-            '[data-dataset="NCBN"].population[data-depth="2"]',
-          );
-          depth2Children.forEach((el) =>
-            el.parentElement?.classList.toggle("show"),
-          );
-        }
-      }),
-    );
+          // NCBN: depth=2 をトグル
+          if (ds === "NCBN") {
+            toggleChildren('[data-dataset="NCBN"].population[data-depth="2"]', "show");
+          }
+        }),
+      );
 
     // ---- depth=2（サブ集団行）のクリックイベント ----
-    const depth2Layer = this.root.querySelectorAll<HTMLElement>(
-      '.population[data-depth="2"]',
-    );
-    depth2Layer.forEach((layer) =>
-      layer.addEventListener("click", (e) => {
-        (e.target as HTMLElement).classList.toggle("open");
+    this.root
+      .querySelectorAll<HTMLElement>('.population[data-depth="2"]')
+      .forEach((layer) =>
+        layer.addEventListener("click", (e) => {
+          (e.target as HTMLElement).classList.toggle("open");
+          const ds = layer.dataset.dataset;
+          const id = layer.dataset.id;
 
-        if (layer.dataset.dataset === "JGA-SNP") {
-          const depth3Children = this.root.querySelectorAll<HTMLElement>(
-            `[data-dataset="JGA-SNP"].population[data-parent-id="${layer.dataset.id}"][data-depth="3"]`,
-          );
-          depth3Children.forEach((el) =>
-            el.parentElement?.classList.toggle("show"),
-          );
-        }
-      }),
-    );
+          // JGA-SNP: depth=3 (Male/Female) をトグル
+          if (ds === "JGA-SNP") {
+            toggleChildren(
+              `[data-dataset="JGA-SNP"].population[data-parent-id="${id}"][data-depth="3"]`,
+              "show",
+            );
+          }
+        }),
+      );
   }
 
   // ============================================================
