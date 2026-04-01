@@ -21,8 +21,41 @@ main {
     }
   }
 
+  // 周波数詳細テーブル本体はこの stanza 専用
   .frequency-detail {
     width: 100%;
+
+    > tbody > tr > td {
+      line-height: 18px;
+
+      .dataset-icon {
+        display: inline-block;
+        margin-right: 0.2em;
+        vertical-align: middle;
+      }
+
+      &.alt,
+      &.total,
+      &.frequency {
+        text-align: right;
+      }
+
+      &.alt {
+        font-weight: bold;
+        color: $COLOR_ALT;
+
+        &::after {
+          margin-left: 0.5em;
+          font-size: 10px;
+          color: $COLOR_BLACK;
+          content: "/";
+        }
+      }
+
+      &.total {
+        font-size: 10px;
+      }
+    }
   }
 
   .table > {

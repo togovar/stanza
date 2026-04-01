@@ -11,7 +11,7 @@
     display: inline-block;
     height: 18px;
     margin-right: 2px;
-    content: "";
+    content: "\e800";
   }
 
   > .properties {
@@ -29,8 +29,6 @@
     vertical-align: middle;
     transform: scale(0.9);
     -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -webkit-box-pack: center;
 
     &::before,
     &::after {
