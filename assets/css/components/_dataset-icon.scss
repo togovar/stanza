@@ -1,0 +1,95 @@
+@use "../foundation/variables" as *;
+
+.dataset-icon {
+  position: relative;
+  height: 18px;
+  font-family: fontello;
+
+  &::before {
+    position: relative;
+    left: 2px;
+    display: inline-block;
+    height: 18px;
+    margin-right: 2px;
+    content: "";
+  }
+
+  > .properties {
+    position: relative;
+    top: -1px;
+    left: -2px;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 20px;
+    font-family: "Roboto Condensed", sans-serif;
+    font-size: 10px;
+    font-weight: lighter;
+    line-height: 9px;
+    vertical-align: middle;
+    transform: scale(0.9);
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-pack: center;
+
+    &::before,
+    &::after {
+      display: block;
+      height: 10px;
+    }
+  }
+
+  &[data-dataset="jga_wgs"]::before,
+  &[data-dataset="jga_wes"]::before,
+  &[data-dataset="jga_snp"]::before {
+    color: $COLOR_DATASET_JGA;
+  }
+
+  &[data-dataset="tommo"]::before {
+    color: $COLOR_DATASET_TOMMO;
+  }
+
+  &[data-dataset="ncbn"]::before {
+    color: $COLOR_DATASET_NCBN;
+  }
+
+  &[data-dataset="hgvd"]::before,
+  &[data-dataset="mgend"]::before {
+    color: $COLOR_DATASET_HGVD;
+  }
+
+  &[data-dataset="gem_j_wga"]::before {
+    color: $COLOR_DATASET_GEM_J;
+  }
+
+  &[data-dataset="bbj"]::before {
+    color: $COLOR_DATASET_BBJ;
+  }
+
+  &[data-dataset="clinvar"]::before,
+  &[data-dataset^="gnomad"]::before {
+    color: $COLOR_GRAY;
+  }
+
+  &[data-dataset="clinvar"] > .properties::before,
+  &[data-dataset="mgend"] > .properties::before {
+    color: $COLOR_SIGN_DANGEROUS;
+    content: "Disease";
+  }
+
+  &[data-dataset="tommo"] > .properties::after,
+  &[data-dataset="gem_j_wga"] > .properties::after {
+    content: "WGS";
+  }
+
+  &[data-dataset="jga_wes"] > .properties::after,
+  &[data-dataset="hgvd"] > .properties::after,
+  &[data-dataset^="gnomad"] > .properties::after {
+    content: "WES";
+  }
+
+  &[data-dataset="jga_snp"] > .properties::after,
+  &[data-dataset="bbj"] > .properties::after {
+    content: "SNP";
+  }
+}
