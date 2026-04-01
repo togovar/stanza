@@ -35,9 +35,9 @@ ul {
   padding-inline-start: 2rem;
 
   &.no-bullet {
-    list-style: none;
-    margin: 0;
     padding: 0;
+    margin: 0;
+    list-style: none;
   }
 }
 
@@ -52,40 +52,42 @@ ul {
     padding-left: 10px;
 
     &.text-center {
-      text-align: center;
       padding: 14px 0 0;
+      text-align: center;
     }
   }
 }
 
 .alert {
-  font-size: 10px;
-  font-family: "Roboto Condensed", sans-serif;
-  color: $COLOR_BLACK;
   padding: 4px 6px;
-  border-width: 1px;
+  font-family: "Roboto Condensed", sans-serif;
+  font-size: 10px;
+  color: $COLOR_BLACK;
   border-style: solid;
+  border-width: 1px;
   border-radius: 4px;
 
   &.alert-danger {
-    border-color: color.adjust($COLOR_SIGN_DANGEROUS, $lightness: -2%);
     background-color: color.adjust($COLOR_SIGN_DANGEROUS, $lightness: 30%);
+    border-color: color.adjust($COLOR_SIGN_DANGEROUS, $lightness: -2%);
   }
+
   &.alert-warning {
-    border-color: color.adjust($COLOR_SIGN_WARNING, $lightness: -2%);
     background-color: color.adjust($COLOR_SIGN_WARNING, $lightness: 45%);
+    border-color: color.adjust($COLOR_SIGN_WARNING, $lightness: -2%);
   }
+
   &.alert-info {
-    border-color: color.adjust($COLOR_SIGN_NORMAL, $lightness: -2%);
     background-color: color.adjust($COLOR_SIGN_NORMAL, $lightness: 42%);
+    border-color: color.adjust($COLOR_SIGN_NORMAL, $lightness: -2%);
   }
 }
 
 .unimplemented {
-  color: red;
   margin-bottom: 0;
+  color: red;
 
-  &:before {
+  &::before {
     content: "unimplemented: ";
   }
 }
@@ -97,68 +99,70 @@ ul {
     .ref,
     .alt {
       display: inline-block;
-      line-height: 18px;
       height: 18px;
       padding: 0 6px;
+      line-height: 18px;
       vertical-align: middle;
     }
 
-    .ref[data-sum]:after,
-    .alt[data-sum]:after {
-      color: white;
-      font-size: 10px;
-      display: inline-block;
-      line-height: 12px;
-      padding: 0 4px;
-      border-radius: 6px;
-      vertical-align: middle;
-      font-weight: lighter;
-      margin: 0 -3px 4px 3px;
+    .ref[data-sum]::after,
+    .alt[data-sum]::after {
       position: relative;
+      display: inline-block;
+      padding: 0 4px;
+      margin: 0 -3px 4px 3px;
+      font-size: 10px;
+      font-weight: lighter;
+      line-height: 12px;
+      vertical-align: middle;
+      color: white;
       content: attr(data-sum) "bp";
+      border-radius: 6px;
     }
 
     .ref {
-      border-left: solid 1px $COLOR_REF;
-      border-top: solid 1px $COLOR_REF;
-      border-bottom: solid 1px $COLOR_REF;
-      border-top-left-radius: 3px;
-      border-bottom-left-radius: 3px;
-      color: $COLOR_REF;
-      background-color: #d8f0f4;
       position: relative;
       padding-right: 4px;
+      color: $COLOR_REF;
+      background-color: #d8f0f4;
+      border-top: solid 1px $COLOR_REF;
+      border-bottom: solid 1px $COLOR_REF;
+      border-left: solid 1px $COLOR_REF;
+      border-top-left-radius: 3px;
+      border-bottom-left-radius: 3px;
 
-      &[data-sum]:after {
+      &[data-sum]::after {
         background-color: $COLOR_REF;
       }
-      &[data-sum="0"]:after,
-      &[data-sum="1"]:after,
-      &[data-sum="2"]:after,
-      &[data-sum="3"]:after,
-      &[data-sum="4"]:after {
+
+      &[data-sum="0"]::after,
+      &[data-sum="1"]::after,
+      &[data-sum="2"]::after,
+      &[data-sum="3"]::after,
+      &[data-sum="4"]::after {
         display: none;
       }
     }
 
     .alt {
-      border-right: solid 1px $COLOR_ALT;
+      padding-left: 9px;
+      color: $COLOR_ALT;
+      background-color: #fde2e7;
       border-top: solid 1px $COLOR_ALT;
+      border-right: solid 1px $COLOR_ALT;
       border-bottom: solid 1px $COLOR_ALT;
       border-top-right-radius: 3px;
       border-bottom-right-radius: 3px;
-      color: $COLOR_ALT;
-      background-color: #fde2e7;
-      padding-left: 9px;
 
-      &[data-sum]:after {
+      &[data-sum]::after {
         background-color: $COLOR_ALT;
       }
-      &[data-sum="0"]:after,
-      &[data-sum="1"]:after,
-      &[data-sum="2"]:after,
-      &[data-sum="3"]:after,
-      &[data-sum="4"]:after {
+
+      &[data-sum="0"]::after,
+      &[data-sum="1"]::after,
+      &[data-sum="2"]::after,
+      &[data-sum="3"]::after,
+      &[data-sum="4"]::after {
         display: none;
       }
     }
@@ -166,37 +170,37 @@ ul {
     .arrow {
       position: relative;
 
-      &:before,
-      &:after {
-        content: "";
-        display: inline-block;
+      &::before,
+      &::after {
         position: absolute;
+        display: inline-block;
+        content: "";
       }
 
-      &:before {
+      &::before {
+        top: 0;
+        right: -6px;
         border-top: 9px solid transparent;
         border-bottom: 9px solid transparent;
         border-left: 6px solid $COLOR_KEY_DEEP;
-        top: 0;
-        right: -6px;
       }
 
-      &:after {
+      &::after {
+        top: 1px;
+        right: -5px;
         border-top: 8px solid transparent;
         border-bottom: 8px solid transparent;
         border-left: 6px solid #d8f0f4;
-        top: 1px;
-        right: -5px;
       }
     }
   }
 }
 
 .variant-function {
+  display: inline-block;
+  padding: 0 8px;
   color: white;
   border-radius: 9px;
-  padding: 0 8px;
-  display: inline-block;
 
   &[data-function="T"],
   &[data-function="B"] {
@@ -228,118 +232,118 @@ ul {
 }
 
 .clinical-significance {
-  &:before {
-    content: attr(data-sign) "";
-    width: 18px;
-    line-height: 18px;
-    height: 18px;
+  &::before {
     display: inline-block;
+    width: 18px;
+    height: 18px;
     margin-right: 3px;
-    border-radius: 9px;
-    border-width: 1px;
-    border-style: solid;
-    text-align: center;
     font-size: 10px;
     font-weight: bold;
+    line-height: 18px;
     vertical-align: top;
+    text-align: center;
+    content: attr(data-sign) "";
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 9px;
   }
 
-  &[data-sign="P"]:before {
+  &[data-sign="P"]::before {
     color: $COLOR_SIGN_DANGEROUS;
-    border-color: $COLOR_SIGN_DANGEROUS;
     background-color: #ffeeed;
+    border-color: $COLOR_SIGN_DANGEROUS;
   }
 
-  &[data-sign="LP"]:before {
+  &[data-sign="LP"]::before {
     color: $COLOR_SIGN_WARNING;
-    border-color: $COLOR_SIGN_WARNING;
     background-color: #fff7e6;
+    border-color: $COLOR_SIGN_WARNING;
   }
 
-  &[data-sign="US"]:before {
+  &[data-sign="US"]::before {
     color: $COLOR_GRAY;
-    border-color: $COLOR_GRAY;
     background-color: #eaeae9;
-  }
-
-  &[data-sign="LB"]:before {
-    color: $COLOR_SIGN_NORMAL;
-    border-color: $COLOR_SIGN_NORMAL;
-    background-color: #f3f9e6;
-  }
-
-  &[data-sign="B"]:before {
-    color: $COLOR_SIGN_SAFE;
-    border-color: $COLOR_SIGN_SAFE;
-    background-color: #e5fbe7;
-  }
-
-  &[data-sign="CI"]:before {
-    color: $COLOR_SIGN_MODIFIER;
-    border-color: $COLOR_SIGN_MODIFIER;
-    background-color: #f9edff;
-  }
-
-  &[data-sign="DR"]:before,
-  &[data-sign="A"]:before,
-  &[data-sign="RF"]:before,
-  &[data-sign="PR"]:before,
-  &[data-sign="AF"]:before,
-  &[data-sign="O"]:before {
-    color: $COLOR_SIGN_OTHER;
-    border-color: $COLOR_SIGN_OTHER;
-    background-color: #fff7cf;
-  }
-
-  &[data-sign="NP"]:before,
-  &[data-sign="AN"]:before {
-    color: $COLOR_BLACK;
     border-color: $COLOR_GRAY;
+  }
+
+  &[data-sign="LB"]::before {
+    color: $COLOR_SIGN_NORMAL;
+    background-color: #f3f9e6;
+    border-color: $COLOR_SIGN_NORMAL;
+  }
+
+  &[data-sign="B"]::before {
+    color: $COLOR_SIGN_SAFE;
+    background-color: #e5fbe7;
+    border-color: $COLOR_SIGN_SAFE;
+  }
+
+  &[data-sign="CI"]::before {
+    color: $COLOR_SIGN_MODIFIER;
+    background-color: #f9edff;
+    border-color: $COLOR_SIGN_MODIFIER;
+  }
+
+  &[data-sign="DR"]::before,
+  &[data-sign="A"]::before,
+  &[data-sign="RF"]::before,
+  &[data-sign="PR"]::before,
+  &[data-sign="AF"]::before,
+  &[data-sign="O"]::before {
+    color: $COLOR_SIGN_OTHER;
+    background-color: #fff7cf;
+    border-color: $COLOR_SIGN_OTHER;
+  }
+
+  &[data-sign="NP"]::before,
+  &[data-sign="AN"]::before {
+    color: $COLOR_BLACK;
     background-color: white;
+    border-color: $COLOR_GRAY;
   }
 }
 
 .clinical-significance-full {
+  padding: 0 7px;
   font-size: 12px;
   font-weight: bold;
   border: 1px solid transparent;
   border-radius: 8.5px;
-  padding: 0 7px;
 
   &[data-sign="P"] {
     color: $COLOR_SIGN_DANGEROUS;
-    border-color: $COLOR_SIGN_DANGEROUS;
     background-color: #ffeeed;
+    border-color: $COLOR_SIGN_DANGEROUS;
   }
 
   &[data-sign="LP"] {
     color: $COLOR_SIGN_WARNING;
-    border-color: $COLOR_SIGN_WARNING;
     background-color: #fff7e6;
+    border-color: $COLOR_SIGN_WARNING;
   }
 
   &[data-sign="US"] {
     color: $COLOR_GRAY;
-    border-color: $COLOR_GRAY;
     background-color: #eaeae9;
+    border-color: $COLOR_GRAY;
   }
 
   &[data-sign="LB"] {
     color: $COLOR_SIGN_NORMAL;
-    border-color: $COLOR_SIGN_NORMAL;
     background-color: #f3f9e6;
+    border-color: $COLOR_SIGN_NORMAL;
   }
 
   &[data-sign="B"] {
     color: $COLOR_SIGN_SAFE;
-    border-color: $COLOR_SIGN_SAFE;
     background-color: #e5fbe7;
+    border-color: $COLOR_SIGN_SAFE;
   }
 
   &[data-sign="CI"] {
     color: $COLOR_SIGN_MODIFIER;
-    border-color: $COLOR_SIGN_MODIFIER;
     background-color: #f9edff;
+    border-color: $COLOR_SIGN_MODIFIER;
   }
 
   &[data-sign="DR"],
@@ -349,48 +353,48 @@ ul {
   &[data-sign="AF"],
   &[data-sign="O"] {
     color: $COLOR_SIGN_OTHER;
-    border-color: $COLOR_SIGN_OTHER;
     background-color: #fff7cf;
+    border-color: $COLOR_SIGN_OTHER;
   }
 
   &[data-sign="NP"],
   &[data-sign="AN"] {
     color: $COLOR_BLACK;
-    border-color: $COLOR_GRAY;
     background-color: white;
+    border-color: $COLOR_GRAY;
   }
 }
 
 .frequency-graph > .dataset {
+  position: relative;
+  box-sizing: border-box;
   display: inline-block;
   width: 9px;
   height: 20px;
-  border: solid 1px rgba(148, 146, 141, 0.25);
-  box-sizing: border-box;
-  position: relative;
   margin-right: 1px;
-  background-color: $COLOR_KEY_DEEP;
   vertical-align: middle;
+  background-color: $COLOR_KEY_DEEP;
+  border: solid 1px rgb(148 146 141 / 25%);
 
-  &:before {
-    content: "";
-    display: block;
+  &::before {
     position: absolute;
+    display: block;
     width: 7px;
+    content: "";
     background-color: white;
   }
 
-  &:after {
-    content: "";
-    display: block;
+  &::after {
     position: absolute;
-    width: 7px;
-    background-color: white;
-    opacity: 0.75;
-    height: 1px;
     top: 1px;
+    display: block;
+    width: 7px;
+    height: 1px;
+    content: "";
+    background-color: white;
     box-shadow: 0 3px white, 0 6px white, 0 9px white, 0 12px white,
       0 15px white;
+    opacity: 0.75;
   }
 
   &[data-dataset="jga_wes"],
@@ -415,38 +419,38 @@ ul {
   }
 
   &[data-frequency="na"] {
-    background-color: rgba(234, 234, 233, 0.6);
+    background-color: rgb(234 234 233 / 60%);
 
-    &:after {
+    &::after {
       display: none;
     }
   }
 
-  &[data-frequency="monomorphic"]:before {
+  &[data-frequency="monomorphic"]::before {
     height: 18px;
   }
 
-  &[data-frequency="singleton"]:before {
+  &[data-frequency="singleton"]::before {
     height: 17px;
   }
 
-  &[data-frequency="<0.0001"]:before {
+  &[data-frequency="<0.0001"]::before {
     height: 14px;
   }
 
-  &[data-frequency="<0.001"]:before {
+  &[data-frequency="<0.001"]::before {
     height: 11px;
   }
 
-  &[data-frequency="<0.01"]:before {
+  &[data-frequency="<0.01"]::before {
     height: 8px;
   }
 
-  &[data-frequency="<0.05"]:before {
+  &[data-frequency="<0.05"]::before {
     height: 5px;
   }
 
-  &[data-frequency="<0.5"]:before {
+  &[data-frequency="<0.5"]::before {
     height: 2px;
   }
 }
@@ -459,8 +463,8 @@ ul {
 
     .dataset-icon {
       display: inline-block;
-      vertical-align: middle;
       margin-right: 0.2em;
+      vertical-align: middle;
     }
 
     &.alt,
@@ -473,11 +477,11 @@ ul {
       font-weight: bold;
       color: $COLOR_ALT;
 
-      &:after {
-        content: "/";
+      &::after {
+        margin-left: 0.5em;
         font-size: 10px;
         color: $COLOR_BLACK;
-        margin-left: 0.5em;
+        content: "/";
       }
     }
 
@@ -488,37 +492,37 @@ ul {
 }
 
 .allele-frequency-graph > .dataset {
+  position: relative;
+  box-sizing: border-box;
   display: inline-block;
   width: 31px;
   height: 14px;
-  border: solid 1px #ffffff;
-  box-shadow: 0 0 0 1px #dfdedd;
-  position: relative;
   margin-right: 1px;
-  background-color: $COLOR_KEY_DEEP;
   vertical-align: middle;
-  box-sizing: border-box;
+  background-color: $COLOR_KEY_DEEP;
+  border: solid 1px #fff;
+  box-shadow: 0 0 0 1px #dfdedd;
 
-  &:before,
-  &:after {
-    content: "";
-    display: block;
+  &::before,
+  &::after {
     position: absolute;
+    display: block;
     height: 12px;
+    content: "";
     background-color: white;
   }
 
-  &:before {
+  &::before {
     right: 0;
   }
 
-  &:after {
-    opacity: 0.75;
-    width: 1px;
+  &::after {
     top: 0;
     left: -1px;
+    width: 1px;
     box-shadow: 5px 0 white, 10px 0 white, 15px 0 white, 20px 0 white,
       25px 0 white;
+    opacity: 0.75;
   }
 
   &[data-dataset="gem_j_wga"],
@@ -559,74 +563,74 @@ ul {
   }
 
   &[data-frequency="na"] {
-    background-color: rgba(234, 234, 233, 0.6);
+    background-color: rgb(234 234 233 / 60%);
 
-    &:after {
+    &::after {
       display: none;
     }
   }
 
-  &[data-frequency="monomorphic"]:before {
+  &[data-frequency="monomorphic"]::before {
     width: 29px;
   }
 
-  &[data-frequency="singleton"]:before {
+  &[data-frequency="singleton"]::before {
     width: 26px;
   }
 
-  &[data-frequency="<0.0001"]:before {
+  &[data-frequency="<0.0001"]::before {
     width: 25px;
   }
 
-  &[data-frequency="<0.001"]:before {
+  &[data-frequency="<0.001"]::before {
     width: 20px;
   }
 
-  &[data-frequency="<0.01"]:before {
+  &[data-frequency="<0.01"]::before {
     width: 15px;
   }
 
-  &[data-frequency="<0.05"]:before {
+  &[data-frequency="<0.05"]::before {
     width: 10px;
   }
 
-  &[data-frequency="<0.5"]:before {
+  &[data-frequency="<0.5"]::before {
     width: 5px;
   }
 }
 
 .dataset-icon {
-  font-family: fontello;
-  height: 18px;
   position: relative;
+  height: 18px;
+  font-family: fontello;
 
-  &:before {
-    content: "";
-    margin-right: 2px;
+  &::before {
     position: relative;
     left: 2px;
     display: inline-block;
     height: 18px;
+    margin-right: 2px;
+    content: "";
   }
 
   > .properties {
+    position: relative;
+    top: -1px;
+    left: -2px;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 20px;
     font-family: "Roboto Condensed", sans-serif;
     font-size: 10px;
-    display: inline-flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    flex-direction: column;
-    -webkit-box-pack: center;
-    justify-content: center;
     font-weight: lighter;
     line-height: 9px;
-    position: relative;
-    left: -2px;
-    top: -1px;
     vertical-align: middle;
-    height: 20px;
-    -webkit-transform: scale(0.9);
     transform: scale(0.9);
+    transform: scale(0.9);
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-box-pack: center;
 
     &::before,
     &::after {
@@ -635,35 +639,35 @@ ul {
     }
   }
 
-  &[data-dataset="jga_wgs"]:before,
-  &[data-dataset="jga_wes"]:before,
-  &[data-dataset="jga_snp"]:before {
+  &[data-dataset="jga_wgs"]::before,
+  &[data-dataset="jga_wes"]::before,
+  &[data-dataset="jga_snp"]::before {
     color: $COLOR_DATASET_JGA;
   }
 
-  &[data-dataset="tommo"]:before {
+  &[data-dataset="tommo"]::before {
     color: $COLOR_DATASET_TOMMO;
   }
 
-  &[data-dataset="ncbn"]:before {
+  &[data-dataset="ncbn"]::before {
     color: $COLOR_DATASET_NCBN;
   }
 
-  &[data-dataset="hgvd"]:before,
-  &[data-dataset="mgend"]:before {
+  &[data-dataset="hgvd"]::before,
+  &[data-dataset="mgend"]::before {
     color: $COLOR_DATASET_HGVD;
   }
 
-  &[data-dataset="gem_j_wga"]:before {
+  &[data-dataset="gem_j_wga"]::before {
     color: $COLOR_DATASET_GEM_J;
   }
 
-  &[data-dataset="bbj"]:before {
+  &[data-dataset="bbj"]::before {
     color: $COLOR_DATASET_BBJ;
   }
 
-  &[data-dataset="clinvar"]:before,
-  &[data-dataset^="gnomad"]:before {
+  &[data-dataset="clinvar"]::before,
+  &[data-dataset^="gnomad"]::before {
     color: $COLOR_GRAY;
   }
 
@@ -691,22 +695,22 @@ ul {
 }
 
 .star-rating {
-  display: inline-block;
   position: absolute;
+  display: inline-block;
   font-size: 15px;
 
-  &:after {
-    content: "\02605\02605\02605\02605";
+  &::after {
     color: #dfdedd;
+    content: "\02605\02605\02605\02605";
   }
 
   > .star-rating-item {
     position: absolute;
     overflow: hidden;
 
-    &:before {
-      content: "\02605\02605\02605\02605";
+    &::before {
       color: $COLOR_KEY_DEEP;
+      content: "\02605\02605\02605\02605";
     }
 
     &[data-stars="0"] {
@@ -735,7 +739,7 @@ togostanza--menu {
   position: relative;
   z-index: var(--z-index-togostanza-menu);
   display: block;
-  margin-left: auto;
   padding: 2px;
+  margin-left: auto;
   cursor: pointer;
 }

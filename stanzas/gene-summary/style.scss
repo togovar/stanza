@@ -2,27 +2,27 @@
 
 main {
   .gene-info {
-    min-width: 600px;
-    margin: 0;
     display: grid;
     grid-template-columns: auto 1fr auto 1fr;
+    min-width: 600px;
+    margin: 0;
 
     dt,
     dd {
       padding: 3px 0;
-      line-height: 1.2;
-      border-bottom: 1px solid var(--color-table-border);
-      vertical-align: middle;
       margin: 0;
+      line-height: 1.2;
+      vertical-align: middle;
+      border-bottom: 1px solid var(--color-table-border);
     }
 
     dt {
-      font-size: 12px;
-      color: var(--color-black);
-      font-weight: bold;
-      text-align: right;
-      padding-left: 8px;
       padding-right: 12px;
+      padding-left: 8px;
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--color-black);
+      text-align: right;
 
       &:nth-child(4n + 3) {
         padding-left: 20px;

@@ -2,24 +2,24 @@
 
 .disease-header {
   .pagetype {
-    font-size: 14px;
-    text-align: var(--text-align);
-    color: #1f5065;
-    border-bottom: 0;
-    font-weight: bold;
-    margin: 0;
     padding: 1px;
+    margin: 0;
+    font-size: 14px;
+    font-weight: bold;
     line-height: 16px;
+    color: #1f5065;
+    text-align: var(--text-align);
+    border-bottom: 0;
   }
 
   .title {
+    padding: 1px !important;
+    margin: 0;
     font-size: 28px;
     font-weight: 600;
-    text-align: var(--text-align);
-    margin: 0;
-    padding: 1px 1px 1px 1px !important;
-    color: #ffffff;
     line-height: 28px;
+    color: #fff;
+    text-align: var(--text-align);
   }
 }
 

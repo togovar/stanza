@@ -9,8 +9,8 @@ main {
     background-color: white;
 
     .table {
-      border-collapse: separate;
       border-spacing: 0;
+      border-collapse: separate;
 
       > thead {
         position: sticky;
@@ -28,19 +28,19 @@ main {
   .table > {
     thead > tr {
       > th {
-        white-space: nowrap;
         padding-right: 4px;
+        white-space: nowrap;
 
         &[rowspan] {
           vertical-align: bottom;
         }
 
         &[colspan] {
-          font-size: 10px;
-          color: $COLOR_BLACK;
-          padding-left: 7px;
           padding-top: 3px;
           padding-bottom: 0;
+          padding-left: 7px;
+          font-size: 10px;
+          color: $COLOR_BLACK;
           border: none;
           border-left: 1px solid #dee2e6;
         }
@@ -71,6 +71,7 @@ main {
     tbody {
       > tr {
         border-bottom: 1px solid #dee2e6;
+
         &[data-depth="1"],
         &[data-depth="2"],
         &[data-depth="3"] {
@@ -92,8 +93,8 @@ main {
           padding-right: 5px;
 
           &.dataset {
-            white-space: nowrap;
             padding-left: 14px;
+            white-space: nowrap;
 
             &[data-depth="0"][data-has-child="false"],
             &[data-depth="0"][data-has-child="true"] {
@@ -112,6 +113,7 @@ main {
             &[data-depth="0"][data-has-child="true"] {
               padding-left: 12px;
             }
+
             &[data-depth="1"] {
               padding-left: 28px;
             }
@@ -128,13 +130,13 @@ main {
               cursor: pointer;
 
               &::before {
-                content: "";
                 position: relative;
                 right: 4px;
                 bottom: 2px;
                 display: inline-block;
                 width: 6px;
                 height: 6px;
+                content: "";
                 border-right: 1px solid $COLOR_BLACK;
                 border-bottom: 1px solid $COLOR_BLACK;
                 transform: rotate(-45deg);
@@ -142,7 +144,7 @@ main {
 
               &.open {
                 &::before {
-                  right: 0px;
+                  right: 0;
                   bottom: 3px;
                   margin-right: 3px;
                   transform: rotate(45deg);
@@ -152,51 +154,52 @@ main {
 
             > .lock {
               &::before {
-                content: var(--char-lock);
-                font-family: "FontAwesome";
-                color: $COLOR_BLACK;
-                opacity: 0.4;
-                font-size: 14px;
                 margin-right: 3px;
+                font-family: FontAwesome;
+                font-size: 14px;
+                color: $COLOR_BLACK;
+                content: var(--char-lock);
+                opacity: 0.4;
               }
             }
           }
 
           &.num_alt_alleles {
-            text-align: right;
             color: $COLOR_ALT;
+            text-align: right;
             border-left: 1px solid #dee2e6;
 
             .slash {
+              margin-right: 4px;
+              margin-left: 7px;
               font-size: 10px;
               color: $COLOR_BLACK;
-              margin-left: 7px;
-              margin-right: 4px;
             }
 
             .comment {
+              position: relative;
+              padding: 3px 6px 3px 23px;
+              margin-bottom: 4px;
+              font-size: 12px;
               color: $COLOR_BLACK;
-              border-color: color.adjust($COLOR_SIGN_WARNING, $lightness: -2%);
               background-color: color.adjust(
                 $COLOR_SIGN_WARNING,
                 $lightness: 45%
               );
-              padding: 3px 6px 3px 23px;
-              border-width: 1px;
+              border-color: color.adjust($COLOR_SIGN_WARNING, $lightness: -2%);
               border-style: solid;
+              border-width: 1px;
               border-radius: 4px;
-              margin-bottom: 4px;
-              position: relative;
-              font-size: 12px;
-              &:before {
-                content: var(--char-excramation-triangle);
-                font-family: FontAwesome;
-                color: color.adjust($COLOR_SIGN_WARNING, $lightness: -2%);
+
+              &::before {
                 position: absolute;
                 top: 50%;
                 left: 6px;
-                transform: translateY(-50%);
                 margin-right: 4px;
+                font-family: FontAwesome;
+                color: color.adjust($COLOR_SIGN_WARNING, $lightness: -2%);
+                content: var(--char-excramation-triangle);
+                transform: translateY(-50%);
               }
             }
           }
@@ -207,10 +210,10 @@ main {
           }
 
           &.frequency {
-            padding-left: 20px;
             box-sizing: content-box;
-            text-align: left;
             width: 58px;
+            padding-left: 20px;
+            text-align: left;
           }
 
           &.num-td {
@@ -236,8 +239,8 @@ main {
           }
 
           &.filter {
-            color: $COLOR_SIGN_DANGEROUS;
             padding: 0 0 0 7px;
+            color: $COLOR_SIGN_DANGEROUS;
             border-left: 1px solid #dee2e6;
 
             &[data-filter="PASS"] {
@@ -259,13 +262,13 @@ togostanza--menu {
   padding: 0;
 
   &::after {
-    content: "\f019";
-    font-family: "FontAwesome";
-    color: #000;
-    pointer-events: none;
-    font-size: 16px;
     position: absolute;
     top: 2px;
     left: 26px;
+    font-family: FontAwesome;
+    font-size: 16px;
+    color: #000;
+    pointer-events: none;
+    content: "\f019";
   }
 }
