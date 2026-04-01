@@ -11,9 +11,11 @@ import {
 export default class VariantFrequency extends Stanza {
   constructor() {
     super(...arguments);
+    // ダウンロード用データを保持する配列
     this.data = [];
   }
 
+  // 右上のメニューボタンに表示するダウンロード項目を返す
   menu() {
     if (!this.data || this.data.length === 0) {
       return [];
@@ -34,21 +36,33 @@ export default class VariantFrequency extends Stanza {
     // database icon
     this.importWebFontCSS(new URL("./assets/fontello.css", import.meta.url));
 
+    // stanzaのパラメータを取得
+    // data-url: APIのベースURL、assembly: GRCh37/GRCh38、tgv_id: バリアントID
     const { "data-url": urlBase, assembly, tgv_id } = this.params;
+    // APIのリクエストURL（バリアントIDでデータセット情報を展開して取得）
     const dataURL = `${urlBase}/search?quality=0&term=${tgv_id}&expand_dataset`;
+    // テーブルに表示するデータを格納する配列
     let resultObject = [];
+    // JGA-WGSの未ログイン時に表示するダミーデータ
     let jgawgsData = [];
+    // JGA-WGSの子要素（4集団）が既に存在するかを管理するフラグ
     const hasjgawgsChildren = [false, false, false, false];
     let jgawgsChildren;
+    // JGA-SNPの depth=1 レイヤーを追跡（見出し行の重複を防ぐため）
     let currentLayer1;
+    // X染色体などでヘミ接合体(Hemizygote)が存在するかのフラグ
     let hasHemizygote = false;
+    // ノードに振るID（連番）
     let uniqueIdCounter = 0;
+    // DATASETS定数をツリー構造に変換し、各ノードにIDと深さを付与
     const preparedDatasets = Object.values(prepareData().data.children);
     preparedDatasets.forEach((dataset) => {
       if (dataset.value === "jga_wgs") {
+        // JGA-WGSの子要素リスト（未ログイン時のダミー表示に使う）
         jgawgsChildren = dataset.children;
       }
     });
+    // ログイン状態フラグ（JGA-WGSの詳細データ表示に使用）
     let isLogin = false;
 
     try {
@@ -147,29 +161,50 @@ export default class VariantFrequency extends Stanza {
             frequencyData.label = datum.label;
           }
 
-          // frequencyの情報をバインディングに追加（localeString変換前の数値で計算する）
-          const ac = parseInt(frequencyData.ac);
-          const freq = parseFloat(frequencyData.af);
+          // =========================================================
+          // 【バグ修正箇所】アレル頻度メーターの目盛り計算
+          //
+          // 修正前の問題:
+          //   先に localeString() を呼ぶと、例えば ac=1538 が
+          //   "1,538" という文字列に変換されてしまう。
+          //   その後 parseInt("1,538") を呼ぶと、カンマで処理が
+          //   止まるため結果が 1 になってしまう。
+          //   → frequency(1, 0.101) は "singleton" と判定され、
+          //     メーターが1目盛りしか表示されなかった。
+          //
+          // 修正後:
+          //   localeString() による文字列変換を行う前に、
+          //   元の数値のまま frequency() を呼んで正しいレベルを計算する。
+          //   → frequency(1538, 0.101) は "<0.5" と判定され、
+          //     メーターが6目盛り表示される（0.101 に対応した正しい値）。
+          // =========================================================
+
+          // ★ まず数値のまま ac と af を取得してメーターレベルを計算する
+          const ac = parseInt(frequencyData.ac);  // アルテルアレル数（例: 1538）
+          const freq = parseFloat(frequencyData.af); // アレル頻度（例: 0.101）
+          // frequency() が返す { frequency, count, level } を frequencyData にマージ
+          // level はCSSクラス名として使われ、メーターの目盛り数を決定する
           Object.assign(frequencyData, frequency(ac, freq));
 
-          // 数値をロケール形式の文字列に変換する関数
+          // ★ frequency() の計算が終わった後で、表示用に数値をカンマ区切りの文字列に変換する
+          // parseInt().toLocaleString() により 1538 → "1,538" のような形式にする
           const localeString = (v) =>
             v !== undefined ? parseInt(v).toLocaleString() : null;
-          // Alt
+          // Alt（アルテルアレル数）
           frequencyData.ac = localeString(frequencyData.ac);
-          // Total
+          // Total（総アレル数）
           frequencyData.an = localeString(frequencyData.an);
-          // Alt/Alt
+          // Alt/Alt（アルテル/アルテルのホモ接合体数）
           frequencyData.aac = localeString(frequencyData.aac);
-          // Alt/Ref
+          // Alt/Ref（アルテル/リファレンスのヘテロ接合体数）
           frequencyData.arc = localeString(frequencyData.arc);
-          // Alt/OtherAlts(JGA-WGSのみ)
+          // Alt/OtherAlts（JGA-WGSのみ）
           frequencyData.aoc = localeString(frequencyData.aoc);
-          // Ref/Ref
+          // Ref/Ref（リファレンス/リファレンスのホモ接合体数）
           frequencyData.rrc = localeString(frequencyData.rrc);
-          // Ref/OtherAlts(JGA-WGSのみ)
+          // Ref/OtherAlts（JGA-WGSのみ）
           frequencyData.roc = localeString(frequencyData.roc);
-          // Other_Alts/Other_Alts(JGA-WGSのみ)
+          // Other_Alts/Other_Alts（JGA-WGSのみ）
           frequencyData.ooc = localeString(frequencyData.ooc);
 
           if (

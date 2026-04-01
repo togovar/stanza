@@ -489,7 +489,7 @@ ul {
 
 .allele-frequency-graph > .dataset {
   display: inline-block;
-  width: 36px;
+  width: 31px;
   height: 14px;
   border: solid 1px #ffffff;
   box-shadow: 0 0 0 1px #dfdedd;
@@ -518,7 +518,7 @@ ul {
     top: 0;
     left: -1px;
     box-shadow: 5px 0 white, 10px 0 white, 15px 0 white, 20px 0 white,
-      25px 0 white, 30px 0 white;
+      25px 0 white;
   }
 
   &[data-dataset="gem_j_wga"],
@@ -567,31 +567,31 @@ ul {
   }
 
   &[data-frequency="monomorphic"]:before {
-    width: 35px;
+    width: 29px;
   }
 
   &[data-frequency="singleton"]:before {
-    width: 31px;
-  }
-
-  &[data-frequency="<0.0001"]:before {
     width: 26px;
   }
 
+  &[data-frequency="<0.0001"]:before {
+    width: 25px;
+  }
+
   &[data-frequency="<0.001"]:before {
-    width: 21px;
+    width: 20px;
   }
 
   &[data-frequency="<0.01"]:before {
-    width: 16px;
+    width: 15px;
   }
 
   &[data-frequency="<0.05"]:before {
-    width: 11px;
+    width: 10px;
   }
 
   &[data-frequency="<0.5"]:before {
-    width: 6px;
+    width: 5px;
   }
 }
 
