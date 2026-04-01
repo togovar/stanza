@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "strict": false,
+    "allowJs": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": [
+    "stanzas/**/*.ts",
+    "stanzas/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "lib"
+  ]
+}

@@ -1,0 +1,747 @@
+import Stanza from "togostanza/stanza";
+import { hierarchy } from "d3-hierarchy";
+import { DATASETS } from "@/lib/constants";
+import { frequency } from "@/lib/display";
+import {
+  downloadCSVMenuItem,
+  downloadJSONMenuItem,
+  downloadTSVMenuItem,
+} from "togostanza-utils";
+
+// ============================================================
+// 型定義
+// ============================================================
+
+/** APIから返されるデータセットごとの頻度情報 */
+interface FrequencyData {
+  source: string; // データセットID (例: "gem_j_wga")
+  ac?: number | string; // Alt Allele Count
+  an?: number | string; // Total Allele Count
+  af?: number | string; // Allele Frequency
+  aac?: number | string; // Alt/Alt Homozygote Count
+  arc?: number | string; // Alt/Ref Heterozygote Count
+  aoc?: number | string; // Alt/OtherAlts Count (JGA-WGSのみ)
+  rrc?: number | string; // Ref/Ref Homozygote Count
+  roc?: number | string; // Ref/OtherAlts Count (JGA-WGSのみ)
+  ooc?: number | string; // OtherAlts/OtherAlts Count (JGA-WGSのみ)
+  hac?: number | string; // Hemizygote Alt Count (X染色体など)
+  hrc?: number | string; // Hemizygote Ref Count
+  hoc?: number | string; // Hemizygote OtherAlts Count
+  filter?: string | string[];
+  quality?: string;
+  // searchData() で付与するプロパティ
+  id?: string;
+  depth?: number;
+  parent_id?: string;
+  grandparent_id?: string;
+  dataset?: string;
+  label?: string;
+  has_child?: boolean;
+  need_loading?: boolean;
+  // frequency() が返すプロパティ (Object.assign でマージ)
+  frequency?: string;
+  count?: number;
+  level?: string;
+}
+
+/** DAATASETSの各ノード（ツリー構造）に ID・depth を付加したもの */
+interface DataNode {
+  id: string;
+  depth: number;
+  value: string;
+  label: string;
+  children?: DataNode[];
+}
+
+// ============================================================
+// メインクラス
+// ============================================================
+
+export default class VariantFrequency extends Stanza {
+  /** ダウンロードボタン用に保持するデータ */
+  data: FrequencyData[] = [];
+
+  // ============================================================
+  // menu() — 右上のダウンロードメニューを構成
+  // ============================================================
+
+  menu() {
+    if (!this.data || this.data.length === 0) {
+      return [];
+    }
+
+    return [
+      downloadJSONMenuItem(this, "variant-frequency", this.data),
+      downloadCSVMenuItem(this, "variant-frequency", this.data),
+      downloadTSVMenuItem(this, "variant-frequency", this.data),
+    ];
+  }
+
+  // ============================================================
+  // render() — メイン処理（APIからデータを取得してHTMLに描画）
+  // ============================================================
+
+  async render() {
+    // フォントの読み込み
+    this.importWebFontCSS(
+      "https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900",
+    );
+    // データセットアイコン用フォント
+    this.importWebFontCSS(
+      new URL("./assets/fontello.css", import.meta.url).href,
+    );
+
+    // ---- stanzaパラメータの取得 ----
+    // data-url: APIのベースURL, assembly: GRCh37/GRCh38, tgv_id: バリアントID
+    const { "data-url": urlBase, assembly, tgv_id } = this.params;
+
+    // バリアントIDでデータセット情報を展開して取得するAPIエンドポイント
+    const dataURL = `${urlBase}/search?quality=0&term=${tgv_id}&expand_dataset`;
+
+    // ---- 変数の初期化 ----
+
+    // テーブルに表示する行データを格納する配列
+    let resultObject: FrequencyData[] = [];
+
+    // JGA-WGSの未ログイン時に表示するダミー行データ
+    let jgawgsData: FrequencyData[] = [];
+
+    // JGA-WGSの4つの子集団が既に resultObject に入っているかを管理するフラグ
+    const hasjgawgsChildren = [false, false, false, false];
+    let jgawgsChildren: DataNode[] = [];
+
+    // JGA-SNP で見出し行の重複挿入を防ぐための追跡変数
+    let currentLayer1: string | undefined;
+
+    // X染色体などでヘミ接合体(Hemizygote) 列を表示するかどうかのフラグ
+    let hasHemizygote = false;
+
+    // ノードに振る連番ID
+    let uniqueIdCounter = 0;
+
+    // ---- ツリーデータの準備 ----
+
+    // DATASETS定数にID・depthを付与し、d3-hierarchyのツリー構造に変換
+    const preparedDatasets = Object.values(
+      prepareData().data.children,
+    ) as DataNode[];
+
+    // JGA-WGSの子ノード一覧を事前に取得（未ログイン時のダミー表示に使用）
+    preparedDatasets.forEach((dataset) => {
+      if (dataset.value === "jga_wgs") {
+        jgawgsChildren = dataset.children ?? [];
+      }
+    });
+
+    // ---- ログイン状態の確認 ----
+    // JGA-WGSの詳細データ（個別集団）はログイン時のみ表示される
+    let isLogin = false;
+
+    try {
+      if (window.location.origin === "http://localhost:8080") {
+        isLogin = false;
+      }
+
+      // 10秒タイムアウト付きでログイン状態を確認
+      const timeout = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Request timeout")), 10000),
+      );
+      const fetchPromise = fetch(`${window.location.origin}/auth/status`);
+      const response = await Promise.race([fetchPromise, timeout]);
+
+      if (response.status === 401 || response.status === 403) {
+        isLogin = false;
+      } else if (response.status === 200) {
+        isLogin = true;
+      }
+    } catch (error) {
+      console.error("Error fetching auth status or timeout occurred:", error);
+    }
+
+    // ---- 頻度データの取得と処理 ----
+
+    try {
+      const response = await fetch(dataURL, {
+        method: "GET",
+        headers: { Accept: "application/json" },
+      });
+
+      if (!response.ok) {
+        throw new Error(`${dataURL} returns status ${response.status}`);
+      }
+
+      const responseDatasets = await response.json();
+      // APIレスポンスからバリアントの頻度データ配列を取り出す
+      const frequenciesDatasets: FrequencyData[] | undefined =
+        responseDatasets.data[0]?.frequencies;
+
+      // ----------------------------------------------------------
+      // searchData() — ツリー構造を再帰的に走査して行データを構築
+      // ----------------------------------------------------------
+      const searchData = (datum: DataNode) => {
+        // APIレスポンスから現在のノードに対応する頻度データを探す
+        const frequencyData = frequenciesDatasets?.find(
+          (x) => x.source === datum.value,
+        );
+
+        if (frequencyData) {
+          // ツリー上の位置情報を付与
+          frequencyData.id = datum.id;
+          frequencyData.depth = datum.depth;
+          if (datum.depth > 0) {
+            frequencyData.parent_id = findParent(
+              preparedDatasets,
+              datum.id,
+            )?.id;
+          }
+          if (datum.depth > 1) {
+            frequencyData.grandparent_id = findParent(
+              preparedDatasets,
+              findParent(preparedDatasets, datum.id)!.id,
+            )?.id;
+          }
+
+          // ---- データセット名の設定 ----
+          // ToMMoはアセンブリに応じて表示名が変わる
+          if (datum.value === "tommo") {
+            switch (assembly) {
+              case "GRCh37":
+                frequencyData.dataset = "ToMMo 8.3KJPN";
+                break;
+              case "GRCh38":
+                frequencyData.dataset = "ToMMo 54KJPN";
+                break;
+            }
+          } else {
+            // その他はトップレベルの親ノードのラベルをデータセット名にする
+            frequencyData.dataset = findTopParent(
+              preparedDatasets,
+              datum.id,
+            )?.label;
+          }
+
+          // ---- 集団ラベルの設定 ----
+          if (["gem_j_wga", "jga_wes", "tommo", "hgvd"].includes(datum.value)) {
+            // 日本人単一集団データセット
+            frequencyData.label = "Japanese";
+          } else if (
+            [
+              "jga_wgs",
+              "jga_snp",
+              "ncbn",
+              "gnomad_genomes",
+              "gnomad_exomes",
+            ].includes(datum.value)
+          ) {
+            // 複数集団を合計したデータ
+            frequencyData.label = "Total";
+          } else {
+            frequencyData.label = datum.label;
+          }
+
+          // ============================================================
+          // 【バグ修正箇所】アレル頻度メーターの目盛り計算
+          //
+          // 修正前の問題:
+          //   先に toLocaleString() を呼ぶと、例えば ac=1538 が
+          //   "1,538" という文字列に変換されてしまう。
+          //   その後 parseInt("1,538") を呼ぶと、カンマで処理が
+          //   止まるため結果が 1 になってしまう。
+          //   → frequency(1, 0.101) は "singleton" と判定され、
+          //     メーターが1目盛りしか表示されなかった。
+          //
+          // 修正後:
+          //   toLocaleString() による文字列変換を行う前に、
+          //   元の数値のまま frequency() を呼んで正しいレベルを計算する。
+          //   → frequency(1538, 0.101) は "<0.5" と判定され、
+          //     メーターが正しい目盛り数で表示される。
+          // ============================================================
+
+          // ★ まず数値のまま frequency() を呼び出してメーターレベルを計算する
+          const ac = parseInt(String(frequencyData.ac)); // アルテルアレル数（例: 1538）
+          const freq = parseFloat(String(frequencyData.af)); // アレル頻度（例: 0.101）
+          // frequency() が返す { frequency, count, level } を frequencyData にマージ
+          // level はCSSの data-frequency 属性値として使われ、メーターの目盛り数を決定する
+          Object.assign(frequencyData, frequency(ac, freq));
+
+          // ★ frequency() の計算が終わった後で、表示用にカンマ区切りの文字列に変換する
+          // 例: 1538 → "1,538"
+          const localeString = (
+            v: number | string | undefined,
+          ): string | null =>
+            v !== undefined ? parseInt(String(v)).toLocaleString() : null;
+
+          frequencyData.ac = localeString(frequencyData.ac) ?? undefined; // Alt Allele Count
+          frequencyData.an = localeString(frequencyData.an) ?? undefined; // Total Allele Count
+          frequencyData.aac = localeString(frequencyData.aac) ?? undefined; // Alt/Alt Homozygote Count
+          frequencyData.arc = localeString(frequencyData.arc) ?? undefined; // Alt/Ref Heterozygote Count
+          frequencyData.aoc = localeString(frequencyData.aoc) ?? undefined; // Alt/OtherAlts Count
+          frequencyData.rrc = localeString(frequencyData.rrc) ?? undefined; // Ref/Ref Homozygote Count
+          frequencyData.roc = localeString(frequencyData.roc) ?? undefined; // Ref/OtherAlts Count
+          frequencyData.ooc = localeString(frequencyData.ooc) ?? undefined; // OtherAlts/OtherAlts Count
+
+          // ヘミ接合体カラムが必要かを判定（1件でも値があれば列を表示する）
+          if (
+            !hasHemizygote &&
+            (Number(frequencyData.hac) > 0 ||
+              Number(frequencyData.hrc) > 0 ||
+              Number(frequencyData.hoc) > 0)
+          ) {
+            hasHemizygote = true;
+          }
+          frequencyData.hac = localeString(frequencyData.hac) ?? undefined; // Hemizygote Alt
+          frequencyData.hrc = localeString(frequencyData.hrc) ?? undefined; // Hemizygote Ref
+          frequencyData.hoc = localeString(frequencyData.hoc) ?? undefined; // Hemizygote OtherAlts
+
+          // ---- JGA-SNP専用: 見出し行の挿入 ----
+          // JGA-SNPはAPIレスポンスに depth=1 の見出しデータが存在しないため、
+          // 集団が切り替わるタイミングで手動で見出し行を挿入する
+          if (frequencyData.dataset === "JGA-SNP") {
+            if (currentLayer1 !== frequencyData.label) {
+              if (
+                frequencyData.depth === 2 &&
+                currentLayer1 !== findParent(preparedDatasets, datum.id)?.label
+              ) {
+                const parent = findParent(preparedDatasets, datum.id)!;
+                const titleRow: FrequencyData = {
+                  dataset: frequencyData.dataset,
+                  depth: 1,
+                  label: parent.label,
+                  source: `${frequencyData.dataset}-title`,
+                  id: parent.id,
+                  has_child: true,
+                };
+                resultObject = [...resultObject, titleRow];
+                currentLayer1 = parent.label;
+              }
+            }
+          }
+
+          resultObject = [...resultObject, frequencyData];
+
+          // ---- 未ログイン時: JGA-WGSのダミー行を準備 ----
+          // 未ログインだとJGA-WGSの個別集団データがAPIから返ってこないため、
+          // ログインを促すプレースホルダー行を表示する
+          if (!isLogin && frequencyData.source === "jga_wgs") {
+            jgawgsChildren.forEach((child) => {
+              const dummyRow: FrequencyData = {
+                dataset: frequencyData.dataset,
+                depth: 1,
+                label: child.label,
+                source: child.value,
+                id: child.id,
+                need_loading: true,
+              };
+              jgawgsData = [...jgawgsData, dummyRow];
+            });
+          }
+        }
+
+        // 子ノードを再帰的に処理
+        if (datum.children) {
+          datum.children.forEach(searchData);
+        }
+      };
+
+      // DATASETSツリー全体を再帰的に走査
+      preparedDatasets.forEach(searchData);
+
+      // 未ログイン時: JGA-WGSのダミー行を適切な位置に挿入
+      if (!isLogin) {
+        checkExistence(resultObject, jgawgsChildren);
+        insertObject(resultObject, hasjgawgsChildren, jgawgsData);
+      }
+
+      // has_child フラグを更新（開閉トグルの制御に使用）
+      updateHasChild(preparedDatasets, resultObject);
+
+      // ダウンロード用データを保存
+      this.data = this.createDownloadData(
+        resultObject,
+        responseDatasets.data[0],
+        hasHemizygote,
+      );
+
+      // HTMLテンプレートに渡してレンダリング
+      this.renderTemplate({
+        template: "stanza.html.hbs",
+        parameters: {
+          params: this.params,
+          result: { resultObject },
+          hasHemizygote,
+        },
+      });
+    } catch (e: any) {
+      ({ error: { message: e.message } });
+    }
+
+    // ============================================================
+    // ヘルパー関数群（render() 内で定義）
+    // ============================================================
+
+    /**
+     * DATASETS の各ノードに一意のID(連番)と階層の深さ(depth)を付与する。
+     * d3-hierarchy でツリー化する前の前処理として使用。
+     */
+    function addIdsToDataNodes(dataNodes: any[], currentDepth = 0): DataNode[] {
+      return dataNodes.map((node) => {
+        const newNode: DataNode = {
+          ...node,
+          id: `${uniqueIdCounter++}`,
+          depth: currentDepth,
+        };
+        if (newNode.children && newNode.children.length > 0) {
+          newNode.children = addIdsToDataNodes(
+            newNode.children,
+            currentDepth + 1,
+          );
+        }
+        return newNode;
+      });
+    }
+
+    /**
+     * DATASETS定数をID付きノードのツリーに変換し、d3-hierarchyで管理する。
+     */
+    function prepareData() {
+      const dataWithIds = addIdsToDataNodes(DATASETS);
+      return hierarchy({
+        id: "-1",
+        label: "root",
+        value: "",
+        children: dataWithIds,
+      });
+    }
+
+    /**
+     * 指定IDのノードが属するトップレベル（depth=0）のノードを返す。
+     * データセット名の特定に使用。
+     */
+    function findTopParent(
+      data: DataNode[],
+      targetId: string,
+    ): DataNode | null {
+      function recursiveSearch(
+        nodes: DataNode[],
+        targetId: string,
+        topParent: DataNode | null = null,
+      ): DataNode | null {
+        for (const node of nodes) {
+          if (node.id === targetId) {
+            // topParent が null の場合、自分自身がトップレベルなのでそのまま返す
+            return topParent ?? node;
+          }
+          if (node.children) {
+            const found = recursiveSearch(
+              node.children,
+              targetId,
+              topParent ?? node,
+            );
+            if (found) return found;
+          }
+        }
+        return null;
+      }
+      return recursiveSearch(data, targetId);
+    }
+
+    /**
+     * 指定IDのノードの直接の親ノードを返す。
+     * parent_id / grandparent_id の特定に使用。
+     */
+    function findParent(data: DataNode[], targetId: string): DataNode | null {
+      function recursiveSearch(
+        nodes: DataNode[],
+        targetId: string,
+        parent: DataNode | null = null,
+      ): DataNode | null {
+        for (const node of nodes) {
+          if (node.id === targetId) {
+            return parent;
+          }
+          if (node.children) {
+            const found = recursiveSearch(node.children, targetId, node);
+            if (found) return found;
+          }
+        }
+        return null;
+      }
+      return recursiveSearch(data, targetId);
+    }
+
+    /**
+     * JGA-WGSの個別集団データが既に resultObject にあるか確認し、
+     * hasjgawgsChildren フラグを更新する。
+     */
+    function checkExistence(
+      resultObject: FrequencyData[],
+      jgawgsChildren: DataNode[],
+    ) {
+      resultObject.forEach((data) => {
+        jgawgsChildren.forEach((child, index) => {
+          if (data.source === child.value) {
+            hasjgawgsChildren[index] = true;
+          }
+        });
+      });
+    }
+
+    /**
+     * JGA-WGSの個別集団データが存在しない場合、ダミー行をその直後に挿入する。
+     */
+    function insertObject(
+      resultObject: FrequencyData[],
+      hasChildren: boolean[],
+      jgawgsData: FrequencyData[],
+    ) {
+      hasChildren.forEach((exists, index) => {
+        if (!exists) {
+          resultObject.forEach((data, i) => {
+            if (data.id === (index + 1).toString()) {
+              resultObject.splice(i + 1, 0, jgawgsData[index]);
+            }
+          });
+        }
+      });
+    }
+
+    /**
+     * 各データセットノードの has_child フラグを更新する。
+     * 子データが存在するノードには has_child=true を設定し、
+     * テンプレート側でトグルアイコンの表示を制御する。
+     */
+    function updateHasChild(datasets: DataNode[], data: FrequencyData[]) {
+      datasets.forEach((datum) => {
+        const dataNode = data.find((d) => d.source === datum.value);
+        if (dataNode) {
+          dataNode.has_child = false;
+        }
+
+        if (datum.children?.length > 0 && dataNode) {
+          const hasMatchingChild = datum.children.some((child) =>
+            data.some((d) => d.source === child.value),
+          );
+          const hasMatchingChildSub = datum.children.some((child) =>
+            data.some((d) => d.label === child.label),
+          );
+
+          if (hasMatchingChild || hasMatchingChildSub) {
+            dataNode.has_child = true;
+          }
+        }
+
+        if (datum.children && datum.children.length > 0) {
+          updateHasChild(datum.children, data);
+        }
+      });
+    }
+
+    // ============================================================
+    // トグル（開閉）イベントの設定
+    // ============================================================
+
+    // ---- depth=0（データセット行）のクリックイベント ----
+    const depth0Layer = this.root.querySelectorAll<HTMLElement>(
+      '.population[data-depth="0"]',
+    );
+    depth0Layer.forEach((layer) =>
+      layer.addEventListener("click", (e) => {
+        (e.target as HTMLElement).classList.toggle("open");
+
+        if (layer.dataset.dataset === "JGA-WGS") {
+          const depth1Children = this.root.querySelectorAll<HTMLElement>(
+            '[data-dataset="JGA-WGS"].population[data-depth="1"]',
+          );
+          depth1Children.forEach((el) =>
+            el.parentElement?.classList.toggle("show-by-total"),
+          );
+        }
+
+        if (layer.dataset.dataset === "JGA-SNP") {
+          const depth1Children = this.root.querySelectorAll<HTMLElement>(
+            '[data-dataset="JGA-SNP"].population[data-depth="1"]',
+          );
+          depth1Children.forEach((el) =>
+            el.parentElement?.classList.toggle("show-by-total"),
+          );
+
+          const depth2Children = this.root.querySelectorAll<HTMLElement>(
+            '[data-dataset="JGA-SNP"].population[data-depth="2"]',
+          );
+          depth2Children.forEach((el) => {
+            const parent = el.parentElement!;
+            if (parent.classList.contains("close-by-total")) {
+              parent.classList.remove("close-by-total");
+            } else if (parent.classList.contains("show-by-sub")) {
+              parent.classList.add("close-by-total");
+            }
+          });
+
+          // Male / Female
+          const depth3Children = this.root.querySelectorAll<HTMLElement>(
+            '[data-dataset="JGA-SNP"].population[data-depth="3"]',
+          );
+          depth3Children.forEach((el) => {
+            const parent = el.parentElement!;
+            if (parent.classList.contains("close-by-total")) {
+              parent.classList.remove("close-by-total");
+            } else if (parent.classList.contains("show")) {
+              parent.classList.add("close-by-total");
+            }
+          });
+        }
+
+        if (layer.dataset.dataset === "NCBN") {
+          const depth1Children = this.root.querySelectorAll<HTMLElement>(
+            '[data-dataset="NCBN"].population[data-depth="1"]',
+          );
+          depth1Children.forEach((el) =>
+            el.parentElement?.classList.toggle("show-by-total"),
+          );
+
+          const depth2Children = this.root.querySelectorAll<HTMLElement>(
+            '[data-dataset="NCBN"].population[data-depth="2"]',
+          );
+          depth2Children.forEach((el) => {
+            const parent = el.parentElement!;
+            if (parent.classList.contains("close-by-total")) {
+              parent.classList.remove("close-by-total");
+            } else if (parent.classList.contains("show")) {
+              parent.classList.add("close-by-total");
+            }
+          });
+        }
+
+        if (layer.dataset.dataset === "gnomAD Genomes") {
+          const depth1Children = this.root.querySelectorAll<HTMLElement>(
+            '[data-dataset="gnomAD Genomes"].population[data-depth="1"]',
+          );
+          depth1Children.forEach((el) =>
+            el.parentElement?.classList.toggle("show-by-total"),
+          );
+        }
+
+        if (layer.dataset.dataset === "gnomAD Exomes") {
+          const depth1Children = this.root.querySelectorAll<HTMLElement>(
+            '[data-dataset="gnomAD Exomes"].population[data-depth="1"]',
+          );
+          depth1Children.forEach((el) =>
+            el.parentElement?.classList.toggle("show-by-total"),
+          );
+        }
+      }),
+    );
+
+    // ---- depth=1（集団行）のクリックイベント ----
+    const depth1Layer = this.root.querySelectorAll<HTMLElement>(
+      '.population[data-depth="1"]',
+    );
+    depth1Layer.forEach((layer) =>
+      layer.addEventListener("click", (e) => {
+        (e.target as HTMLElement).classList.toggle("open");
+
+        if (layer.dataset.dataset === "JGA-SNP") {
+          const depth2Children = this.root.querySelectorAll<HTMLElement>(
+            `[data-dataset="JGA-SNP"].population[data-parent-id="${layer.dataset.id}"][data-depth="2"]`,
+          );
+          depth2Children.forEach((el) =>
+            el.parentElement?.classList.toggle("show-by-sub"),
+          );
+
+          // Male / Female
+          const depth3Children = this.root.querySelectorAll<HTMLElement>(
+            `[data-dataset="JGA-SNP"].population[data-grandparent-id="${layer.dataset.id}"][data-depth="3"]`,
+          );
+          depth3Children.forEach((el) => {
+            const parent = el.parentElement!;
+            if (parent.classList.contains("close-by-sub")) {
+              parent.classList.remove("close-by-sub");
+            } else if (parent.classList.contains("show")) {
+              parent.classList.add("close-by-sub");
+            }
+          });
+        }
+
+        if (layer.dataset.dataset === "NCBN") {
+          const depth2Children = this.root.querySelectorAll<HTMLElement>(
+            '[data-dataset="NCBN"].population[data-depth="2"]',
+          );
+          depth2Children.forEach((el) =>
+            el.parentElement?.classList.toggle("show"),
+          );
+        }
+      }),
+    );
+
+    // ---- depth=2（サブ集団行）のクリックイベント ----
+    const depth2Layer = this.root.querySelectorAll<HTMLElement>(
+      '.population[data-depth="2"]',
+    );
+    depth2Layer.forEach((layer) =>
+      layer.addEventListener("click", (e) => {
+        (e.target as HTMLElement).classList.toggle("open");
+
+        if (layer.dataset.dataset === "JGA-SNP") {
+          const depth3Children = this.root.querySelectorAll<HTMLElement>(
+            `[data-dataset="JGA-SNP"].population[data-parent-id="${layer.dataset.id}"][data-depth="3"]`,
+          );
+          depth3Children.forEach((el) =>
+            el.parentElement?.classList.toggle("show"),
+          );
+        }
+      }),
+    );
+  }
+
+  // ============================================================
+  // createDownloadData() — ダウンロード用データの整形
+  // ============================================================
+
+  createDownloadData(
+    resultObject: FrequencyData[],
+    variantData: any,
+    hasHemizygote: boolean,
+  ) {
+    return resultObject
+      .filter((freq) => {
+        return (
+          !freq.source?.includes("-title") && // JGA-SNPの見出し行を除外
+          !freq.need_loading && // 未ログイン時のダミー行を除外
+          freq.af !== undefined // 頻度データが存在する行のみ
+        );
+      })
+      .map((freq) => {
+        return {
+          id: freq.id,
+          depth: freq.depth,
+          tgvid: variantData.id,
+          rsid: variantData.existing_variations?.join(",") || "",
+          chrom: variantData.chromosome,
+          pos: variantData.position,
+          ref: variantData.reference,
+          alt: variantData.alternate,
+          dataset: freq.dataset,
+          population: freq.label,
+          source: freq.source,
+          ac: freq.ac,
+          an: freq.an,
+          af: freq.frequency,
+          "alt/alt": freq.aac,
+          "alt/ref": freq.arc,
+          "ref/otheralts": freq.aoc,
+          "ref/ref": freq.rrc,
+          "ref/otheralt": freq.roc,
+          "otheralt/otheralt": freq.ooc,
+          ...(hasHemizygote && {
+            hemi_alt: freq.hac,
+            hemi_ref: freq.hrc,
+            hemi_other_alts: freq.hoc,
+          }),
+          filter: Array.isArray(freq.filter)
+            ? freq.filter.join(",")
+            : freq.filter,
+          quality: freq.quality,
+        };
+      });
+  }
+}
