@@ -51,7 +51,7 @@
               <div class="frequency-graph">
                 {{#each frequencies}}
                   <div
-                    class="dataset"
+                    class="dataset{{#if this.has_homozygote_marker}} has-homozygote{{/if}}"
                     data-dataset="{{this.source}}"
                     data-frequency="{{this.level}}"
                   ></div>

@@ -42,6 +42,7 @@ interface FrequencyData {
   frequency?: string;
   count?: number;
   level?: string;
+  has_homozygote_marker?: boolean;
 }
 
 /** DAATASETSの各ノード（ツリー構造）に ID・depth を付加したもの */
@@ -263,6 +264,8 @@ export default class VariantFrequency extends Stanza {
           // frequency() が返す { frequency, count, level } を frequencyData にマージ
           // level はCSSの data-frequency 属性値として使われ、メーターの目盛り数を決定する
           Object.assign(frequencyData, frequency(ac, freq));
+          frequencyData.has_homozygote_marker =
+            Number(frequencyData.aac) > 0 || Number(frequencyData.hac) > 0;
 
           // ★ frequency() の計算が終わった後で、表示用にカンマ区切りの文字列に変換する
           // 例: 1538 → "1,538"

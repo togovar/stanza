@@ -1,48 +1,156 @@
-@use "sass:list";
 @use "../foundation/variables" as *;
 
-// ============================================================
-// 周波数レベルごとの ::before サイズ定義
-//   1番目: .frequency-graph の height（縦棒グラフ用）
-//   2番目: .allele-frequency-graph の width（横棒グラフ用）
-// ============================================================
-$_frequency-sizes: (
-  "monomorphic": (
-    18px,
-    29px,
-  ),
-  "singleton": (
-    17px,
-    26px,
-  ),
-  "<0.0001": (
-    14px,
-    25px,
-  ),
-  "<0.001": (
-    11px,
-    20px,
-  ),
-  "<0.01": (
-    8px,
-    15px,
-  ),
-  "<0.05": (
-    5px,
-    10px,
-  ),
-  "<0.5": (
-    2px,
-    5px,
-  ),
+$frequency-block-count: 6;
+$frequency-block-gap: 1px;
+$vertical-block-width: 5px;
+$vertical-block-height: 2px;
+$vertical-graph-width: $vertical-block-width + 4px;
+$vertical-graph-height: ($vertical-block-height * $frequency-block-count) +
+  (($frequency-block-gap * ($frequency-block-count - 1)) + 4px);
+$horizontal-block-width: 4px;
+$horizontal-block-height: 12px;
+$horizontal-graph-width: ($horizontal-block-width * $frequency-block-count) +
+  (($frequency-block-gap * ($frequency-block-count - 1)) + 4px);
+$horizontal-graph-height: $horizontal-block-height + 4px;
+$frequency-block-counts: (
+  "monomorphic": 0,
+  "singleton": 1,
+  "<0.0001": 1,
+  "<0.001": 2,
+  "<0.01": 3,
+  "<0.05": 4,
+  "<0.5": 5,
+  "≥0.5": 6,
 );
+$frequency-na-border: #d4d3d1;
+$frequency-na-background: #f4f4f4;
+$frequency-marker-color: $COLOR_SIGN_DANGEROUS;
+$frequency-marker-size: 7px;
+$frequency-marker-offset: -4px;
+$frequency-marker-icon-size: 5px;
 
-// データなし（na）の共通スタイル
-@mixin dataset-na {
-  background-color: rgb(234 234 233 / 60%);
+@mixin frequency-dataset-color($color) {
+  --frequency-dataset-color: #{$color};
+}
 
-  &::after {
+@mixin frequency-dataset-colors {
+  &[data-dataset="gem_j_wga"],
+  &[data-dataset="GEM-J WGA"] {
+    @include frequency-dataset-color($COLOR_DATASET_GEM_J);
+  }
+
+  &[data-dataset="jga_wgs"],
+  &[data-dataset="JGA-WGS"],
+  &[data-dataset="jga_wes"],
+  &[data-dataset="JGA-WES"],
+  &[data-dataset="jga_snp"],
+  &[data-dataset="JGA-SNP"] {
+    @include frequency-dataset-color($COLOR_DATASET_JGA);
+  }
+
+  &[data-dataset="tommo"],
+  &[data-dataset="ToMMo"],
+  &[data-dataset^="ToMMo"] {
+    @include frequency-dataset-color($COLOR_DATASET_TOMMO);
+  }
+
+  &[data-dataset="ncbn"],
+  &[data-dataset="NCBN"] {
+    @include frequency-dataset-color($COLOR_DATASET_NCBN);
+  }
+
+  &[data-dataset="hgvd"],
+  &[data-dataset="HGVD"] {
+    @include frequency-dataset-color($COLOR_DATASET_HGVD);
+  }
+
+  &[data-dataset="bbj"],
+  &[data-dataset="BBJ"] {
+    @include frequency-dataset-color($COLOR_DATASET_BBJ);
+  }
+}
+
+@mixin frequency-na {
+  background-color: $frequency-na-background;
+  border-color: $frequency-na-border;
+
+  &::before {
     display: none;
+  }
+}
+
+@mixin frequency-marker {
+  &.has-homozygote::after {
+    position: absolute;
+    top: $frequency-marker-offset;
+    right: $frequency-marker-offset;
+    z-index: 1;
+    display: block;
+    width: $frequency-marker-size;
+    height: $frequency-marker-size;
+    content: "";
+    background-color: $frequency-marker-color;
+    background-image: url("./assets/icons/slashmark.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: $frequency-marker-icon-size $frequency-marker-icon-size;
+    border-radius: 1.5px;
+  }
+}
+
+@mixin vertical-frequency-blocks {
+  &::before {
+    position: absolute;
+    bottom: 1px;
+    left: 1px;
+    display: none;
+    width: $vertical-block-width;
+    content: "";
+    background-image: repeating-linear-gradient(
+      to top,
+      var(--frequency-dataset-color) 0,
+      var(--frequency-dataset-color) $vertical-block-height,
+      transparent $vertical-block-height,
+      transparent ($vertical-block-height + $frequency-block-gap)
+    );
+  }
+
+  @each $level, $count in $frequency-block-counts {
+    @if $count > 0 {
+      &[data-frequency="#{$level}"]::before {
+        display: block;
+        height: ($count * $vertical-block-height) +
+          (($count - 1) * $frequency-block-gap);
+      }
+    }
+  }
+}
+
+@mixin horizontal-frequency-blocks {
+  &::before {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    display: none;
+    height: $horizontal-block-height;
+    content: "";
+    background-image: repeating-linear-gradient(
+      to right,
+      var(--frequency-dataset-color) 0,
+      var(--frequency-dataset-color) $horizontal-block-width,
+      transparent $horizontal-block-width,
+      transparent ($horizontal-block-width + $frequency-block-gap)
+    );
+  }
+
+  @each $level, $count in $frequency-block-counts {
+    @if $count > 0 {
+      &[data-frequency="#{$level}"]::before {
+        display: block;
+        width: ($count * $horizontal-block-width) +
+          (($count - 1) * $frequency-block-gap);
+      }
+    }
   }
 }
 
@@ -50,75 +158,29 @@ $_frequency-sizes: (
 // 縦型周波数グラフ (.frequency-graph)
 // バリアント一覧などで使うコンパクトな縦棒グラフ
 // ============================================================
-.frequency-graph > .dataset {
-  position: relative;
-  box-sizing: border-box;
-  display: inline-block;
-  width: 9px;
-  height: 20px;
-  margin-right: 1px;
-  vertical-align: middle;
-  background-color: $COLOR_KEY_DEEP;
-  border: solid 1px rgb(148 146 141 / 25%);
+.frequency-graph {
+  font-size: 0;
+  white-space: nowrap;
 
-  // 白い塗りつぶし領域（頻度に応じて height が変わる）
-  &::before {
-    position: absolute;
-    display: block;
-    width: 7px;
-    content: "";
+  > .dataset {
+    @include frequency-dataset-colors;
+    @include frequency-marker;
+    @include vertical-frequency-blocks;
+
+    --frequency-dataset-color: #{$COLOR_DATASET_FOREIGN};
+
+    position: relative;
+    box-sizing: border-box;
+    display: inline-block;
+    width: $vertical-graph-width;
+    height: $vertical-graph-height;
+    margin-right: 1px;
+    vertical-align: middle;
     background-color: white;
-  }
+    border: solid 1px var(--frequency-dataset-color);
 
-  // グリッド線（半透明の白い横線）
-  &::after {
-    position: absolute;
-    top: 1px;
-    display: block;
-    width: 7px;
-    height: 1px;
-    content: "";
-    background-color: white;
-    box-shadow:
-      0 3px white,
-      0 6px white,
-      0 9px white,
-      0 12px white,
-      0 15px white;
-    opacity: 0.75;
-  }
-
-  // データセット別の背景色
-  &[data-dataset="jga_wes"],
-  &[data-dataset="jga_snp"] {
-    background-color: $COLOR_DATASET_JGA;
-  }
-
-  &[data-dataset="tommo"] {
-    background-color: $COLOR_DATASET_TOMMO;
-  }
-
-  &[data-dataset="gem_j_wga"] {
-    background-color: $COLOR_DATASET_GEM_J;
-  }
-
-  &[data-dataset="hgvd"] {
-    background-color: $COLOR_DATASET_HGVD;
-  }
-
-  &[data-dataset^="gnomad"] {
-    background-color: $COLOR_GRAY;
-  }
-
-  // データなし
-  &[data-frequency="na"] {
-    @include dataset-na;
-  }
-
-  // 周波数レベルごとに ::before の height を設定
-  @each $level, $sizes in $_frequency-sizes {
-    &[data-frequency="#{$level}"]::before {
-      height: list.nth($sizes, 1);
+    &[data-frequency="na"] {
+      @include frequency-na;
     }
   }
 }
@@ -128,94 +190,23 @@ $_frequency-sizes: (
 // バリアント詳細画面で使用する横棒グラフ
 // ============================================================
 .allele-frequency-graph > .dataset {
+  @include frequency-dataset-colors;
+  @include frequency-marker;
+  @include horizontal-frequency-blocks;
+
+  --frequency-dataset-color: #{$COLOR_DATASET_FOREIGN};
+
   position: relative;
   box-sizing: border-box;
   display: inline-block;
-  width: 31px;
-  height: 14px;
+  width: $horizontal-graph-width;
+  height: $horizontal-graph-height;
   margin-right: 1px;
   vertical-align: middle;
-  background-color: $COLOR_KEY_DEEP;
-  border: solid 1px #fff;
-  box-shadow: 0 0 0 1px #dfdedd;
+  background-color: white;
+  border: solid 1px var(--frequency-dataset-color);
 
-  // 白い塗りつぶし領域（頻度に応じて width が変わる）と
-  // グリッド線で共通のベーススタイル
-  &::before,
-  &::after {
-    position: absolute;
-    display: block;
-    height: 12px;
-    content: "";
-    background-color: white;
-  }
-
-  &::before {
-    right: 0;
-  }
-
-  // グリッド線（半透明の白い縦線）
-  &::after {
-    top: 0;
-    left: -1px;
-    width: 1px;
-    box-shadow:
-      5px 0 white,
-      10px 0 white,
-      15px 0 white,
-      20px 0 white,
-      25px 0 white;
-    opacity: 0.75;
-  }
-
-  // データセット別の背景色・枠線色
-  &[data-dataset="gem_j_wga"],
-  &[data-dataset="GEM-J WGA"] {
-    background-color: $COLOR_DATASET_GEM_J;
-    box-shadow: 0 0 0 1px $COLOR_DATASET_GEM_J;
-  }
-
-  &[data-dataset="JGA-WGS"],
-  &[data-dataset="jga_wes"],
-  &[data-dataset="JGA-WES"],
-  &[data-dataset="jga_snp"],
-  &[data-dataset="JGA-SNP"] {
-    background-color: $COLOR_DATASET_JGA;
-    box-shadow: 0 0 0 1px $COLOR_DATASET_JGA;
-  }
-
-  &[data-dataset="tommo"],
-  &[data-dataset^="ToMMo"] {
-    background-color: $COLOR_DATASET_TOMMO;
-    box-shadow: 0 0 0 1px $COLOR_DATASET_TOMMO;
-  }
-
-  &[data-dataset="ncbn"],
-  &[data-dataset="NCBN"] {
-    background-color: $COLOR_DATASET_NCBN;
-    box-shadow: 0 0 0 1px $COLOR_DATASET_NCBN;
-  }
-
-  &[data-dataset="hgvd"] {
-    background-color: $COLOR_DATASET_HGVD;
-    box-shadow: 0 0 0 1px $COLOR_DATASET_HGVD;
-  }
-
-  &[data-dataset^="gnomad"],
-  &[data-dataset^="gnomAD"] {
-    background-color: $COLOR_GRAY;
-    box-shadow: 0 0 0 1px $COLOR_GRAY;
-  }
-
-  // データなし
   &[data-frequency="na"] {
-    @include dataset-na;
-  }
-
-  // 周波数レベルごとに ::before の width を設定
-  @each $level, $sizes in $_frequency-sizes {
-    &[data-frequency="#{$level}"]::before {
-      width: list.nth($sizes, 2);
-    }
+    @include frequency-na;
   }
 }

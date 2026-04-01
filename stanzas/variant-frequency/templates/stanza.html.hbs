@@ -79,7 +79,7 @@
                 {{#if level}}
                   <div class='allele-frequency-graph'>
                     <span
-                      class='dataset'
+                      class='dataset{{#if has_homozygote_marker}} has-homozygote{{/if}}'
                       data-frequency='{{level}}'
                       data-dataset='{{dataset}}'
                     ></span>
