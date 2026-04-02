@@ -266,6 +266,7 @@ export default class VariantFrequency extends Stanza {
             v !== null &&
             v !== "" &&
             !Number.isNaN(Number(v));
+          // ヘミ接合体マーカーは値が 0 の場合も表示する（データが存在することを示すため）
           const hasHemizygoteValue =
             hasNumericValue(frequencyData.hac) ||
             hasNumericValue(frequencyData.hrc) ||

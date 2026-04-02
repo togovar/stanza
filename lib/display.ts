@@ -184,6 +184,7 @@ export const transformRecord = (
   ) as FrequencyEntry[];
 
   record.frequencies.forEach((entry) => {
+    // ヘミ接合体マーカーは値が 0 の場合も表示する（データが存在することを示すため）
     const hasHemizygoteValue =
       hasNumericValue(entry.hac) ||
       hasNumericValue(entry.hrc) ||
