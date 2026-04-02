@@ -258,30 +258,37 @@ export default class VariantFrequency extends Stanza {
           // 例: 1538 → "1,538"
           const localeString = (
             v: number | string | undefined,
-          ): string | null =>
-            v !== undefined ? parseInt(String(v)).toLocaleString() : null;
+          ): string | undefined =>
+            v !== undefined ? parseInt(String(v)).toLocaleString() : undefined;
+          const hasNumericValue = (
+            v: number | string | undefined,
+          ): boolean =>
+            v !== undefined &&
+            v !== null &&
+            v !== "" &&
+            !Number.isNaN(Number(v));
 
-          frequencyData.ac = localeString(frequencyData.ac) ?? undefined; // Alt Allele Count
-          frequencyData.an = localeString(frequencyData.an) ?? undefined; // Total Allele Count
-          frequencyData.aac = localeString(frequencyData.aac) ?? undefined; // Alt/Alt Homozygote Count
-          frequencyData.arc = localeString(frequencyData.arc) ?? undefined; // Alt/Ref Heterozygote Count
-          frequencyData.aoc = localeString(frequencyData.aoc) ?? undefined; // Alt/OtherAlts Count
-          frequencyData.rrc = localeString(frequencyData.rrc) ?? undefined; // Ref/Ref Homozygote Count
-          frequencyData.roc = localeString(frequencyData.roc) ?? undefined; // Ref/OtherAlts Count
-          frequencyData.ooc = localeString(frequencyData.ooc) ?? undefined; // OtherAlts/OtherAlts Count
+          frequencyData.ac = localeString(frequencyData.ac); // Alt Allele Count
+          frequencyData.an = localeString(frequencyData.an); // Total Allele Count
+          frequencyData.aac = localeString(frequencyData.aac); // Alt/Alt Homozygote Count
+          frequencyData.arc = localeString(frequencyData.arc); // Alt/Ref Heterozygote Count
+          frequencyData.aoc = localeString(frequencyData.aoc); // Alt/OtherAlts Count
+          frequencyData.rrc = localeString(frequencyData.rrc); // Ref/Ref Homozygote Count
+          frequencyData.roc = localeString(frequencyData.roc); // Ref/OtherAlts Count
+          frequencyData.ooc = localeString(frequencyData.ooc); // OtherAlts/OtherAlts Count
 
-          // ヘミ接合体カラムが必要かを判定（1件でも値があれば列を表示する）
+          // ヘミ接合体カラムが必要かを判定（0を含め、数値があれば列を表示する）
           if (
             !hasHemizygote &&
-            (Number(frequencyData.hac) > 0 ||
-              Number(frequencyData.hrc) > 0 ||
-              Number(frequencyData.hoc) > 0)
+            (hasNumericValue(frequencyData.hac) ||
+              hasNumericValue(frequencyData.hrc) ||
+              hasNumericValue(frequencyData.hoc))
           ) {
             hasHemizygote = true;
           }
-          frequencyData.hac = localeString(frequencyData.hac) ?? undefined; // Hemizygote Alt
-          frequencyData.hrc = localeString(frequencyData.hrc) ?? undefined; // Hemizygote Ref
-          frequencyData.hoc = localeString(frequencyData.hoc) ?? undefined; // Hemizygote OtherAlts
+          frequencyData.hac = localeString(frequencyData.hac); // Hemizygote Alt
+          frequencyData.hrc = localeString(frequencyData.hrc); // Hemizygote Ref
+          frequencyData.hoc = localeString(frequencyData.hoc); // Hemizygote OtherAlts
 
           // ---- JGA-SNP専用: 見出し行の挿入 ----
           // JGA-SNPはAPIレスポンスに depth=1 の見出しデータが存在しないため、
