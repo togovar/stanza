@@ -1,3 +1,5 @@
+@use "sass:color";
+
 $COLOR_KEY: #46b9cc;
 $COLOR_KEY_DEEP: #249eb3;
 $COLOR_KEY_DARK: #256d80;
@@ -6,15 +8,18 @@ $COLOR_DISABLE_DEEP: #808080;
 $COLOR_DISABLE: #999;
 $COLOR_BLACK: #444;
 $COLOR_GRAY: #94928d;
-$COLOR_LIGHT_GRAY: lighten($COLOR_GRAY, 35%);
+$COLOR_LIGHT_GRAY: color.adjust($COLOR_GRAY, $lightness: 35%);
 $COLOR_SEPARATOR: rgb(0 0 0 / 30%);
 $COLOR_SEPARATOR_SUB: rgb(0 0 0 / 20%);
 $COLOR_REF: #249eb3;
 $COLOR_ALT: #ff6682;
 $COLOR_DATASET_JGA: $COLOR_KEY;
-$COLOR_DATASET_JGA_LIGHT: lighten($COLOR_DATASET_JGA, 35%);
+$COLOR_DATASET_JGA_LIGHT: color.adjust($COLOR_DATASET_JGA, $lightness: 35%);
 $COLOR_DATASET_TOMMO: #ca678d;
-$COLOR_DATASET_TOMMO_LIGHT: lighten($COLOR_DATASET_TOMMO, 35%);
+$COLOR_DATASET_TOMMO_LIGHT: color.adjust(
+  $COLOR_DATASET_TOMMO,
+  $lightness: 35%
+);
 $COLOR_DATASET_HGVD: #005b80;
 $COLOR_DATASET_NCBN: #234b7c;
 $COLOR_DATASET_MGEND: $COLOR_DATASET_HGVD;
@@ -28,6 +33,7 @@ $COLOR_SIGN_DANGEROUS: #ff5a54;
 $COLOR_SIGN_MODIFIER: #c654ff;
 $COLOR_SIGN_OTHER: #9c8200;
 $COLOR_SIGN_UNKNOWN: #bbba7e;
+$COLOR_SINGLETON: #fff0c2;
 
 :host {
   // Key colors
@@ -35,6 +41,9 @@ $COLOR_SIGN_UNKNOWN: #bbba7e;
 
   // Font colors
   --color-black: #444;
+
+  // Frequency graph colors
+  --color-singleton: #{$COLOR_SINGLETON};
 
   // Border colors
   --color-table-border: #dee2e6;

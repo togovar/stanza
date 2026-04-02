@@ -79,6 +79,10 @@ $frequency-marker-icon-size: 5px;
   }
 }
 
+@mixin frequency-singleton {
+  background-color: var(--color-singleton);
+}
+
 @mixin frequency-marker {
   &.has-homozygote::after {
     position: absolute;
@@ -179,6 +183,10 @@ $frequency-marker-icon-size: 5px;
     background-color: white;
     border: solid 1px var(--frequency-dataset-color);
 
+    &[data-frequency="singleton"] {
+      @include frequency-singleton;
+    }
+
     &[data-frequency="na"] {
       @include frequency-na;
     }
@@ -205,6 +213,10 @@ $frequency-marker-icon-size: 5px;
   vertical-align: middle;
   background-color: white;
   border: solid 1px var(--frequency-dataset-color);
+
+  &[data-frequency="singleton"] {
+    @include frequency-singleton;
+  }
 
   &[data-frequency="na"] {
     @include frequency-na;
