@@ -373,8 +373,18 @@ export default class VariantFrequency extends Stanza {
           hasHemizygote,
         },
       });
-    } catch (e: any) {
-      ({ error: { message: e.message } });
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
+
+      this.data = [];
+      this.renderTemplate({
+        template: "stanza.html.hbs",
+        parameters: {
+          params: this.params,
+          error: { message },
+        },
+      });
+      return;
     }
 
     // ============================================================
