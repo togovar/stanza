@@ -723,7 +723,8 @@ export default class VariantFrequency extends Stanza {
           source: freq.source,
           ac: freq.ac,
           an: freq.an,
-          af: freq.frequency,
+          // ダウンロードは表示用フォーマットではなく、生のAF値を出力する
+          af: freq.af,
           "alt/alt": freq.aac,
           "alt/ref": freq.arc,
           "ref/otheralts": freq.aoc,

@@ -53,10 +53,15 @@ const resolveFrequencyLevel = (
 
 /**
  * AF 表示は小数 4 桁固定で切り捨てる。
- * 閾値近傍での「表示丸め」と「レベル判定」のズレを抑える目的。
+ * ただし 0 < AF < 0.0001 は、非ゼロ値であることを明示するため
+ * 画面表示を "<0.0001" にする。
  */
 const formatFrequencyValue = (value: NumericInput): string => {
   const numeric = toNumericValue(value);
+  if (numeric > 0 && numeric < 0.0001) {
+    return "<0.0001";
+  }
+
   return frequencyFormatter.format(
     truncateDecimal(numeric, frequencyDisplayDigits),
   );
