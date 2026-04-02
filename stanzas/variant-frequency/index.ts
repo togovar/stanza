@@ -587,8 +587,8 @@ export default class VariantFrequency extends Stanza {
     this.root
       .querySelectorAll<HTMLElement>('.population[data-depth="0"]')
       .forEach((layer) =>
-        layer.addEventListener("click", (e) => {
-          (e.target as HTMLElement).classList.toggle("open");
+        layer.addEventListener("click", (_e) => {
+          layer.classList.toggle("open");
           const ds = layer.dataset.dataset;
 
           // JGA-WGS / gnomAD Genomes / gnomAD Exomes:
@@ -643,8 +643,8 @@ export default class VariantFrequency extends Stanza {
     this.root
       .querySelectorAll<HTMLElement>('.population[data-depth="1"]')
       .forEach((layer) =>
-        layer.addEventListener("click", (e) => {
-          (e.target as HTMLElement).classList.toggle("open");
+        layer.addEventListener("click", (_e) => {
+          layer.classList.toggle("open");
           const ds = layer.dataset.dataset;
           const id = layer.dataset.id;
 
@@ -675,8 +675,8 @@ export default class VariantFrequency extends Stanza {
     this.root
       .querySelectorAll<HTMLElement>('.population[data-depth="2"]')
       .forEach((layer) =>
-        layer.addEventListener("click", (e) => {
-          (e.target as HTMLElement).classList.toggle("open");
+        layer.addEventListener("click", (_e) => {
+          layer.classList.toggle("open");
           const ds = layer.dataset.dataset;
           const id = layer.dataset.id;
 
