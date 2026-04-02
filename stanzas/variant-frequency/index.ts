@@ -1,7 +1,7 @@
 import Stanza from "togostanza/stanza";
 import { hierarchy } from "d3-hierarchy";
 import { DATASETS } from "@/lib/constants";
-import { frequency } from "@/lib/display";
+import { buildFrequencyDisplay } from "@/lib/frequency";
 import {
   downloadCSVMenuItem,
   downloadJSONMenuItem,
@@ -38,7 +38,7 @@ interface FrequencyData {
   label?: string;
   has_child?: boolean;
   need_loading?: boolean;
-  // frequency() が返すプロパティ (Object.assign でマージ)
+  // buildFrequencyDisplay() が返すプロパティ (Object.assign でマージ)
   frequency?: string;
   count?: number;
   level?: string;
@@ -244,16 +244,17 @@ export default class VariantFrequency extends Stanza {
           // アレル頻度メーターの目盛り計算
           // ============================================================
 
-          // ★ まず数値のまま frequency() を呼び出してメーターレベルを計算する
+          // ★ まず数値のまま buildFrequencyDisplay() を呼び出してメーターレベルを計算する
           const ac = parseInt(String(frequencyData.ac)); // アルテルアレル数（例: 1538）
           const freq = parseFloat(String(frequencyData.af)); // アレル頻度（例: 0.101）
-          // frequency() が返す { frequency, count, level } を frequencyData にマージ
+          // buildFrequencyDisplay() が返す { frequency, count, level } を frequencyData にマージ
           // level はCSSの data-frequency 属性値として使われ、メーターの目盛り数を決定する
-          Object.assign(frequencyData, frequency(ac, freq));
+
+          Object.assign(frequencyData, buildFrequencyDisplay(ac, freq));
           frequencyData.has_homozygote_marker =
             Number(frequencyData.aac) > 0 || Number(frequencyData.hac) > 0;
 
-          // ★ frequency() の計算が終わった後で、表示用にカンマ区切りの文字列に変換する
+          // ★ buildFrequencyDisplay() の計算が終わった後で、表示用にカンマ区切りの文字列に変換する
           // 例: 1538 → "1,538"
           const localeString = (
             v: number | string | undefined,
