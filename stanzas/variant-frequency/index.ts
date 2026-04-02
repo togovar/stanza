@@ -46,7 +46,7 @@ interface FrequencyData {
   has_hemizygote_marker?: boolean;
 }
 
-/** DAATASETSの各ノード（ツリー構造）に ID・depth を付加したもの */
+/** DATASETSの各ノード（ツリー構造）に ID・depth を付加したもの */
 interface DataNode {
   id: string;
   depth: number;
