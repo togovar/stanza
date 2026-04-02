@@ -4,6 +4,7 @@ $frequency-block-count: 6;
 $frequency-block-gap: 1px;
 $vertical-block-width: 5px;
 $vertical-block-height: 2px;
+$vertical-dataset-gap: 5px;
 $vertical-graph-width: $vertical-block-width + 4px;
 $vertical-graph-height: ($vertical-block-height * $frequency-block-count) +
   (($frequency-block-gap * ($frequency-block-count - 1)) + 4px);
@@ -24,8 +25,8 @@ $frequency-na-border: #d4d3d1;
 $frequency-na-background: #f4f4f4;
 $frequency-marker-color: $COLOR_SIGN_DANGEROUS;
 $frequency-marker-size: 7px;
-$frequency-marker-offset: -4px;
-$frequency-marker-icon-size: 7px;
+$frequency-marker-offset: -5px;
+$frequency-marker-gap: 1px;
 
 @mixin frequency-dataset-color($color) {
   --frequency-dataset-color: #{$color};
@@ -82,21 +83,40 @@ $frequency-marker-icon-size: 7px;
 }
 
 @mixin frequency-marker {
-  &.has-homozygote::after {
+  > .marker {
     position: absolute;
     top: $frequency-marker-offset;
-    right: $frequency-marker-offset;
     z-index: 1;
+    box-sizing: border-box;
     display: block;
     width: $frequency-marker-size;
     height: $frequency-marker-size;
-    content: "";
     background-color: $frequency-marker-color;
-    background-image: url("./assets/icons/slashmark.svg");
     background-repeat: no-repeat;
     background-position: center;
-    background-size: $frequency-marker-icon-size;
     border-radius: 1.5px;
+  }
+
+  > .marker.homozygote-marker {
+    top: $frequency-marker-offset;
+    right: $frequency-marker-offset;
+    background-image: url("./assets/icons/slashmark.svg");
+    background-size: cover;
+  }
+
+  > .marker.hemizygote-marker {
+    top: calc(
+      #{$frequency-marker-offset + $frequency-marker-size +
+        $frequency-marker-gap}
+    );
+    right: $frequency-marker-offset;
+    background-image: url("./assets/icons/slashmark-hemi.svg");
+    background-size: cover;
+
+    &:only-child {
+      top: $frequency-marker-offset;
+      right: $frequency-marker-offset;
+    }
   }
 }
 
@@ -176,7 +196,7 @@ $frequency-marker-icon-size: 7px;
     display: inline-block;
     width: $vertical-graph-width;
     height: $vertical-graph-height;
-    margin-right: 1px;
+    margin-right: $vertical-dataset-gap;
     vertical-align: middle;
     background-color: white;
     border: solid 1px var(--frequency-dataset-color);

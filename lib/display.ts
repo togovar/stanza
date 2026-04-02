@@ -19,6 +19,8 @@ interface FrequencyEntry extends Record<string, unknown> {
   af?: NumericInput;
   aac?: NumericInput;
   hac?: NumericInput;
+  hrc?: NumericInput;
+  hoc?: NumericInput;
 }
 
 interface SignificanceEntry {
@@ -52,6 +54,15 @@ const fractionDigits3 = floatFormatter(3);
 
 const toNumericValue = (value: NumericInput): number => {
   return Number.parseFloat(String(value));
+};
+
+const hasNumericValue = (value: NumericInput): boolean => {
+  return (
+    value !== undefined &&
+    value !== null &&
+    value !== "" &&
+    !Number.isNaN(Number(value))
+  );
 };
 
 export const refAlt = (
@@ -173,12 +184,17 @@ export const transformRecord = (
   ) as FrequencyEntry[];
 
   record.frequencies.forEach((entry) => {
+    const hasHemizygoteValue =
+      hasNumericValue(entry.hac) ||
+      hasNumericValue(entry.hrc) ||
+      hasNumericValue(entry.hoc);
+
     Object.assign(
       entry,
       buildFrequencyDisplay(entry.ac, entry.af),
       {
-        has_homozygote_marker:
-          Number(entry.aac) > 0 || Number(entry.hac) > 0,
+        has_homozygote_marker: Number(entry.aac) > 0,
+        has_hemizygote_marker: hasHemizygoteValue,
       },
     );
   });

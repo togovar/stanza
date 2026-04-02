@@ -43,6 +43,7 @@ interface FrequencyData {
   count?: number;
   level?: string;
   has_homozygote_marker?: boolean;
+  has_hemizygote_marker?: boolean;
 }
 
 /** DAATASETSの各ノード（ツリー構造）に ID・depth を付加したもの */
@@ -251,8 +252,6 @@ export default class VariantFrequency extends Stanza {
           // level はCSSの data-frequency 属性値として使われ、メーターの目盛り数を決定する
 
           Object.assign(frequencyData, buildFrequencyDisplay(ac, freq));
-          frequencyData.has_homozygote_marker =
-            Number(frequencyData.aac) > 0 || Number(frequencyData.hac) > 0;
 
           // ★ buildFrequencyDisplay() の計算が終わった後で、表示用にカンマ区切りの文字列に変換する
           // 例: 1538 → "1,538"
@@ -267,6 +266,14 @@ export default class VariantFrequency extends Stanza {
             v !== null &&
             v !== "" &&
             !Number.isNaN(Number(v));
+          const hasHemizygoteValue =
+            hasNumericValue(frequencyData.hac) ||
+            hasNumericValue(frequencyData.hrc) ||
+            hasNumericValue(frequencyData.hoc);
+
+          frequencyData.has_homozygote_marker =
+            Number(frequencyData.aac) > 0;
+          frequencyData.has_hemizygote_marker = hasHemizygoteValue;
 
           frequencyData.ac = localeString(frequencyData.ac); // Alt Allele Count
           frequencyData.an = localeString(frequencyData.an); // Total Allele Count
@@ -280,9 +287,7 @@ export default class VariantFrequency extends Stanza {
           // ヘミ接合体カラムが必要かを判定（0を含め、数値があれば列を表示する）
           if (
             !hasHemizygote &&
-            (hasNumericValue(frequencyData.hac) ||
-              hasNumericValue(frequencyData.hrc) ||
-              hasNumericValue(frequencyData.hoc))
+            hasHemizygoteValue
           ) {
             hasHemizygote = true;
           }
