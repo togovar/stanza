@@ -58,6 +58,10 @@ const resolveFrequencyLevel = (
  */
 const formatFrequencyValue = (value: NumericInput): string => {
   const numeric = toNumericValue(value);
+  if (!Number.isFinite(numeric)) {
+    return "";
+  }
+
   if (numeric > 0 && numeric < 0.0001) {
     return "<0.0001";
   }
