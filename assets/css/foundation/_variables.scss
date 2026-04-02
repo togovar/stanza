@@ -16,10 +16,7 @@ $COLOR_ALT: #ff6682;
 $COLOR_DATASET_JGA: $COLOR_KEY;
 $COLOR_DATASET_JGA_LIGHT: color.adjust($COLOR_DATASET_JGA, $lightness: 35%);
 $COLOR_DATASET_TOMMO: #ca678d;
-$COLOR_DATASET_TOMMO_LIGHT: color.adjust(
-  $COLOR_DATASET_TOMMO,
-  $lightness: 35%
-);
+$COLOR_DATASET_TOMMO_LIGHT: color.adjust($COLOR_DATASET_TOMMO, $lightness: 35%);
 $COLOR_DATASET_HGVD: #005b80;
 $COLOR_DATASET_NCBN: #234b7c;
 $COLOR_DATASET_MGEND: $COLOR_DATASET_HGVD;
@@ -33,7 +30,6 @@ $COLOR_SIGN_DANGEROUS: #ff5a54;
 $COLOR_SIGN_MODIFIER: #c654ff;
 $COLOR_SIGN_OTHER: #9c8200;
 $COLOR_SIGN_UNKNOWN: #bbba7e;
-$COLOR_SINGLETON: #fff0c2;
 
 :host {
   // Key colors
@@ -43,7 +39,7 @@ $COLOR_SINGLETON: #fff0c2;
   --color-black: #444;
 
   // Frequency graph colors
-  --color-singleton: #{$COLOR_SINGLETON};
+  --color-singleton: #fff0c2;
 
   // Border colors
   --color-table-border: #dee2e6;

@@ -241,21 +241,7 @@ export default class VariantFrequency extends Stanza {
           }
 
           // ============================================================
-          // 【バグ修正箇所】アレル頻度メーターの目盛り計算
-          //
-          // 修正前の問題:
-          //   先に toLocaleString() を呼ぶと、例えば ac=1538 が
-          //   "1,538" という文字列に変換されてしまう。
-          //   その後 parseInt("1,538") を呼ぶと、カンマで処理が
-          //   止まるため結果が 1 になってしまう。
-          //   → frequency(1, 0.101) は "singleton" と判定され、
-          //     メーターが1目盛りしか表示されなかった。
-          //
-          // 修正後:
-          //   toLocaleString() による文字列変換を行う前に、
-          //   元の数値のまま frequency() を呼んで正しいレベルを計算する。
-          //   → frequency(1538, 0.101) は "<0.5" と判定され、
-          //     メーターが正しい目盛り数で表示される。
+          // アレル頻度メーターの目盛り計算
           // ============================================================
 
           // ★ まず数値のまま frequency() を呼び出してメーターレベルを計算する
@@ -548,9 +534,9 @@ export default class VariantFrequency extends Stanza {
      * querySelectorAll → forEach → parentElement.classList.toggle の繰り返しを共通化。
      */
     const toggleChildren = (selector: string, cls: string) => {
-      this.root.querySelectorAll<HTMLElement>(selector).forEach((el) =>
-        el.parentElement?.classList.toggle(cls),
-      );
+      this.root
+        .querySelectorAll<HTMLElement>(selector)
+        .forEach((el) => el.parentElement?.classList.toggle(cls));
     };
 
     /**
@@ -584,23 +570,48 @@ export default class VariantFrequency extends Stanza {
 
           // JGA-WGS / gnomAD Genomes / gnomAD Exomes:
           // depth=1 の子行をトグルするだけ
-          if (ds === "JGA-WGS" || ds === "gnomAD Genomes" || ds === "gnomAD Exomes") {
-            toggleChildren(`[data-dataset="${ds}"].population[data-depth="1"]`, "show-by-total");
+          if (
+            ds === "JGA-WGS" ||
+            ds === "gnomAD Genomes" ||
+            ds === "gnomAD Exomes"
+          ) {
+            toggleChildren(
+              `[data-dataset="${ds}"].population[data-depth="1"]`,
+              "show-by-total",
+            );
           }
 
           // JGA-SNP: depth=1 をトグルしつつ、下位レイヤーの展開状態も同期
           if (ds === "JGA-SNP") {
-            toggleChildren('[data-dataset="JGA-SNP"].population[data-depth="1"]', "show-by-total");
+            toggleChildren(
+              '[data-dataset="JGA-SNP"].population[data-depth="1"]',
+              "show-by-total",
+            );
             // depth=2: show-by-sub で展開中のものを閉じる（または元に戻す）
-            conditionalClose('[data-dataset="JGA-SNP"].population[data-depth="2"]', "close-by-total", "show-by-sub");
+            conditionalClose(
+              '[data-dataset="JGA-SNP"].population[data-depth="2"]',
+              "close-by-total",
+              "show-by-sub",
+            );
             // depth=3 (Male/Female): show で展開中のものを閉じる（または元に戻す）
-            conditionalClose('[data-dataset="JGA-SNP"].population[data-depth="3"]', "close-by-total", "show");
+            conditionalClose(
+              '[data-dataset="JGA-SNP"].population[data-depth="3"]',
+              "close-by-total",
+              "show",
+            );
           }
 
           // NCBN: depth=1 をトグルしつつ、depth=2 の展開状態も同期
           if (ds === "NCBN") {
-            toggleChildren('[data-dataset="NCBN"].population[data-depth="1"]', "show-by-total");
-            conditionalClose('[data-dataset="NCBN"].population[data-depth="2"]', "close-by-total", "show");
+            toggleChildren(
+              '[data-dataset="NCBN"].population[data-depth="1"]',
+              "show-by-total",
+            );
+            conditionalClose(
+              '[data-dataset="NCBN"].population[data-depth="2"]',
+              "close-by-total",
+              "show",
+            );
           }
         }),
       );
@@ -629,7 +640,10 @@ export default class VariantFrequency extends Stanza {
 
           // NCBN: depth=2 をトグル
           if (ds === "NCBN") {
-            toggleChildren('[data-dataset="NCBN"].population[data-depth="2"]', "show");
+            toggleChildren(
+              '[data-dataset="NCBN"].population[data-depth="2"]',
+              "show",
+            );
           }
         }),
       );

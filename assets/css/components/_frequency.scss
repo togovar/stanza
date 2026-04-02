@@ -13,8 +13,6 @@ $horizontal-graph-width: ($horizontal-block-width * $frequency-block-count) +
   (($frequency-block-gap * ($frequency-block-count - 1)) + 4px);
 $horizontal-graph-height: $horizontal-block-height + 4px;
 $frequency-block-counts: (
-  "monomorphic": 0,
-  "singleton": 1,
   "<0.0001": 1,
   "<0.001": 2,
   "<0.01": 3,
@@ -27,7 +25,7 @@ $frequency-na-background: #f4f4f4;
 $frequency-marker-color: $COLOR_SIGN_DANGEROUS;
 $frequency-marker-size: 7px;
 $frequency-marker-offset: -4px;
-$frequency-marker-icon-size: 5px;
+$frequency-marker-icon-size: 7px;
 
 @mixin frequency-dataset-color($color) {
   --frequency-dataset-color: #{$color};
@@ -97,7 +95,7 @@ $frequency-marker-icon-size: 5px;
     background-image: url("./assets/icons/slashmark.svg");
     background-repeat: no-repeat;
     background-position: center;
-    background-size: $frequency-marker-icon-size $frequency-marker-icon-size;
+    background-size: $frequency-marker-icon-size;
     border-radius: 1.5px;
   }
 }
@@ -183,7 +181,7 @@ $frequency-marker-icon-size: 5px;
     background-color: white;
     border: solid 1px var(--frequency-dataset-color);
 
-    &[data-frequency="singleton"] {
+    &[data-allele-count="1"] {
       @include frequency-singleton;
     }
 
@@ -214,7 +212,7 @@ $frequency-marker-icon-size: 5px;
   background-color: white;
   border: solid 1px var(--frequency-dataset-color);
 
-  &[data-frequency="singleton"] {
+  &[data-allele-count="1"] {
     @include frequency-singleton;
   }
 
