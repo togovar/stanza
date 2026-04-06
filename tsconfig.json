@@ -13,11 +13,14 @@
     }
   },
   "include": [
+    "stanzas/**/*.js",
     "stanzas/**/*.ts",
-    "stanzas/**/*.tsx"
+    "stanzas/**/*.tsx",
+    "lib/**/*.js",
+    "lib/**/*.ts",
+    "types/**/*.d.ts"
   ],
   "exclude": [
-    "node_modules",
-    "lib"
+    "node_modules"
   ]
 }

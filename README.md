@@ -4,7 +4,7 @@
 
 ## Prerequisites
 
-* Node: 20.19.0+
+* Node: 20.19.x
 * yarn: 1.22+
 
 ## Getting Started
