@@ -9,14 +9,59 @@ import {
 } from "togostanza-utils";
 
 // ============================================================
+// 型定義
+// ============================================================
+
+/** APIから返されるデータセットごとの頻度情報 */
+interface FrequencyData {
+  source: string; // データセットID (例: "gem_j_wga")
+  ac?: number | string; // Alt Allele Count
+  an?: number | string; // Total Allele Count
+  af?: number | string; // Allele Frequency
+  aac?: number | string; // Alt/Alt Homozygote Count
+  arc?: number | string; // Alt/Ref Heterozygote Count
+  aoc?: number | string; // Alt/OtherAlts Count (JGA-WGSのみ)
+  rrc?: number | string; // Ref/Ref Homozygote Count
+  roc?: number | string; // Ref/OtherAlts Count (JGA-WGSのみ)
+  ooc?: number | string; // OtherAlts/OtherAlts Count (JGA-WGSのみ)
+  hac?: number | string; // Hemizygote Alt Count (X染色体など)
+  hrc?: number | string; // Hemizygote Ref Count
+  hoc?: number | string; // Hemizygote OtherAlts Count
+  filter?: string | string[];
+  quality?: string;
+  // searchData() で付与するプロパティ
+  id?: string;
+  depth?: number;
+  parent_id?: string;
+  grandparent_id?: string;
+  dataset?: string;
+  label?: string;
+  has_child?: boolean;
+  need_loading?: boolean;
+  // buildFrequencyDisplay() が返すプロパティ (Object.assign でマージ)
+  frequency?: string;
+  count?: number;
+  level?: string;
+  has_homozygote_marker?: boolean;
+  has_hemizygote_marker?: boolean;
+}
+
+/** DATASETSの各ノード（ツリー構造）に ID・depth を付加したもの */
+interface DataNode {
+  id: string;
+  depth: number;
+  value: string;
+  label: string;
+  children?: DataNode[];
+}
+
+// ============================================================
 // メインクラス
 // ============================================================
 
 export default class VariantFrequency extends Stanza {
-  constructor(...args) {
-    super(...args);
-    this.data = [];
-  }
+  /** ダウンロードボタン用に保持するデータ */
+  data: FrequencyData[] = [];
 
   // ============================================================
   // menu() — 右上のダウンロードメニューを構成
@@ -58,17 +103,17 @@ export default class VariantFrequency extends Stanza {
     // ---- 変数の初期化 ----
 
     // テーブルに表示する行データを格納する配列
-    let resultObject = [];
+    let resultObject: FrequencyData[] = [];
 
     // JGA-WGSの未ログイン時に表示するダミー行データ
-    let jgawgsData = [];
+    let jgawgsData: FrequencyData[] = [];
 
     // JGA-WGSの4つの子集団が既に resultObject に入っているかを管理するフラグ
     const hasjgawgsChildren = [false, false, false, false];
-    let jgawgsChildren = [];
+    let jgawgsChildren: DataNode[] = [];
 
     // JGA-SNP で見出し行の重複挿入を防ぐための追跡変数
-    let currentLayer1;
+    let currentLayer1: string | undefined;
 
     // X染色体などでヘミ接合体(Hemizygote) 列を表示するかどうかのフラグ
     let hasHemizygote = false;
@@ -79,7 +124,9 @@ export default class VariantFrequency extends Stanza {
     // ---- ツリーデータの準備 ----
 
     // DATASETS定数にID・depthを付与し、d3-hierarchyのツリー構造に変換
-    const preparedDatasets = Object.values(prepareData().data.children);
+    const preparedDatasets = Object.values(
+      prepareData().data.children,
+    ) as DataNode[];
 
     // JGA-WGSの子ノード一覧を事前に取得（未ログイン時のダミー表示に使用）
     preparedDatasets.forEach((dataset) => {
@@ -98,7 +145,7 @@ export default class VariantFrequency extends Stanza {
       }
 
       // 10秒タイムアウト付きでログイン状態を確認
-      const timeout = new Promise((_, reject) =>
+      const timeout = new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error("Request timeout")), 10000),
       );
       const fetchPromise = fetch(`${window.location.origin}/auth/status`);
@@ -127,12 +174,13 @@ export default class VariantFrequency extends Stanza {
 
       const responseDatasets = await response.json();
       // APIレスポンスからバリアントの頻度データ配列を取り出す
-      const frequenciesDatasets = responseDatasets.data[0]?.frequencies;
+      const frequenciesDatasets: FrequencyData[] | undefined =
+        responseDatasets.data[0]?.frequencies;
 
       // ----------------------------------------------------------
       // searchData() — ツリー構造を再帰的に走査して行データを構築
       // ----------------------------------------------------------
-      const searchData = (datum) => {
+      const searchData = (datum: DataNode) => {
         // APIレスポンスから現在のノードに対応する頻度データを探す
         const frequencyData = frequenciesDatasets?.find(
           (x) => x.source === datum.value,
@@ -151,7 +199,7 @@ export default class VariantFrequency extends Stanza {
           if (datum.depth > 1) {
             frequencyData.grandparent_id = findParent(
               preparedDatasets,
-              findParent(preparedDatasets, datum.id).id,
+              findParent(preparedDatasets, datum.id)!.id,
             )?.id;
           }
 
@@ -207,9 +255,11 @@ export default class VariantFrequency extends Stanza {
 
           // ★ buildFrequencyDisplay() の計算が終わった後で、表示用にカンマ区切りの文字列に変換する
           // 例: 1538 → "1,538"
-          const localeString = (v) =>
+          const localeString = (
+            v: number | string | undefined,
+          ): string | undefined =>
             v !== undefined ? parseInt(String(v)).toLocaleString() : undefined;
-          const hasNumericValue = (v) =>
+          const hasNumericValue = (v: number | string | undefined): boolean =>
             v !== undefined &&
             v !== null &&
             v !== "" &&
@@ -249,8 +299,8 @@ export default class VariantFrequency extends Stanza {
                 frequencyData.depth === 2 &&
                 currentLayer1 !== findParent(preparedDatasets, datum.id)?.label
               ) {
-                const parent = findParent(preparedDatasets, datum.id);
-                const titleRow = {
+                const parent = findParent(preparedDatasets, datum.id)!;
+                const titleRow: FrequencyData = {
                   dataset: frequencyData.dataset,
                   depth: 1,
                   label: parent.label,
@@ -271,7 +321,7 @@ export default class VariantFrequency extends Stanza {
           // ログインを促すプレースホルダー行を表示する
           if (!isLogin && frequencyData.source === "jga_wgs") {
             jgawgsChildren.forEach((child) => {
-              const dummyRow = {
+              const dummyRow: FrequencyData = {
                 dataset: frequencyData.dataset,
                 depth: 1,
                 label: child.label,
@@ -318,7 +368,7 @@ export default class VariantFrequency extends Stanza {
           hasHemizygote,
         },
       });
-    } catch (e) {
+    } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e);
 
       this.data = [];
@@ -340,9 +390,9 @@ export default class VariantFrequency extends Stanza {
      * DATASETS の各ノードに一意のID(連番)と階層の深さ(depth)を付与する。
      * d3-hierarchy でツリー化する前の前処理として使用。
      */
-    function addIdsToDataNodes(dataNodes, currentDepth = 0) {
+    function addIdsToDataNodes(dataNodes: any[], currentDepth = 0): DataNode[] {
       return dataNodes.map((node) => {
-        const newNode = {
+        const newNode: DataNode = {
           ...node,
           id: `${uniqueIdCounter++}`,
           depth: currentDepth,
@@ -374,8 +424,15 @@ export default class VariantFrequency extends Stanza {
      * 指定IDのノードが属するトップレベル（depth=0）のノードを返す。
      * データセット名の特定に使用。
      */
-    function findTopParent(data, targetId) {
-      function recursiveSearch(nodes, targetId, topParent = null) {
+    function findTopParent(
+      data: DataNode[],
+      targetId: string,
+    ): DataNode | null {
+      function recursiveSearch(
+        nodes: DataNode[],
+        targetId: string,
+        topParent: DataNode | null = null,
+      ): DataNode | null {
         for (const node of nodes) {
           if (node.id === targetId) {
             // topParent が null の場合、自分自身がトップレベルなのでそのまま返す
@@ -399,8 +456,12 @@ export default class VariantFrequency extends Stanza {
      * 指定IDのノードの直接の親ノードを返す。
      * parent_id / grandparent_id の特定に使用。
      */
-    function findParent(data, targetId) {
-      function recursiveSearch(nodes, targetId, parent = null) {
+    function findParent(data: DataNode[], targetId: string): DataNode | null {
+      function recursiveSearch(
+        nodes: DataNode[],
+        targetId: string,
+        parent: DataNode | null = null,
+      ): DataNode | null {
         for (const node of nodes) {
           if (node.id === targetId) {
             return parent;
@@ -419,7 +480,10 @@ export default class VariantFrequency extends Stanza {
      * JGA-WGSの個別集団データが既に resultObject にあるか確認し、
      * hasjgawgsChildren フラグを更新する。
      */
-    function checkExistence(resultObject, jgawgsChildren) {
+    function checkExistence(
+      resultObject: FrequencyData[],
+      jgawgsChildren: DataNode[],
+    ) {
       resultObject.forEach((data) => {
         jgawgsChildren.forEach((child, index) => {
           if (data.source === child.value) {
@@ -432,7 +496,11 @@ export default class VariantFrequency extends Stanza {
     /**
      * JGA-WGSの個別集団データが存在しない場合、ダミー行をその直後に挿入する。
      */
-    function insertObject(resultObject, hasChildren, jgawgsData) {
+    function insertObject(
+      resultObject: FrequencyData[],
+      hasChildren: boolean[],
+      jgawgsData: FrequencyData[],
+    ) {
       hasChildren.forEach((exists, index) => {
         if (!exists) {
           resultObject.forEach((data, i) => {
@@ -449,7 +517,7 @@ export default class VariantFrequency extends Stanza {
      * 子データが存在するノードには has_child=true を設定し、
      * テンプレート側でトグルアイコンの表示を制御する。
      */
-    function updateHasChild(datasets, data) {
+    function updateHasChild(datasets: DataNode[], data: FrequencyData[]) {
       datasets.forEach((datum) => {
         const dataNode = data.find((d) => d.source === datum.value);
         if (dataNode) {
@@ -483,9 +551,9 @@ export default class VariantFrequency extends Stanza {
      * セレクタに一致する要素の parentElement に対してクラスをトグルする。
      * querySelectorAll → forEach → parentElement.classList.toggle の繰り返しを共通化。
      */
-    const toggleChildren = (selector, cls) => {
+    const toggleChildren = (selector: string, cls: string) => {
       this.root
-        .querySelectorAll(selector)
+        .querySelectorAll<HTMLElement>(selector)
         .forEach((el) => el.parentElement?.classList.toggle(cls));
     };
 
@@ -495,9 +563,13 @@ export default class VariantFrequency extends Stanza {
      * - showClass を持つ場合    → closeClass を追加（展開中を閉じる）
      * このパターンは depth=0 のトグル時に下位レイヤーの状態を同期するために使う。
      */
-    const conditionalClose = (selector, closeClass, showClass) => {
-      this.root.querySelectorAll(selector).forEach((el) => {
-        const parent = el.parentElement;
+    const conditionalClose = (
+      selector: string,
+      closeClass: string,
+      showClass: string,
+    ) => {
+      this.root.querySelectorAll<HTMLElement>(selector).forEach((el) => {
+        const parent = el.parentElement!;
         if (parent.classList.contains(closeClass)) {
           parent.classList.remove(closeClass);
         } else if (parent.classList.contains(showClass)) {
@@ -508,7 +580,7 @@ export default class VariantFrequency extends Stanza {
 
     // ---- depth=0（データセット行）のクリックイベント ----
     this.root
-      .querySelectorAll('.population[data-depth="0"]')
+      .querySelectorAll<HTMLElement>('.population[data-depth="0"]')
       .forEach((layer) =>
         layer.addEventListener("click", (_e) => {
           layer.classList.toggle("open");
@@ -564,7 +636,7 @@ export default class VariantFrequency extends Stanza {
 
     // ---- depth=1（集団行）のクリックイベント ----
     this.root
-      .querySelectorAll('.population[data-depth="1"]')
+      .querySelectorAll<HTMLElement>('.population[data-depth="1"]')
       .forEach((layer) =>
         layer.addEventListener("click", (_e) => {
           layer.classList.toggle("open");
@@ -596,7 +668,7 @@ export default class VariantFrequency extends Stanza {
 
     // ---- depth=2（サブ集団行）のクリックイベント ----
     this.root
-      .querySelectorAll('.population[data-depth="2"]')
+      .querySelectorAll<HTMLElement>('.population[data-depth="2"]')
       .forEach((layer) =>
         layer.addEventListener("click", (_e) => {
           layer.classList.toggle("open");
@@ -618,7 +690,11 @@ export default class VariantFrequency extends Stanza {
   // createDownloadData() — ダウンロード用データの整形
   // ============================================================
 
-  createDownloadData(resultObject, variantData, hasHemizygote) {
+  createDownloadData(
+    resultObject: FrequencyData[],
+    variantData: any,
+    hasHemizygote: boolean,
+  ) {
     return resultObject
       .filter((freq) => {
         return (

@@ -1,14 +1,32 @@
+export type NumericInput = number | string | null | undefined;
+
+export type FrequencyLevel =
+  | "na"
+  | "monomorphic"
+  | "<0.0001"
+  | "<0.001"
+  | "<0.01"
+  | "<0.05"
+  | "<0.5"
+  | "≥0.5";
+
+export interface FrequencyResult {
+  frequency: string;
+  count: NumericInput;
+  level: FrequencyLevel;
+}
+
 const frequencyDisplayDigits = 4;
 const frequencyFormatter = new Intl.NumberFormat("en", {
   minimumFractionDigits: frequencyDisplayDigits,
   maximumFractionDigits: frequencyDisplayDigits,
 });
 
-const toNumericValue = (value) => {
+const toNumericValue = (value: NumericInput): number => {
   return Number.parseFloat(String(value));
 };
 
-const truncateDecimal = (value, digits) => {
+const truncateDecimal = (value: number, digits: number): number => {
   const factor = 10 ** digits;
   return Math.trunc(value * factor) / factor;
 };
@@ -18,7 +36,10 @@ const truncateDecimal = (value, digits) => {
  * シングルトン強調は別属性（data-allele-count）で扱うため、
  * ここでは ac===1 を特別扱いしない。
  */
-const resolveFrequencyLevel = (alleleCount, alleleFrequency) => {
+const resolveFrequencyLevel = (
+  alleleCount: number,
+  alleleFrequency: number,
+): FrequencyLevel => {
   if (Number.isNaN(alleleCount)) return "na";
   if (alleleCount === 0) return "monomorphic";
   if (alleleFrequency < 0.0001) return "<0.0001";
@@ -35,7 +56,7 @@ const resolveFrequencyLevel = (alleleCount, alleleFrequency) => {
  * ただし 0 < AF < 0.0001 は、非ゼロ値であることを明示するため
  * 画面表示を "<0.0001" にする。
  */
-const formatFrequencyValue = (value) => {
+const formatFrequencyValue = (value: NumericInput): string => {
   const numeric = toNumericValue(value);
   if (!Number.isFinite(numeric)) {
     return "";
@@ -50,7 +71,10 @@ const formatFrequencyValue = (value) => {
   );
 };
 
-export const buildFrequencyDisplay = (count, value) => {
+export const buildFrequencyDisplay = (
+  count: NumericInput,
+  value: NumericInput,
+): FrequencyResult => {
   const alleleCount = toNumericValue(count);
   const alleleFrequency = toNumericValue(value);
 
