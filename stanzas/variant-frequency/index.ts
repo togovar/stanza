@@ -265,15 +265,6 @@ export default class VariantFrequency extends Stanza {
             v !== "" &&
             !Number.isNaN(Number(v));
 
-          frequencyData.ac = localeString(frequencyData.ac); // Alt Allele Count
-          frequencyData.an = localeString(frequencyData.an); // Total Allele Count
-          frequencyData.aac = localeString(frequencyData.aac); // Alt/Alt Homozygote Count
-          frequencyData.arc = localeString(frequencyData.arc); // Alt/Ref Heterozygote Count
-          frequencyData.aoc = localeString(frequencyData.aoc); // Alt/OtherAlts Count
-          frequencyData.rrc = localeString(frequencyData.rrc); // Ref/Ref Homozygote Count
-          frequencyData.roc = localeString(frequencyData.roc); // Ref/OtherAlts Count
-          frequencyData.ooc = localeString(frequencyData.ooc); // OtherAlts/OtherAlts Count
-
           // ホモ接合マーカーは aac が 1 以上のときだけ表示する
           frequencyData.has_homozygote_marker = Number(frequencyData.aac) >= 1;
           // ヘミ接合マーカーは hac が 1 以上のときだけ表示する
@@ -284,6 +275,15 @@ export default class VariantFrequency extends Stanza {
             hasNumericValue(frequencyData.hac) ||
             hasNumericValue(frequencyData.hrc) ||
             hasNumericValue(frequencyData.hoc);
+
+          frequencyData.ac = localeString(frequencyData.ac); // Alt Allele Count
+          frequencyData.an = localeString(frequencyData.an); // Total Allele Count
+          frequencyData.aac = localeString(frequencyData.aac); // Alt/Alt Homozygote Count
+          frequencyData.arc = localeString(frequencyData.arc); // Alt/Ref Heterozygote Count
+          frequencyData.aoc = localeString(frequencyData.aoc); // Alt/OtherAlts Count
+          frequencyData.rrc = localeString(frequencyData.rrc); // Ref/Ref Homozygote Count
+          frequencyData.roc = localeString(frequencyData.roc); // Ref/OtherAlts Count
+          frequencyData.ooc = localeString(frequencyData.ooc); // OtherAlts/OtherAlts Count
 
           // ヘミ接合体カラムが必要かを判定（0を含め、数値があれば列を表示する）
           if (!hasHemizygote && hasHemizygoteValue) {
