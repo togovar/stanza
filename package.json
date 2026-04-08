@@ -11,6 +11,7 @@
     "build": "npx togostanza build",
     "generate": "npx togostanza generate stanza",
     "start": "npx togostanza serve",
+    "postinstall": "node ./scripts/fix-togostanza-tsconfig.mjs",
     "lint": "npm run lint:js && npm run lint:css",
     "lint:js": "npm run lint:eslint lib stanzas",
     "lint:eslint": "eslint --ignore-path .gitignore",
