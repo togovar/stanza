@@ -100,7 +100,12 @@ export default class VariantFrequency extends Stanza {
     const { "data-url": urlBase, assembly, tgv_id } = this.params;
 
     // バリアントIDでデータセット情報を展開して取得するAPIエンドポイント
-    const dataURL = `${urlBase}/search?quality=0&term=${tgv_id}&expand_dataset`;
+    const searchParams = new URLSearchParams({
+      quality: "0",
+      term: String(tgv_id),
+    });
+    searchParams.append("expand_dataset", "");
+    const dataURL = `${urlBase}/search?${searchParams.toString()}`;
 
     // ---- 変数の初期化 ----
 
