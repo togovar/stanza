@@ -65,7 +65,7 @@ const tsFallbackPlugin = () => {
 
     transform(code, id) {
       // JS ファイルと node_modules 配下はこのプラグインでは触らない。
-      if (!/\.tsx?$/u.test(id) || id.includes("/node_modules/")) {
+      if (!/\.tsx?$/u.test(id) || /[\\/]+node_modules[\\/]+/u.test(id)) {
         return null;
       }
 
