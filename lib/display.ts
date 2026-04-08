@@ -53,15 +53,6 @@ const toNumericValue = (value: NumericInput): number => {
   return Number.parseFloat(String(value));
 };
 
-const hasNumericValue = (value: NumericInput): boolean => {
-  return (
-    value !== undefined &&
-    value !== null &&
-    value !== "" &&
-    !Number.isNaN(Number(value))
-  );
-};
-
 export const refAlt = (
   ref?: string,
   alt?: string,
@@ -176,15 +167,11 @@ export const transformRecord = (
   ) as FrequencyEntry[];
 
   record.frequencies.forEach((entry) => {
-    // ヘミ接合体マーカーは値が 0 の場合も表示する（データが存在することを示すため）
-    const hasHemizygoteValue =
-      hasNumericValue(entry.hac) ||
-      hasNumericValue(entry.hrc) ||
-      hasNumericValue(entry.hoc);
-
     Object.assign(entry, buildFrequencyDisplay(entry.ac, entry.af), {
-      has_homozygote_marker: Number(entry.aac) > 0,
-      has_hemizygote_marker: hasHemizygoteValue,
+      // ホモ接合マーカーは aac が 1 以上のときだけ表示する
+      has_homozygote_marker: Number(entry.aac) >= 1,
+      // ヘミ接合体マーカーは hac が 1 以上のときだけ表示する
+      has_hemizygote_marker: Number(entry.hac) >= 1,
     });
   });
 

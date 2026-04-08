@@ -264,14 +264,6 @@ export default class VariantFrequency extends Stanza {
             v !== null &&
             v !== "" &&
             !Number.isNaN(Number(v));
-          // ヘミ接合体マーカーは値が 0 の場合も表示する（データが存在することを示すため）
-          const hasHemizygoteValue =
-            hasNumericValue(frequencyData.hac) ||
-            hasNumericValue(frequencyData.hrc) ||
-            hasNumericValue(frequencyData.hoc);
-
-          frequencyData.has_homozygote_marker = Number(frequencyData.aac) > 0;
-          frequencyData.has_hemizygote_marker = hasHemizygoteValue;
 
           frequencyData.ac = localeString(frequencyData.ac); // Alt Allele Count
           frequencyData.an = localeString(frequencyData.an); // Total Allele Count
@@ -281,6 +273,17 @@ export default class VariantFrequency extends Stanza {
           frequencyData.rrc = localeString(frequencyData.rrc); // Ref/Ref Homozygote Count
           frequencyData.roc = localeString(frequencyData.roc); // Ref/OtherAlts Count
           frequencyData.ooc = localeString(frequencyData.ooc); // OtherAlts/OtherAlts Count
+
+          // ホモ接合マーカーは aac が 1 以上のときだけ表示する
+          frequencyData.has_homozygote_marker = Number(frequencyData.aac) >= 1;
+          // ヘミ接合マーカーは hac が 1 以上のときだけ表示する
+          frequencyData.has_hemizygote_marker = Number(frequencyData.hac) >= 1;
+
+          // ヘミ接合体カラムは 0 を含め、数値があれば表示する
+          const hasHemizygoteValue =
+            hasNumericValue(frequencyData.hac) ||
+            hasNumericValue(frequencyData.hrc) ||
+            hasNumericValue(frequencyData.hoc);
 
           // ヘミ接合体カラムが必要かを判定（0を含め、数値があれば列を表示する）
           if (!hasHemizygote && hasHemizygoteValue) {
