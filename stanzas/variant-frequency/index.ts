@@ -57,6 +57,22 @@ interface DataNode {
   children?: DataNode[];
 }
 
+const isTruthyParam = (value: unknown): boolean => {
+  if (typeof value === "boolean") {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    return /^(?:1|true|yes|on)$/iu.test(value.trim());
+  }
+
+  return false;
+};
+
+const isLocalhostHost = (hostname: string): boolean => {
+  return hostname === "localhost" || hostname === "127.0.0.1";
+};
+
 // ============================================================
 // メインクラス
 // ============================================================
@@ -97,7 +113,12 @@ export default class VariantFrequency extends Stanza {
 
     // ---- stanzaパラメータの取得 ----
     // data-url: APIのベースURL, assembly: GRCh37/GRCh38, tgv_id: バリアントID
-    const { "data-url": urlBase, assembly, tgv_id } = this.params;
+    const {
+      "data-url": urlBase,
+      assembly,
+      tgv_id,
+      check_local_auth_status,
+    } = this.params;
 
     // バリアントIDでデータセット情報を展開して取得するAPIエンドポイント
     const searchParams = new URLSearchParams({
@@ -145,23 +166,24 @@ export default class VariantFrequency extends Stanza {
     // ---- ログイン状態の確認 ----
     // JGA-WGSの詳細データ（個別集団）はログイン時のみ表示される
     let isLogin = false;
+    const shouldCheckLocalAuth = isTruthyParam(check_local_auth_status);
+    const shouldFetchAuthStatus =
+      !isLocalhostHost(window.location.hostname) || shouldCheckLocalAuth;
 
     try {
-      if (window.location.origin === "http://localhost:8080") {
-        isLogin = false;
-      }
+      if (shouldFetchAuthStatus) {
+        // 10秒タイムアウト付きでログイン状態を確認
+        const timeout = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("Request timeout")), 10000),
+        );
+        const fetchPromise = fetch(`${window.location.origin}/auth/status`);
+        const response = await Promise.race([fetchPromise, timeout]);
 
-      // 10秒タイムアウト付きでログイン状態を確認
-      const timeout = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("Request timeout")), 10000),
-      );
-      const fetchPromise = fetch(`${window.location.origin}/auth/status`);
-      const response = await Promise.race([fetchPromise, timeout]);
-
-      if (response.status === 401 || response.status === 403) {
-        isLogin = false;
-      } else if (response.status === 200) {
-        isLogin = true;
+        if (response.status === 401 || response.status === 403) {
+          isLogin = false;
+        } else if (response.status === 200) {
+          isLogin = true;
+        }
       }
     } catch (error) {
       console.error("Error fetching auth status or timeout occurred:", error);
