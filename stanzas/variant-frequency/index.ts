@@ -13,20 +13,22 @@ import {
 // ============================================================
 
 /** APIから返されるデータセットごとの頻度情報 */
+type FrequencyValue = number | string | null;
+
 interface FrequencyData {
   source: string; // データセットID (例: "gem_j_wga")
-  ac?: number | string; // Alt Allele Count
-  an?: number | string; // Total Allele Count
-  af?: number | string; // Allele Frequency
-  aac?: number | string; // Alt/Alt Homozygote Count
-  arc?: number | string; // Alt/Ref Heterozygote Count
-  aoc?: number | string; // Alt/OtherAlts Count (JGA-WGSのみ)
-  rrc?: number | string; // Ref/Ref Homozygote Count
-  roc?: number | string; // Ref/OtherAlts Count (JGA-WGSのみ)
-  ooc?: number | string; // OtherAlts/OtherAlts Count (JGA-WGSのみ)
-  hac?: number | string; // Hemizygote Alt Count (X染色体など)
-  hrc?: number | string; // Hemizygote Ref Count
-  hoc?: number | string; // Hemizygote OtherAlts Count
+  ac?: FrequencyValue; // Alt Allele Count
+  an?: FrequencyValue; // Total Allele Count
+  af?: FrequencyValue; // Allele Frequency
+  aac?: FrequencyValue; // Alt/Alt Homozygote Count
+  arc?: FrequencyValue; // Alt/Ref Heterozygote Count
+  aoc?: FrequencyValue; // Alt/OtherAlts Count (JGA-WGSのみ)
+  rrc?: FrequencyValue; // Ref/Ref Homozygote Count
+  roc?: FrequencyValue; // Ref/OtherAlts Count (JGA-WGSのみ)
+  ooc?: FrequencyValue; // OtherAlts/OtherAlts Count (JGA-WGSのみ)
+  hac?: FrequencyValue; // Hemizygote Alt Count (X染色体など)
+  hrc?: FrequencyValue; // Hemizygote Ref Count
+  hoc?: FrequencyValue; // Hemizygote OtherAlts Count
   filter?: string | string[];
   quality?: string;
   // searchData() で付与するプロパティ
@@ -255,15 +257,19 @@ export default class VariantFrequency extends Stanza {
 
           // ★ buildFrequencyDisplay() の計算が終わった後で、表示用にカンマ区切りの文字列に変換する
           // 例: 1538 → "1,538"
-          const localeString = (
-            v: number | string | undefined,
-          ): string | undefined =>
-            v !== undefined ? parseInt(String(v)).toLocaleString() : undefined;
-          const hasNumericValue = (v: number | string | undefined): boolean =>
+          const hasNumericValue = (
+            v: number | string | null | undefined,
+          ): boolean =>
             v !== undefined &&
             v !== null &&
             v !== "" &&
             !Number.isNaN(Number(v));
+          const localeString = (
+            v: number | string | null | undefined,
+          ): string | undefined =>
+            hasNumericValue(v)
+              ? parseInt(String(v), 10).toLocaleString()
+              : undefined;
 
           // ホモ接合マーカーは aac が 1 以上のときだけ表示する
           frequencyData.has_homozygote_marker = Number(frequencyData.aac) >= 1;
