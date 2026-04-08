@@ -40,7 +40,9 @@
     },
     {
       "stanza:key": "check_local_auth_status",
-      "stanza:example": "true",
+      "stanza:type": "boolean",
+      "stanza:example": true,
+      "stanza:label": "Check auth status on localhost",
       "stanza:description": "When true, auth status is checked even on localhost. Default: false"
     }
   ],
