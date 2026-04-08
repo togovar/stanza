@@ -135,9 +135,6 @@ export default class VariantFrequency extends Stanza {
 
     // JGA-WGSの未ログイン時に表示するダミー行データ
     let jgawgsData: FrequencyData[] = [];
-
-    // JGA-WGSの4つの子集団が既に resultObject に入っているかを管理するフラグ
-    const hasjgawgsChildren = [false, false, false, false];
     let jgawgsChildren: DataNode[] = [];
 
     // JGA-SNP で見出し行の重複挿入を防ぐための追跡変数
@@ -381,8 +378,7 @@ export default class VariantFrequency extends Stanza {
 
       // 未ログイン時: JGA-WGSのダミー行を適切な位置に挿入
       if (!isLogin) {
-        checkExistence(resultObject, jgawgsChildren);
-        insertObject(resultObject, hasjgawgsChildren, jgawgsData);
+        insertObject(resultObject, jgawgsChildren, jgawgsData);
       }
 
       // has_child フラグを更新（開閉トグルの制御に使用）
@@ -513,37 +509,38 @@ export default class VariantFrequency extends Stanza {
     }
 
     /**
-     * JGA-WGSの個別集団データが既に resultObject にあるか確認し、
-     * hasjgawgsChildren フラグを更新する。
-     */
-    function checkExistence(
-      resultObject: FrequencyData[],
-      jgawgsChildren: DataNode[],
-    ) {
-      resultObject.forEach((data) => {
-        jgawgsChildren.forEach((child, index) => {
-          if (data.source === child.value) {
-            hasjgawgsChildren[index] = true;
-          }
-        });
-      });
-    }
-
-    /**
-     * JGA-WGSの個別集団データが存在しない場合、ダミー行をその直後に挿入する。
+     * JGA-WGSの個別集団データが存在しない場合、
+     * 親の JGA-WGS 行の直後から、子ノード定義順を保ったままダミー行を挿入する。
      */
     function insertObject(
       resultObject: FrequencyData[],
-      hasChildren: boolean[],
+      jgawgsChildren: DataNode[],
       jgawgsData: FrequencyData[],
     ) {
-      hasChildren.forEach((exists, index) => {
-        if (!exists) {
-          resultObject.forEach((data, i) => {
-            if (data.id === (index + 1).toString()) {
-              resultObject.splice(i + 1, 0, jgawgsData[index]);
-            }
-          });
+      const parentIndex = resultObject.findIndex(
+        (data) => data.source === "jga_wgs",
+      );
+
+      if (parentIndex === -1) {
+        return;
+      }
+
+      let insertIndex = parentIndex + 1;
+
+      jgawgsChildren.forEach((child, index) => {
+        const existingChildIndex = resultObject.findIndex(
+          (data) => data.source === child.value,
+        );
+
+        if (existingChildIndex !== -1) {
+          insertIndex = existingChildIndex + 1;
+          return;
+        }
+
+        const dummyRow = jgawgsData[index];
+        if (dummyRow) {
+          resultObject.splice(insertIndex, 0, dummyRow);
+          insertIndex += 1;
         }
       });
     }
