@@ -163,10 +163,6 @@ if (typeof module !== "undefined") {
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
-function getDefaultExportFromCjs (x) {
-	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
-}
-
 var accessibility = {
 	name: "accessibility",
 	keywords: [
@@ -24191,9 +24187,9 @@ var each = {
 	            execIteration(i, i, i === context.length - 1);
 	          }
 	        }
-	      } else if (commonjsGlobal.Symbol && context[commonjsGlobal.Symbol.iterator]) {
+	      } else if (typeof Symbol === 'function' && context[Symbol.iterator]) {
 	        var newContext = [];
-	        var iterator = context[commonjsGlobal.Symbol.iterator]();
+	        var iterator = context[Symbol.iterator]();
 	        for (var it = iterator.next(); !it.done; it = iterator.next()) {
 	          newContext.push(it.value);
 	        }
@@ -24435,35 +24431,35 @@ helpers.registerDefaultHelpers = registerDefaultHelpers;
 helpers.moveHelperToHooks = moveHelperToHooks;
 // istanbul ignore next
 
-function _interopRequireDefault$3(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault$4(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 var _helpersBlockHelperMissing = blockHelperMissingExports;
 
-var _helpersBlockHelperMissing2 = _interopRequireDefault$3(_helpersBlockHelperMissing);
+var _helpersBlockHelperMissing2 = _interopRequireDefault$4(_helpersBlockHelperMissing);
 
 var _helpersEach = eachExports;
 
-var _helpersEach2 = _interopRequireDefault$3(_helpersEach);
+var _helpersEach2 = _interopRequireDefault$4(_helpersEach);
 
 var _helpersHelperMissing = helperMissingExports;
 
-var _helpersHelperMissing2 = _interopRequireDefault$3(_helpersHelperMissing);
+var _helpersHelperMissing2 = _interopRequireDefault$4(_helpersHelperMissing);
 
 var _helpersIf = _ifExports;
 
-var _helpersIf2 = _interopRequireDefault$3(_helpersIf);
+var _helpersIf2 = _interopRequireDefault$4(_helpersIf);
 
 var _helpersLog = logExports;
 
-var _helpersLog2 = _interopRequireDefault$3(_helpersLog);
+var _helpersLog2 = _interopRequireDefault$4(_helpersLog);
 
 var _helpersLookup = lookupExports;
 
-var _helpersLookup2 = _interopRequireDefault$3(_helpersLookup);
+var _helpersLookup2 = _interopRequireDefault$4(_helpersLookup);
 
 var _helpersWith = _withExports;
 
-var _helpersWith2 = _interopRequireDefault$3(_helpersWith);
+var _helpersWith2 = _interopRequireDefault$4(_helpersWith);
 
 function registerDefaultHelpers(instance) {
   _helpersBlockHelperMissing2['default'](instance);
@@ -24479,7 +24475,8 @@ function moveHelperToHooks(instance, helperName, keepHelper) {
   if (instance.helpers[helperName]) {
     instance.hooks[helperName] = instance.helpers[helperName];
     if (!keepHelper) {
-      delete instance.helpers[helperName];
+      // Using delete is slow
+      instance.helpers[helperName] = undefined;
     }
   }
 }
@@ -24527,18 +24524,18 @@ decorators.__esModule = true;
 decorators.registerDefaultDecorators = registerDefaultDecorators;
 // istanbul ignore next
 
-function _interopRequireDefault$2(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault$3(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 var _decoratorsInline = inlineExports;
 
-var _decoratorsInline2 = _interopRequireDefault$2(_decoratorsInline);
+var _decoratorsInline2 = _interopRequireDefault$3(_decoratorsInline);
 
 function registerDefaultDecorators(instance) {
   _decoratorsInline2['default'](instance);
 }
 
 var loggerExports = {};
-var logger$1 = {
+var logger = {
   get exports(){ return loggerExports; },
   set exports(v){ loggerExports = v; },
 };
@@ -24590,31 +24587,9 @@ var logger$1 = {
 	exports['default'] = logger;
 	module.exports = exports['default'];
 	
-} (logger$1, loggerExports));
+} (logger, loggerExports));
 
 var protoAccess = {};
-
-var createNewLookupObject$1 = {};
-
-createNewLookupObject$1.__esModule = true;
-createNewLookupObject$1.createNewLookupObject = createNewLookupObject;
-
-var _utils$2 = utils;
-
-/**
- * Create a new object with "null"-prototype to avoid truthy results on prototype properties.
- * The resulting object can be used with "object[property]" to check if a property exists
- * @param {...object} sources a varargs parameter of source objects that will be merged
- * @returns {object}
- */
-
-function createNewLookupObject() {
-  for (var _len = arguments.length, sources = Array(_len), _key = 0; _key < _len; _key++) {
-    sources[_key] = arguments[_key];
-  }
-
-  return _utils$2.extend.apply(undefined, [Object.create(null)].concat(sources));
-}
 
 protoAccess.__esModule = true;
 protoAccess.createProtoAccessControl = createProtoAccessControl;
@@ -24622,34 +24597,39 @@ protoAccess.resultIsAllowed = resultIsAllowed;
 protoAccess.resetLoggedProperties = resetLoggedProperties;
 // istanbul ignore next
 
-function _interopRequireWildcard$1(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+function _interopRequireDefault$2(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-var _createNewLookupObject = createNewLookupObject$1;
+var _utils$2 = utils;
 
 var _logger$1 = loggerExports;
 
-var logger = _interopRequireWildcard$1(_logger$1);
+var _logger2$1 = _interopRequireDefault$2(_logger$1);
 
 var loggedProperties = Object.create(null);
 
 function createProtoAccessControl(runtimeOptions) {
-  var defaultMethodWhiteList = Object.create(null);
-  defaultMethodWhiteList['constructor'] = false;
-  defaultMethodWhiteList['__defineGetter__'] = false;
-  defaultMethodWhiteList['__defineSetter__'] = false;
-  defaultMethodWhiteList['__lookupGetter__'] = false;
-
-  var defaultPropertyWhiteList = Object.create(null);
+  // Create an object with "null"-prototype to avoid truthy results on
+  // prototype properties.
+  var propertyWhiteList = Object.create(null);
   // eslint-disable-next-line no-proto
-  defaultPropertyWhiteList['__proto__'] = false;
+  propertyWhiteList['__proto__'] = false;
+  _utils$2.extend(propertyWhiteList, runtimeOptions.allowedProtoProperties);
+
+  var methodWhiteList = Object.create(null);
+  methodWhiteList['constructor'] = false;
+  methodWhiteList['__defineGetter__'] = false;
+  methodWhiteList['__defineSetter__'] = false;
+  methodWhiteList['__lookupGetter__'] = false;
+  methodWhiteList['__lookupSetter__'] = false;
+  _utils$2.extend(methodWhiteList, runtimeOptions.allowedProtoMethods);
 
   return {
     properties: {
-      whitelist: _createNewLookupObject.createNewLookupObject(defaultPropertyWhiteList, runtimeOptions.allowedProtoProperties),
+      whitelist: propertyWhiteList,
       defaultValue: runtimeOptions.allowProtoPropertiesByDefault
     },
     methods: {
-      whitelist: _createNewLookupObject.createNewLookupObject(defaultMethodWhiteList, runtimeOptions.allowedProtoMethods),
+      whitelist: methodWhiteList,
       defaultValue: runtimeOptions.allowProtoMethodsByDefault
     }
   };
@@ -24677,7 +24657,7 @@ function checkWhiteList(protoAccessControlForType, propertyName) {
 function logUnexpecedPropertyAccessOnce(propertyName) {
   if (loggedProperties[propertyName] !== true) {
     loggedProperties[propertyName] = true;
-    logger.log('error', 'Handlebars: Access has been denied to resolve the property "' + propertyName + '" because it is not an "own property" of its parent.\n' + 'You can add a runtime option to disable the check or this warning:\n' + 'See https://handlebarsjs.com/api-reference/runtime-options.html#options-to-control-prototype-access for details');
+    _logger2$1['default'].log('error', 'Handlebars: Access has been denied to resolve the property "' + propertyName + '" because it is not an "own property" of its parent.\n' + 'You can add a runtime option to disable the check or this warning:\n' + 'See https://handlebarsjs.com/api-reference/runtime-options.html#options-to-control-prototype-access for details');
   }
 }
 
@@ -24709,7 +24689,7 @@ var _logger2 = _interopRequireDefault$1(_logger);
 
 var _internalProtoAccess$1 = protoAccess;
 
-var VERSION = '4.7.7';
+var VERSION = '4.7.9';
 base.VERSION = VERSION;
 var COMPILER_REVISION = 8;
 base.COMPILER_REVISION = COMPILER_REVISION;
@@ -24823,7 +24803,7 @@ var safeString = {
 	
 } (safeString, safeStringExports));
 
-var runtime = {};
+var runtime$1 = {};
 
 var wrapHelper$1 = {};
 
@@ -24844,13 +24824,13 @@ function wrapHelper(helper, transformOptionsFn) {
   return wrapper;
 }
 
-runtime.__esModule = true;
-runtime.checkRevision = checkRevision;
-runtime.template = template;
-runtime.wrapProgram = wrapProgram;
-runtime.resolvePartial = resolvePartial;
-runtime.invokePartial = invokePartial;
-runtime.noop = noop;
+runtime$1.__esModule = true;
+runtime$1.checkRevision = checkRevision;
+runtime$1.template = template;
+runtime$1.wrapProgram = wrapProgram;
+runtime$1.resolvePartial = resolvePartial;
+runtime$1.invokePartial = invokePartial;
+runtime$1.noop = noop;
 // istanbul ignore next
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -24920,16 +24900,14 @@ function template(templateSpec, env) {
     }
     partial = env.VM.resolvePartial.call(this, partial, context, options);
 
-    var extendedOptions = Utils.extend({}, options, {
-      hooks: this.hooks,
-      protoAccessControl: this.protoAccessControl
-    });
+    options.hooks = this.hooks;
+    options.protoAccessControl = this.protoAccessControl;
 
-    var result = env.VM.invokePartial.call(this, partial, context, extendedOptions);
+    var result = env.VM.invokePartial.call(this, partial, context, options);
 
     if (result == null && env.compile) {
       options.partials[options.name] = env.compile(partial, templateSpec.compilerOptions, env);
-      result = options.partials[options.name](context, extendedOptions);
+      result = options.partials[options.name](context, options);
     }
     if (result != null) {
       if (options.indent) {
@@ -24978,7 +24956,7 @@ function template(templateSpec, env) {
       for (var i = 0; i < len; i++) {
         var result = depths[i] && container.lookupProperty(depths[i], name);
         if (result != null) {
-          return depths[i][name];
+          return result;
         }
       }
     },
@@ -25060,8 +25038,9 @@ function template(templateSpec, env) {
 
   ret._setup = function (options) {
     if (!options.partial) {
-      var mergedHelpers = Utils.extend({}, env.helpers, options.helpers);
-      wrapHelpersToPassLookupProperty(mergedHelpers, container);
+      var mergedHelpers = {};
+      addHelpers(mergedHelpers, env.helpers, container);
+      addHelpers(mergedHelpers, options.helpers, container);
       container.helpers = mergedHelpers;
 
       if (templateSpec.usePartial) {
@@ -25127,21 +25106,21 @@ function wrapProgram(container, i, fn, data, declaredBlockParams, blockParams, d
 function resolvePartial(partial, context, options) {
   if (!partial) {
     if (options.name === '@partial-block') {
-      partial = options.data['partial-block'];
+      partial = lookupOwnProperty(options.data, 'partial-block');
     } else {
-      partial = options.partials[options.name];
+      partial = lookupOwnProperty(options.partials, options.name);
     }
   } else if (!partial.call && !options.name) {
     // This is a dynamic partial that returned a string
     options.name = partial;
-    partial = options.partials[partial];
+    partial = lookupOwnProperty(options.partials, partial);
   }
   return partial;
 }
 
 function invokePartial(partial, context, options) {
   // Use the current closure context to save the partial-block if this partial
-  var currentPartialBlock = options.data && options.data['partial-block'];
+  var currentPartialBlock = lookupOwnProperty(options.data, 'partial-block');
   options.partial = true;
   if (options.ids) {
     options.data.contextPath = options.ids[0] || options.data.contextPath;
@@ -25183,6 +25162,12 @@ function noop() {
   return '';
 }
 
+function lookupOwnProperty(obj, name) {
+  if (obj && Object.prototype.hasOwnProperty.call(obj, name)) {
+    return obj[name];
+  }
+}
+
 function initData(context, data) {
   if (!data || !('root' in data)) {
     data = data ? _base.createFrame(data) : {};
@@ -25200,9 +25185,10 @@ function executeDecorators(fn, prog, container, depths, data, blockParams) {
   return prog;
 }
 
-function wrapHelpersToPassLookupProperty(mergedHelpers, container) {
-  Object.keys(mergedHelpers).forEach(function (helperName) {
-    var helper = mergedHelpers[helperName];
+function addHelpers(mergedHelpers, helpers, container) {
+  if (!helpers) return;
+  Object.keys(helpers).forEach(function (helperName) {
+    var helper = helpers[helperName];
     mergedHelpers[helperName] = passLookupPropertyOption(helper, container);
   });
 }
@@ -25210,7 +25196,8 @@ function wrapHelpersToPassLookupProperty(mergedHelpers, container) {
 function passLookupPropertyOption(helper, container) {
   var lookupProperty = container.lookupProperty;
   return _internalWrapHelper.wrapHelper(helper, function (options) {
-    return Utils.extend({ lookupProperty: lookupProperty }, options);
+    options.lookupProperty = lookupProperty;
+    return options;
   });
 }
 
@@ -25220,18 +25207,30 @@ var noConflict = {
   set exports(v){ noConflictExports = v; },
 };
 
+/* global globalThis */
+
 (function (module, exports) {
 
 	exports.__esModule = true;
 
 	exports['default'] = function (Handlebars) {
 	  /* istanbul ignore next */
-	  var root = typeof commonjsGlobal !== 'undefined' ? commonjsGlobal : window,
-	      $Handlebars = root.Handlebars;
+	  // https://mathiasbynens.be/notes/globalthis
+	  (function () {
+	    if (typeof globalThis === 'object') return;
+	    Object.prototype.__defineGetter__('__magic__', function () {
+	      return this;
+	    });
+	    __magic__.globalThis = __magic__; // eslint-disable-line no-undef
+	    delete Object.prototype.__magic__;
+	  })();
+
+	  var $Handlebars = globalThis.Handlebars;
+
 	  /* istanbul ignore next */
 	  Handlebars.noConflict = function () {
-	    if (root.Handlebars === Handlebars) {
-	      root.Handlebars = $Handlebars;
+	    if (globalThis.Handlebars === Handlebars) {
+	      globalThis.Handlebars = $Handlebars;
 	    }
 	    return Handlebars;
 	  };
@@ -25271,9 +25270,9 @@ var noConflict = {
 
 	var Utils = _interopRequireWildcard(_handlebarsUtils);
 
-	var _handlebarsRuntime = runtime;
+	var _handlebarsRuntime = runtime$1;
 
-	var runtime$1 = _interopRequireWildcard(_handlebarsRuntime);
+	var runtime = _interopRequireWildcard(_handlebarsRuntime);
 
 	var _handlebarsNoConflict = noConflictExports;
 
@@ -25289,9 +25288,9 @@ var noConflict = {
 	  hb.Utils = Utils;
 	  hb.escapeExpression = Utils.escapeExpression;
 
-	  hb.VM = runtime$1;
+	  hb.VM = runtime;
 	  hb.template = function (spec) {
-	    return runtime$1.template(spec, hb);
+	    return runtime.template(spec, hb);
 	  };
 
 	  return hb;
@@ -25309,7 +25308,9 @@ var noConflict = {
 	
 } (handlebars_runtime, handlebars_runtimeExports));
 
-var HandlebarsRuntime = /*@__PURE__*/getDefaultExportFromCjs(handlebars_runtimeExports);
+// Create a simple path alias to allow browserify to resolve
+// the runtime on a supported path.
+var runtime = handlebars_runtimeExports['default'];
 
 class Stanza {
     element;
@@ -25321,7 +25322,7 @@ class Stanza {
     constructor(element, metadata, templates, url) {
         this.element = element;
         this.metadata = metadata;
-        const handlebarsRuntime = HandlebarsRuntime.create();
+        const handlebarsRuntime = runtime.create();
         this.templates = Object.fromEntries(templates.map(([name, spec]) => {
             return [name, handlebarsRuntime.template(spec)];
         }));
@@ -25419,4 +25420,4 @@ class Stanza {
 }
 
 export { Stanza as S, commonjsGlobal as c, defineStanzaElement as d };
-//# sourceMappingURL=stanza-33919c9f.js.map
+//# sourceMappingURL=stanza-a61f9e15.js.map

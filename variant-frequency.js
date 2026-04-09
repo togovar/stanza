@@ -1,240 +1,7 @@
-import { S as Stanza, d as defineStanzaElement } from './stanza-33919c9f.js';
+import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
+import { h as hierarchy } from './transform-ddf65f5a.js';
 import { D as DATASETS } from './constants-f43484af.js';
-import { f as frequency } from './display-8f29f2e3.js';
-import './transform-1553d9f4.js';
-
-function count(node) {
-  var sum = 0,
-      children = node.children,
-      i = children && children.length;
-  if (!i) sum = 1;
-  else while (--i >= 0) sum += children[i].value;
-  node.value = sum;
-}
-
-function node_count() {
-  return this.eachAfter(count);
-}
-
-function node_each(callback, that) {
-  let index = -1;
-  for (const node of this) {
-    callback.call(that, node, ++index, this);
-  }
-  return this;
-}
-
-function node_eachBefore(callback, that) {
-  var node = this, nodes = [node], children, i, index = -1;
-  while (node = nodes.pop()) {
-    callback.call(that, node, ++index, this);
-    if (children = node.children) {
-      for (i = children.length - 1; i >= 0; --i) {
-        nodes.push(children[i]);
-      }
-    }
-  }
-  return this;
-}
-
-function node_eachAfter(callback, that) {
-  var node = this, nodes = [node], next = [], children, i, n, index = -1;
-  while (node = nodes.pop()) {
-    next.push(node);
-    if (children = node.children) {
-      for (i = 0, n = children.length; i < n; ++i) {
-        nodes.push(children[i]);
-      }
-    }
-  }
-  while (node = next.pop()) {
-    callback.call(that, node, ++index, this);
-  }
-  return this;
-}
-
-function node_find(callback, that) {
-  let index = -1;
-  for (const node of this) {
-    if (callback.call(that, node, ++index, this)) {
-      return node;
-    }
-  }
-}
-
-function node_sum(value) {
-  return this.eachAfter(function(node) {
-    var sum = +value(node.data) || 0,
-        children = node.children,
-        i = children && children.length;
-    while (--i >= 0) sum += children[i].value;
-    node.value = sum;
-  });
-}
-
-function node_sort(compare) {
-  return this.eachBefore(function(node) {
-    if (node.children) {
-      node.children.sort(compare);
-    }
-  });
-}
-
-function node_path(end) {
-  var start = this,
-      ancestor = leastCommonAncestor(start, end),
-      nodes = [start];
-  while (start !== ancestor) {
-    start = start.parent;
-    nodes.push(start);
-  }
-  var k = nodes.length;
-  while (end !== ancestor) {
-    nodes.splice(k, 0, end);
-    end = end.parent;
-  }
-  return nodes;
-}
-
-function leastCommonAncestor(a, b) {
-  if (a === b) return a;
-  var aNodes = a.ancestors(),
-      bNodes = b.ancestors(),
-      c = null;
-  a = aNodes.pop();
-  b = bNodes.pop();
-  while (a === b) {
-    c = a;
-    a = aNodes.pop();
-    b = bNodes.pop();
-  }
-  return c;
-}
-
-function node_ancestors() {
-  var node = this, nodes = [node];
-  while (node = node.parent) {
-    nodes.push(node);
-  }
-  return nodes;
-}
-
-function node_descendants() {
-  return Array.from(this);
-}
-
-function node_leaves() {
-  var leaves = [];
-  this.eachBefore(function(node) {
-    if (!node.children) {
-      leaves.push(node);
-    }
-  });
-  return leaves;
-}
-
-function node_links() {
-  var root = this, links = [];
-  root.each(function(node) {
-    if (node !== root) { // Don’t include the root’s parent, if any.
-      links.push({source: node.parent, target: node});
-    }
-  });
-  return links;
-}
-
-function* node_iterator() {
-  var node = this, current, next = [node], children, i, n;
-  do {
-    current = next.reverse(), next = [];
-    while (node = current.pop()) {
-      yield node;
-      if (children = node.children) {
-        for (i = 0, n = children.length; i < n; ++i) {
-          next.push(children[i]);
-        }
-      }
-    }
-  } while (next.length);
-}
-
-function hierarchy(data, children) {
-  if (data instanceof Map) {
-    data = [undefined, data];
-    if (children === undefined) children = mapChildren;
-  } else if (children === undefined) {
-    children = objectChildren;
-  }
-
-  var root = new Node(data),
-      node,
-      nodes = [root],
-      child,
-      childs,
-      i,
-      n;
-
-  while (node = nodes.pop()) {
-    if ((childs = children(node.data)) && (n = (childs = Array.from(childs)).length)) {
-      node.children = childs;
-      for (i = n - 1; i >= 0; --i) {
-        nodes.push(child = childs[i] = new Node(childs[i]));
-        child.parent = node;
-        child.depth = node.depth + 1;
-      }
-    }
-  }
-
-  return root.eachBefore(computeHeight);
-}
-
-function node_copy() {
-  return hierarchy(this).eachBefore(copyData);
-}
-
-function objectChildren(d) {
-  return d.children;
-}
-
-function mapChildren(d) {
-  return Array.isArray(d) ? d[1] : null;
-}
-
-function copyData(node) {
-  if (node.data.value !== undefined) node.value = node.data.value;
-  node.data = node.data.data;
-}
-
-function computeHeight(node) {
-  var height = 0;
-  do node.height = height;
-  while ((node = node.parent) && (node.height < ++height));
-}
-
-function Node(data) {
-  this.data = data;
-  this.depth =
-  this.height = 0;
-  this.parent = null;
-}
-
-Node.prototype = hierarchy.prototype = {
-  constructor: Node,
-  count: node_count,
-  each: node_each,
-  eachAfter: node_eachAfter,
-  eachBefore: node_eachBefore,
-  find: node_find,
-  sum: node_sum,
-  sort: node_sort,
-  path: node_path,
-  ancestors: node_ancestors,
-  descendants: node_descendants,
-  leaves: node_leaves,
-  links: node_links,
-  copy: node_copy,
-  [Symbol.iterator]: node_iterator
-};
+import { b as buildFrequencyDisplay } from './frequency-0e5f07a7.js';
 
 var global$1 = (typeof global !== "undefined" ? global :
             typeof self !== "undefined" ? self :
@@ -2294,8 +2061,7 @@ const castPath = function (value, object) {
 const toKey = function (value) {
   if (typeof value === "string" || isSymbol(value)) return value;
   const result = `${value}`;
-  // eslint-disable-next-line
-  return result == "0" && 1 / value == -INFINITY ? "-0" : result;
+  return result == "0" && 1 / value == -Infinity ? "-0" : result;
 };
 
 const get = function (object, path) {
@@ -2477,9 +2243,10 @@ const normalize_options = function (opts) {
       const isRegExp = quoted_match instanceof RegExp;
       if (!isString && !isRegExp) {
         return [
-          Error(
-            `Invalid Option: quoted_match must be a string or a regex, got ${JSON.stringify(quoted_match)}`,
-          ),
+          new CsvError("CSV_OPTION_QUOTED_MATCH", [
+            "option `quoted_match` must be a string or a regex,",
+            `got ${JSON.stringify(options.quoted_match)}`,
+          ]),
         ];
       }
     }
@@ -2512,9 +2279,57 @@ const normalize_options = function (opts) {
     ];
   }
   // Normalize option `header`
-  if (options.header === undefined || options.header === null) {
+  if (
+    options.header === undefined ||
+    options.header === null ||
+    options.header === false
+  ) {
     options.header = false;
+  } else if (options.header !== true) {
+    throw new CsvError(
+      "CSV_INVALID_OPTION_HEADER",
+      [
+        "option `header` is expected to be a boolean,",
+        `got ${JSON.stringify(options.header)}`,
+      ],
+      options,
+    );
   }
+  // Normalize option `headers_as_comment`
+  if (
+    options.header_as_comment === undefined ||
+    options.header_as_comment === null ||
+    options.header_as_comment === false
+  ) {
+    options.header_as_comment = false;
+  } else if (options.header_as_comment === true) {
+    options.header_as_comment = "#";
+  } else if (isBuffer(options.header_as_comment)) {
+    options.header_as_comment = options.header_as_comment.toString();
+  } else if (typeof options.header_as_comment !== "string") {
+    throw new CsvError(
+      "CSV_INVALID_OPTION_HEADER_AS_COMMENT",
+      [
+        "option `header_as_comment` must be a boolean, a string or a buffer,",
+        `got ${JSON.stringify(options.header_as_comment)}`,
+      ],
+      options,
+    );
+  }
+  // if (options.header_as_comment && !options.comment?.length) {
+  //   throw new CsvError(
+  //     "CSV_INVALID_OPTION_COMMENT",
+  //     [
+  //       "option `comment` must be a non empty string or buffer when using `header_as_comment`,",
+  //       `got ${JSON.stringify(options.comment)}`,
+  //     ],
+  //     options,
+  //   );
+  // }
+  // Header is always enabled with `header_as_comment`
+  // if (options.header_as_comment === true) {
+  //   options.header = true;
+  // }
   // Normalize option `columns`
   const [errColumns, columns] = normalize_columns(options.columns);
   if (errColumns !== undefined) return [errColumns];
@@ -2881,6 +2696,9 @@ const stringifier = function (options, state, info) {
         [err, headers] = this.stringify(headers);
       }
       if (err) return err;
+      if (this.options.header_as_comment) {
+        headers = this.options.header_as_comment + " " + headers;
+      }
       push(headers);
     },
     __cast: function (value, context) {
@@ -3063,6 +2881,45 @@ function getTimezoneOffsetInMilliseconds(date) {
   utcDate.setUTCFullYear(date.getFullYear());
   return date.getTime() - utcDate.getTime();
 }
+
+/**
+ * Days in 1 week.
+ *
+ * @name daysInWeek
+ * @constant
+ * @type {number}
+ * @default
+ */
+
+/**
+ * Milliseconds in 1 minute
+ *
+ * @name millisecondsInMinute
+ * @constant
+ * @type {number}
+ * @default
+ */
+var millisecondsInMinute = 60000;
+
+/**
+ * Milliseconds in 1 hour
+ *
+ * @name millisecondsInHour
+ * @constant
+ * @type {number}
+ * @default
+ */
+var millisecondsInHour = 3600000;
+
+/**
+ * Milliseconds in 1 second
+ *
+ * @name millisecondsInSecond
+ * @constant
+ * @type {number}
+ * @default
+ */
+var millisecondsInSecond = 1000;
 
 /**
  * @name isDate
@@ -3324,7 +3181,7 @@ function addLeadingZeros(number, targetLength) {
  *
  * Letters marked by * are not implemented but reserved by Unicode standard.
  */
-var formatters$2 = {
+var formatters$1 = {
   // Year
   y: function y(date, token) {
     // From http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_tokens
@@ -3390,7 +3247,6 @@ var formatters$2 = {
     return addLeadingZeros(fractionalSeconds, token.length);
   }
 };
-var formatters$3 = formatters$2;
 
 var dayPeriodEnum = {
   am: 'am',
@@ -3484,7 +3340,7 @@ var formatters = {
         unit: 'year'
       });
     }
-    return formatters$3.y(date, token);
+    return formatters$1.y(date, token);
   },
   // Local week-numbering year
   Y: function Y(date, token, localize, options) {
@@ -3606,7 +3462,7 @@ var formatters = {
     switch (token) {
       case 'M':
       case 'MM':
-        return formatters$3.M(date, token);
+        return formatters$1.M(date, token);
       // 1st, 2nd, ..., 12th
       case 'Mo':
         return localize.ordinalNumber(month + 1, {
@@ -3696,7 +3552,7 @@ var formatters = {
         unit: 'date'
       });
     }
-    return formatters$3.d(date, token);
+    return formatters$1.d(date, token);
   },
   // Day of year
   D: function D(date, token, localize) {
@@ -3976,7 +3832,7 @@ var formatters = {
         unit: 'hour'
       });
     }
-    return formatters$3.h(date, token);
+    return formatters$1.h(date, token);
   },
   // Hour [0-23]
   H: function H(date, token, localize) {
@@ -3985,7 +3841,7 @@ var formatters = {
         unit: 'hour'
       });
     }
-    return formatters$3.H(date, token);
+    return formatters$1.H(date, token);
   },
   // Hour [0-11]
   K: function K(date, token, localize) {
@@ -4015,7 +3871,7 @@ var formatters = {
         unit: 'minute'
       });
     }
-    return formatters$3.m(date, token);
+    return formatters$1.m(date, token);
   },
   // Second
   s: function s(date, token, localize) {
@@ -4024,11 +3880,11 @@ var formatters = {
         unit: 'second'
       });
     }
-    return formatters$3.s(date, token);
+    return formatters$1.s(date, token);
   },
   // Fraction of second
   S: function S(date, token) {
-    return formatters$3.S(date, token);
+    return formatters$1.S(date, token);
   },
   // Timezone (ISO-8601. If offset is 0, output is always `'Z'`)
   X: function X(date, token, _localize, options) {
@@ -4156,7 +4012,6 @@ function formatTimezone(offset, dirtyDelimiter) {
   var minutes = addLeadingZeros(absOffset % 60, 2);
   return sign + hours + delimiter + minutes;
 }
-var formatters$1 = formatters;
 
 var dateLongFormatter = function dateLongFormatter(pattern, formatLong) {
   switch (pattern) {
@@ -4237,7 +4092,6 @@ var longFormatters = {
   p: timeLongFormatter,
   P: dateTimeLongFormatter
 };
-var longFormatters$1 = longFormatters;
 
 var protectedDayOfYearTokens = ['D', 'DD'];
 var protectedWeekYearTokens = ['YY', 'YYYY'];
@@ -4341,7 +4195,6 @@ var formatDistance = function formatDistance(token, count, options) {
   }
   return result;
 };
-var formatDistance$1 = formatDistance;
 
 function buildFormatLongFn(args) {
   return function () {
@@ -4385,7 +4238,6 @@ var formatLong = {
     defaultWidth: 'full'
   })
 };
-var formatLong$1 = formatLong;
 
 var formatRelativeLocale = {
   lastWeek: "'last' eeee 'at' p",
@@ -4398,7 +4250,6 @@ var formatRelativeLocale = {
 var formatRelative = function formatRelative(token, _date, _baseDate, _options) {
   return formatRelativeLocale[token];
 };
-var formatRelative$1 = formatRelative;
 
 function buildLocalizeFn(args) {
   return function (dirtyIndex, options) {
@@ -4560,7 +4411,6 @@ var localize = {
     defaultFormattingWidth: 'wide'
   })
 };
-var localize$1 = localize;
 
 function buildMatchFn(args) {
   return function (string) {
@@ -4718,7 +4568,6 @@ var match = {
     defaultParseWidth: 'any'
   })
 };
-var match$1 = match;
 
 /**
  * @type {Locale}
@@ -4731,17 +4580,16 @@ var match$1 = match;
  */
 var locale = {
   code: 'en-US',
-  formatDistance: formatDistance$1,
-  formatLong: formatLong$1,
-  formatRelative: formatRelative$1,
-  localize: localize$1,
-  match: match$1,
+  formatDistance: formatDistance,
+  formatLong: formatLong,
+  formatRelative: formatRelative,
+  localize: localize,
+  match: match,
   options: {
     weekStartsOn: 0 /* Sunday */,
     firstWeekContainsDate: 1
   }
 };
-var defaultLocale = locale;
 
 // - [yYQqMLwIdDecihHKkms]o matches any available ordinal number token
 //   (one of the certain letters followed by `o`)
@@ -5059,7 +4907,7 @@ function format(dirtyDate, dirtyFormatStr, options) {
   requiredArgs(2, arguments);
   var formatStr = String(dirtyFormatStr);
   var defaultOptions = getDefaultOptions();
-  var locale = (_ref = (_options$locale = options === null || options === void 0 ? void 0 : options.locale) !== null && _options$locale !== void 0 ? _options$locale : defaultOptions.locale) !== null && _ref !== void 0 ? _ref : defaultLocale;
+  var locale$1 = (_ref = (_options$locale = options === null || options === void 0 ? void 0 : options.locale) !== null && _options$locale !== void 0 ? _options$locale : defaultOptions.locale) !== null && _ref !== void 0 ? _ref : locale;
   var firstWeekContainsDate = toInteger((_ref2 = (_ref3 = (_ref4 = (_options$firstWeekCon = options === null || options === void 0 ? void 0 : options.firstWeekContainsDate) !== null && _options$firstWeekCon !== void 0 ? _options$firstWeekCon : options === null || options === void 0 ? void 0 : (_options$locale2 = options.locale) === null || _options$locale2 === void 0 ? void 0 : (_options$locale2$opti = _options$locale2.options) === null || _options$locale2$opti === void 0 ? void 0 : _options$locale2$opti.firstWeekContainsDate) !== null && _ref4 !== void 0 ? _ref4 : defaultOptions.firstWeekContainsDate) !== null && _ref3 !== void 0 ? _ref3 : (_defaultOptions$local = defaultOptions.locale) === null || _defaultOptions$local === void 0 ? void 0 : (_defaultOptions$local2 = _defaultOptions$local.options) === null || _defaultOptions$local2 === void 0 ? void 0 : _defaultOptions$local2.firstWeekContainsDate) !== null && _ref2 !== void 0 ? _ref2 : 1);
 
   // Test if weekStartsOn is between 1 and 7 _and_ is not NaN
@@ -5072,10 +4920,10 @@ function format(dirtyDate, dirtyFormatStr, options) {
   if (!(weekStartsOn >= 0 && weekStartsOn <= 6)) {
     throw new RangeError('weekStartsOn must be between 0 and 6 inclusively');
   }
-  if (!locale.localize) {
+  if (!locale$1.localize) {
     throw new RangeError('locale must contain localize property');
   }
-  if (!locale.formatLong) {
+  if (!locale$1.formatLong) {
     throw new RangeError('locale must contain formatLong property');
   }
   var originalDate = toDate(dirtyDate);
@@ -5091,14 +4939,14 @@ function format(dirtyDate, dirtyFormatStr, options) {
   var formatterOptions = {
     firstWeekContainsDate: firstWeekContainsDate,
     weekStartsOn: weekStartsOn,
-    locale: locale,
+    locale: locale$1,
     _originalDate: originalDate
   };
   var result = formatStr.match(longFormattingTokensRegExp).map(function (substring) {
     var firstCharacter = substring[0];
     if (firstCharacter === 'p' || firstCharacter === 'P') {
-      var longFormatter = longFormatters$1[firstCharacter];
-      return longFormatter(substring, locale.formatLong);
+      var longFormatter = longFormatters[firstCharacter];
+      return longFormatter(substring, locale$1.formatLong);
     }
     return substring;
   }).join('').match(formattingTokensRegExp).map(function (substring) {
@@ -5110,7 +4958,7 @@ function format(dirtyDate, dirtyFormatStr, options) {
     if (firstCharacter === "'") {
       return cleanEscapedString(substring);
     }
-    var formatter = formatters$1[firstCharacter];
+    var formatter = formatters[firstCharacter];
     if (formatter) {
       if (!(options !== null && options !== void 0 && options.useAdditionalWeekYearTokens) && isProtectedWeekYearToken(substring)) {
         throwProtectedError(substring, dirtyFormatStr, String(dirtyDate));
@@ -5118,7 +4966,7 @@ function format(dirtyDate, dirtyFormatStr, options) {
       if (!(options !== null && options !== void 0 && options.useAdditionalDayOfYearTokens) && isProtectedDayOfYearToken(substring)) {
         throwProtectedError(substring, dirtyFormatStr, String(dirtyDate));
       }
-      return formatter(utcDate, substring, locale.localize, formatterOptions);
+      return formatter(utcDate, substring, locale$1.localize, formatterOptions);
     }
     if (firstCharacter.match(unescapedLatinCharacterRegExp)) {
       throw new RangeError('Format string contains an unescaped latin alphabet character `' + firstCharacter + '`');
@@ -5134,6 +4982,2194 @@ function cleanEscapedString(input) {
   }
   return matched[1].replace(doubleQuoteRegExp, "'");
 }
+
+function _assertThisInitialized(e) {
+  if (void 0 === e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  return e;
+}
+
+function _setPrototypeOf(t, e) {
+  return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) {
+    return t.__proto__ = e, t;
+  }, _setPrototypeOf(t, e);
+}
+
+function _inherits(t, e) {
+  if ("function" != typeof e && null !== e) throw new TypeError("Super expression must either be null or a function");
+  t.prototype = Object.create(e && e.prototype, {
+    constructor: {
+      value: t,
+      writable: !0,
+      configurable: !0
+    }
+  }), Object.defineProperty(t, "prototype", {
+    writable: !1
+  }), e && _setPrototypeOf(t, e);
+}
+
+function _getPrototypeOf(t) {
+  return _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function (t) {
+    return t.__proto__ || Object.getPrototypeOf(t);
+  }, _getPrototypeOf(t);
+}
+
+function _isNativeReflectConstruct() {
+  try {
+    var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+  } catch (t) {}
+  return (_isNativeReflectConstruct = function _isNativeReflectConstruct() {
+    return !!t;
+  })();
+}
+
+function _possibleConstructorReturn(t, e) {
+  if (e && ("object" == _typeof(e) || "function" == typeof e)) return e;
+  if (void 0 !== e) throw new TypeError("Derived constructors may only return object or undefined");
+  return _assertThisInitialized(t);
+}
+
+function _createSuper(t) {
+  var r = _isNativeReflectConstruct();
+  return function () {
+    var e,
+      o = _getPrototypeOf(t);
+    if (r) {
+      var s = _getPrototypeOf(this).constructor;
+      e = Reflect.construct(o, arguments, s);
+    } else e = o.apply(this, arguments);
+    return _possibleConstructorReturn(this, e);
+  };
+}
+
+function _classCallCheck(a, n) {
+  if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function");
+}
+
+function toPrimitive(t, r) {
+  if ("object" != _typeof(t) || !t) return t;
+  var e = t[Symbol.toPrimitive];
+  if (void 0 !== e) {
+    var i = e.call(t, r || "default");
+    if ("object" != _typeof(i)) return i;
+    throw new TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return ("string" === r ? String : Number)(t);
+}
+
+function toPropertyKey(t) {
+  var i = toPrimitive(t, "string");
+  return "symbol" == _typeof(i) ? i : i + "";
+}
+
+function _defineProperties(e, r) {
+  for (var t = 0; t < r.length; t++) {
+    var o = r[t];
+    o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, toPropertyKey(o.key), o);
+  }
+}
+function _createClass(e, r, t) {
+  return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", {
+    writable: !1
+  }), e;
+}
+
+function _defineProperty(e, r, t) {
+  return (r = toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
+    value: t,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  }) : e[r] = t, e;
+}
+
+var Setter = /*#__PURE__*/function () {
+  function Setter() {
+    _classCallCheck(this, Setter);
+    _defineProperty(this, "priority", void 0);
+    _defineProperty(this, "subPriority", 0);
+  }
+  _createClass(Setter, [{
+    key: "validate",
+    value: function validate(_utcDate, _options) {
+      return true;
+    }
+  }]);
+  return Setter;
+}();
+var ValueSetter = /*#__PURE__*/function (_Setter) {
+  _inherits(ValueSetter, _Setter);
+  var _super = _createSuper(ValueSetter);
+  function ValueSetter(value, validateValue, setValue, priority, subPriority) {
+    var _this;
+    _classCallCheck(this, ValueSetter);
+    _this = _super.call(this);
+    _this.value = value;
+    _this.validateValue = validateValue;
+    _this.setValue = setValue;
+    _this.priority = priority;
+    if (subPriority) {
+      _this.subPriority = subPriority;
+    }
+    return _this;
+  }
+  _createClass(ValueSetter, [{
+    key: "validate",
+    value: function validate(utcDate, options) {
+      return this.validateValue(utcDate, this.value, options);
+    }
+  }, {
+    key: "set",
+    value: function set(utcDate, flags, options) {
+      return this.setValue(utcDate, flags, this.value, options);
+    }
+  }]);
+  return ValueSetter;
+}(Setter);
+
+var Parser = /*#__PURE__*/function () {
+  function Parser() {
+    _classCallCheck(this, Parser);
+    _defineProperty(this, "incompatibleTokens", void 0);
+    _defineProperty(this, "priority", void 0);
+    _defineProperty(this, "subPriority", void 0);
+  }
+  _createClass(Parser, [{
+    key: "run",
+    value: function run(dateString, token, match, options) {
+      var result = this.parse(dateString, token, match, options);
+      if (!result) {
+        return null;
+      }
+      return {
+        setter: new ValueSetter(result.value, this.validate, this.set, this.priority, this.subPriority),
+        rest: result.rest
+      };
+    }
+  }, {
+    key: "validate",
+    value: function validate(_utcDate, _value, _options) {
+      return true;
+    }
+  }]);
+  return Parser;
+}();
+
+var EraParser = /*#__PURE__*/function (_Parser) {
+  _inherits(EraParser, _Parser);
+  var _super = _createSuper(EraParser);
+  function EraParser() {
+    var _this;
+    _classCallCheck(this, EraParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 140);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['R', 'u', 't', 'T']);
+    return _this;
+  }
+  _createClass(EraParser, [{
+    key: "parse",
+    value: function parse(dateString, token, match) {
+      switch (token) {
+        // AD, BC
+        case 'G':
+        case 'GG':
+        case 'GGG':
+          return match.era(dateString, {
+            width: 'abbreviated'
+          }) || match.era(dateString, {
+            width: 'narrow'
+          });
+        // A, B
+        case 'GGGGG':
+          return match.era(dateString, {
+            width: 'narrow'
+          });
+        // Anno Domini, Before Christ
+        case 'GGGG':
+        default:
+          return match.era(dateString, {
+            width: 'wide'
+          }) || match.era(dateString, {
+            width: 'abbreviated'
+          }) || match.era(dateString, {
+            width: 'narrow'
+          });
+      }
+    }
+  }, {
+    key: "set",
+    value: function set(date, flags, value) {
+      flags.era = value;
+      date.setUTCFullYear(value, 0, 1);
+      date.setUTCHours(0, 0, 0, 0);
+      return date;
+    }
+  }]);
+  return EraParser;
+}(Parser);
+
+var numericPatterns = {
+  month: /^(1[0-2]|0?\d)/,
+  // 0 to 12
+  date: /^(3[0-1]|[0-2]?\d)/,
+  // 0 to 31
+  dayOfYear: /^(36[0-6]|3[0-5]\d|[0-2]?\d?\d)/,
+  // 0 to 366
+  week: /^(5[0-3]|[0-4]?\d)/,
+  // 0 to 53
+  hour23h: /^(2[0-3]|[0-1]?\d)/,
+  // 0 to 23
+  hour24h: /^(2[0-4]|[0-1]?\d)/,
+  // 0 to 24
+  hour11h: /^(1[0-1]|0?\d)/,
+  // 0 to 11
+  hour12h: /^(1[0-2]|0?\d)/,
+  // 0 to 12
+  minute: /^[0-5]?\d/,
+  // 0 to 59
+  second: /^[0-5]?\d/,
+  // 0 to 59
+
+  singleDigit: /^\d/,
+  // 0 to 9
+  twoDigits: /^\d{1,2}/,
+  // 0 to 99
+  threeDigits: /^\d{1,3}/,
+  // 0 to 999
+  fourDigits: /^\d{1,4}/,
+  // 0 to 9999
+
+  anyDigitsSigned: /^-?\d+/,
+  singleDigitSigned: /^-?\d/,
+  // 0 to 9, -0 to -9
+  twoDigitsSigned: /^-?\d{1,2}/,
+  // 0 to 99, -0 to -99
+  threeDigitsSigned: /^-?\d{1,3}/,
+  // 0 to 999, -0 to -999
+  fourDigitsSigned: /^-?\d{1,4}/ // 0 to 9999, -0 to -9999
+};
+
+var timezonePatterns = {
+  basicOptionalMinutes: /^([+-])(\d{2})(\d{2})?|Z/,
+  basic: /^([+-])(\d{2})(\d{2})|Z/,
+  basicOptionalSeconds: /^([+-])(\d{2})(\d{2})((\d{2}))?|Z/,
+  extended: /^([+-])(\d{2}):(\d{2})|Z/,
+  extendedOptionalSeconds: /^([+-])(\d{2}):(\d{2})(:(\d{2}))?|Z/
+};
+
+function mapValue(parseFnResult, mapFn) {
+  if (!parseFnResult) {
+    return parseFnResult;
+  }
+  return {
+    value: mapFn(parseFnResult.value),
+    rest: parseFnResult.rest
+  };
+}
+function parseNumericPattern(pattern, dateString) {
+  var matchResult = dateString.match(pattern);
+  if (!matchResult) {
+    return null;
+  }
+  return {
+    value: parseInt(matchResult[0], 10),
+    rest: dateString.slice(matchResult[0].length)
+  };
+}
+function parseTimezonePattern(pattern, dateString) {
+  var matchResult = dateString.match(pattern);
+  if (!matchResult) {
+    return null;
+  }
+
+  // Input is 'Z'
+  if (matchResult[0] === 'Z') {
+    return {
+      value: 0,
+      rest: dateString.slice(1)
+    };
+  }
+  var sign = matchResult[1] === '+' ? 1 : -1;
+  var hours = matchResult[2] ? parseInt(matchResult[2], 10) : 0;
+  var minutes = matchResult[3] ? parseInt(matchResult[3], 10) : 0;
+  var seconds = matchResult[5] ? parseInt(matchResult[5], 10) : 0;
+  return {
+    value: sign * (hours * millisecondsInHour + minutes * millisecondsInMinute + seconds * millisecondsInSecond),
+    rest: dateString.slice(matchResult[0].length)
+  };
+}
+function parseAnyDigitsSigned(dateString) {
+  return parseNumericPattern(numericPatterns.anyDigitsSigned, dateString);
+}
+function parseNDigits(n, dateString) {
+  switch (n) {
+    case 1:
+      return parseNumericPattern(numericPatterns.singleDigit, dateString);
+    case 2:
+      return parseNumericPattern(numericPatterns.twoDigits, dateString);
+    case 3:
+      return parseNumericPattern(numericPatterns.threeDigits, dateString);
+    case 4:
+      return parseNumericPattern(numericPatterns.fourDigits, dateString);
+    default:
+      return parseNumericPattern(new RegExp('^\\d{1,' + n + '}'), dateString);
+  }
+}
+function parseNDigitsSigned(n, dateString) {
+  switch (n) {
+    case 1:
+      return parseNumericPattern(numericPatterns.singleDigitSigned, dateString);
+    case 2:
+      return parseNumericPattern(numericPatterns.twoDigitsSigned, dateString);
+    case 3:
+      return parseNumericPattern(numericPatterns.threeDigitsSigned, dateString);
+    case 4:
+      return parseNumericPattern(numericPatterns.fourDigitsSigned, dateString);
+    default:
+      return parseNumericPattern(new RegExp('^-?\\d{1,' + n + '}'), dateString);
+  }
+}
+function dayPeriodEnumToHours(dayPeriod) {
+  switch (dayPeriod) {
+    case 'morning':
+      return 4;
+    case 'evening':
+      return 17;
+    case 'pm':
+    case 'noon':
+    case 'afternoon':
+      return 12;
+    case 'am':
+    case 'midnight':
+    case 'night':
+    default:
+      return 0;
+  }
+}
+function normalizeTwoDigitYear(twoDigitYear, currentYear) {
+  var isCommonEra = currentYear > 0;
+  // Absolute number of the current year:
+  // 1 -> 1 AC
+  // 0 -> 1 BC
+  // -1 -> 2 BC
+  var absCurrentYear = isCommonEra ? currentYear : 1 - currentYear;
+  var result;
+  if (absCurrentYear <= 50) {
+    result = twoDigitYear || 100;
+  } else {
+    var rangeEnd = absCurrentYear + 50;
+    var rangeEndCentury = Math.floor(rangeEnd / 100) * 100;
+    var isPreviousCentury = twoDigitYear >= rangeEnd % 100;
+    result = twoDigitYear + rangeEndCentury - (isPreviousCentury ? 100 : 0);
+  }
+  return isCommonEra ? result : 1 - result;
+}
+function isLeapYearIndex(year) {
+  return year % 400 === 0 || year % 4 === 0 && year % 100 !== 0;
+}
+
+// From http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns
+// | Year     |     y | yy |   yyy |  yyyy | yyyyy |
+// |----------|-------|----|-------|-------|-------|
+// | AD 1     |     1 | 01 |   001 |  0001 | 00001 |
+// | AD 12    |    12 | 12 |   012 |  0012 | 00012 |
+// | AD 123   |   123 | 23 |   123 |  0123 | 00123 |
+// | AD 1234  |  1234 | 34 |  1234 |  1234 | 01234 |
+// | AD 12345 | 12345 | 45 | 12345 | 12345 | 12345 |
+var YearParser = /*#__PURE__*/function (_Parser) {
+  _inherits(YearParser, _Parser);
+  var _super = _createSuper(YearParser);
+  function YearParser() {
+    var _this;
+    _classCallCheck(this, YearParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 130);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['Y', 'R', 'u', 'w', 'I', 'i', 'e', 'c', 't', 'T']);
+    return _this;
+  }
+  _createClass(YearParser, [{
+    key: "parse",
+    value: function parse(dateString, token, match) {
+      var valueCallback = function valueCallback(year) {
+        return {
+          year: year,
+          isTwoDigitYear: token === 'yy'
+        };
+      };
+      switch (token) {
+        case 'y':
+          return mapValue(parseNDigits(4, dateString), valueCallback);
+        case 'yo':
+          return mapValue(match.ordinalNumber(dateString, {
+            unit: 'year'
+          }), valueCallback);
+        default:
+          return mapValue(parseNDigits(token.length, dateString), valueCallback);
+      }
+    }
+  }, {
+    key: "validate",
+    value: function validate(_date, value) {
+      return value.isTwoDigitYear || value.year > 0;
+    }
+  }, {
+    key: "set",
+    value: function set(date, flags, value) {
+      var currentYear = date.getUTCFullYear();
+      if (value.isTwoDigitYear) {
+        var normalizedTwoDigitYear = normalizeTwoDigitYear(value.year, currentYear);
+        date.setUTCFullYear(normalizedTwoDigitYear, 0, 1);
+        date.setUTCHours(0, 0, 0, 0);
+        return date;
+      }
+      var year = !('era' in flags) || flags.era === 1 ? value.year : 1 - value.year;
+      date.setUTCFullYear(year, 0, 1);
+      date.setUTCHours(0, 0, 0, 0);
+      return date;
+    }
+  }]);
+  return YearParser;
+}(Parser);
+
+// Local week-numbering year
+var LocalWeekYearParser = /*#__PURE__*/function (_Parser) {
+  _inherits(LocalWeekYearParser, _Parser);
+  var _super = _createSuper(LocalWeekYearParser);
+  function LocalWeekYearParser() {
+    var _this;
+    _classCallCheck(this, LocalWeekYearParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 130);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['y', 'R', 'u', 'Q', 'q', 'M', 'L', 'I', 'd', 'D', 'i', 't', 'T']);
+    return _this;
+  }
+  _createClass(LocalWeekYearParser, [{
+    key: "parse",
+    value: function parse(dateString, token, match) {
+      var valueCallback = function valueCallback(year) {
+        return {
+          year: year,
+          isTwoDigitYear: token === 'YY'
+        };
+      };
+      switch (token) {
+        case 'Y':
+          return mapValue(parseNDigits(4, dateString), valueCallback);
+        case 'Yo':
+          return mapValue(match.ordinalNumber(dateString, {
+            unit: 'year'
+          }), valueCallback);
+        default:
+          return mapValue(parseNDigits(token.length, dateString), valueCallback);
+      }
+    }
+  }, {
+    key: "validate",
+    value: function validate(_date, value) {
+      return value.isTwoDigitYear || value.year > 0;
+    }
+  }, {
+    key: "set",
+    value: function set(date, flags, value, options) {
+      var currentYear = getUTCWeekYear(date, options);
+      if (value.isTwoDigitYear) {
+        var normalizedTwoDigitYear = normalizeTwoDigitYear(value.year, currentYear);
+        date.setUTCFullYear(normalizedTwoDigitYear, 0, options.firstWeekContainsDate);
+        date.setUTCHours(0, 0, 0, 0);
+        return startOfUTCWeek(date, options);
+      }
+      var year = !('era' in flags) || flags.era === 1 ? value.year : 1 - value.year;
+      date.setUTCFullYear(year, 0, options.firstWeekContainsDate);
+      date.setUTCHours(0, 0, 0, 0);
+      return startOfUTCWeek(date, options);
+    }
+  }]);
+  return LocalWeekYearParser;
+}(Parser);
+
+var ISOWeekYearParser = /*#__PURE__*/function (_Parser) {
+  _inherits(ISOWeekYearParser, _Parser);
+  var _super = _createSuper(ISOWeekYearParser);
+  function ISOWeekYearParser() {
+    var _this;
+    _classCallCheck(this, ISOWeekYearParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 130);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['G', 'y', 'Y', 'u', 'Q', 'q', 'M', 'L', 'w', 'd', 'D', 'e', 'c', 't', 'T']);
+    return _this;
+  }
+  _createClass(ISOWeekYearParser, [{
+    key: "parse",
+    value: function parse(dateString, token) {
+      if (token === 'R') {
+        return parseNDigitsSigned(4, dateString);
+      }
+      return parseNDigitsSigned(token.length, dateString);
+    }
+  }, {
+    key: "set",
+    value: function set(_date, _flags, value) {
+      var firstWeekOfYear = new Date(0);
+      firstWeekOfYear.setUTCFullYear(value, 0, 4);
+      firstWeekOfYear.setUTCHours(0, 0, 0, 0);
+      return startOfUTCISOWeek(firstWeekOfYear);
+    }
+  }]);
+  return ISOWeekYearParser;
+}(Parser);
+
+var ExtendedYearParser = /*#__PURE__*/function (_Parser) {
+  _inherits(ExtendedYearParser, _Parser);
+  var _super = _createSuper(ExtendedYearParser);
+  function ExtendedYearParser() {
+    var _this;
+    _classCallCheck(this, ExtendedYearParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 130);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['G', 'y', 'Y', 'R', 'w', 'I', 'i', 'e', 'c', 't', 'T']);
+    return _this;
+  }
+  _createClass(ExtendedYearParser, [{
+    key: "parse",
+    value: function parse(dateString, token) {
+      if (token === 'u') {
+        return parseNDigitsSigned(4, dateString);
+      }
+      return parseNDigitsSigned(token.length, dateString);
+    }
+  }, {
+    key: "set",
+    value: function set(date, _flags, value) {
+      date.setUTCFullYear(value, 0, 1);
+      date.setUTCHours(0, 0, 0, 0);
+      return date;
+    }
+  }]);
+  return ExtendedYearParser;
+}(Parser);
+
+var QuarterParser = /*#__PURE__*/function (_Parser) {
+  _inherits(QuarterParser, _Parser);
+  var _super = _createSuper(QuarterParser);
+  function QuarterParser() {
+    var _this;
+    _classCallCheck(this, QuarterParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 120);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['Y', 'R', 'q', 'M', 'L', 'w', 'I', 'd', 'D', 'i', 'e', 'c', 't', 'T']);
+    return _this;
+  }
+  _createClass(QuarterParser, [{
+    key: "parse",
+    value: function parse(dateString, token, match) {
+      switch (token) {
+        // 1, 2, 3, 4
+        case 'Q':
+        case 'QQ':
+          // 01, 02, 03, 04
+          return parseNDigits(token.length, dateString);
+        // 1st, 2nd, 3rd, 4th
+        case 'Qo':
+          return match.ordinalNumber(dateString, {
+            unit: 'quarter'
+          });
+        // Q1, Q2, Q3, Q4
+        case 'QQQ':
+          return match.quarter(dateString, {
+            width: 'abbreviated',
+            context: 'formatting'
+          }) || match.quarter(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          });
+        // 1, 2, 3, 4 (narrow quarter; could be not numerical)
+        case 'QQQQQ':
+          return match.quarter(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          });
+        // 1st quarter, 2nd quarter, ...
+        case 'QQQQ':
+        default:
+          return match.quarter(dateString, {
+            width: 'wide',
+            context: 'formatting'
+          }) || match.quarter(dateString, {
+            width: 'abbreviated',
+            context: 'formatting'
+          }) || match.quarter(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          });
+      }
+    }
+  }, {
+    key: "validate",
+    value: function validate(_date, value) {
+      return value >= 1 && value <= 4;
+    }
+  }, {
+    key: "set",
+    value: function set(date, _flags, value) {
+      date.setUTCMonth((value - 1) * 3, 1);
+      date.setUTCHours(0, 0, 0, 0);
+      return date;
+    }
+  }]);
+  return QuarterParser;
+}(Parser);
+
+var StandAloneQuarterParser = /*#__PURE__*/function (_Parser) {
+  _inherits(StandAloneQuarterParser, _Parser);
+  var _super = _createSuper(StandAloneQuarterParser);
+  function StandAloneQuarterParser() {
+    var _this;
+    _classCallCheck(this, StandAloneQuarterParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 120);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['Y', 'R', 'Q', 'M', 'L', 'w', 'I', 'd', 'D', 'i', 'e', 'c', 't', 'T']);
+    return _this;
+  }
+  _createClass(StandAloneQuarterParser, [{
+    key: "parse",
+    value: function parse(dateString, token, match) {
+      switch (token) {
+        // 1, 2, 3, 4
+        case 'q':
+        case 'qq':
+          // 01, 02, 03, 04
+          return parseNDigits(token.length, dateString);
+        // 1st, 2nd, 3rd, 4th
+        case 'qo':
+          return match.ordinalNumber(dateString, {
+            unit: 'quarter'
+          });
+        // Q1, Q2, Q3, Q4
+        case 'qqq':
+          return match.quarter(dateString, {
+            width: 'abbreviated',
+            context: 'standalone'
+          }) || match.quarter(dateString, {
+            width: 'narrow',
+            context: 'standalone'
+          });
+        // 1, 2, 3, 4 (narrow quarter; could be not numerical)
+        case 'qqqqq':
+          return match.quarter(dateString, {
+            width: 'narrow',
+            context: 'standalone'
+          });
+        // 1st quarter, 2nd quarter, ...
+        case 'qqqq':
+        default:
+          return match.quarter(dateString, {
+            width: 'wide',
+            context: 'standalone'
+          }) || match.quarter(dateString, {
+            width: 'abbreviated',
+            context: 'standalone'
+          }) || match.quarter(dateString, {
+            width: 'narrow',
+            context: 'standalone'
+          });
+      }
+    }
+  }, {
+    key: "validate",
+    value: function validate(_date, value) {
+      return value >= 1 && value <= 4;
+    }
+  }, {
+    key: "set",
+    value: function set(date, _flags, value) {
+      date.setUTCMonth((value - 1) * 3, 1);
+      date.setUTCHours(0, 0, 0, 0);
+      return date;
+    }
+  }]);
+  return StandAloneQuarterParser;
+}(Parser);
+
+var MonthParser = /*#__PURE__*/function (_Parser) {
+  _inherits(MonthParser, _Parser);
+  var _super = _createSuper(MonthParser);
+  function MonthParser() {
+    var _this;
+    _classCallCheck(this, MonthParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['Y', 'R', 'q', 'Q', 'L', 'w', 'I', 'D', 'i', 'e', 'c', 't', 'T']);
+    _defineProperty(_assertThisInitialized(_this), "priority", 110);
+    return _this;
+  }
+  _createClass(MonthParser, [{
+    key: "parse",
+    value: function parse(dateString, token, match) {
+      var valueCallback = function valueCallback(value) {
+        return value - 1;
+      };
+      switch (token) {
+        // 1, 2, ..., 12
+        case 'M':
+          return mapValue(parseNumericPattern(numericPatterns.month, dateString), valueCallback);
+        // 01, 02, ..., 12
+        case 'MM':
+          return mapValue(parseNDigits(2, dateString), valueCallback);
+        // 1st, 2nd, ..., 12th
+        case 'Mo':
+          return mapValue(match.ordinalNumber(dateString, {
+            unit: 'month'
+          }), valueCallback);
+        // Jan, Feb, ..., Dec
+        case 'MMM':
+          return match.month(dateString, {
+            width: 'abbreviated',
+            context: 'formatting'
+          }) || match.month(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          });
+        // J, F, ..., D
+        case 'MMMMM':
+          return match.month(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          });
+        // January, February, ..., December
+        case 'MMMM':
+        default:
+          return match.month(dateString, {
+            width: 'wide',
+            context: 'formatting'
+          }) || match.month(dateString, {
+            width: 'abbreviated',
+            context: 'formatting'
+          }) || match.month(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          });
+      }
+    }
+  }, {
+    key: "validate",
+    value: function validate(_date, value) {
+      return value >= 0 && value <= 11;
+    }
+  }, {
+    key: "set",
+    value: function set(date, _flags, value) {
+      date.setUTCMonth(value, 1);
+      date.setUTCHours(0, 0, 0, 0);
+      return date;
+    }
+  }]);
+  return MonthParser;
+}(Parser);
+
+var StandAloneMonthParser = /*#__PURE__*/function (_Parser) {
+  _inherits(StandAloneMonthParser, _Parser);
+  var _super = _createSuper(StandAloneMonthParser);
+  function StandAloneMonthParser() {
+    var _this;
+    _classCallCheck(this, StandAloneMonthParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 110);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['Y', 'R', 'q', 'Q', 'M', 'w', 'I', 'D', 'i', 'e', 'c', 't', 'T']);
+    return _this;
+  }
+  _createClass(StandAloneMonthParser, [{
+    key: "parse",
+    value: function parse(dateString, token, match) {
+      var valueCallback = function valueCallback(value) {
+        return value - 1;
+      };
+      switch (token) {
+        // 1, 2, ..., 12
+        case 'L':
+          return mapValue(parseNumericPattern(numericPatterns.month, dateString), valueCallback);
+        // 01, 02, ..., 12
+        case 'LL':
+          return mapValue(parseNDigits(2, dateString), valueCallback);
+        // 1st, 2nd, ..., 12th
+        case 'Lo':
+          return mapValue(match.ordinalNumber(dateString, {
+            unit: 'month'
+          }), valueCallback);
+        // Jan, Feb, ..., Dec
+        case 'LLL':
+          return match.month(dateString, {
+            width: 'abbreviated',
+            context: 'standalone'
+          }) || match.month(dateString, {
+            width: 'narrow',
+            context: 'standalone'
+          });
+        // J, F, ..., D
+        case 'LLLLL':
+          return match.month(dateString, {
+            width: 'narrow',
+            context: 'standalone'
+          });
+        // January, February, ..., December
+        case 'LLLL':
+        default:
+          return match.month(dateString, {
+            width: 'wide',
+            context: 'standalone'
+          }) || match.month(dateString, {
+            width: 'abbreviated',
+            context: 'standalone'
+          }) || match.month(dateString, {
+            width: 'narrow',
+            context: 'standalone'
+          });
+      }
+    }
+  }, {
+    key: "validate",
+    value: function validate(_date, value) {
+      return value >= 0 && value <= 11;
+    }
+  }, {
+    key: "set",
+    value: function set(date, _flags, value) {
+      date.setUTCMonth(value, 1);
+      date.setUTCHours(0, 0, 0, 0);
+      return date;
+    }
+  }]);
+  return StandAloneMonthParser;
+}(Parser);
+
+function setUTCWeek(dirtyDate, dirtyWeek, options) {
+  requiredArgs(2, arguments);
+  var date = toDate(dirtyDate);
+  var week = toInteger(dirtyWeek);
+  var diff = getUTCWeek(date, options) - week;
+  date.setUTCDate(date.getUTCDate() - diff * 7);
+  return date;
+}
+
+var LocalWeekParser = /*#__PURE__*/function (_Parser) {
+  _inherits(LocalWeekParser, _Parser);
+  var _super = _createSuper(LocalWeekParser);
+  function LocalWeekParser() {
+    var _this;
+    _classCallCheck(this, LocalWeekParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 100);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['y', 'R', 'u', 'q', 'Q', 'M', 'L', 'I', 'd', 'D', 'i', 't', 'T']);
+    return _this;
+  }
+  _createClass(LocalWeekParser, [{
+    key: "parse",
+    value: function parse(dateString, token, match) {
+      switch (token) {
+        case 'w':
+          return parseNumericPattern(numericPatterns.week, dateString);
+        case 'wo':
+          return match.ordinalNumber(dateString, {
+            unit: 'week'
+          });
+        default:
+          return parseNDigits(token.length, dateString);
+      }
+    }
+  }, {
+    key: "validate",
+    value: function validate(_date, value) {
+      return value >= 1 && value <= 53;
+    }
+  }, {
+    key: "set",
+    value: function set(date, _flags, value, options) {
+      return startOfUTCWeek(setUTCWeek(date, value, options), options);
+    }
+  }]);
+  return LocalWeekParser;
+}(Parser);
+
+function setUTCISOWeek(dirtyDate, dirtyISOWeek) {
+  requiredArgs(2, arguments);
+  var date = toDate(dirtyDate);
+  var isoWeek = toInteger(dirtyISOWeek);
+  var diff = getUTCISOWeek(date) - isoWeek;
+  date.setUTCDate(date.getUTCDate() - diff * 7);
+  return date;
+}
+
+var ISOWeekParser = /*#__PURE__*/function (_Parser) {
+  _inherits(ISOWeekParser, _Parser);
+  var _super = _createSuper(ISOWeekParser);
+  function ISOWeekParser() {
+    var _this;
+    _classCallCheck(this, ISOWeekParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 100);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['y', 'Y', 'u', 'q', 'Q', 'M', 'L', 'w', 'd', 'D', 'e', 'c', 't', 'T']);
+    return _this;
+  }
+  _createClass(ISOWeekParser, [{
+    key: "parse",
+    value: function parse(dateString, token, match) {
+      switch (token) {
+        case 'I':
+          return parseNumericPattern(numericPatterns.week, dateString);
+        case 'Io':
+          return match.ordinalNumber(dateString, {
+            unit: 'week'
+          });
+        default:
+          return parseNDigits(token.length, dateString);
+      }
+    }
+  }, {
+    key: "validate",
+    value: function validate(_date, value) {
+      return value >= 1 && value <= 53;
+    }
+  }, {
+    key: "set",
+    value: function set(date, _flags, value) {
+      return startOfUTCISOWeek(setUTCISOWeek(date, value));
+    }
+  }]);
+  return ISOWeekParser;
+}(Parser);
+
+var DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+var DAYS_IN_MONTH_LEAP_YEAR = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+// Day of the month
+var DateParser = /*#__PURE__*/function (_Parser) {
+  _inherits(DateParser, _Parser);
+  var _super = _createSuper(DateParser);
+  function DateParser() {
+    var _this;
+    _classCallCheck(this, DateParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 90);
+    _defineProperty(_assertThisInitialized(_this), "subPriority", 1);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['Y', 'R', 'q', 'Q', 'w', 'I', 'D', 'i', 'e', 'c', 't', 'T']);
+    return _this;
+  }
+  _createClass(DateParser, [{
+    key: "parse",
+    value: function parse(dateString, token, match) {
+      switch (token) {
+        case 'd':
+          return parseNumericPattern(numericPatterns.date, dateString);
+        case 'do':
+          return match.ordinalNumber(dateString, {
+            unit: 'date'
+          });
+        default:
+          return parseNDigits(token.length, dateString);
+      }
+    }
+  }, {
+    key: "validate",
+    value: function validate(date, value) {
+      var year = date.getUTCFullYear();
+      var isLeapYear = isLeapYearIndex(year);
+      var month = date.getUTCMonth();
+      if (isLeapYear) {
+        return value >= 1 && value <= DAYS_IN_MONTH_LEAP_YEAR[month];
+      } else {
+        return value >= 1 && value <= DAYS_IN_MONTH[month];
+      }
+    }
+  }, {
+    key: "set",
+    value: function set(date, _flags, value) {
+      date.setUTCDate(value);
+      date.setUTCHours(0, 0, 0, 0);
+      return date;
+    }
+  }]);
+  return DateParser;
+}(Parser);
+
+var DayOfYearParser = /*#__PURE__*/function (_Parser) {
+  _inherits(DayOfYearParser, _Parser);
+  var _super = _createSuper(DayOfYearParser);
+  function DayOfYearParser() {
+    var _this;
+    _classCallCheck(this, DayOfYearParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 90);
+    _defineProperty(_assertThisInitialized(_this), "subpriority", 1);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['Y', 'R', 'q', 'Q', 'M', 'L', 'w', 'I', 'd', 'E', 'i', 'e', 'c', 't', 'T']);
+    return _this;
+  }
+  _createClass(DayOfYearParser, [{
+    key: "parse",
+    value: function parse(dateString, token, match) {
+      switch (token) {
+        case 'D':
+        case 'DD':
+          return parseNumericPattern(numericPatterns.dayOfYear, dateString);
+        case 'Do':
+          return match.ordinalNumber(dateString, {
+            unit: 'date'
+          });
+        default:
+          return parseNDigits(token.length, dateString);
+      }
+    }
+  }, {
+    key: "validate",
+    value: function validate(date, value) {
+      var year = date.getUTCFullYear();
+      var isLeapYear = isLeapYearIndex(year);
+      if (isLeapYear) {
+        return value >= 1 && value <= 366;
+      } else {
+        return value >= 1 && value <= 365;
+      }
+    }
+  }, {
+    key: "set",
+    value: function set(date, _flags, value) {
+      date.setUTCMonth(0, value);
+      date.setUTCHours(0, 0, 0, 0);
+      return date;
+    }
+  }]);
+  return DayOfYearParser;
+}(Parser);
+
+function setUTCDay(dirtyDate, dirtyDay, options) {
+  var _ref, _ref2, _ref3, _options$weekStartsOn, _options$locale, _options$locale$optio, _defaultOptions$local, _defaultOptions$local2;
+  requiredArgs(2, arguments);
+  var defaultOptions = getDefaultOptions();
+  var weekStartsOn = toInteger((_ref = (_ref2 = (_ref3 = (_options$weekStartsOn = options === null || options === void 0 ? void 0 : options.weekStartsOn) !== null && _options$weekStartsOn !== void 0 ? _options$weekStartsOn : options === null || options === void 0 ? void 0 : (_options$locale = options.locale) === null || _options$locale === void 0 ? void 0 : (_options$locale$optio = _options$locale.options) === null || _options$locale$optio === void 0 ? void 0 : _options$locale$optio.weekStartsOn) !== null && _ref3 !== void 0 ? _ref3 : defaultOptions.weekStartsOn) !== null && _ref2 !== void 0 ? _ref2 : (_defaultOptions$local = defaultOptions.locale) === null || _defaultOptions$local === void 0 ? void 0 : (_defaultOptions$local2 = _defaultOptions$local.options) === null || _defaultOptions$local2 === void 0 ? void 0 : _defaultOptions$local2.weekStartsOn) !== null && _ref !== void 0 ? _ref : 0);
+
+  // Test if weekStartsOn is between 0 and 6 _and_ is not NaN
+  if (!(weekStartsOn >= 0 && weekStartsOn <= 6)) {
+    throw new RangeError('weekStartsOn must be between 0 and 6 inclusively');
+  }
+  var date = toDate(dirtyDate);
+  var day = toInteger(dirtyDay);
+  var currentDay = date.getUTCDay();
+  var remainder = day % 7;
+  var dayIndex = (remainder + 7) % 7;
+  var diff = (dayIndex < weekStartsOn ? 7 : 0) + day - currentDay;
+  date.setUTCDate(date.getUTCDate() + diff);
+  return date;
+}
+
+var DayParser = /*#__PURE__*/function (_Parser) {
+  _inherits(DayParser, _Parser);
+  var _super = _createSuper(DayParser);
+  function DayParser() {
+    var _this;
+    _classCallCheck(this, DayParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 90);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['D', 'i', 'e', 'c', 't', 'T']);
+    return _this;
+  }
+  _createClass(DayParser, [{
+    key: "parse",
+    value: function parse(dateString, token, match) {
+      switch (token) {
+        // Tue
+        case 'E':
+        case 'EE':
+        case 'EEE':
+          return match.day(dateString, {
+            width: 'abbreviated',
+            context: 'formatting'
+          }) || match.day(dateString, {
+            width: 'short',
+            context: 'formatting'
+          }) || match.day(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          });
+        // T
+        case 'EEEEE':
+          return match.day(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          });
+        // Tu
+        case 'EEEEEE':
+          return match.day(dateString, {
+            width: 'short',
+            context: 'formatting'
+          }) || match.day(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          });
+        // Tuesday
+        case 'EEEE':
+        default:
+          return match.day(dateString, {
+            width: 'wide',
+            context: 'formatting'
+          }) || match.day(dateString, {
+            width: 'abbreviated',
+            context: 'formatting'
+          }) || match.day(dateString, {
+            width: 'short',
+            context: 'formatting'
+          }) || match.day(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          });
+      }
+    }
+  }, {
+    key: "validate",
+    value: function validate(_date, value) {
+      return value >= 0 && value <= 6;
+    }
+  }, {
+    key: "set",
+    value: function set(date, _flags, value, options) {
+      date = setUTCDay(date, value, options);
+      date.setUTCHours(0, 0, 0, 0);
+      return date;
+    }
+  }]);
+  return DayParser;
+}(Parser);
+
+var LocalDayParser = /*#__PURE__*/function (_Parser) {
+  _inherits(LocalDayParser, _Parser);
+  var _super = _createSuper(LocalDayParser);
+  function LocalDayParser() {
+    var _this;
+    _classCallCheck(this, LocalDayParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 90);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['y', 'R', 'u', 'q', 'Q', 'M', 'L', 'I', 'd', 'D', 'E', 'i', 'c', 't', 'T']);
+    return _this;
+  }
+  _createClass(LocalDayParser, [{
+    key: "parse",
+    value: function parse(dateString, token, match, options) {
+      var valueCallback = function valueCallback(value) {
+        var wholeWeekDays = Math.floor((value - 1) / 7) * 7;
+        return (value + options.weekStartsOn + 6) % 7 + wholeWeekDays;
+      };
+      switch (token) {
+        // 3
+        case 'e':
+        case 'ee':
+          // 03
+          return mapValue(parseNDigits(token.length, dateString), valueCallback);
+        // 3rd
+        case 'eo':
+          return mapValue(match.ordinalNumber(dateString, {
+            unit: 'day'
+          }), valueCallback);
+        // Tue
+        case 'eee':
+          return match.day(dateString, {
+            width: 'abbreviated',
+            context: 'formatting'
+          }) || match.day(dateString, {
+            width: 'short',
+            context: 'formatting'
+          }) || match.day(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          });
+        // T
+        case 'eeeee':
+          return match.day(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          });
+        // Tu
+        case 'eeeeee':
+          return match.day(dateString, {
+            width: 'short',
+            context: 'formatting'
+          }) || match.day(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          });
+        // Tuesday
+        case 'eeee':
+        default:
+          return match.day(dateString, {
+            width: 'wide',
+            context: 'formatting'
+          }) || match.day(dateString, {
+            width: 'abbreviated',
+            context: 'formatting'
+          }) || match.day(dateString, {
+            width: 'short',
+            context: 'formatting'
+          }) || match.day(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          });
+      }
+    }
+  }, {
+    key: "validate",
+    value: function validate(_date, value) {
+      return value >= 0 && value <= 6;
+    }
+  }, {
+    key: "set",
+    value: function set(date, _flags, value, options) {
+      date = setUTCDay(date, value, options);
+      date.setUTCHours(0, 0, 0, 0);
+      return date;
+    }
+  }]);
+  return LocalDayParser;
+}(Parser);
+
+var StandAloneLocalDayParser = /*#__PURE__*/function (_Parser) {
+  _inherits(StandAloneLocalDayParser, _Parser);
+  var _super = _createSuper(StandAloneLocalDayParser);
+  function StandAloneLocalDayParser() {
+    var _this;
+    _classCallCheck(this, StandAloneLocalDayParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 90);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['y', 'R', 'u', 'q', 'Q', 'M', 'L', 'I', 'd', 'D', 'E', 'i', 'e', 't', 'T']);
+    return _this;
+  }
+  _createClass(StandAloneLocalDayParser, [{
+    key: "parse",
+    value: function parse(dateString, token, match, options) {
+      var valueCallback = function valueCallback(value) {
+        var wholeWeekDays = Math.floor((value - 1) / 7) * 7;
+        return (value + options.weekStartsOn + 6) % 7 + wholeWeekDays;
+      };
+      switch (token) {
+        // 3
+        case 'c':
+        case 'cc':
+          // 03
+          return mapValue(parseNDigits(token.length, dateString), valueCallback);
+        // 3rd
+        case 'co':
+          return mapValue(match.ordinalNumber(dateString, {
+            unit: 'day'
+          }), valueCallback);
+        // Tue
+        case 'ccc':
+          return match.day(dateString, {
+            width: 'abbreviated',
+            context: 'standalone'
+          }) || match.day(dateString, {
+            width: 'short',
+            context: 'standalone'
+          }) || match.day(dateString, {
+            width: 'narrow',
+            context: 'standalone'
+          });
+        // T
+        case 'ccccc':
+          return match.day(dateString, {
+            width: 'narrow',
+            context: 'standalone'
+          });
+        // Tu
+        case 'cccccc':
+          return match.day(dateString, {
+            width: 'short',
+            context: 'standalone'
+          }) || match.day(dateString, {
+            width: 'narrow',
+            context: 'standalone'
+          });
+        // Tuesday
+        case 'cccc':
+        default:
+          return match.day(dateString, {
+            width: 'wide',
+            context: 'standalone'
+          }) || match.day(dateString, {
+            width: 'abbreviated',
+            context: 'standalone'
+          }) || match.day(dateString, {
+            width: 'short',
+            context: 'standalone'
+          }) || match.day(dateString, {
+            width: 'narrow',
+            context: 'standalone'
+          });
+      }
+    }
+  }, {
+    key: "validate",
+    value: function validate(_date, value) {
+      return value >= 0 && value <= 6;
+    }
+  }, {
+    key: "set",
+    value: function set(date, _flags, value, options) {
+      date = setUTCDay(date, value, options);
+      date.setUTCHours(0, 0, 0, 0);
+      return date;
+    }
+  }]);
+  return StandAloneLocalDayParser;
+}(Parser);
+
+function setUTCISODay(dirtyDate, dirtyDay) {
+  requiredArgs(2, arguments);
+  var day = toInteger(dirtyDay);
+  if (day % 7 === 0) {
+    day = day - 7;
+  }
+  var weekStartsOn = 1;
+  var date = toDate(dirtyDate);
+  var currentDay = date.getUTCDay();
+  var remainder = day % 7;
+  var dayIndex = (remainder + 7) % 7;
+  var diff = (dayIndex < weekStartsOn ? 7 : 0) + day - currentDay;
+  date.setUTCDate(date.getUTCDate() + diff);
+  return date;
+}
+
+var ISODayParser = /*#__PURE__*/function (_Parser) {
+  _inherits(ISODayParser, _Parser);
+  var _super = _createSuper(ISODayParser);
+  function ISODayParser() {
+    var _this;
+    _classCallCheck(this, ISODayParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 90);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['y', 'Y', 'u', 'q', 'Q', 'M', 'L', 'w', 'd', 'D', 'E', 'e', 'c', 't', 'T']);
+    return _this;
+  }
+  _createClass(ISODayParser, [{
+    key: "parse",
+    value: function parse(dateString, token, match) {
+      var valueCallback = function valueCallback(value) {
+        if (value === 0) {
+          return 7;
+        }
+        return value;
+      };
+      switch (token) {
+        // 2
+        case 'i':
+        case 'ii':
+          // 02
+          return parseNDigits(token.length, dateString);
+        // 2nd
+        case 'io':
+          return match.ordinalNumber(dateString, {
+            unit: 'day'
+          });
+        // Tue
+        case 'iii':
+          return mapValue(match.day(dateString, {
+            width: 'abbreviated',
+            context: 'formatting'
+          }) || match.day(dateString, {
+            width: 'short',
+            context: 'formatting'
+          }) || match.day(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          }), valueCallback);
+        // T
+        case 'iiiii':
+          return mapValue(match.day(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          }), valueCallback);
+        // Tu
+        case 'iiiiii':
+          return mapValue(match.day(dateString, {
+            width: 'short',
+            context: 'formatting'
+          }) || match.day(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          }), valueCallback);
+        // Tuesday
+        case 'iiii':
+        default:
+          return mapValue(match.day(dateString, {
+            width: 'wide',
+            context: 'formatting'
+          }) || match.day(dateString, {
+            width: 'abbreviated',
+            context: 'formatting'
+          }) || match.day(dateString, {
+            width: 'short',
+            context: 'formatting'
+          }) || match.day(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          }), valueCallback);
+      }
+    }
+  }, {
+    key: "validate",
+    value: function validate(_date, value) {
+      return value >= 1 && value <= 7;
+    }
+  }, {
+    key: "set",
+    value: function set(date, _flags, value) {
+      date = setUTCISODay(date, value);
+      date.setUTCHours(0, 0, 0, 0);
+      return date;
+    }
+  }]);
+  return ISODayParser;
+}(Parser);
+
+var AMPMParser = /*#__PURE__*/function (_Parser) {
+  _inherits(AMPMParser, _Parser);
+  var _super = _createSuper(AMPMParser);
+  function AMPMParser() {
+    var _this;
+    _classCallCheck(this, AMPMParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 80);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['b', 'B', 'H', 'k', 't', 'T']);
+    return _this;
+  }
+  _createClass(AMPMParser, [{
+    key: "parse",
+    value: function parse(dateString, token, match) {
+      switch (token) {
+        case 'a':
+        case 'aa':
+        case 'aaa':
+          return match.dayPeriod(dateString, {
+            width: 'abbreviated',
+            context: 'formatting'
+          }) || match.dayPeriod(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          });
+        case 'aaaaa':
+          return match.dayPeriod(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          });
+        case 'aaaa':
+        default:
+          return match.dayPeriod(dateString, {
+            width: 'wide',
+            context: 'formatting'
+          }) || match.dayPeriod(dateString, {
+            width: 'abbreviated',
+            context: 'formatting'
+          }) || match.dayPeriod(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          });
+      }
+    }
+  }, {
+    key: "set",
+    value: function set(date, _flags, value) {
+      date.setUTCHours(dayPeriodEnumToHours(value), 0, 0, 0);
+      return date;
+    }
+  }]);
+  return AMPMParser;
+}(Parser);
+
+var AMPMMidnightParser = /*#__PURE__*/function (_Parser) {
+  _inherits(AMPMMidnightParser, _Parser);
+  var _super = _createSuper(AMPMMidnightParser);
+  function AMPMMidnightParser() {
+    var _this;
+    _classCallCheck(this, AMPMMidnightParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 80);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['a', 'B', 'H', 'k', 't', 'T']);
+    return _this;
+  }
+  _createClass(AMPMMidnightParser, [{
+    key: "parse",
+    value: function parse(dateString, token, match) {
+      switch (token) {
+        case 'b':
+        case 'bb':
+        case 'bbb':
+          return match.dayPeriod(dateString, {
+            width: 'abbreviated',
+            context: 'formatting'
+          }) || match.dayPeriod(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          });
+        case 'bbbbb':
+          return match.dayPeriod(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          });
+        case 'bbbb':
+        default:
+          return match.dayPeriod(dateString, {
+            width: 'wide',
+            context: 'formatting'
+          }) || match.dayPeriod(dateString, {
+            width: 'abbreviated',
+            context: 'formatting'
+          }) || match.dayPeriod(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          });
+      }
+    }
+  }, {
+    key: "set",
+    value: function set(date, _flags, value) {
+      date.setUTCHours(dayPeriodEnumToHours(value), 0, 0, 0);
+      return date;
+    }
+  }]);
+  return AMPMMidnightParser;
+}(Parser);
+
+var DayPeriodParser = /*#__PURE__*/function (_Parser) {
+  _inherits(DayPeriodParser, _Parser);
+  var _super = _createSuper(DayPeriodParser);
+  function DayPeriodParser() {
+    var _this;
+    _classCallCheck(this, DayPeriodParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 80);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['a', 'b', 't', 'T']);
+    return _this;
+  }
+  _createClass(DayPeriodParser, [{
+    key: "parse",
+    value: function parse(dateString, token, match) {
+      switch (token) {
+        case 'B':
+        case 'BB':
+        case 'BBB':
+          return match.dayPeriod(dateString, {
+            width: 'abbreviated',
+            context: 'formatting'
+          }) || match.dayPeriod(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          });
+        case 'BBBBB':
+          return match.dayPeriod(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          });
+        case 'BBBB':
+        default:
+          return match.dayPeriod(dateString, {
+            width: 'wide',
+            context: 'formatting'
+          }) || match.dayPeriod(dateString, {
+            width: 'abbreviated',
+            context: 'formatting'
+          }) || match.dayPeriod(dateString, {
+            width: 'narrow',
+            context: 'formatting'
+          });
+      }
+    }
+  }, {
+    key: "set",
+    value: function set(date, _flags, value) {
+      date.setUTCHours(dayPeriodEnumToHours(value), 0, 0, 0);
+      return date;
+    }
+  }]);
+  return DayPeriodParser;
+}(Parser);
+
+var Hour1to12Parser = /*#__PURE__*/function (_Parser) {
+  _inherits(Hour1to12Parser, _Parser);
+  var _super = _createSuper(Hour1to12Parser);
+  function Hour1to12Parser() {
+    var _this;
+    _classCallCheck(this, Hour1to12Parser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 70);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['H', 'K', 'k', 't', 'T']);
+    return _this;
+  }
+  _createClass(Hour1to12Parser, [{
+    key: "parse",
+    value: function parse(dateString, token, match) {
+      switch (token) {
+        case 'h':
+          return parseNumericPattern(numericPatterns.hour12h, dateString);
+        case 'ho':
+          return match.ordinalNumber(dateString, {
+            unit: 'hour'
+          });
+        default:
+          return parseNDigits(token.length, dateString);
+      }
+    }
+  }, {
+    key: "validate",
+    value: function validate(_date, value) {
+      return value >= 1 && value <= 12;
+    }
+  }, {
+    key: "set",
+    value: function set(date, _flags, value) {
+      var isPM = date.getUTCHours() >= 12;
+      if (isPM && value < 12) {
+        date.setUTCHours(value + 12, 0, 0, 0);
+      } else if (!isPM && value === 12) {
+        date.setUTCHours(0, 0, 0, 0);
+      } else {
+        date.setUTCHours(value, 0, 0, 0);
+      }
+      return date;
+    }
+  }]);
+  return Hour1to12Parser;
+}(Parser);
+
+var Hour0to23Parser = /*#__PURE__*/function (_Parser) {
+  _inherits(Hour0to23Parser, _Parser);
+  var _super = _createSuper(Hour0to23Parser);
+  function Hour0to23Parser() {
+    var _this;
+    _classCallCheck(this, Hour0to23Parser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 70);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['a', 'b', 'h', 'K', 'k', 't', 'T']);
+    return _this;
+  }
+  _createClass(Hour0to23Parser, [{
+    key: "parse",
+    value: function parse(dateString, token, match) {
+      switch (token) {
+        case 'H':
+          return parseNumericPattern(numericPatterns.hour23h, dateString);
+        case 'Ho':
+          return match.ordinalNumber(dateString, {
+            unit: 'hour'
+          });
+        default:
+          return parseNDigits(token.length, dateString);
+      }
+    }
+  }, {
+    key: "validate",
+    value: function validate(_date, value) {
+      return value >= 0 && value <= 23;
+    }
+  }, {
+    key: "set",
+    value: function set(date, _flags, value) {
+      date.setUTCHours(value, 0, 0, 0);
+      return date;
+    }
+  }]);
+  return Hour0to23Parser;
+}(Parser);
+
+var Hour0To11Parser = /*#__PURE__*/function (_Parser) {
+  _inherits(Hour0To11Parser, _Parser);
+  var _super = _createSuper(Hour0To11Parser);
+  function Hour0To11Parser() {
+    var _this;
+    _classCallCheck(this, Hour0To11Parser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 70);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['h', 'H', 'k', 't', 'T']);
+    return _this;
+  }
+  _createClass(Hour0To11Parser, [{
+    key: "parse",
+    value: function parse(dateString, token, match) {
+      switch (token) {
+        case 'K':
+          return parseNumericPattern(numericPatterns.hour11h, dateString);
+        case 'Ko':
+          return match.ordinalNumber(dateString, {
+            unit: 'hour'
+          });
+        default:
+          return parseNDigits(token.length, dateString);
+      }
+    }
+  }, {
+    key: "validate",
+    value: function validate(_date, value) {
+      return value >= 0 && value <= 11;
+    }
+  }, {
+    key: "set",
+    value: function set(date, _flags, value) {
+      var isPM = date.getUTCHours() >= 12;
+      if (isPM && value < 12) {
+        date.setUTCHours(value + 12, 0, 0, 0);
+      } else {
+        date.setUTCHours(value, 0, 0, 0);
+      }
+      return date;
+    }
+  }]);
+  return Hour0To11Parser;
+}(Parser);
+
+var Hour1To24Parser = /*#__PURE__*/function (_Parser) {
+  _inherits(Hour1To24Parser, _Parser);
+  var _super = _createSuper(Hour1To24Parser);
+  function Hour1To24Parser() {
+    var _this;
+    _classCallCheck(this, Hour1To24Parser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 70);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['a', 'b', 'h', 'H', 'K', 't', 'T']);
+    return _this;
+  }
+  _createClass(Hour1To24Parser, [{
+    key: "parse",
+    value: function parse(dateString, token, match) {
+      switch (token) {
+        case 'k':
+          return parseNumericPattern(numericPatterns.hour24h, dateString);
+        case 'ko':
+          return match.ordinalNumber(dateString, {
+            unit: 'hour'
+          });
+        default:
+          return parseNDigits(token.length, dateString);
+      }
+    }
+  }, {
+    key: "validate",
+    value: function validate(_date, value) {
+      return value >= 1 && value <= 24;
+    }
+  }, {
+    key: "set",
+    value: function set(date, _flags, value) {
+      var hours = value <= 24 ? value % 24 : value;
+      date.setUTCHours(hours, 0, 0, 0);
+      return date;
+    }
+  }]);
+  return Hour1To24Parser;
+}(Parser);
+
+var MinuteParser = /*#__PURE__*/function (_Parser) {
+  _inherits(MinuteParser, _Parser);
+  var _super = _createSuper(MinuteParser);
+  function MinuteParser() {
+    var _this;
+    _classCallCheck(this, MinuteParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 60);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['t', 'T']);
+    return _this;
+  }
+  _createClass(MinuteParser, [{
+    key: "parse",
+    value: function parse(dateString, token, match) {
+      switch (token) {
+        case 'm':
+          return parseNumericPattern(numericPatterns.minute, dateString);
+        case 'mo':
+          return match.ordinalNumber(dateString, {
+            unit: 'minute'
+          });
+        default:
+          return parseNDigits(token.length, dateString);
+      }
+    }
+  }, {
+    key: "validate",
+    value: function validate(_date, value) {
+      return value >= 0 && value <= 59;
+    }
+  }, {
+    key: "set",
+    value: function set(date, _flags, value) {
+      date.setUTCMinutes(value, 0, 0);
+      return date;
+    }
+  }]);
+  return MinuteParser;
+}(Parser);
+
+var SecondParser = /*#__PURE__*/function (_Parser) {
+  _inherits(SecondParser, _Parser);
+  var _super = _createSuper(SecondParser);
+  function SecondParser() {
+    var _this;
+    _classCallCheck(this, SecondParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 50);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['t', 'T']);
+    return _this;
+  }
+  _createClass(SecondParser, [{
+    key: "parse",
+    value: function parse(dateString, token, match) {
+      switch (token) {
+        case 's':
+          return parseNumericPattern(numericPatterns.second, dateString);
+        case 'so':
+          return match.ordinalNumber(dateString, {
+            unit: 'second'
+          });
+        default:
+          return parseNDigits(token.length, dateString);
+      }
+    }
+  }, {
+    key: "validate",
+    value: function validate(_date, value) {
+      return value >= 0 && value <= 59;
+    }
+  }, {
+    key: "set",
+    value: function set(date, _flags, value) {
+      date.setUTCSeconds(value, 0);
+      return date;
+    }
+  }]);
+  return SecondParser;
+}(Parser);
+
+var FractionOfSecondParser = /*#__PURE__*/function (_Parser) {
+  _inherits(FractionOfSecondParser, _Parser);
+  var _super = _createSuper(FractionOfSecondParser);
+  function FractionOfSecondParser() {
+    var _this;
+    _classCallCheck(this, FractionOfSecondParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 30);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['t', 'T']);
+    return _this;
+  }
+  _createClass(FractionOfSecondParser, [{
+    key: "parse",
+    value: function parse(dateString, token) {
+      var valueCallback = function valueCallback(value) {
+        return Math.floor(value * Math.pow(10, -token.length + 3));
+      };
+      return mapValue(parseNDigits(token.length, dateString), valueCallback);
+    }
+  }, {
+    key: "set",
+    value: function set(date, _flags, value) {
+      date.setUTCMilliseconds(value);
+      return date;
+    }
+  }]);
+  return FractionOfSecondParser;
+}(Parser);
+
+var ISOTimezoneWithZParser = /*#__PURE__*/function (_Parser) {
+  _inherits(ISOTimezoneWithZParser, _Parser);
+  var _super = _createSuper(ISOTimezoneWithZParser);
+  function ISOTimezoneWithZParser() {
+    var _this;
+    _classCallCheck(this, ISOTimezoneWithZParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 10);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['t', 'T', 'x']);
+    return _this;
+  }
+  _createClass(ISOTimezoneWithZParser, [{
+    key: "parse",
+    value: function parse(dateString, token) {
+      switch (token) {
+        case 'X':
+          return parseTimezonePattern(timezonePatterns.basicOptionalMinutes, dateString);
+        case 'XX':
+          return parseTimezonePattern(timezonePatterns.basic, dateString);
+        case 'XXXX':
+          return parseTimezonePattern(timezonePatterns.basicOptionalSeconds, dateString);
+        case 'XXXXX':
+          return parseTimezonePattern(timezonePatterns.extendedOptionalSeconds, dateString);
+        case 'XXX':
+        default:
+          return parseTimezonePattern(timezonePatterns.extended, dateString);
+      }
+    }
+  }, {
+    key: "set",
+    value: function set(date, flags, value) {
+      if (flags.timestampIsSet) {
+        return date;
+      }
+      return new Date(date.getTime() - value);
+    }
+  }]);
+  return ISOTimezoneWithZParser;
+}(Parser);
+
+var ISOTimezoneParser = /*#__PURE__*/function (_Parser) {
+  _inherits(ISOTimezoneParser, _Parser);
+  var _super = _createSuper(ISOTimezoneParser);
+  function ISOTimezoneParser() {
+    var _this;
+    _classCallCheck(this, ISOTimezoneParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 10);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", ['t', 'T', 'X']);
+    return _this;
+  }
+  _createClass(ISOTimezoneParser, [{
+    key: "parse",
+    value: function parse(dateString, token) {
+      switch (token) {
+        case 'x':
+          return parseTimezonePattern(timezonePatterns.basicOptionalMinutes, dateString);
+        case 'xx':
+          return parseTimezonePattern(timezonePatterns.basic, dateString);
+        case 'xxxx':
+          return parseTimezonePattern(timezonePatterns.basicOptionalSeconds, dateString);
+        case 'xxxxx':
+          return parseTimezonePattern(timezonePatterns.extendedOptionalSeconds, dateString);
+        case 'xxx':
+        default:
+          return parseTimezonePattern(timezonePatterns.extended, dateString);
+      }
+    }
+  }, {
+    key: "set",
+    value: function set(date, flags, value) {
+      if (flags.timestampIsSet) {
+        return date;
+      }
+      return new Date(date.getTime() - value);
+    }
+  }]);
+  return ISOTimezoneParser;
+}(Parser);
+
+var TimestampSecondsParser = /*#__PURE__*/function (_Parser) {
+  _inherits(TimestampSecondsParser, _Parser);
+  var _super = _createSuper(TimestampSecondsParser);
+  function TimestampSecondsParser() {
+    var _this;
+    _classCallCheck(this, TimestampSecondsParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 40);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", '*');
+    return _this;
+  }
+  _createClass(TimestampSecondsParser, [{
+    key: "parse",
+    value: function parse(dateString) {
+      return parseAnyDigitsSigned(dateString);
+    }
+  }, {
+    key: "set",
+    value: function set(_date, _flags, value) {
+      return [new Date(value * 1000), {
+        timestampIsSet: true
+      }];
+    }
+  }]);
+  return TimestampSecondsParser;
+}(Parser);
+
+var TimestampMillisecondsParser = /*#__PURE__*/function (_Parser) {
+  _inherits(TimestampMillisecondsParser, _Parser);
+  var _super = _createSuper(TimestampMillisecondsParser);
+  function TimestampMillisecondsParser() {
+    var _this;
+    _classCallCheck(this, TimestampMillisecondsParser);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty(_assertThisInitialized(_this), "priority", 20);
+    _defineProperty(_assertThisInitialized(_this), "incompatibleTokens", '*');
+    return _this;
+  }
+  _createClass(TimestampMillisecondsParser, [{
+    key: "parse",
+    value: function parse(dateString) {
+      return parseAnyDigitsSigned(dateString);
+    }
+  }, {
+    key: "set",
+    value: function set(_date, _flags, value) {
+      return [new Date(value), {
+        timestampIsSet: true
+      }];
+    }
+  }]);
+  return TimestampMillisecondsParser;
+}(Parser);
+
+/*
+ * |     | Unit                           |     | Unit                           |
+ * |-----|--------------------------------|-----|--------------------------------|
+ * |  a  | AM, PM                         |  A* | Milliseconds in day            |
+ * |  b  | AM, PM, noon, midnight         |  B  | Flexible day period            |
+ * |  c  | Stand-alone local day of week  |  C* | Localized hour w/ day period   |
+ * |  d  | Day of month                   |  D  | Day of year                    |
+ * |  e  | Local day of week              |  E  | Day of week                    |
+ * |  f  |                                |  F* | Day of week in month           |
+ * |  g* | Modified Julian day            |  G  | Era                            |
+ * |  h  | Hour [1-12]                    |  H  | Hour [0-23]                    |
+ * |  i! | ISO day of week                |  I! | ISO week of year               |
+ * |  j* | Localized hour w/ day period   |  J* | Localized hour w/o day period  |
+ * |  k  | Hour [1-24]                    |  K  | Hour [0-11]                    |
+ * |  l* | (deprecated)                   |  L  | Stand-alone month              |
+ * |  m  | Minute                         |  M  | Month                          |
+ * |  n  |                                |  N  |                                |
+ * |  o! | Ordinal number modifier        |  O* | Timezone (GMT)                 |
+ * |  p  |                                |  P  |                                |
+ * |  q  | Stand-alone quarter            |  Q  | Quarter                        |
+ * |  r* | Related Gregorian year         |  R! | ISO week-numbering year        |
+ * |  s  | Second                         |  S  | Fraction of second             |
+ * |  t! | Seconds timestamp              |  T! | Milliseconds timestamp         |
+ * |  u  | Extended year                  |  U* | Cyclic year                    |
+ * |  v* | Timezone (generic non-locat.)  |  V* | Timezone (location)            |
+ * |  w  | Local week of year             |  W* | Week of month                  |
+ * |  x  | Timezone (ISO-8601 w/o Z)      |  X  | Timezone (ISO-8601)            |
+ * |  y  | Year (abs)                     |  Y  | Local week-numbering year      |
+ * |  z* | Timezone (specific non-locat.) |  Z* | Timezone (aliases)             |
+ *
+ * Letters marked by * are not implemented but reserved by Unicode standard.
+ *
+ * Letters marked by ! are non-standard, but implemented by date-fns:
+ * - `o` modifies the previous token to turn it into an ordinal (see `parse` docs)
+ * - `i` is ISO day of week. For `i` and `ii` is returns numeric ISO week days,
+ *   i.e. 7 for Sunday, 1 for Monday, etc.
+ * - `I` is ISO week of year, as opposed to `w` which is local week of year.
+ * - `R` is ISO week-numbering year, as opposed to `Y` which is local week-numbering year.
+ *   `R` is supposed to be used in conjunction with `I` and `i`
+ *   for universal ISO week-numbering date, whereas
+ *   `Y` is supposed to be used in conjunction with `w` and `e`
+ *   for week-numbering date specific to the locale.
+ */
+({
+  G: new EraParser(),
+  y: new YearParser(),
+  Y: new LocalWeekYearParser(),
+  R: new ISOWeekYearParser(),
+  u: new ExtendedYearParser(),
+  Q: new QuarterParser(),
+  q: new StandAloneQuarterParser(),
+  M: new MonthParser(),
+  L: new StandAloneMonthParser(),
+  w: new LocalWeekParser(),
+  I: new ISOWeekParser(),
+  d: new DateParser(),
+  D: new DayOfYearParser(),
+  E: new DayParser(),
+  e: new LocalDayParser(),
+  c: new StandAloneLocalDayParser(),
+  i: new ISODayParser(),
+  a: new AMPMParser(),
+  b: new AMPMMidnightParser(),
+  B: new DayPeriodParser(),
+  h: new Hour1to12Parser(),
+  H: new Hour0to23Parser(),
+  K: new Hour0To11Parser(),
+  k: new Hour1To24Parser(),
+  m: new MinuteParser(),
+  s: new SecondParser(),
+  S: new FractionOfSecondParser(),
+  X: new ISOTimezoneWithZParser(),
+  x: new ISOTimezoneParser(),
+  t: new TimestampSecondsParser(),
+  T: new TimestampMillisecondsParser()
+});
 
 function filenameWithTimestamp(prefix) {
   return prefix + "-" + format(new Date(), "yyyyMMdd-HHmmss");
@@ -5199,596 +7235,528 @@ function downloadTSVMenuItem(stanza, filenamePrefix, data) {
   };
 }
 
+const isTruthyParam = (value) => {
+    if (typeof value === "boolean") {
+        return value;
+    }
+    if (typeof value === "string") {
+        return /^(?:1|true|yes|on)$/iu.test(value.trim());
+    }
+    return false;
+};
+const isLocalhostHost = (hostname) => {
+    return hostname === "localhost" || hostname === "127.0.0.1";
+};
+// ============================================================
+// メインクラス
+// ============================================================
 class VariantFrequency extends Stanza {
-  constructor() {
-    super(...arguments);
-    this.data = [];
-  }
-
-  menu() {
-    if (!this.data || this.data.length === 0) {
-      return [];
-    }
-
-    return [
-      downloadJSONMenuItem(this, "variant-frequency", this.data),
-      downloadCSVMenuItem(this, "variant-frequency", this.data),
-      downloadTSVMenuItem(this, "variant-frequency", this.data),
-    ];
-  }
-
-  async render() {
-    // font: Roboto Condensed
-    this.importWebFontCSS(
-      "https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900"
-    );
-    // database icon
-    this.importWebFontCSS(new URL("./assets/fontello.css", import.meta.url));
-
-    const { "data-url": urlBase, assembly, tgv_id } = this.params;
-    const dataURL = `${urlBase}/search?quality=0&term=${tgv_id}&expand_dataset`;
-    let resultObject = [];
-    let jgawgsData = [];
-    const hasjgawgsChildren = [false, false, false, false];
-    let jgawgsChildren;
-    let currentLayer1;
-    let hasHemizygote = false;
-    let uniqueIdCounter = 0;
-    const preparedDatasets = Object.values(prepareData().data.children);
-    preparedDatasets.forEach((dataset) => {
-      if (dataset.value === "jga_wgs") {
-        jgawgsChildren = dataset.children;
-      }
-    });
-    let isLogin = false;
-
-    try {
-      if (window.location.origin === "http://localhost:8080") {
-        isLogin = false;
-      }
-
-      const timeout = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Request timeout")), 10000)
-      );
-
-      const fetchPromise = fetch(`${window.location.origin}/auth/status`);
-      const response = await Promise.race([fetchPromise, timeout]);
-
-      if (response.status === 401 || response.status === 403) {
-        isLogin = false;
-      } else if (response.status === 200) {
-        isLogin = true;
-      }
-    } catch (error) {
-      console.error("Error fetching auth status or timeout occurred:", error);
-    }
-
-    try {
-      // dataURL に GET リクエストを送信
-      const response = await fetch(dataURL, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-        },
-      });
-
-      // レスポンスのステータスをチェック
-      if (!response.ok) {
-        throw new Error(`${dataURL} returns status ${response.status}`);
-      }
-
-      // レスポンスを JSON 形式でパース
-      const responseDatasets = await response.json();
-      const frequenciesDatasets = responseDatasets.data[0]?.frequencies;
-
-      /** Searches for and processes data, updating frequency datasets and result objects.
-       * @param {Object} datum - The current dataset object being processed. */
-      const searchData = (datum) => {
-        // 一致するデータを探す
-        const frequencyData = frequenciesDatasets?.find(
-          (x) => x.source === datum.value
-        );
-        if (frequencyData) {
-          // ID
-          frequencyData.id = datum.id;
-          // 深さ
-          frequencyData.depth = datum.depth;
-          // 親ID
-          if (datum.depth > 0) {
-            frequencyData.parent_id = findParent(preparedDatasets, datum.id).id;
-          }
-          if (datum.depth > 1) {
-            frequencyData.grandparent_id = findParent(
-              preparedDatasets,
-              findParent(preparedDatasets, datum.id).id
-            ).id;
-          }
-
-          // バインディングにデータセット情報を追加
-          if (datum.value === "tommo") {
-            switch (assembly) {
-              case "GRCh37":
-                frequencyData.dataset = "ToMMo 8.3KJPN";
-                break;
-              case "GRCh38":
-                frequencyData.dataset = "ToMMo 54KJPN";
-                break;
-            }
-          } else {
-            frequencyData.dataset = findTopParent(
-              preparedDatasets,
-              datum.id
-            ).label;
-          }
-
-          // Population label
-          if (["gem_j_wga", "jga_wes", "tommo", "hgvd"].includes(datum.value)) {
-            frequencyData.label = "Japanese";
-          } else if (
-            [
-              "jga_wgs",
-              "jga_snp",
-              "ncbn",
-              "gnomad_genomes",
-              "gnomad_exomes",
-            ].includes(datum.value)
-          ) {
-            frequencyData.label = "Total";
-          } else {
-            frequencyData.label = datum.label;
-          }
-
-          // 数値をロケール形式の文字列に変換する関数
-          const localeString = (v) =>
-            v !== undefined ? parseInt(v).toLocaleString() : null;
-          // Alt
-          frequencyData.ac = localeString(frequencyData.ac);
-          // Total
-          frequencyData.an = localeString(frequencyData.an);
-          // Alt/Alt
-          frequencyData.aac = localeString(frequencyData.aac);
-          // Alt/Ref
-          frequencyData.arc = localeString(frequencyData.arc);
-          // Alt/OtherAlts(JGA-WGSのみ)
-          frequencyData.aoc = localeString(frequencyData.aoc);
-          // Ref/Ref
-          frequencyData.rrc = localeString(frequencyData.rrc);
-          // Ref/OtherAlts(JGA-WGSのみ)
-          frequencyData.roc = localeString(frequencyData.roc);
-          // Other_Alts/Other_Alts(JGA-WGSのみ)
-          frequencyData.ooc = localeString(frequencyData.ooc);
-
-          if (
-            !hasHemizygote &&
-            (Number(frequencyData.hac) > 0 ||
-              Number(frequencyData.hrc) > 0 ||
-              Number(frequencyData.hoc) > 0)
-          ) {
-            hasHemizygote = true;
-          }
-          frequencyData.hac = localeString(frequencyData.hac);
-          frequencyData.hrc = localeString(frequencyData.hrc);
-          frequencyData.hoc = localeString(frequencyData.hoc);
-
-          // frequencyの情報をバインディングに追加
-          const ac = parseInt(frequencyData.ac);
-          const freq = parseFloat(frequencyData.af);
-          Object.assign(frequencyData, frequency(ac, freq));
-
-          // JGA-SNPの場合 見出しのdataがないため追加
-          if (frequencyData.dataset === "JGA-SNP") {
-            if (currentLayer1 !== frequencyData.label) {
-              if (
-                frequencyData.depth === 2 &&
-                currentLayer1 !== findParent(preparedDatasets, datum.id).label
-              ) {
-                let data = {
-                  dataset: frequencyData.dataset,
-                  depth: 1,
-                  label: findParent(preparedDatasets, datum.id).label,
-                  source: `${frequencyData.dataset}-title`,
-                  id: findParent(preparedDatasets, datum.id).id,
-                  has_child: true,
-                };
-                resultObject = [...resultObject, data];
-                currentLayer1 = findParent(preparedDatasets, datum.id).label;
-              }
-            }
-          }
-
-          resultObject = [...resultObject, frequencyData];
-
-          if (!isLogin) {
-            if (frequencyData.source === "jga_wgs") {
-              jgawgsChildren.forEach((child) => {
-                let data = {
-                  dataset: frequencyData.dataset,
-                  depth: 1,
-                  label: child.label,
-                  source: child.value,
-                  id: child.id,
-                  need_loading: true,
-                };
-                jgawgsData = [...jgawgsData, data];
-              });
-            }
-          }
+    /** ダウンロードボタン用に保持するデータ */
+    data = [];
+    // ============================================================
+    // menu() — 右上のダウンロードメニューを構成
+    // ============================================================
+    menu() {
+        if (!this.data || this.data.length === 0) {
+            return [];
         }
-
-        // Recursively search children
-        if (datum.children) {
-          datum.children.forEach(searchData);
-        }
-      };
-
-      // 各データセットに対して再帰的に探索を開始
-      preparedDatasets.forEach(searchData);
-
-      // JGA-WGSのデータを挿入
-      if (!isLogin) {
-        checkExistence(resultObject, jgawgsChildren);
-        insertObject(resultObject, hasjgawgsChildren, jgawgsData);
-      }
-
-      // クラス名を更新
-      updateHasChild(preparedDatasets, resultObject);
-
-      // Prepare download data
-      this.data = this.createDownloadData(
-        resultObject,
-        responseDatasets.data[0],
-        hasHemizygote
-      );
-
-      // 結果をレンダリング
-      this.renderTemplate({
-        template: "stanza.html.hbs",
-        parameters: {
-          params: this.params,
-          result: { resultObject },
-          hasHemizygote,
-        },
-      });
-    } catch (e) {
-      ({ error: { message: e.message } });
+        return [
+            downloadJSONMenuItem(this, "variant-frequency", this.data),
+            downloadCSVMenuItem(this, "variant-frequency", this.data),
+            downloadTSVMenuItem(this, "variant-frequency", this.data),
+        ];
     }
-
-    function addIdsToDataNodes(dataNodes, currentDepth = 0) {
-      return dataNodes.map((node) => {
-        // 各ノードに一意のIDを設定
-        const newNode = {
-          ...node,
-          id: `${uniqueIdCounter++}`,
-          depth: currentDepth,
-        };
-
-        // 子ノードがある場合は再帰的に処理
-        if (newNode.children && newNode.children.length > 0) {
-          newNode.children = addIdsToDataNodes(
-            newNode.children,
-            currentDepth + 1
-          );
-        }
-        return newNode;
-      });
-    }
-
-    function prepareData() {
-      const data = DATASETS;
-      const dataWithIds = addIdsToDataNodes(data);
-      const hierarchyData = hierarchy({
-        id: "-1",
-        label: "root",
-        value: "",
-        children: dataWithIds,
-      });
-      return hierarchyData;
-    }
-
-    /** Finds the top-level parent of a given node ID in a nested data structure.
-     * @param {Array<Object>} data - The nested data structure to search.
-     * @param {string} id - The ID of the node to find the top-level parent for.
-     * @returns {Object|null} The top-level parent node or null if not found. */
-    function findTopParent(data, targetId) {
-      // 内部で再帰的に探索する関数
-      function recursiveSearch(nodes, targetId, parent = null) {
-        for (const node of nodes) {
-          if (node.id === targetId) {
-            // ターゲットIDが見つかったら、トップレベルの親を返す
-            return parent || node;
-          }
-          if (node.children) {
-            const found = recursiveSearch(
-              node.children,
-              targetId,
-              parent || node
-            );
-            if (found) {
-              return found;
-            }
-          }
-        }
-        return null;
-      }
-      return recursiveSearch(data, targetId);
-    }
-
-    /** Finds the direct parent of a given node ID in a nested data structure.
-     * @param {Array<Object>} data - The nested data structure to search.
-     * @param {string} id - The ID of the node to find the parent for.
-     * @returns {Object|null} The parent node or null if not found. */
-    function findParent(data, id) {
-      function recursiveSearch(nodes, targetId, parent = null) {
-        for (const node of nodes) {
-          if (node.id === targetId) {
-            // ターゲットIDが見つかったら、そのノードの親を返す
-            return parent;
-          }
-          if (node.children) {
-            const found = recursiveSearch(node.children, targetId, node);
-            if (found) {
-              return found;
-            }
-          }
-        }
-        return null;
-      }
-      return recursiveSearch(data, id);
-    }
-
-    // 存在確認を関数化
-    function checkExistence(resultObject, jgawgsChildren) {
-      resultObject.forEach((data) => {
-        jgawgsChildren.forEach((child, index) => {
-          if (data.source === child.value) {
-            hasjgawgsChildren[index] = true;
-          }
+    // ============================================================
+    // render() — メイン処理（APIからデータを取得してHTMLに描画）
+    // ============================================================
+    async render() {
+        // フォントの読み込み
+        this.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
+        // データセットアイコン用フォント
+        this.importWebFontCSS(new URL("./assets/fontello.css", import.meta.url).href);
+        // ---- stanzaパラメータの取得 ----
+        // data-url: APIのベースURL, assembly: GRCh37/GRCh38, tgv_id: バリアントID
+        const { "data-url": urlBase, assembly, tgv_id, check_local_auth_status, } = this.params;
+        // バリアントIDでデータセット情報を展開して取得するAPIエンドポイント
+        const searchParams = new URLSearchParams({
+            quality: "0",
+            term: String(tgv_id),
         });
-      });
-    }
-
-    // オブジェクト挿入を関数化
-    function insertObject(resultObject, hasChildren, jgawgsData) {
-      hasChildren.forEach((exists, index) => {
-        if (!exists) {
-          resultObject.forEach((data, i) => {
-            if (data.id === (index + 1).toString()) {
-              resultObject.splice(i + 1, 0, jgawgsData[index]);
+        searchParams.append("expand_dataset", "");
+        const dataURL = `${urlBase}/search?${searchParams.toString()}`;
+        // ---- 変数の初期化 ----
+        // テーブルに表示する行データを格納する配列
+        let resultObject = [];
+        // JGA-WGSの未ログイン時に表示するダミー行データ
+        let jgawgsData = [];
+        let jgawgsChildren = [];
+        // JGA-SNP で見出し行の重複挿入を防ぐための追跡変数
+        let currentLayer1;
+        // X染色体などでヘミ接合体(Hemizygote) 列を表示するかどうかのフラグ
+        let hasHemizygote = false;
+        // ノードに振る連番ID
+        let uniqueIdCounter = 0;
+        // ---- ツリーデータの準備 ----
+        // DATASETS定数にID・depthを付与し、d3-hierarchyのツリー構造に変換
+        const preparedDatasets = Object.values(prepareData().data.children);
+        // JGA-WGSの子ノード一覧を事前に取得（未ログイン時のダミー表示に使用）
+        preparedDatasets.forEach((dataset) => {
+            if (dataset.value === "jga_wgs") {
+                jgawgsChildren = dataset.children ?? [];
             }
-          });
-        }
-      });
-    }
-
-    function updateHasChild(datasets, data) {
-      datasets.forEach((datum) => {
-        // 現在のノードに対応するデータを取得
-        const dataNode = data.find((d) => d.source === datum.value);
-        if (dataNode) {
-          dataNode.has_child = false;
-        }
-
-        if (datum.children?.length > 0 && dataNode) {
-          // 子供の一致を確認
-          const hasMatchingChild = datum.children.some((child) =>
-            data.some((d) => d.source === child.value)
-          );
-          const hasMatchingChildSub = datum.children.some((child) =>
-            data.some((d) => d.label === child.label)
-          );
-
-          if (hasMatchingChild || hasMatchingChildSub) {
-            dataNode.has_child = true;
-          }
-        }
-
-        // 子供を持つノードに対して再帰的に同じ処理を行う
-        if (datum.children && datum.children.length > 0) {
-          updateHasChild(datum.children, data);
-        }
-      });
-    }
-
-    // 以下トグルの開閉に関するイベント
-    const depth0Layer = this.root.querySelectorAll(
-      '.population[data-depth="0"]'
-    );
-    depth0Layer.forEach((layer) =>
-      layer.addEventListener("click", (e) => {
-        e.target.classList.toggle("open");
-
-        // JGA-WGS
-        if (layer.dataset.dataset === "JGA-WGS") {
-          const depth1Children = this.root.querySelectorAll(
-            '[data-dataset="JGA-WGS"].population[data-depth="1"]'
-          );
-          depth1Children.forEach((element) => {
-            element.parentElement.classList.toggle("show-by-total");
-          });
-        }
-
-        // JGA-SNP
-        if (layer.dataset.dataset === "JGA-SNP") {
-          const depth1Children = this.root.querySelectorAll(
-            '[data-dataset="JGA-SNP"].population[data-depth="1"]'
-          );
-          depth1Children.forEach((element) => {
-            element.parentElement.classList.toggle("show-by-total");
-          });
-
-          const depth2Children = this.root.querySelectorAll(
-            '[data-dataset="JGA-SNP"].population[data-depth="2"]'
-          );
-          depth2Children.forEach((element) => {
-            if (element.parentElement.classList.contains("close-by-total")) {
-              element.parentElement.classList.remove("close-by-total");
-            } else if (
-              element.parentElement.classList.contains("show-by-sub")
-            ) {
-              element.parentElement.classList.add("close-by-total");
+        });
+        // ---- ログイン状態の確認 ----
+        // JGA-WGSの詳細データ（個別集団）はログイン時のみ表示される
+        let isLogin = false;
+        const shouldCheckLocalAuth = isTruthyParam(check_local_auth_status);
+        const shouldFetchAuthStatus = !isLocalhostHost(window.location.hostname) || shouldCheckLocalAuth;
+        try {
+            if (shouldFetchAuthStatus) {
+                // 10秒タイムアウト付きでログイン状態を確認
+                const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Request timeout")), 10000));
+                const fetchPromise = fetch(`${window.location.origin}/auth/status`);
+                const response = await Promise.race([fetchPromise, timeout]);
+                if (response.status === 401 || response.status === 403) {
+                    isLogin = false;
+                }
+                else if (response.status === 200) {
+                    isLogin = true;
+                }
             }
-          });
-
-          // Male or Female
-          const depth3Children = this.root.querySelectorAll(
-            '[data-dataset="JGA-SNP"].population[data-depth="3"]'
-          );
-          depth3Children.forEach((element) => {
-            if (element.parentElement.classList.contains("close-by-total")) {
-              element.parentElement.classList.remove("close-by-total");
-            } else if (element.parentElement.classList.contains("show")) {
-              element.parentElement.classList.add("close-by-total");
+        }
+        catch (error) {
+            console.error("Error fetching auth status or timeout occurred:", error);
+        }
+        // ---- 頻度データの取得と処理 ----
+        try {
+            const response = await fetch(dataURL, {
+                method: "GET",
+                headers: { Accept: "application/json" },
+            });
+            if (!response.ok) {
+                throw new Error(`${dataURL} returns status ${response.status}`);
             }
-          });
-        }
-
-        // NCBN
-        if (layer.dataset.dataset === "NCBN") {
-          const depth1Children = this.root.querySelectorAll(
-            '[data-dataset="NCBN"].population[data-depth="1"]'
-          );
-          depth1Children.forEach((element) => {
-            element.parentElement.classList.toggle("show-by-total");
-          });
-
-          const depth2Children = this.root.querySelectorAll(
-            '[data-dataset="NCBN"].population[data-depth="2"]'
-          );
-          depth2Children.forEach((element) => {
-            if (element.parentElement.classList.contains("close-by-total")) {
-              element.parentElement.classList.remove("close-by-total");
-            } else if (element.parentElement.classList.contains("show")) {
-              element.parentElement.classList.add("close-by-total");
+            const responseDatasets = await response.json();
+            // APIレスポンスからバリアントの頻度データ配列を取り出す
+            const frequenciesDatasets = responseDatasets.data[0]?.frequencies;
+            // ----------------------------------------------------------
+            // searchData() — ツリー構造を再帰的に走査して行データを構築
+            // ----------------------------------------------------------
+            const searchData = (datum) => {
+                // APIレスポンスから現在のノードに対応する頻度データを探す
+                const frequencyData = frequenciesDatasets?.find((x) => x.source === datum.value);
+                if (frequencyData) {
+                    // ツリー上の位置情報を付与
+                    frequencyData.id = datum.id;
+                    frequencyData.depth = datum.depth;
+                    if (datum.depth > 0) {
+                        frequencyData.parent_id = findParent(preparedDatasets, datum.id)?.id;
+                    }
+                    if (datum.depth > 1) {
+                        frequencyData.grandparent_id = findParent(preparedDatasets, findParent(preparedDatasets, datum.id).id)?.id;
+                    }
+                    // ---- データセット名の設定 ----
+                    // ToMMoはアセンブリに応じて表示名が変わる
+                    if (datum.value === "tommo") {
+                        switch (assembly) {
+                            case "GRCh37":
+                                frequencyData.dataset = "ToMMo 8.3KJPN";
+                                break;
+                            case "GRCh38":
+                                frequencyData.dataset = "ToMMo 54KJPN";
+                                break;
+                        }
+                    }
+                    else {
+                        // その他はトップレベルの親ノードのラベルをデータセット名にする
+                        frequencyData.dataset = findTopParent(preparedDatasets, datum.id)?.label;
+                    }
+                    // ---- 集団ラベルの設定 ----
+                    if (["gem_j_wga", "jga_wes", "tommo", "hgvd"].includes(datum.value)) {
+                        // 日本人単一集団データセット
+                        frequencyData.label = "Japanese";
+                    }
+                    else if ([
+                        "jga_wgs",
+                        "jga_snp",
+                        "ncbn",
+                        "gnomad_genomes",
+                        "gnomad_exomes",
+                    ].includes(datum.value)) {
+                        // 複数集団を合計したデータ
+                        frequencyData.label = "Total";
+                    }
+                    else {
+                        frequencyData.label = datum.label;
+                    }
+                    // ============================================================
+                    // アレル頻度メーターの目盛り計算
+                    // ============================================================
+                    // ★ まず数値のまま buildFrequencyDisplay() を呼び出してメーターレベルを計算する
+                    const ac = parseInt(String(frequencyData.ac)); // アルテルアレル数（例: 1538）
+                    const freq = parseFloat(String(frequencyData.af)); // アレル頻度（例: 0.101）
+                    // buildFrequencyDisplay() が返す { frequency, count, level } を frequencyData にマージ
+                    // level はCSSの data-frequency 属性値として使われ、メーターの目盛り数を決定する
+                    Object.assign(frequencyData, buildFrequencyDisplay(ac, freq));
+                    // ★ buildFrequencyDisplay() の計算が終わった後で、表示用にカンマ区切りの文字列に変換する
+                    // 例: 1538 → "1,538"
+                    const hasNumericValue = (v) => v !== undefined &&
+                        v !== null &&
+                        v !== "" &&
+                        !Number.isNaN(Number(v));
+                    const localeString = (v) => hasNumericValue(v)
+                        ? parseInt(String(v), 10).toLocaleString()
+                        : undefined;
+                    // ホモ接合マーカーは aac が 1 以上のときだけ表示する
+                    frequencyData.has_homozygote_marker = Number(frequencyData.aac) >= 1;
+                    // ヘミ接合マーカーは hac が 1 以上のときだけ表示する
+                    frequencyData.has_hemizygote_marker = Number(frequencyData.hac) >= 1;
+                    // ヘミ接合体カラムは 0 を含め、数値があれば表示する
+                    const hasHemizygoteValue = hasNumericValue(frequencyData.hac) ||
+                        hasNumericValue(frequencyData.hrc) ||
+                        hasNumericValue(frequencyData.hoc);
+                    frequencyData.ac = localeString(frequencyData.ac); // Alt Allele Count
+                    frequencyData.an = localeString(frequencyData.an); // Total Allele Count
+                    frequencyData.aac = localeString(frequencyData.aac); // Alt/Alt Homozygote Count
+                    frequencyData.arc = localeString(frequencyData.arc); // Alt/Ref Heterozygote Count
+                    frequencyData.aoc = localeString(frequencyData.aoc); // Alt/OtherAlts Count
+                    frequencyData.rrc = localeString(frequencyData.rrc); // Ref/Ref Homozygote Count
+                    frequencyData.roc = localeString(frequencyData.roc); // Ref/OtherAlts Count
+                    frequencyData.ooc = localeString(frequencyData.ooc); // OtherAlts/OtherAlts Count
+                    // ヘミ接合体カラムが必要かを判定（0を含め、数値があれば列を表示する）
+                    if (!hasHemizygote && hasHemizygoteValue) {
+                        hasHemizygote = true;
+                    }
+                    frequencyData.hac = localeString(frequencyData.hac); // Hemizygote Alt
+                    frequencyData.hrc = localeString(frequencyData.hrc); // Hemizygote Ref
+                    frequencyData.hoc = localeString(frequencyData.hoc); // Hemizygote OtherAlts
+                    // ---- JGA-SNP専用: 見出し行の挿入 ----
+                    // JGA-SNPはAPIレスポンスに depth=1 の見出しデータが存在しないため、
+                    // 集団が切り替わるタイミングで手動で見出し行を挿入する
+                    if (frequencyData.dataset === "JGA-SNP") {
+                        if (currentLayer1 !== frequencyData.label) {
+                            if (frequencyData.depth === 2 &&
+                                currentLayer1 !== findParent(preparedDatasets, datum.id)?.label) {
+                                const parent = findParent(preparedDatasets, datum.id);
+                                const titleRow = {
+                                    dataset: frequencyData.dataset,
+                                    depth: 1,
+                                    label: parent.label,
+                                    source: `${frequencyData.dataset}-title`,
+                                    id: parent.id,
+                                    has_child: true,
+                                };
+                                resultObject = [...resultObject, titleRow];
+                                currentLayer1 = parent.label;
+                            }
+                        }
+                    }
+                    resultObject = [...resultObject, frequencyData];
+                    // ---- 未ログイン時: JGA-WGSのダミー行を準備 ----
+                    // 未ログインだとJGA-WGSの個別集団データがAPIから返ってこないため、
+                    // ログインを促すプレースホルダー行を表示する
+                    if (!isLogin && frequencyData.source === "jga_wgs") {
+                        jgawgsChildren.forEach((child) => {
+                            const dummyRow = {
+                                dataset: frequencyData.dataset,
+                                depth: 1,
+                                label: child.label,
+                                source: child.value,
+                                id: child.id,
+                                need_loading: true,
+                            };
+                            jgawgsData = [...jgawgsData, dummyRow];
+                        });
+                    }
+                }
+                // 子ノードを再帰的に処理
+                if (datum.children) {
+                    datum.children.forEach(searchData);
+                }
+            };
+            // DATASETSツリー全体を再帰的に走査
+            preparedDatasets.forEach(searchData);
+            // 未ログイン時: JGA-WGSのダミー行を適切な位置に挿入
+            if (!isLogin) {
+                insertObject(resultObject, jgawgsChildren, jgawgsData);
             }
-          });
+            // has_child フラグを更新（開閉トグルの制御に使用）
+            updateHasChild(preparedDatasets, resultObject);
+            // ダウンロード用データを保存
+            this.data = this.createDownloadData(resultObject, responseDatasets.data[0], hasHemizygote);
+            // HTMLテンプレートに渡してレンダリング
+            this.renderTemplate({
+                template: "stanza.html.hbs",
+                parameters: {
+                    params: this.params,
+                    result: { resultObject },
+                    hasHemizygote,
+                },
+            });
         }
-
-        // gnomAD Genomes
-        if (layer.dataset.dataset === "gnomAD Genomes") {
-          const depth1Children = this.root.querySelectorAll(
-            '[data-dataset="gnomAD Genomes"].population[data-depth="1"]'
-          );
-          depth1Children.forEach((element) => {
-            element.parentElement.classList.toggle("show-by-total");
-          });
+        catch (e) {
+            const message = e instanceof Error ? e.message : String(e);
+            this.data = [];
+            this.renderTemplate({
+                template: "stanza.html.hbs",
+                parameters: {
+                    params: this.params,
+                    error: { message },
+                },
+            });
+            return;
         }
-
-        // gnomAD Exomes
-        if (layer.dataset.dataset === "gnomAD Exomes") {
-          const depth1Children = this.root.querySelectorAll(
-            '[data-dataset="gnomAD Exomes"].population[data-depth="1"]'
-          );
-          depth1Children.forEach((element) => {
-            element.parentElement.classList.toggle("show-by-total");
-          });
+        // ============================================================
+        // ヘルパー関数群（render() 内で定義）
+        // ============================================================
+        /**
+         * DATASETS の各ノードに一意のID(連番)と階層の深さ(depth)を付与する。
+         * d3-hierarchy でツリー化する前の前処理として使用。
+         */
+        function addIdsToDataNodes(dataNodes, currentDepth = 0) {
+            return dataNodes.map((node) => {
+                const newNode = {
+                    ...node,
+                    id: `${uniqueIdCounter++}`,
+                    depth: currentDepth,
+                };
+                if (newNode.children && newNode.children.length > 0) {
+                    newNode.children = addIdsToDataNodes(newNode.children, currentDepth + 1);
+                }
+                return newNode;
+            });
         }
-      })
-    );
-
-    const depth1Layer = this.root.querySelectorAll(
-      '.population[data-depth="1"]'
-    );
-    depth1Layer.forEach((layer) =>
-      layer.addEventListener("click", (e) => {
-        e.target.classList.toggle("open");
-
-        // JGA-SNP
-        if (layer.dataset.dataset === "JGA-SNP") {
-          const depth2Children = this.root.querySelectorAll(
-            `[data-dataset="JGA-SNP"].population[data-parent-id="${layer.dataset.id}"][data-depth="2"]`
-          );
-          depth2Children.forEach((element) => {
-            element.parentElement.classList.toggle("show-by-sub");
-          });
-
-          // Male, Female
-          const depth3Children = this.root.querySelectorAll(
-            `[data-dataset="JGA-SNP"].population[data-grandparent-id="${layer.dataset.id}"][data-depth="3"]`
-          );
-          depth3Children.forEach((element) => {
-            if (element.parentElement.classList.contains("close-by-sub")) {
-              element.parentElement.classList.remove("close-by-sub");
-            } else if (element.parentElement.classList.contains("show")) {
-              element.parentElement.classList.add("close-by-sub");
+        /**
+         * DATASETS定数をID付きノードのツリーに変換し、d3-hierarchyで管理する。
+         */
+        function prepareData() {
+            const dataWithIds = addIdsToDataNodes(DATASETS);
+            return hierarchy({
+                id: "-1",
+                label: "root",
+                value: "",
+                children: dataWithIds,
+            });
+        }
+        /**
+         * 指定IDのノードが属するトップレベル（depth=0）のノードを返す。
+         * データセット名の特定に使用。
+         */
+        function findTopParent(data, targetId) {
+            function recursiveSearch(nodes, targetId, topParent = null) {
+                for (const node of nodes) {
+                    if (node.id === targetId) {
+                        // topParent が null の場合、自分自身がトップレベルなのでそのまま返す
+                        return topParent ?? node;
+                    }
+                    if (node.children) {
+                        const found = recursiveSearch(node.children, targetId, topParent ?? node);
+                        if (found)
+                            return found;
+                    }
+                }
+                return null;
             }
-          });
+            return recursiveSearch(data, targetId);
         }
-
-        // NCBN
-        if (layer.dataset.dataset === "NCBN") {
-          const depth2Children = this.root.querySelectorAll(
-            '[data-dataset="NCBN"].population[data-depth="2"]'
-          );
-          depth2Children.forEach((element) => {
-            element.parentElement.classList.toggle("show");
-          });
+        /**
+         * 指定IDのノードの直接の親ノードを返す。
+         * parent_id / grandparent_id の特定に使用。
+         */
+        function findParent(data, targetId) {
+            function recursiveSearch(nodes, targetId, parent = null) {
+                for (const node of nodes) {
+                    if (node.id === targetId) {
+                        return parent;
+                    }
+                    if (node.children) {
+                        const found = recursiveSearch(node.children, targetId, node);
+                        if (found)
+                            return found;
+                    }
+                }
+                return null;
+            }
+            return recursiveSearch(data, targetId);
         }
-      })
-    );
-
-    const depth2Layer = this.root.querySelectorAll(
-      '.population[data-depth="2"]'
-    );
-    depth2Layer.forEach((layer) =>
-      layer.addEventListener("click", (e) => {
-        e.target.classList.toggle("open");
-
-        // JGA-SNP
-        if (layer.dataset.dataset === "JGA-SNP") {
-          const depth3Children = this.root.querySelectorAll(
-            `[data-dataset="JGA-SNP"].population[data-parent-id="${layer.dataset.id}"][data-depth="3"]`
-          );
-          depth3Children.forEach((element) => {
-            element.parentElement.classList.toggle("show");
-          });
+        /**
+         * JGA-WGSの個別集団データが存在しない場合、
+         * 親の JGA-WGS 行の直後から、子ノード定義順を保ったままダミー行を挿入する。
+         */
+        function insertObject(resultObject, jgawgsChildren, jgawgsData) {
+            const parentIndex = resultObject.findIndex((data) => data.source === "jga_wgs");
+            if (parentIndex === -1) {
+                return;
+            }
+            let insertIndex = parentIndex + 1;
+            jgawgsChildren.forEach((child, index) => {
+                const existingChildIndex = resultObject.findIndex((data) => data.source === child.value);
+                if (existingChildIndex !== -1) {
+                    insertIndex = existingChildIndex + 1;
+                    return;
+                }
+                const dummyRow = jgawgsData[index];
+                if (dummyRow) {
+                    resultObject.splice(insertIndex, 0, dummyRow);
+                    insertIndex += 1;
+                }
+            });
         }
-      })
-    );
-  }
-
-  createDownloadData(resultObject, variantData, hasHemizygote) {
-    return resultObject
-      .filter((freq) => {
-        return (
-          !freq.source?.includes("-title") && // タイトル行でない
-          !freq.need_loading && // ダミーデータでない
-          freq.af !== undefined // 頻度データが存在する
-        );
-      })
-      .map((freq) => {
-        return {
-          id: freq.id,
-          depth: freq.depth,
-          tgvid: variantData.id,
-          rsid: variantData.existing_variations?.join(",") || "",
-          chrom: variantData.chromosome,
-          pos: variantData.position,
-          ref: variantData.reference,
-          alt: variantData.alternate,
-          dataset: freq.dataset,
-          population: freq.label,
-          source: freq.source,
-          ac: freq.ac,
-          an: freq.an,
-          af: freq.frequency,
-          "alt/alt": freq.aac,
-          "alt/ref": freq.arc,
-          "ref/otheralts": freq.aoc,
-          "ref/ref": freq.rrc,
-          "ref/otheralt": freq.roc,
-          "otheralt/otheralt": freq.ooc,
-          ...(hasHemizygote && {
-            hemi_alt: freq.hac,
-            hemi_ref: freq.hrc,
-            hemi_other_alts: freq.hoc,
-          }),
-          filter: Array.isArray(freq.filter)
-            ? freq.filter.join(",")
-            : freq.filter,
-          quality: freq.quality,
+        /**
+         * 各データセットノードの has_child フラグを更新する。
+         * 子データが存在するノードには has_child=true を設定し、
+         * テンプレート側でトグルアイコンの表示を制御する。
+         */
+        function updateHasChild(datasets, data) {
+            datasets.forEach((datum) => {
+                const dataNode = data.find((d) => d.source === datum.value);
+                if (dataNode) {
+                    dataNode.has_child = false;
+                }
+                if (datum.children?.length > 0 && dataNode) {
+                    const hasMatchingChild = datum.children.some((child) => data.some((d) => d.source === child.value));
+                    const hasMatchingChildSub = datum.children.some((child) => data.some((d) => d.label === child.label));
+                    if (hasMatchingChild || hasMatchingChildSub) {
+                        dataNode.has_child = true;
+                    }
+                }
+                if (datum.children && datum.children.length > 0) {
+                    updateHasChild(datum.children, data);
+                }
+            });
+        }
+        // ============================================================
+        // トグル（開閉）イベントの設定
+        // ============================================================
+        /**
+         * セレクタに一致する要素の parentElement に対してクラスをトグルする。
+         * querySelectorAll → forEach → parentElement.classList.toggle の繰り返しを共通化。
+         */
+        const toggleChildren = (selector, cls) => {
+            this.root
+                .querySelectorAll(selector)
+                .forEach((el) => el.parentElement?.classList.toggle(cls));
         };
-      });
-  }
+        /**
+         * セレクタに一致する要素の parentElement に対して条件付きでクラスを付け外しする。
+         * - closeClass を既に持つ場合 → closeClass を削除（元に戻す）
+         * - showClass を持つ場合    → closeClass を追加（展開中を閉じる）
+         * このパターンは depth=0 のトグル時に下位レイヤーの状態を同期するために使う。
+         */
+        const conditionalClose = (selector, closeClass, showClass) => {
+            this.root.querySelectorAll(selector).forEach((el) => {
+                const parent = el.parentElement;
+                if (parent.classList.contains(closeClass)) {
+                    parent.classList.remove(closeClass);
+                }
+                else if (parent.classList.contains(showClass)) {
+                    parent.classList.add(closeClass);
+                }
+            });
+        };
+        // ---- depth=0（データセット行）のクリックイベント ----
+        this.root
+            .querySelectorAll('.population[data-depth="0"]')
+            .forEach((layer) => layer.addEventListener("click", (_e) => {
+            layer.classList.toggle("open");
+            const ds = layer.dataset.dataset;
+            // JGA-WGS / gnomAD Genomes / gnomAD Exomes:
+            // depth=1 の子行をトグルするだけ
+            if (ds === "JGA-WGS" ||
+                ds === "gnomAD Genomes" ||
+                ds === "gnomAD Exomes") {
+                toggleChildren(`[data-dataset="${ds}"].population[data-depth="1"]`, "show-by-total");
+            }
+            // JGA-SNP: depth=1 をトグルしつつ、下位レイヤーの展開状態も同期
+            if (ds === "JGA-SNP") {
+                toggleChildren('[data-dataset="JGA-SNP"].population[data-depth="1"]', "show-by-total");
+                // depth=2: show-by-sub で展開中のものを閉じる（または元に戻す）
+                conditionalClose('[data-dataset="JGA-SNP"].population[data-depth="2"]', "close-by-total", "show-by-sub");
+                // depth=3 (Male/Female): show で展開中のものを閉じる（または元に戻す）
+                conditionalClose('[data-dataset="JGA-SNP"].population[data-depth="3"]', "close-by-total", "show");
+            }
+            // NCBN: depth=1 をトグルしつつ、depth=2 の展開状態も同期
+            if (ds === "NCBN") {
+                toggleChildren('[data-dataset="NCBN"].population[data-depth="1"]', "show-by-total");
+                conditionalClose('[data-dataset="NCBN"].population[data-depth="2"]', "close-by-total", "show");
+            }
+        }));
+        // ---- depth=1（集団行）のクリックイベント ----
+        this.root
+            .querySelectorAll('.population[data-depth="1"]')
+            .forEach((layer) => layer.addEventListener("click", (_e) => {
+            layer.classList.toggle("open");
+            const ds = layer.dataset.dataset;
+            const id = layer.dataset.id;
+            // JGA-SNP: depth=2 をトグルしつつ、depth=3 (Male/Female) の状態も同期
+            if (ds === "JGA-SNP") {
+                toggleChildren(`[data-dataset="JGA-SNP"].population[data-parent-id="${id}"][data-depth="2"]`, "show-by-sub");
+                conditionalClose(`[data-dataset="JGA-SNP"].population[data-grandparent-id="${id}"][data-depth="3"]`, "close-by-sub", "show");
+            }
+            // NCBN: depth=2 をトグル
+            if (ds === "NCBN") {
+                toggleChildren('[data-dataset="NCBN"].population[data-depth="2"]', "show");
+            }
+        }));
+        // ---- depth=2（サブ集団行）のクリックイベント ----
+        this.root
+            .querySelectorAll('.population[data-depth="2"]')
+            .forEach((layer) => layer.addEventListener("click", (_e) => {
+            layer.classList.toggle("open");
+            const ds = layer.dataset.dataset;
+            const id = layer.dataset.id;
+            // JGA-SNP: depth=3 (Male/Female) をトグル
+            if (ds === "JGA-SNP") {
+                toggleChildren(`[data-dataset="JGA-SNP"].population[data-parent-id="${id}"][data-depth="3"]`, "show");
+            }
+        }));
+    }
+    // ============================================================
+    // createDownloadData() — ダウンロード用データの整形
+    // ============================================================
+    createDownloadData(resultObject, variantData, hasHemizygote) {
+        return resultObject
+            .filter((freq) => {
+            return (!freq.source?.includes("-title") && // JGA-SNPの見出し行を除外
+                !freq.need_loading && // 未ログイン時のダミー行を除外
+                freq.af !== undefined // 頻度データが存在する行のみ
+            );
+        })
+            .map((freq) => {
+            return {
+                id: freq.id,
+                depth: freq.depth,
+                tgvid: variantData.id,
+                rsid: variantData.existing_variations?.join(",") || "",
+                chrom: variantData.chromosome,
+                pos: variantData.position,
+                ref: variantData.reference,
+                alt: variantData.alternate,
+                dataset: freq.dataset,
+                population: freq.label,
+                source: freq.source,
+                ac: freq.ac,
+                an: freq.an,
+                // ダウンロードは表示用フォーマットではなく、生のAF値を出力する
+                af: freq.af,
+                "alt/alt": freq.aac,
+                "alt/ref": freq.arc,
+                "ref/otheralts": freq.aoc,
+                "ref/ref": freq.rrc,
+                "ref/otheralt": freq.roc,
+                "otheralt/otheralt": freq.ooc,
+                ...(hasHemizygote && {
+                    hemi_alt: freq.hac,
+                    hemi_ref: freq.hrc,
+                    hemi_other_alts: freq.hoc,
+                }),
+                filter: Array.isArray(freq.filter)
+                    ? freq.filter.join(",")
+                    : freq.filter,
+                quality: freq.quality,
+            };
+        });
+    }
 }
 
 var stanzaModule = /*#__PURE__*/Object.freeze({
@@ -5836,13 +7804,20 @@ var metadata = {
 		"stanza:key": "no_data_message",
 		"stanza:example": "No data found.",
 		"stanza:description": "Message displayed when there are zero data"
+	},
+	{
+		"stanza:key": "check_local_auth_status",
+		"stanza:type": "boolean",
+		"stanza:example": true,
+		"stanza:label": "Check auth status on localhost",
+		"stanza:description": "When true, auth status is checked even on localhost. Default: false"
 	}
 ],
 	"stanza:about-link-placement": "bottom-right"
 };
 
 var templates = [
-  ["stanza.html.hbs", {"1":function(container,depth0,helpers,partials,data) {
+  ["stanza.html.hbs", {"0":function(container,depth0,helpers,partials,data) {
     var helper, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
@@ -5853,7 +7828,7 @@ var templates = [
   return "  <div class='alert alert-danger'>"
     + container.escapeExpression(((helper = (helper = lookupProperty(helpers,"message") || (depth0 != null ? lookupProperty(depth0,"message") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : (container.nullContext || {}),{"name":"message","hash":{},"data":data,"loc":{"start":{"line":2,"column":34},"end":{"line":2,"column":45}}}) : helper)))
     + "</div>\n";
-},"3":function(container,depth0,helpers,partials,data,blockParams,depths) {
+},"1":function(container,depth0,helpers,partials,data,blockParams,depths) {
     var stack1, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
@@ -5861,8 +7836,8 @@ var templates = [
         return undefined
     };
 
-  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"result") : depth0),{"name":"with","hash":{},"fn":container.program(4, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":4,"column":2},"end":{"line":110,"column":11}}})) != null ? stack1 : "");
-},"4":function(container,depth0,helpers,partials,data,blockParams,depths) {
+  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"result") : depth0),{"name":"with","hash":{},"fn":container.program(2, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":4,"column":2},"end":{"line":118,"column":11}}})) != null ? stack1 : "");
+},"2":function(container,depth0,helpers,partials,data,blockParams,depths) {
     var stack1, alias1=depth0 != null ? depth0 : (container.nullContext || {}), lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
@@ -5871,19 +7846,19 @@ var templates = [
     };
 
   return "    <div class='variant-frequency-scroll'>\n      <table class='table frequency-detail'>\n      <thead>\n        <tr>\n          <th rowspan='2'>Dataset</th>\n          <th rowspan='2'>Population</th>\n          <th colspan='4'>Allele count</th>\n          <th colspan='"
-    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depths[1] != null ? lookupProperty(depths[1],"hasHemizygote") : depths[1]),{"name":"if","hash":{},"fn":container.program(5, data, 0, blockParams, depths),"inverse":container.program(7, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":12,"column":23},"end":{"line":12,"column":64}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depths[1] != null ? lookupProperty(depths[1],"hasHemizygote") : depths[1]),{"name":"if","hash":{},"fn":container.program(3, data, 0, blockParams, depths),"inverse":container.program(4, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":12,"column":23},"end":{"line":12,"column":64}}})) != null ? stack1 : "")
     + "'>Genotype count</th>\n          <th class='filter_status' rowspan='2'>Filter status</th>\n          <th rowspan='2'>Quality score</th>\n        </tr>\n        <tr>\n          <th class='alt num-th'>Alt</th>\n          <th class='num-th'>Total</th>\n          <th class='frequency num-th'>Frequency</th>\n          <th></th>\n          <th class='num_genotype_alt_homo alt num-th'>Alt / Alt</th>\n          <th class='num_genotype_hetero num-th'>Alt / Ref</th>\n          <th class='num_genotype_alt_otheralts num-th'>Alt/OtherAlts</th>\n          <th class='num_genotype_ref_homo num-th'>Ref / Ref</th>\n          <th class='num_genotype_ref_otheralts num-th'>Ref/OtherAlts</th>\n          <th class='num_genotype_otheralts_otheralts num-th'>Other_Alts/Other_Alts</th>\n"
-    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depths[1] != null ? lookupProperty(depths[1],"hasHemizygote") : depths[1]),{"name":"if","hash":{},"fn":container.program(9, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":27,"column":10},"end":{"line":31,"column":17}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depths[1] != null ? lookupProperty(depths[1],"hasHemizygote") : depths[1]),{"name":"if","hash":{},"fn":container.program(5, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":27,"column":10},"end":{"line":31,"column":17}}})) != null ? stack1 : "")
     + "        </tr>\n      </thead>\n      <tbody>\n"
-    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"resultObject") : depth0),{"name":"if","hash":{},"fn":container.program(11, data, 0, blockParams, depths),"inverse":container.program(23, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":35,"column":8},"end":{"line":106,"column":15}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"resultObject") : depth0),{"name":"if","hash":{},"fn":container.program(6, data, 0, blockParams, depths),"inverse":container.program(15, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":35,"column":8},"end":{"line":114,"column":15}}})) != null ? stack1 : "")
     + "      </tbody>\n      </table>\n    </div>\n";
-},"5":function(container,depth0,helpers,partials,data) {
+},"3":function(container,depth0,helpers,partials,data) {
     return "9";
-},"7":function(container,depth0,helpers,partials,data) {
+},"4":function(container,depth0,helpers,partials,data) {
     return "6";
-},"9":function(container,depth0,helpers,partials,data) {
+},"5":function(container,depth0,helpers,partials,data) {
     return "            <th class='num_genotype_hemi_alt num-th'>Hemi_Alt</th>\n            <th class='num_genotype_hemi_ref num-th'>Hemi_Ref</th>\n            <th class='num_genotype_hemi_otheralts num-th'>Hemi_Other_Alts</th>\n";
-},"11":function(container,depth0,helpers,partials,data,blockParams,depths) {
+},"6":function(container,depth0,helpers,partials,data,blockParams,depths) {
     var stack1, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
@@ -5891,8 +7866,8 @@ var templates = [
         return undefined
     };
 
-  return ((stack1 = lookupProperty(helpers,"each").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"resultObject") : depth0),{"name":"each","hash":{},"fn":container.program(12, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":36,"column":10},"end":{"line":103,"column":19}}})) != null ? stack1 : "");
-},"12":function(container,depth0,helpers,partials,data,blockParams,depths) {
+  return ((stack1 = lookupProperty(helpers,"each").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"resultObject") : depth0),{"name":"each","hash":{},"fn":container.program(7, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":36,"column":10},"end":{"line":111,"column":19}}})) != null ? stack1 : "");
+},"7":function(container,depth0,helpers,partials,data,blockParams,depths) {
     var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=container.hooks.helperMissing, alias3="function", alias4=container.escapeExpression, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
@@ -5923,49 +7898,49 @@ var templates = [
     + "'\n                data-has-child='"
     + alias4(((helper = (helper = lookupProperty(helpers,"has_child") || (depth0 != null ? lookupProperty(depth0,"has_child") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"has_child","hash":{},"data":data,"loc":{"start":{"line":57,"column":32},"end":{"line":57,"column":45}}}) : helper)))
     + "'\n              >\n"
-    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"need_loading") : depth0),{"name":"if","hash":{},"fn":container.program(13, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":59,"column":14},"end":{"line":61,"column":21}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"need_loading") : depth0),{"name":"if","hash":{},"fn":container.program(8, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":59,"column":14},"end":{"line":61,"column":21}}})) != null ? stack1 : "")
     + "                "
     + alias4(((helper = (helper = lookupProperty(helpers,"label") || (depth0 != null ? lookupProperty(depth0,"label") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"label","hash":{},"data":data,"loc":{"start":{"line":62,"column":16},"end":{"line":62,"column":25}}}) : helper)))
     + "\n              </td>\n              <td class='num_alt_alleles'>"
     + alias4(((helper = (helper = lookupProperty(helpers,"ac") || (depth0 != null ? lookupProperty(depth0,"ac") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"ac","hash":{},"data":data,"loc":{"start":{"line":64,"column":42},"end":{"line":64,"column":48}}}) : helper)))
     + "\n"
-    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"ac") : depth0),{"name":"if","hash":{},"fn":container.program(15, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":65,"column":16},"end":{"line":69,"column":23}}})) != null ? stack1 : "")
-    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"need_loading") : depth0),{"name":"if","hash":{},"fn":container.program(17, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":70,"column":16},"end":{"line":74,"column":23}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"ac") : depth0),{"name":"if","hash":{},"fn":container.program(9, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":65,"column":16},"end":{"line":69,"column":23}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"need_loading") : depth0),{"name":"if","hash":{},"fn":container.program(10, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":70,"column":16},"end":{"line":74,"column":23}}})) != null ? stack1 : "")
     + "              </td>\n              <td class='num_alleles'>"
     + alias4(((helper = (helper = lookupProperty(helpers,"an") || (depth0 != null ? lookupProperty(depth0,"an") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"an","hash":{},"data":data,"loc":{"start":{"line":76,"column":38},"end":{"line":76,"column":44}}}) : helper)))
     + "</td>\n              <td class='frequency'>"
     + alias4(((helper = (helper = lookupProperty(helpers,"frequency") || (depth0 != null ? lookupProperty(depth0,"frequency") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"frequency","hash":{},"data":data,"loc":{"start":{"line":77,"column":36},"end":{"line":77,"column":49}}}) : helper)))
     + "</td>\n              <td class='frequency-graph'>\n"
-    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"level") : depth0),{"name":"if","hash":{},"fn":container.program(19, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":79,"column":16},"end":{"line":87,"column":23}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"level") : depth0),{"name":"if","hash":{},"fn":container.program(11, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":79,"column":16},"end":{"line":95,"column":23}}})) != null ? stack1 : "")
     + "              </td>\n              <td class='num_genotype_alt_homo num-td'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"aac") || (depth0 != null ? lookupProperty(depth0,"aac") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"aac","hash":{},"data":data,"loc":{"start":{"line":89,"column":55},"end":{"line":89,"column":62}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"aac") || (depth0 != null ? lookupProperty(depth0,"aac") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"aac","hash":{},"data":data,"loc":{"start":{"line":97,"column":55},"end":{"line":97,"column":62}}}) : helper)))
     + "</td>\n              <td class='num_genotype_hetero num-td'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"arc") || (depth0 != null ? lookupProperty(depth0,"arc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"arc","hash":{},"data":data,"loc":{"start":{"line":90,"column":53},"end":{"line":90,"column":60}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"arc") || (depth0 != null ? lookupProperty(depth0,"arc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"arc","hash":{},"data":data,"loc":{"start":{"line":98,"column":53},"end":{"line":98,"column":60}}}) : helper)))
     + "</td>\n              <td class='num_genotype_alt_otheralts num-td'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"aoc") || (depth0 != null ? lookupProperty(depth0,"aoc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"aoc","hash":{},"data":data,"loc":{"start":{"line":91,"column":60},"end":{"line":91,"column":67}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"aoc") || (depth0 != null ? lookupProperty(depth0,"aoc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"aoc","hash":{},"data":data,"loc":{"start":{"line":99,"column":60},"end":{"line":99,"column":67}}}) : helper)))
     + "</td>\n              <td class='num_genotype_ref_homo num-td'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"rrc") || (depth0 != null ? lookupProperty(depth0,"rrc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"rrc","hash":{},"data":data,"loc":{"start":{"line":92,"column":55},"end":{"line":92,"column":62}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"rrc") || (depth0 != null ? lookupProperty(depth0,"rrc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"rrc","hash":{},"data":data,"loc":{"start":{"line":100,"column":55},"end":{"line":100,"column":62}}}) : helper)))
     + "</td>\n              <td class='num_genotype_ref_otheralts num-td'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"roc") || (depth0 != null ? lookupProperty(depth0,"roc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"roc","hash":{},"data":data,"loc":{"start":{"line":93,"column":60},"end":{"line":93,"column":67}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"roc") || (depth0 != null ? lookupProperty(depth0,"roc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"roc","hash":{},"data":data,"loc":{"start":{"line":101,"column":60},"end":{"line":101,"column":67}}}) : helper)))
     + "</td>\n              <td class='num_genotype_otheralts_otheralts num-td'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"ooc") || (depth0 != null ? lookupProperty(depth0,"ooc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"ooc","hash":{},"data":data,"loc":{"start":{"line":94,"column":66},"end":{"line":94,"column":73}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"ooc") || (depth0 != null ? lookupProperty(depth0,"ooc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"ooc","hash":{},"data":data,"loc":{"start":{"line":102,"column":66},"end":{"line":102,"column":73}}}) : helper)))
     + "</td>\n"
-    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depths[2] != null ? lookupProperty(depths[2],"hasHemizygote") : depths[2]),{"name":"if","hash":{},"fn":container.program(21, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":95,"column":14},"end":{"line":99,"column":21}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depths[2] != null ? lookupProperty(depths[2],"hasHemizygote") : depths[2]),{"name":"if","hash":{},"fn":container.program(14, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":103,"column":14},"end":{"line":107,"column":21}}})) != null ? stack1 : "")
     + "              <td class='filter' data-filter='"
-    + alias4(((helper = (helper = lookupProperty(helpers,"filter") || (depth0 != null ? lookupProperty(depth0,"filter") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"filter","hash":{},"data":data,"loc":{"start":{"line":100,"column":46},"end":{"line":100,"column":56}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"filter") || (depth0 != null ? lookupProperty(depth0,"filter") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"filter","hash":{},"data":data,"loc":{"start":{"line":108,"column":46},"end":{"line":108,"column":56}}}) : helper)))
     + "'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"filter") || (depth0 != null ? lookupProperty(depth0,"filter") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"filter","hash":{},"data":data,"loc":{"start":{"line":100,"column":58},"end":{"line":100,"column":68}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"filter") || (depth0 != null ? lookupProperty(depth0,"filter") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"filter","hash":{},"data":data,"loc":{"start":{"line":108,"column":58},"end":{"line":108,"column":68}}}) : helper)))
     + "</td>\n              <td class='quality'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"quality") || (depth0 != null ? lookupProperty(depth0,"quality") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"quality","hash":{},"data":data,"loc":{"start":{"line":101,"column":34},"end":{"line":101,"column":45}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"quality") || (depth0 != null ? lookupProperty(depth0,"quality") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"quality","hash":{},"data":data,"loc":{"start":{"line":109,"column":34},"end":{"line":109,"column":45}}}) : helper)))
     + "</td>\n            </tr>\n";
-},"13":function(container,depth0,helpers,partials,data) {
+},"8":function(container,depth0,helpers,partials,data) {
     return "                <span class=\"lock\"></span>\n";
-},"15":function(container,depth0,helpers,partials,data) {
+},"9":function(container,depth0,helpers,partials,data) {
     return "                  <span class='slash'>\n                    /\n                  </span>\n";
-},"17":function(container,depth0,helpers,partials,data) {
+},"10":function(container,depth0,helpers,partials,data) {
     return "                  <span class='comment'>\n                    <a href=\"/auth/login\">Login</a> to view allele and genotype counts\n                  </span>\n";
-},"19":function(container,depth0,helpers,partials,data) {
-    var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=container.hooks.helperMissing, alias3="function", alias4=container.escapeExpression, lookupProperty = container.lookupProperty || function(parent, propertyName) {
+},"11":function(container,depth0,helpers,partials,data) {
+    var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=container.hooks.helperMissing, alias3="function", alias4=container.escapeExpression, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
         }
@@ -5974,10 +7949,19 @@ var templates = [
 
   return "                  <div class='allele-frequency-graph'>\n                    <span\n                      class='dataset'\n                      data-frequency='"
     + alias4(((helper = (helper = lookupProperty(helpers,"level") || (depth0 != null ? lookupProperty(depth0,"level") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"level","hash":{},"data":data,"loc":{"start":{"line":83,"column":38},"end":{"line":83,"column":47}}}) : helper)))
+    + "'\n                      data-allele-count='"
+    + alias4(((helper = (helper = lookupProperty(helpers,"count") || (depth0 != null ? lookupProperty(depth0,"count") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"count","hash":{},"data":data,"loc":{"start":{"line":84,"column":41},"end":{"line":84,"column":50}}}) : helper)))
     + "'\n                      data-dataset='"
-    + alias4(((helper = (helper = lookupProperty(helpers,"dataset") || (depth0 != null ? lookupProperty(depth0,"dataset") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"dataset","hash":{},"data":data,"loc":{"start":{"line":84,"column":36},"end":{"line":84,"column":47}}}) : helper)))
-    + "'\n                    ></span>\n                  </div>\n";
-},"21":function(container,depth0,helpers,partials,data) {
+    + alias4(((helper = (helper = lookupProperty(helpers,"dataset") || (depth0 != null ? lookupProperty(depth0,"dataset") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"dataset","hash":{},"data":data,"loc":{"start":{"line":85,"column":36},"end":{"line":85,"column":47}}}) : helper)))
+    + "'\n                    >\n"
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"has_homozygote_marker") : depth0),{"name":"if","hash":{},"fn":container.program(12, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":87,"column":22},"end":{"line":89,"column":29}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"has_hemizygote_marker") : depth0),{"name":"if","hash":{},"fn":container.program(13, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":90,"column":22},"end":{"line":92,"column":29}}})) != null ? stack1 : "")
+    + "                    </span>\n                  </div>\n";
+},"12":function(container,depth0,helpers,partials,data) {
+    return "                        <span class='marker homozygote-marker'></span>\n";
+},"13":function(container,depth0,helpers,partials,data) {
+    return "                        <span class='marker hemizygote-marker'></span>\n";
+},"14":function(container,depth0,helpers,partials,data) {
     var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=container.hooks.helperMissing, alias3="function", alias4=container.escapeExpression, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
@@ -5986,13 +7970,13 @@ var templates = [
     };
 
   return "                <td class='num_genotype_hemi_alt num-td'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"hac") || (depth0 != null ? lookupProperty(depth0,"hac") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"hac","hash":{},"data":data,"loc":{"start":{"line":96,"column":57},"end":{"line":96,"column":64}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"hac") || (depth0 != null ? lookupProperty(depth0,"hac") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"hac","hash":{},"data":data,"loc":{"start":{"line":104,"column":57},"end":{"line":104,"column":64}}}) : helper)))
     + "</td>\n                <td class='num_genotype_hemi_ref num-td'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"hrc") || (depth0 != null ? lookupProperty(depth0,"hrc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"hrc","hash":{},"data":data,"loc":{"start":{"line":97,"column":57},"end":{"line":97,"column":64}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"hrc") || (depth0 != null ? lookupProperty(depth0,"hrc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"hrc","hash":{},"data":data,"loc":{"start":{"line":105,"column":57},"end":{"line":105,"column":64}}}) : helper)))
     + "</td>\n                <td class='num_genotype_hemi_otheralts num-td'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"hoc") || (depth0 != null ? lookupProperty(depth0,"hoc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"hoc","hash":{},"data":data,"loc":{"start":{"line":98,"column":63},"end":{"line":98,"column":70}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"hoc") || (depth0 != null ? lookupProperty(depth0,"hoc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"hoc","hash":{},"data":data,"loc":{"start":{"line":106,"column":63},"end":{"line":106,"column":70}}}) : helper)))
     + "</td>\n";
-},"23":function(container,depth0,helpers,partials,data,blockParams,depths) {
+},"15":function(container,depth0,helpers,partials,data,blockParams,depths) {
     var stack1, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
@@ -6011,7 +7995,7 @@ var templates = [
         return undefined
     };
 
-  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"error") : depth0),{"name":"with","hash":{},"fn":container.program(1, data, 0, blockParams, depths),"inverse":container.program(3, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":1,"column":0},"end":{"line":111,"column":9}}})) != null ? stack1 : "");
+  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"error") : depth0),{"name":"with","hash":{},"fn":container.program(0, data, 0, blockParams, depths),"inverse":container.program(1, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":1,"column":0},"end":{"line":119,"column":9}}})) != null ? stack1 : "");
 },"useData":true,"useDepths":true}]
 ];
 

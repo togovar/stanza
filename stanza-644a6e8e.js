@@ -1,4 +1,4 @@
-import { S as Stanza } from './stanza-33919c9f.js';
+import { S as Stanza } from './stanza-a61f9e15.js';
 
 Stanza.prototype.embedScriptTag = function (...src) {
   const self = this;
@@ -14,4 +14,4 @@ Stanza.prototype.embedScriptTag = function (...src) {
     Promise.resolve()
   );
 };
-//# sourceMappingURL=stanza-f94b87e1.js.map
+//# sourceMappingURL=stanza-644a6e8e.js.map

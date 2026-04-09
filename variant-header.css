@@ -2,24 +2,93 @@
 :host {
   --color-key-dark: #256d80;
   --color-black: #444;
+  --color-singleton: #fff0c2;
   --color-table-border: #dee2e6;
   --border-table-bottom: 0.5px solid #444;
   --z-index-sticky-table-header: 10;
   --z-index-togostanza-menu: 10000;
-  --char-lock: "";
-  --char-excramation-triangle: "";
+  --char-lock: "\f023";
+  --char-excramation-triangle: "\f071";
 }
 
 .badge {
-  font-size: 10px;
-  border: solid 1px #94928D;
-  border-radius: 7px;
-  background-color: #eaeae9;
-  padding: 0 4px;
-  margin-left: 4px;
-  vertical-align: middle;
   position: absolute;
   top: 5px;
+  padding: 0 4px;
+  margin-left: 4px;
+  font-size: 10px;
+  vertical-align: middle;
+  background-color: #eaeae9;
+  border: solid 1px #94928d;
+  border-radius: 7px;
+}
+
+.dataset-icon {
+  position: relative;
+  height: 18px;
+  font-family: fontello;
+}
+.dataset-icon::before {
+  position: relative;
+  left: 2px;
+  display: inline-block;
+  height: 18px;
+  margin-right: 2px;
+  content: "\e800";
+}
+.dataset-icon > .properties {
+  position: relative;
+  top: -1px;
+  left: -2px;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 20px;
+  font-family: "Roboto Condensed", sans-serif;
+  font-size: 10px;
+  font-weight: lighter;
+  line-height: 9px;
+  vertical-align: middle;
+  transform: scale(0.9);
+  -webkit-box-orient: vertical;
+}
+.dataset-icon > .properties::before, .dataset-icon > .properties::after {
+  display: block;
+  height: 10px;
+}
+.dataset-icon[data-dataset=jga_wgs]::before, .dataset-icon[data-dataset=jga_wes]::before, .dataset-icon[data-dataset=jga_snp]::before {
+  color: #46b9cc;
+}
+.dataset-icon[data-dataset=tommo]::before {
+  color: #ca678d;
+}
+.dataset-icon[data-dataset=ncbn]::before {
+  color: #234b7c;
+}
+.dataset-icon[data-dataset=hgvd]::before, .dataset-icon[data-dataset=mgend]::before {
+  color: #005b80;
+}
+.dataset-icon[data-dataset=gem_j_wga]::before {
+  color: #dc2828;
+}
+.dataset-icon[data-dataset=bbj]::before {
+  color: #ff993f;
+}
+.dataset-icon[data-dataset=clinvar]::before, .dataset-icon[data-dataset^=gnomad]::before {
+  color: #94928d;
+}
+.dataset-icon[data-dataset=clinvar] > .properties::before, .dataset-icon[data-dataset=mgend] > .properties::before {
+  color: #ff5a54;
+  content: "Disease";
+}
+.dataset-icon[data-dataset=tommo] > .properties::after, .dataset-icon[data-dataset=gem_j_wga] > .properties::after {
+  content: "WGS";
+}
+.dataset-icon[data-dataset=jga_wes] > .properties::after, .dataset-icon[data-dataset=hgvd] > .properties::after, .dataset-icon[data-dataset^=gnomad] > .properties::after {
+  content: "WES";
+}
+.dataset-icon[data-dataset=jga_snp] > .properties::after, .dataset-icon[data-dataset=bbj] > .properties::after {
+  content: "SNP";
 }
 
 table.dataTable {
@@ -479,10 +548,10 @@ table.dataTable, table.dataTable th, table.dataTable td {
 }
 #dataTable_wrapper > #dataTable_info {
   position: absolute;
-  font-size: 12px;
   top: 6px;
   left: 14px;
   padding-top: 0;
+  font-size: 12px;
 }
 #dataTable_wrapper > #dataTable_length {
   position: absolute;
@@ -490,35 +559,35 @@ table.dataTable, table.dataTable th, table.dataTable td {
   right: 4px;
 }
 #dataTable_wrapper > #dataTable_length > label {
-  font-size: 12px;
   margin: 0 4px 0 0;
+  font-size: 12px;
 }
 #dataTable_wrapper > #dataTable_length > label > select {
-  font-family: "Roboto Condensed", sans-serif;
   padding: 0;
+  font-family: "Roboto Condensed", sans-serif;
 }
 #dataTable_wrapper > #dataTable_length > label > select > option {
   font-family: "Roboto Condensed", sans-serif;
 }
 #dataTable_wrapper > #dataTable {
   width: auto !important;
-  border-collapse: collapse;
   font-family: "Roboto Condensed", sans-serif;
+  border-collapse: collapse;
 }
 #dataTable_wrapper > #dataTable > thead {
   padding-top: 2px;
 }
 #dataTable_wrapper > #dataTable > thead > tr > th {
-  font-size: 12px;
-  color: var(--color-black);
-  font-weight: bold;
-  vertical-align: baseline;
-  text-align: left;
   padding-top: 4px;
   padding-bottom: 4px;
   padding-left: 14px;
-  border-bottom: var(--border-table-bottom);
+  font-size: 12px;
+  font-weight: bold;
+  vertical-align: baseline;
+  color: var(--color-black);
+  text-align: left;
   white-space: nowrap;
+  border-bottom: var(--border-table-bottom);
 }
 #dataTable_wrapper > #dataTable > thead > tr > th[aria-label=PMID] {
   width: 10% !important;
@@ -536,8 +605,8 @@ table.dataTable, table.dataTable th, table.dataTable td {
   width: 25% !important;
 }
 #dataTable_wrapper > #dataTable > thead > tr > th.sorting_asc, #dataTable_wrapper > #dataTable > thead > tr > th.sorting_desc, #dataTable_wrapper > #dataTable > thead > tr > th.sorting {
-  background-size: 15px;
   background-position: 100% 50%;
+  background-size: 15px;
 }
 #dataTable_wrapper > #dataTable > thead:first-child {
   padding-left: 14px;
@@ -545,13 +614,13 @@ table.dataTable, table.dataTable th, table.dataTable td {
 #dataTable_wrapper > #dataTable > tbody > tr > td {
   padding: 6px 10px;
   font-size: 14px;
-  color: #444444;
   vertical-align: middle;
+  color: #444;
   border-bottom: 1px solid #dee2e6;
 }
 #dataTable_wrapper > #dataTable > tbody > tr > td:first-of-type {
-  padding-left: 14px;
   width: 10% !important;
+  padding-left: 14px;
 }
 #dataTable_wrapper > #dataTable > tbody > tr > td:nth-of-type(2) {
   width: 80% !important;
@@ -566,57 +635,57 @@ table.dataTable, table.dataTable th, table.dataTable td {
   width: 25% !important;
 }
 #dataTable_wrapper > .dataTables_paginate {
-  padding: 10px;
   float: unset;
-  text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 10px;
   font-size: 14px;
   font-weight: bold;
+  text-align: center;
 }
 #dataTable_wrapper > .dataTables_paginate > span > .paginate_button {
-  padding: 1px 0 0 0;
   width: 24px;
   height: 24px;
+  padding: 1px 0 0;
   line-height: 24px;
 }
 #dataTable_wrapper > .dataTables_paginate > span > .paginate_button.current {
-  color: #ffffff !important;
+  color: #fff !important;
   background: none;
   background-color: #249eb3;
-  border-radius: 50px;
   border: none;
+  border-radius: 50px;
 }
 #dataTable_wrapper > .dataTables_paginate > span > .paginate_button.current:focus {
   outline: none;
 }
 #dataTable_wrapper > .dataTables_paginate > span > .paginate_button:hover {
-  color: #ffffff !important;
+  color: #fff !important;
   background: none;
   background-color: #249eb3;
-  border-radius: 50px;
   border: none;
+  border-radius: 50px;
 }
 #dataTable_wrapper > .dataTables_paginate > .paginate_button {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  padding: 0;
+  overflow: hidden;
   text-indent: 100vw;
   white-space: nowrap;
-  overflow: hidden;
-  display: inline-block;
   content: "";
-  width: 15px;
-  height: 15px;
   background-repeat: no-repeat;
-  background-size: 6px;
-  padding: 0;
   background-position: 2px 1px;
+  background-size: 6px;
 }
 #dataTable_wrapper > .dataTables_paginate > .paginate_button:hover {
-  border: none;
   width: 15px;
   height: 15px;
-  background-size: 15px;
   background-position: 0;
+  background-size: 15px;
+  border: none;
 }
 #dataTable_wrapper > .dataTables_paginate > .paginate_button.previous {
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAATCAIAAAArl3v+AAAACXBIWXMAABYlAAAWJQFJUiTwAAAA4klEQVQokYXSMQ6DMAwAQJd2S3b2ZIdPIH8FsYJYkZitTLyChZ3MiFfAA5gj5lRVKkopoZ6c5GRZjsF6whgzDIN786KqqpIk6fveWvuAsyCicRxdwhgLfgkRaa1dHoZhHMdHtBeMsbquOefBhVBKSSkBIPgrPuhCvNG1AIB7FEVt227npmkO4lUJEYUQ27nrup+ZQMA5V0ptTmtNRAd0e30NwLIsaZqu6+puEbEsy6/G3WSVUoyx03qfOUkpfe5r4j737mkf8zwXRbH1l2XZyRbs6wkhENG7dNM05XlujLHWPgHUwcZGP2JpaQAAAABJRU5ErkJggg==");
@@ -625,8 +694,8 @@ table.dataTable, table.dataTable th, table.dataTable td {
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAIAAAC0Ujn1AAAACXBIWXMAABYlAAAWJQFJUiTwAAACG0lEQVRIib2WsU/iUBzH372DJodQkjLQBIWQ3BGQwWOp0ZxjBxInFwcG7y9gdThGbnDlL9CB1ZWBUaOBhbuh1nCXGFQSGGxCIZgrnBgtKdjfe8/Gqt+pfd9vP/kl/b3fex8mkwmiqD0YVlvd6mVH1Xp9Y2yFApwnJQTlqCjHwhG/j/wxQmS0qunFmlLv3ADHLkkMFVbTKYEHDkDrxqjUaB6cXYAkSzvL8XwmwXNeKlo3RrnK6bmmMyg0JQW+nF2bp+NX4SKEzjU9VznVjZEd7ZJLpE/RpUbTIZfnvMSfZtFLjeYMrWq6w//Gc95ydq2cXWfQD84u1McqH9DFmgICBJncpMAHOE85uw4Dlkwgbg+GTvrX4pqvxTqrmnrnpj0Y4mqrC6xnuLvHvw//XIHUE1Vb3Y8Lm9vtwS2wXHERQv/+32FV64F1KvdnXXHCfWyNHp6fO2zu4d/rfcXpAOgbYwwWqdzdo18gxRIV7V5UtG3rb31e3Nv4ClIs4QDnodmQ/j0dBymyApwHp4Qg0SPSf0jprS9LIEVQSghiOSpCg0Hf+7bihC5HRSzHwmD9FehyLIwjfp8khoD1DL0gpUFkJkkMRfy+hw4prLJykN43xrnKCfBnMoHTs7FYU5yP7Ij/k0o/N3aW4yZ62tf5TCJJn+622hncpMDnMwnzGVu1zG/rl8l2qM92o0s6vCy81xXH0ptczObl5jqJELoHFl1AYBu29UEAAAAASUVORK5CYII=");
 }
 #dataTable_wrapper > .dataTables_paginate > .paginate_button.next {
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAATCAIAAAArl3v+AAAACXBIWXMAABYlAAAWJQFJUiTwAAAA3UlEQVQokX3SMQ6DMAwFUDcdk5092eEArJCzwMoBkFhYIh+AI7Cwk5ljwMTEnAO4olRpKW3+ksh6ciQ7QM9M0+Scoz/Z0TiOWZbVdf2bEN3zPG/bFgDWdd22LU1TuIQlSRJF0VG21hpjLgaYEKJpGs55wDEAUEohYsCx4wg75m8Bxz66/nW3fVbnLMtSFIUvlWXJ4JJhGHxJSqm1/kbGGGutF4gohDg99yk4513XHXN+d/oSiOg38UJXoZQ6zSksAOAex3Hf9wGxd9JaSykDYg8ROeeqqprn+eePI6IH/fHDFR20o4MAAAAASUVORK5CYII=");
   margin-left: 12px;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAATCAIAAAArl3v+AAAACXBIWXMAABYlAAAWJQFJUiTwAAAA3UlEQVQokX3SMQ6DMAwFUDcdk5092eEArJCzwMoBkFhYIh+AI7Cwk5ljwMTEnAO4olRpKW3+ksh6ciQ7QM9M0+Scoz/Z0TiOWZbVdf2bEN3zPG/bFgDWdd22LU1TuIQlSRJF0VG21hpjLgaYEKJpGs55wDEAUEohYsCx4wg75m8Bxz66/nW3fVbnLMtSFIUvlWXJ4JJhGHxJSqm1/kbGGGutF4gohDg99yk4513XHXN+d/oSiOg38UJXoZQ6zSksAOAex3Hf9wGxd9JaSykDYg8ROeeqqprn+eePI6IH/fHDFR20o4MAAAAASUVORK5CYII=");
 }
 #dataTable_wrapper > .dataTables_paginate > .paginate_button.next:hover {
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAIAAAC0Ujn1AAAACXBIWXMAABYlAAAWJQFJUiTwAAACMUlEQVRIib2Wv2/aQBSAr8ZxFApGMlWw5ASE1CAcFKUsRIn6Y/KA1AlV6sCQDp1ZM5SRJSt/QTKwZosYMkZKBAtZiBGqhFrVFVUVSz1cUGwSKmILE599PUqab7LuPX8+Pd+9uyej0Qh4oGj9ky8/Tr52ZfVXTx9OkoIMLXIhKcpLsYgQ8Lu/DIC7WlZhqdasd6+QiJMMHy5upUSORSKIGupGudE+vOwgmTh21+OFdIJlFjzVUDfy1fOWCjEWL5IcW8luT9upB/ECAFoqzFfPoW441XN6Xe2WutxoY7wixzrq6EVLheVG21bLKsT8N3FcxB1HHTEcXnbku1mO1aVa0zsTVLI7QYZG/xIGU0gpWh+/fkt168Pk9nr3StH6vo38x1PlJxK1kVWo/B5IUR4A8Gxp8c3K8nHn+/XNLZJ4DyHg9z19+17RBkhoXvv1za2Pzr7TsUkTe88wXgvLhHaoG9R038Fz0Owcff5mpvy17j19SCGDOPZOL8jts6lnYjb1/qsXuecr5jPaNJyzDjI0MujOh1Sc3BtkaErkQsi4C7m11U+ZFKH3rj2EKHO14smtre6/3CT3AgCkKE9JsQgyfo9/8I7VsQglBPwZPoyEbIqz1MEkw4eFgH+8QopbKSRqk6+e9fQhuXcitM7GUq2Jb9mKNiD07q7HTbW1rgvpRNLtwDeRVUjoTXJsIZ0wny01yyxUstsYO6F3euvbu3FOO9pSHuuKM+G/XMymmec6CQD4AzDtVR8kQhMvAAAAAElFTkSuQmCC");
@@ -635,43 +704,253 @@ table.dataTable, table.dataTable th, table.dataTable td {
   outline: none;
 }
 #dataTable_wrapper caption {
-  caption-side: bottom;
-  text-align: left;
+  padding: 8px 14px 0;
   font-size: 12px;
   font-weight: bold;
   color: #6c757d;
-  padding: 8px 14px 0;
+  text-align: left;
+  caption-side: bottom;
+}
+
+.frequency-graph {
+  font-size: 0;
+  white-space: nowrap;
+}
+.frequency-graph > .dataset[data-dataset=gem_j_wga], .frequency-graph > .dataset[data-dataset="GEM-J WGA"] {
+  --frequency-dataset-color: #dc2828;
+}
+.frequency-graph > .dataset[data-dataset=jga_wgs], .frequency-graph > .dataset[data-dataset=JGA-WGS], .frequency-graph > .dataset[data-dataset=jga_wes], .frequency-graph > .dataset[data-dataset=JGA-WES], .frequency-graph > .dataset[data-dataset=jga_snp], .frequency-graph > .dataset[data-dataset=JGA-SNP] {
+  --frequency-dataset-color: #46b9cc;
+}
+.frequency-graph > .dataset[data-dataset=tommo], .frequency-graph > .dataset[data-dataset=ToMMo], .frequency-graph > .dataset[data-dataset^=ToMMo] {
+  --frequency-dataset-color: #ca678d;
+}
+.frequency-graph > .dataset[data-dataset=ncbn], .frequency-graph > .dataset[data-dataset=NCBN] {
+  --frequency-dataset-color: #234b7c;
+}
+.frequency-graph > .dataset[data-dataset=hgvd], .frequency-graph > .dataset[data-dataset=HGVD] {
+  --frequency-dataset-color: #005b80;
+}
+.frequency-graph > .dataset[data-dataset=bbj], .frequency-graph > .dataset[data-dataset=BBJ] {
+  --frequency-dataset-color: #ff993f;
+}
+.frequency-graph > .dataset > .marker {
+  position: absolute;
+  top: -5px;
+  z-index: 1;
+  box-sizing: border-box;
+  display: block;
+  width: 7px;
+  height: 7px;
+  background-color: #ff5a54;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 1.5px;
+}
+.frequency-graph > .dataset > .marker.homozygote-marker {
+  top: -5px;
+  right: -5px;
+  background-image: url("./assets/icons/slashmark.svg");
+  background-size: cover;
+}
+.frequency-graph > .dataset > .marker.hemizygote-marker {
+  top: calc(3px);
+  right: -5px;
+  background-image: url("./assets/icons/slashmark-hemi.svg");
+  background-size: cover;
+}
+.frequency-graph > .dataset > .marker.hemizygote-marker:only-child {
+  top: -5px;
+  right: -5px;
+}
+.frequency-graph > .dataset::before {
+  position: absolute;
+  bottom: 1px;
+  left: 1px;
+  display: none;
+  width: 5px;
+  content: "";
+  background-image: repeating-linear-gradient(to top, var(--frequency-dataset-color) 0, var(--frequency-dataset-color) 2px, transparent 2px, transparent 3px);
+}
+.frequency-graph > .dataset[data-frequency="<0.0001"]::before {
+  display: block;
+  height: 2px;
+}
+.frequency-graph > .dataset[data-frequency="<0.001"]::before {
+  display: block;
+  height: 5px;
+}
+.frequency-graph > .dataset[data-frequency="<0.01"]::before {
+  display: block;
+  height: 8px;
+}
+.frequency-graph > .dataset[data-frequency="<0.05"]::before {
+  display: block;
+  height: 11px;
+}
+.frequency-graph > .dataset[data-frequency="<0.5"]::before {
+  display: block;
+  height: 14px;
+}
+.frequency-graph > .dataset[data-frequency="≥0.5"]::before {
+  display: block;
+  height: 17px;
+}
+.frequency-graph > .dataset {
+  --frequency-dataset-color: #94928d;
+  position: relative;
+  box-sizing: border-box;
+  display: inline-block;
+  width: 9px;
+  height: 21px;
+  margin-right: 5px;
+  vertical-align: middle;
+  background-color: white;
+  border: solid 1px var(--frequency-dataset-color);
+}
+.frequency-graph > .dataset[data-allele-count="1"] {
+  background-color: var(--color-singleton);
+}
+.frequency-graph > .dataset[data-frequency=na] {
+  background-color: #f4f4f4;
+  border-color: #d4d3d1;
+}
+.frequency-graph > .dataset[data-frequency=na]::before {
+  display: none;
+}
+
+.allele-frequency-graph > .dataset[data-dataset=gem_j_wga], .allele-frequency-graph > .dataset[data-dataset="GEM-J WGA"] {
+  --frequency-dataset-color: #dc2828;
+}
+.allele-frequency-graph > .dataset[data-dataset=jga_wgs], .allele-frequency-graph > .dataset[data-dataset=JGA-WGS], .allele-frequency-graph > .dataset[data-dataset=jga_wes], .allele-frequency-graph > .dataset[data-dataset=JGA-WES], .allele-frequency-graph > .dataset[data-dataset=jga_snp], .allele-frequency-graph > .dataset[data-dataset=JGA-SNP] {
+  --frequency-dataset-color: #46b9cc;
+}
+.allele-frequency-graph > .dataset[data-dataset=tommo], .allele-frequency-graph > .dataset[data-dataset=ToMMo], .allele-frequency-graph > .dataset[data-dataset^=ToMMo] {
+  --frequency-dataset-color: #ca678d;
+}
+.allele-frequency-graph > .dataset[data-dataset=ncbn], .allele-frequency-graph > .dataset[data-dataset=NCBN] {
+  --frequency-dataset-color: #234b7c;
+}
+.allele-frequency-graph > .dataset[data-dataset=hgvd], .allele-frequency-graph > .dataset[data-dataset=HGVD] {
+  --frequency-dataset-color: #005b80;
+}
+.allele-frequency-graph > .dataset[data-dataset=bbj], .allele-frequency-graph > .dataset[data-dataset=BBJ] {
+  --frequency-dataset-color: #ff993f;
+}
+.allele-frequency-graph > .dataset > .marker {
+  position: absolute;
+  top: -5px;
+  z-index: 1;
+  box-sizing: border-box;
+  display: block;
+  width: 7px;
+  height: 7px;
+  background-color: #ff5a54;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 1.5px;
+}
+.allele-frequency-graph > .dataset > .marker.homozygote-marker {
+  top: -5px;
+  right: -5px;
+  background-image: url("./assets/icons/slashmark.svg");
+  background-size: cover;
+}
+.allele-frequency-graph > .dataset > .marker.hemizygote-marker {
+  top: calc(3px);
+  right: -5px;
+  background-image: url("./assets/icons/slashmark-hemi.svg");
+  background-size: cover;
+}
+.allele-frequency-graph > .dataset > .marker.hemizygote-marker:only-child {
+  top: -5px;
+  right: -5px;
+}
+.allele-frequency-graph > .dataset::before {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  display: none;
+  height: 12px;
+  content: "";
+  background-image: repeating-linear-gradient(to right, var(--frequency-dataset-color) 0, var(--frequency-dataset-color) 4px, transparent 4px, transparent 5px);
+}
+.allele-frequency-graph > .dataset[data-frequency="<0.0001"]::before {
+  display: block;
+  width: 4px;
+}
+.allele-frequency-graph > .dataset[data-frequency="<0.001"]::before {
+  display: block;
+  width: 9px;
+}
+.allele-frequency-graph > .dataset[data-frequency="<0.01"]::before {
+  display: block;
+  width: 14px;
+}
+.allele-frequency-graph > .dataset[data-frequency="<0.05"]::before {
+  display: block;
+  width: 19px;
+}
+.allele-frequency-graph > .dataset[data-frequency="<0.5"]::before {
+  display: block;
+  width: 24px;
+}
+.allele-frequency-graph > .dataset[data-frequency="≥0.5"]::before {
+  display: block;
+  width: 29px;
+}
+.allele-frequency-graph > .dataset {
+  --frequency-dataset-color: #94928d;
+  position: relative;
+  box-sizing: border-box;
+  display: inline-block;
+  width: 33px;
+  height: 16px;
+  margin-right: 1px;
+  vertical-align: middle;
+  background-color: white;
+  border: solid 1px var(--frequency-dataset-color);
+}
+.allele-frequency-graph > .dataset[data-allele-count="1"] {
+  background-color: var(--color-singleton);
+}
+.allele-frequency-graph > .dataset[data-frequency=na] {
+  background-color: #f4f4f4;
+  border-color: #d4d3d1;
+}
+.allele-frequency-graph > .dataset[data-frequency=na]::before {
+  display: none;
 }
 
 .table {
   width: 100%;
-  border-collapse: collapse;
   font-family: "Roboto Condensed", sans-serif;
+  border-collapse: collapse;
 }
 .table th,
 .table td {
   padding: 3px 0;
+  line-height: 1.2;
   vertical-align: middle;
   border-bottom: 1px solid #dee2e6;
-  line-height: 1.2;
 }
 .table th {
   font-size: 12px;
-  color: var(--color-black);
   font-weight: bold;
+  color: var(--color-black);
 }
 .table td {
   font-size: 14px;
-  color: #444444;
+  color: #444;
   white-space: nowrap;
 }
 .table > thead {
   padding-top: 2px;
 }
 .table > thead > tr > th {
-  text-align: left;
   padding-top: 6px;
   padding-bottom: 4px;
+  text-align: left;
   border-bottom: 0.5px solid #4e5059;
 }
 .table > thead > tr > th:first-child {
@@ -696,28 +975,28 @@ table.dataTable, table.dataTable th, table.dataTable td {
 }
 
 .variant-function {
-  font-size: 12px;
   padding: 1px 8px;
+  font-size: 12px;
   border-radius: 20px;
 }
 
 .within-sticky-table-header {
-  overflow: auto;
   max-height: 300px;
+  overflow: auto;
 }
 .within-sticky-table-header .table > thead > tr > th {
   position: sticky;
   top: 0;
-  background-color: white;
   z-index: var(--z-index-sticky-table-header);
+  background-color: white;
 }
 .within-sticky-table-header .table > thead > tr > th::before {
-  content: "";
-  width: 100%;
-  border-bottom: solid 1px black;
-  left: 0;
-  bottom: -1px;
   position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  content: "";
+  border-bottom: solid 1px black;
 }
 
 main {
@@ -745,9 +1024,9 @@ ul {
   padding-inline-start: 2rem;
 }
 ul.no-bullet {
-  list-style: none;
-  margin: 0;
   padding: 0;
+  margin: 0;
+  list-style: none;
 }
 
 .table > thead > tr > th + th {
@@ -757,37 +1036,37 @@ ul.no-bullet {
   padding-left: 10px;
 }
 .table > tbody > tr > td.text-center {
-  text-align: center;
   padding: 14px 0 0;
+  text-align: center;
 }
 
 .alert {
-  font-size: 10px;
-  font-family: "Roboto Condensed", sans-serif;
-  color: #444;
   padding: 4px 6px;
-  border-width: 1px;
+  font-family: "Roboto Condensed", sans-serif;
+  font-size: 10px;
+  color: #444;
   border-style: solid;
+  border-width: 1px;
   border-radius: 4px;
 }
 .alert.alert-danger {
-  border-color: #ff504a;
-  background-color: #ffeeed;
+  background-color: rgb(255, 237.6315789474, 237);
+  border-color: rgb(255, 80.1578947368, 73.8);
 }
 .alert.alert-warning {
-  border-color: #f5a700;
-  background-color: #fff7e6;
+  background-color: rgb(255, 246.9, 229.5);
+  border-color: rgb(244.8, 167.04, 0);
 }
 .alert.alert-info {
-  border-color: #99cd32;
-  background-color: #f3f9e6;
+  background-color: rgb(242.68, 248.9657142857, 230.2342857143);
+  border-color: rgb(152.88, 204.88, 49.92);
 }
 
 .unimplemented {
-  color: red;
   margin-bottom: 0;
+  color: red;
 }
-.unimplemented:before {
+.unimplemented::before {
   content: "unimplemented: ";
 }
 
@@ -797,86 +1076,86 @@ ul.no-bullet {
 .ref-alt > .ref,
 .ref-alt > .alt {
   display: inline-block;
-  line-height: 18px;
   height: 18px;
   padding: 0 6px;
+  line-height: 18px;
   vertical-align: middle;
 }
-.ref-alt > .ref[data-sum]:after,
-.ref-alt > .alt[data-sum]:after {
-  color: white;
-  font-size: 10px;
-  display: inline-block;
-  line-height: 12px;
-  padding: 0 4px;
-  border-radius: 6px;
-  vertical-align: middle;
-  font-weight: lighter;
-  margin: 0 -3px 4px 3px;
+.ref-alt > .ref[data-sum]::after,
+.ref-alt > .alt[data-sum]::after {
   position: relative;
+  display: inline-block;
+  padding: 0 4px;
+  margin: 0 -3px 4px 3px;
+  font-size: 10px;
+  font-weight: lighter;
+  line-height: 12px;
+  vertical-align: middle;
+  color: white;
   content: attr(data-sum) "bp";
+  border-radius: 6px;
 }
 .ref-alt > .ref {
-  border-left: solid 1px #249eb3;
-  border-top: solid 1px #249eb3;
-  border-bottom: solid 1px #249eb3;
-  border-top-left-radius: 3px;
-  border-bottom-left-radius: 3px;
-  color: #249eb3;
-  background-color: #d8f0f4;
   position: relative;
   padding-right: 4px;
+  color: #249eb3;
+  background-color: #d8f0f4;
+  border-top: solid 1px #249eb3;
+  border-bottom: solid 1px #249eb3;
+  border-left: solid 1px #249eb3;
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
 }
-.ref-alt > .ref[data-sum]:after {
+.ref-alt > .ref[data-sum]::after {
   background-color: #249eb3;
 }
-.ref-alt > .ref[data-sum="0"]:after, .ref-alt > .ref[data-sum="1"]:after, .ref-alt > .ref[data-sum="2"]:after, .ref-alt > .ref[data-sum="3"]:after, .ref-alt > .ref[data-sum="4"]:after {
+.ref-alt > .ref[data-sum="0"]::after, .ref-alt > .ref[data-sum="1"]::after, .ref-alt > .ref[data-sum="2"]::after, .ref-alt > .ref[data-sum="3"]::after, .ref-alt > .ref[data-sum="4"]::after {
   display: none;
 }
 .ref-alt > .alt {
-  border-right: solid 1px #ff6682;
+  padding-left: 9px;
+  color: #ff6682;
+  background-color: #fde2e7;
   border-top: solid 1px #ff6682;
+  border-right: solid 1px #ff6682;
   border-bottom: solid 1px #ff6682;
   border-top-right-radius: 3px;
   border-bottom-right-radius: 3px;
-  color: #ff6682;
-  background-color: #fde2e7;
-  padding-left: 9px;
 }
-.ref-alt > .alt[data-sum]:after {
+.ref-alt > .alt[data-sum]::after {
   background-color: #ff6682;
 }
-.ref-alt > .alt[data-sum="0"]:after, .ref-alt > .alt[data-sum="1"]:after, .ref-alt > .alt[data-sum="2"]:after, .ref-alt > .alt[data-sum="3"]:after, .ref-alt > .alt[data-sum="4"]:after {
+.ref-alt > .alt[data-sum="0"]::after, .ref-alt > .alt[data-sum="1"]::after, .ref-alt > .alt[data-sum="2"]::after, .ref-alt > .alt[data-sum="3"]::after, .ref-alt > .alt[data-sum="4"]::after {
   display: none;
 }
 .ref-alt > .arrow {
   position: relative;
 }
-.ref-alt > .arrow:before, .ref-alt > .arrow:after {
-  content: "";
-  display: inline-block;
+.ref-alt > .arrow::before, .ref-alt > .arrow::after {
   position: absolute;
+  display: inline-block;
+  content: "";
 }
-.ref-alt > .arrow:before {
+.ref-alt > .arrow::before {
+  top: 0;
+  right: -6px;
   border-top: 9px solid transparent;
   border-bottom: 9px solid transparent;
   border-left: 6px solid #249eb3;
-  top: 0;
-  right: -6px;
 }
-.ref-alt > .arrow:after {
+.ref-alt > .arrow::after {
+  top: 1px;
+  right: -5px;
   border-top: 8px solid transparent;
   border-bottom: 8px solid transparent;
   border-left: 6px solid #d8f0f4;
-  top: 1px;
-  right: -5px;
 }
 
 .variant-function {
+  display: inline-block;
+  padding: 0 8px;
   color: white;
   border-radius: 9px;
-  padding: 0 8px;
-  display: inline-block;
 }
 .variant-function[data-function=T], .variant-function[data-function=B] {
   background-color: #04af58;
@@ -898,377 +1177,126 @@ ul.no-bullet {
   background-color: #bbba7e;
 }
 
-.clinical-significance:before {
-  content: attr(data-sign) "";
-  width: 18px;
-  line-height: 18px;
-  height: 18px;
+.clinical-significance::before {
   display: inline-block;
+  width: 18px;
+  height: 18px;
   margin-right: 3px;
-  border-radius: 9px;
-  border-width: 1px;
-  border-style: solid;
-  text-align: center;
   font-size: 10px;
   font-weight: bold;
+  line-height: 18px;
   vertical-align: top;
+  text-align: center;
+  content: attr(data-sign) "";
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 9px;
 }
-.clinical-significance[data-sign=P]:before {
+.clinical-significance[data-sign=P]::before {
   color: #ff5a54;
-  border-color: #ff5a54;
   background-color: #ffeeed;
+  border-color: #ff5a54;
 }
-.clinical-significance[data-sign=LP]:before {
+.clinical-significance[data-sign=LP]::before {
   color: #ffae00;
-  border-color: #ffae00;
   background-color: #fff7e6;
+  border-color: #ffae00;
 }
-.clinical-significance[data-sign=US]:before {
+.clinical-significance[data-sign=US]::before {
   color: #94928d;
-  border-color: #94928d;
   background-color: #eaeae9;
-}
-.clinical-significance[data-sign=LB]:before {
-  color: #9dcf3a;
-  border-color: #9dcf3a;
-  background-color: #f3f9e6;
-}
-.clinical-significance[data-sign=B]:before {
-  color: #04af58;
-  border-color: #04af58;
-  background-color: #e5fbe7;
-}
-.clinical-significance[data-sign=CI]:before {
-  color: #c654ff;
-  border-color: #c654ff;
-  background-color: #f9edff;
-}
-.clinical-significance[data-sign=DR]:before, .clinical-significance[data-sign=A]:before, .clinical-significance[data-sign=RF]:before, .clinical-significance[data-sign=PR]:before, .clinical-significance[data-sign=AF]:before, .clinical-significance[data-sign=O]:before {
-  color: #9c8200;
-  border-color: #9c8200;
-  background-color: #fff7cf;
-}
-.clinical-significance[data-sign=NP]:before, .clinical-significance[data-sign=AN]:before {
-  color: #444;
   border-color: #94928d;
+}
+.clinical-significance[data-sign=LB]::before {
+  color: #9dcf3a;
+  background-color: #f3f9e6;
+  border-color: #9dcf3a;
+}
+.clinical-significance[data-sign=B]::before {
+  color: #04af58;
+  background-color: #e5fbe7;
+  border-color: #04af58;
+}
+.clinical-significance[data-sign=CI]::before {
+  color: #c654ff;
+  background-color: #f9edff;
+  border-color: #c654ff;
+}
+.clinical-significance[data-sign=DR]::before, .clinical-significance[data-sign=A]::before, .clinical-significance[data-sign=RF]::before, .clinical-significance[data-sign=PR]::before, .clinical-significance[data-sign=AF]::before, .clinical-significance[data-sign=O]::before {
+  color: #9c8200;
+  background-color: #fff7cf;
+  border-color: #9c8200;
+}
+.clinical-significance[data-sign=NP]::before, .clinical-significance[data-sign=AN]::before {
+  color: #444;
   background-color: white;
+  border-color: #94928d;
 }
 
 .clinical-significance-full {
+  padding: 0 7px;
   font-size: 12px;
   font-weight: bold;
   border: 1px solid transparent;
   border-radius: 8.5px;
-  padding: 0 7px;
 }
 .clinical-significance-full[data-sign=P] {
   color: #ff5a54;
-  border-color: #ff5a54;
   background-color: #ffeeed;
+  border-color: #ff5a54;
 }
 .clinical-significance-full[data-sign=LP] {
   color: #ffae00;
-  border-color: #ffae00;
   background-color: #fff7e6;
+  border-color: #ffae00;
 }
 .clinical-significance-full[data-sign=US] {
   color: #94928d;
-  border-color: #94928d;
   background-color: #eaeae9;
+  border-color: #94928d;
 }
 .clinical-significance-full[data-sign=LB] {
   color: #9dcf3a;
-  border-color: #9dcf3a;
   background-color: #f3f9e6;
+  border-color: #9dcf3a;
 }
 .clinical-significance-full[data-sign=B] {
   color: #04af58;
-  border-color: #04af58;
   background-color: #e5fbe7;
+  border-color: #04af58;
 }
 .clinical-significance-full[data-sign=CI] {
   color: #c654ff;
-  border-color: #c654ff;
   background-color: #f9edff;
+  border-color: #c654ff;
 }
 .clinical-significance-full[data-sign=DR], .clinical-significance-full[data-sign=A], .clinical-significance-full[data-sign=RF], .clinical-significance-full[data-sign=PR], .clinical-significance-full[data-sign=AF], .clinical-significance-full[data-sign=O] {
   color: #9c8200;
-  border-color: #9c8200;
   background-color: #fff7cf;
+  border-color: #9c8200;
 }
 .clinical-significance-full[data-sign=NP], .clinical-significance-full[data-sign=AN] {
   color: #444;
+  background-color: white;
   border-color: #94928d;
-  background-color: white;
-}
-
-.frequency-graph > .dataset {
-  display: inline-block;
-  width: 9px;
-  height: 20px;
-  border: solid 1px rgba(148, 146, 141, 0.25);
-  box-sizing: border-box;
-  position: relative;
-  margin-right: 1px;
-  background-color: #249eb3;
-  vertical-align: middle;
-}
-.frequency-graph > .dataset:before {
-  content: "";
-  display: block;
-  position: absolute;
-  width: 7px;
-  background-color: white;
-}
-.frequency-graph > .dataset:after {
-  content: "";
-  display: block;
-  position: absolute;
-  width: 7px;
-  background-color: white;
-  opacity: 0.75;
-  height: 1px;
-  top: 1px;
-  box-shadow: 0 3px white, 0 6px white, 0 9px white, 0 12px white, 0 15px white;
-}
-.frequency-graph > .dataset[data-dataset=jga_wes], .frequency-graph > .dataset[data-dataset=jga_snp] {
-  background-color: #46b9cc;
-}
-.frequency-graph > .dataset[data-dataset=tommo] {
-  background-color: #ca678d;
-}
-.frequency-graph > .dataset[data-dataset=gem_j_wga] {
-  background-color: #dc2828;
-}
-.frequency-graph > .dataset[data-dataset=hgvd] {
-  background-color: #005b80;
-}
-.frequency-graph > .dataset[data-dataset^=gnomad] {
-  background-color: #94928d;
-}
-.frequency-graph > .dataset[data-frequency=na] {
-  background-color: rgba(234, 234, 233, 0.6);
-}
-.frequency-graph > .dataset[data-frequency=na]:after {
-  display: none;
-}
-.frequency-graph > .dataset[data-frequency=monomorphic]:before {
-  height: 18px;
-}
-.frequency-graph > .dataset[data-frequency=singleton]:before {
-  height: 17px;
-}
-.frequency-graph > .dataset[data-frequency="<0.0001"]:before {
-  height: 14px;
-}
-.frequency-graph > .dataset[data-frequency="<0.001"]:before {
-  height: 11px;
-}
-.frequency-graph > .dataset[data-frequency="<0.01"]:before {
-  height: 8px;
-}
-.frequency-graph > .dataset[data-frequency="<0.05"]:before {
-  height: 5px;
-}
-.frequency-graph > .dataset[data-frequency="<0.5"]:before {
-  height: 2px;
-}
-
-.frequency-detail {
-  width: 100%;
-}
-.frequency-detail > tbody > tr > td {
-  line-height: 18px;
-}
-.frequency-detail > tbody > tr > td .dataset-icon {
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 0.2em;
-}
-.frequency-detail > tbody > tr > td.alt, .frequency-detail > tbody > tr > td.total, .frequency-detail > tbody > tr > td.frequency {
-  text-align: right;
-}
-.frequency-detail > tbody > tr > td.alt {
-  font-weight: bold;
-  color: #ff6682;
-}
-.frequency-detail > tbody > tr > td.alt:after {
-  content: "/";
-  font-size: 10px;
-  color: #444;
-  margin-left: 0.5em;
-}
-.frequency-detail > tbody > tr > td.total {
-  font-size: 10px;
-}
-
-.allele-frequency-graph > .dataset {
-  display: inline-block;
-  width: 36px;
-  height: 14px;
-  border: solid 1px #ffffff;
-  box-shadow: 0 0 0 1px #dfdedd;
-  position: relative;
-  margin-right: 1px;
-  background-color: #249eb3;
-  vertical-align: middle;
-  box-sizing: border-box;
-}
-.allele-frequency-graph > .dataset:before, .allele-frequency-graph > .dataset:after {
-  content: "";
-  display: block;
-  position: absolute;
-  height: 12px;
-  background-color: white;
-}
-.allele-frequency-graph > .dataset:before {
-  right: 0;
-}
-.allele-frequency-graph > .dataset:after {
-  opacity: 0.75;
-  width: 1px;
-  top: 0;
-  left: -1px;
-  box-shadow: 5px 0 white, 10px 0 white, 15px 0 white, 20px 0 white, 25px 0 white, 30px 0 white;
-}
-.allele-frequency-graph > .dataset[data-dataset=gem_j_wga], .allele-frequency-graph > .dataset[data-dataset="GEM-J WGA"] {
-  background-color: #dc2828;
-  box-shadow: 0 0 0 1px #dc2828;
-}
-.allele-frequency-graph > .dataset[data-dataset=JGA-WGS], .allele-frequency-graph > .dataset[data-dataset=jga_wes], .allele-frequency-graph > .dataset[data-dataset=JGA-WES], .allele-frequency-graph > .dataset[data-dataset=jga_snp], .allele-frequency-graph > .dataset[data-dataset=JGA-SNP] {
-  background-color: #46b9cc;
-  box-shadow: 0 0 0 1px #46b9cc;
-}
-.allele-frequency-graph > .dataset[data-dataset=tommo], .allele-frequency-graph > .dataset[data-dataset^=ToMMo] {
-  background-color: #ca678d;
-  box-shadow: 0 0 0 1px #ca678d;
-}
-.allele-frequency-graph > .dataset[data-dataset=ncbn], .allele-frequency-graph > .dataset[data-dataset=NCBN] {
-  background-color: #234b7c;
-  box-shadow: 0 0 0 1px #234b7c;
-}
-.allele-frequency-graph > .dataset[data-dataset=hgvd] {
-  background-color: #005b80;
-  box-shadow: 0 0 0 1px #005b80;
-}
-.allele-frequency-graph > .dataset[data-dataset^=gnomad], .allele-frequency-graph > .dataset[data-dataset^=gnomAD] {
-  background-color: #94928d;
-}
-.allele-frequency-graph > .dataset[data-frequency=na] {
-  background-color: rgba(234, 234, 233, 0.6);
-}
-.allele-frequency-graph > .dataset[data-frequency=na]:after {
-  display: none;
-}
-.allele-frequency-graph > .dataset[data-frequency=monomorphic]:before {
-  width: 35px;
-}
-.allele-frequency-graph > .dataset[data-frequency=singleton]:before {
-  width: 31px;
-}
-.allele-frequency-graph > .dataset[data-frequency="<0.0001"]:before {
-  width: 26px;
-}
-.allele-frequency-graph > .dataset[data-frequency="<0.001"]:before {
-  width: 21px;
-}
-.allele-frequency-graph > .dataset[data-frequency="<0.01"]:before {
-  width: 16px;
-}
-.allele-frequency-graph > .dataset[data-frequency="<0.05"]:before {
-  width: 11px;
-}
-.allele-frequency-graph > .dataset[data-frequency="<0.5"]:before {
-  width: 6px;
-}
-
-.dataset-icon {
-  font-family: fontello;
-  height: 18px;
-  position: relative;
-}
-.dataset-icon:before {
-  content: "\e800";
-  margin-right: 2px;
-  position: relative;
-  left: 2px;
-  display: inline-block;
-  height: 18px;
-}
-.dataset-icon > .properties {
-  font-family: "Roboto Condensed", sans-serif;
-  font-size: 10px;
-  display: inline-flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  flex-direction: column;
-  -webkit-box-pack: center;
-  justify-content: center;
-  font-weight: lighter;
-  line-height: 9px;
-  position: relative;
-  left: -2px;
-  top: -1px;
-  vertical-align: middle;
-  height: 20px;
-  -webkit-transform: scale(0.9);
-  transform: scale(0.9);
-}
-.dataset-icon > .properties::before, .dataset-icon > .properties::after {
-  display: block;
-  height: 10px;
-}
-.dataset-icon[data-dataset=jga_wgs]:before, .dataset-icon[data-dataset=jga_wes]:before, .dataset-icon[data-dataset=jga_snp]:before {
-  color: #46b9cc;
-}
-.dataset-icon[data-dataset=tommo]:before {
-  color: #ca678d;
-}
-.dataset-icon[data-dataset=ncbn]:before {
-  color: #234b7c;
-}
-.dataset-icon[data-dataset=hgvd]:before, .dataset-icon[data-dataset=mgend]:before {
-  color: #005b80;
-}
-.dataset-icon[data-dataset=gem_j_wga]:before {
-  color: #dc2828;
-}
-.dataset-icon[data-dataset=bbj]:before {
-  color: #ff993f;
-}
-.dataset-icon[data-dataset=clinvar]:before, .dataset-icon[data-dataset^=gnomad]:before {
-  color: #94928d;
-}
-.dataset-icon[data-dataset=clinvar] > .properties::before, .dataset-icon[data-dataset=mgend] > .properties::before {
-  color: #ff5a54;
-  content: "Disease";
-}
-.dataset-icon[data-dataset=tommo] > .properties::after, .dataset-icon[data-dataset=gem_j_wga] > .properties::after {
-  content: "WGS";
-}
-.dataset-icon[data-dataset=jga_wes] > .properties::after, .dataset-icon[data-dataset=hgvd] > .properties::after, .dataset-icon[data-dataset^=gnomad] > .properties::after {
-  content: "WES";
-}
-.dataset-icon[data-dataset=jga_snp] > .properties::after, .dataset-icon[data-dataset=bbj] > .properties::after {
-  content: "SNP";
 }
 
 .star-rating {
-  display: inline-block;
   position: absolute;
+  display: inline-block;
   font-size: 15px;
 }
-.star-rating:after {
-  content: "★★★★";
+.star-rating::after {
   color: #dfdedd;
+  content: "★★★★";
 }
 .star-rating > .star-rating-item {
   position: absolute;
   overflow: hidden;
 }
-.star-rating > .star-rating-item:before {
-  content: "★★★★";
+.star-rating > .star-rating-item::before {
   color: #249eb3;
+  content: "★★★★";
 }
 .star-rating > .star-rating-item[data-stars="0"] {
   width: 0%;
@@ -1290,26 +1318,26 @@ togostanza--menu {
   position: relative;
   z-index: var(--z-index-togostanza-menu);
   display: block;
-  margin-left: auto;
   padding: 2px;
+  margin-left: auto;
   cursor: pointer;
 }
 
 .table.variant-header thead tr th {
-  font-size: 12px;
-  text-align: var(--text-align);
-  color: #1f5065;
-  border-bottom: 0;
-  font-weight: bold;
   padding: 1px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #1f5065;
+  text-align: var(--text-align);
+  border-bottom: 0;
 }
 .table.variant-header tbody td {
+  padding: 1px !important;
   font-size: 14px;
   text-align: var(--text-align);
-  padding: 1px !important;
 }
 .table.variant-header tbody td a {
-  color: #ffffff;
+  color: #fff;
 }
 
 togostanza--menu {

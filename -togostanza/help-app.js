@@ -1,4 +1,4 @@
-import { d as defineComponent, h as ref, i as octicons, a as createElementBlock, F as Fragment, e as createBaseVNode, j as createTextVNode, m as mergeProps, o as openBlock, k as computed, l as watch, r as resolveComponent, c as createBlock, n as normalizeProps, p as guardReactiveProps, q as resolveDynamicComponent, u as createVNode, t as toDisplayString, b as renderList, v as pushScopeId, x as popScopeId, y as n, f as createCommentVNode, z as normalizeClass, A as unref, B as normalizeStyle, s as script$8, w as withCtx, g as createApp } from './Layout-2c5a71f2.js';
+import { d as defineComponent, h as ref, i as octicons, b as createElementBlock, F as Fragment, a as createBaseVNode, j as createTextVNode, m as mergeProps, o as openBlock, k as computed, l as watch, c as createBlock, n as normalizeProps, p as guardReactiveProps, q as resolveDynamicComponent, u as createVNode, t as toDisplayString, r as resolveComponent, e as renderList, v as n, f as createCommentVNode, x as normalizeClass, y as unref, z as normalizeStyle, s as script$8, w as withCtx, g as createApp } from './Layout-0224628e.js';
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -21,8 +21,8 @@ var data = {
 };
 
 /*!
-  * Bootstrap data.js v5.3.2 (https://getbootstrap.com/)
-  * Copyright 2011-2023 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
+  * Bootstrap data.js v5.3.8 (https://getbootstrap.com/)
+  * Copyright 2011-2025 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
 
@@ -104,8 +104,8 @@ var util = {
 };
 
 /*!
-  * Bootstrap index.js v5.3.2 (https://getbootstrap.com/)
-  * Copyright 2011-2023 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
+  * Bootstrap index.js v5.3.8 (https://getbootstrap.com/)
+  * Copyright 2011-2025 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
 
@@ -266,12 +266,11 @@ function requireUtil () {
 		   * @param {HTMLElement} element
 		   * @return void
 		   *
-		   * @see https://www.charistheo.io/blog/2021/02/restart-a-css-animation-with-javascript/#restarting-a-css-animation
+		   * @see https://www.harrytheo.com/blog/2021/02/restart-a-css-animation-with-javascript/#restarting-a-css-animation
 		   */
 		  const reflow = element => {
 		    element.offsetHeight; // eslint-disable-line no-unused-expressions
 		  };
-
 		  const getjQuery = () => {
 		    if (window.jQuery && !document.body.hasAttribute('data-bs-no-jquery')) {
 		      return window.jQuery;
@@ -312,7 +311,7 @@ function requireUtil () {
 		    });
 		  };
 		  const execute = (possibleCallback, args = [], defaultValue = possibleCallback) => {
-		    return typeof possibleCallback === 'function' ? possibleCallback(...args) : defaultValue;
+		    return typeof possibleCallback === 'function' ? possibleCallback.call(...args) : defaultValue;
 		  };
 		  const executeAfterTransition = (callback, transitionElement, waitForTransition = true) => {
 		    if (!waitForTransition) {
@@ -394,8 +393,8 @@ function requireUtil () {
 }
 
 /*!
-  * Bootstrap event-handler.js v5.3.2 (https://getbootstrap.com/)
-  * Copyright 2011-2023 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
+  * Bootstrap event-handler.js v5.3.8 (https://getbootstrap.com/)
+  * Copyright 2011-2025 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
 
@@ -651,8 +650,8 @@ var manipulator = {
 };
 
 /*!
-  * Bootstrap manipulator.js v5.3.2 (https://getbootstrap.com/)
-  * Copyright 2011-2023 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
+  * Bootstrap manipulator.js v5.3.8 (https://getbootstrap.com/)
+  * Copyright 2011-2025 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
 
@@ -712,7 +711,7 @@ function requireManipulator () {
 		      const bsKeys = Object.keys(element.dataset).filter(key => key.startsWith('bs') && !key.startsWith('bsConfig'));
 		      for (const key of bsKeys) {
 		        let pureKey = key.replace(/^bs/, '');
-		        pureKey = pureKey.charAt(0).toLowerCase() + pureKey.slice(1, pureKey.length);
+		        pureKey = pureKey.charAt(0).toLowerCase() + pureKey.slice(1);
 		        attributes[pureKey] = normalizeData(element.dataset[key]);
 		      }
 		      return attributes;
@@ -731,8 +730,8 @@ function requireManipulator () {
 }
 
 /*!
-  * Bootstrap config.js v5.3.2 (https://getbootstrap.com/)
-  * Copyright 2011-2023 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
+  * Bootstrap config.js v5.3.8 (https://getbootstrap.com/)
+  * Copyright 2011-2025 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
 
@@ -807,8 +806,8 @@ function requireConfig () {
 }
 
 /*!
-  * Bootstrap base-component.js v5.3.2 (https://getbootstrap.com/)
-  * Copyright 2011-2023 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
+  * Bootstrap base-component.js v5.3.8 (https://getbootstrap.com/)
+  * Copyright 2011-2025 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
 
@@ -833,7 +832,7 @@ function requireBaseComponent () {
 		   * Constants
 		   */
 
-		  const VERSION = '5.3.2';
+		  const VERSION = '5.3.8';
 
 		  /**
 		   * Class definition
@@ -859,6 +858,8 @@ function requireBaseComponent () {
 		        this[propertyName] = null;
 		      }
 		    }
+
+		    // Private
 		    _queueCallback(callback, element, isAnimated = true) {
 		      index_js.executeAfterTransition(callback, element, isAnimated);
 		    }
@@ -905,8 +906,8 @@ var selectorEngine = {
 };
 
 /*!
-  * Bootstrap selector-engine.js v5.3.2 (https://getbootstrap.com/)
-  * Copyright 2011-2023 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
+  * Bootstrap selector-engine.js v5.3.8 (https://getbootstrap.com/)
+  * Copyright 2011-2025 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
 
@@ -943,9 +944,9 @@ function requireSelectorEngine () {
 		      if (hrefAttribute.includes('#') && !hrefAttribute.startsWith('#')) {
 		        hrefAttribute = `#${hrefAttribute.split('#')[1]}`;
 		      }
-		      selector = hrefAttribute && hrefAttribute !== '#' ? index_js.parseSelector(hrefAttribute.trim()) : null;
+		      selector = hrefAttribute && hrefAttribute !== '#' ? hrefAttribute.trim() : null;
 		    }
-		    return selector;
+		    return selector ? selector.split(',').map(sel => index_js.parseSelector(sel)).join(',') : null;
 		  };
 		  const SelectorEngine = {
 		    find(selector, element = document.documentElement) {
@@ -1017,8 +1018,8 @@ function requireSelectorEngine () {
 }
 
 /*!
-  * Bootstrap tab.js v5.3.2 (https://getbootstrap.com/)
-  * Copyright 2011-2023 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
+  * Bootstrap tab.js v5.3.8 (https://getbootstrap.com/)
+  * Copyright 2011-2025 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
 
@@ -1717,7 +1718,7 @@ function render$3(_ctx, _cache, $props, $setup, $data, $options) {
           createBaseVNode("span", {
             innerHTML: _ctx.checkIcon.toSVG({height: 19})
           }, null, 8 /* PROPS */, _hoisted_1$7),
-          createTextVNode(" Copied ")
+          _cache[1] || (_cache[1] = createTextVNode(" Copied ", -1 /* CACHED */))
         ], 64 /* STABLE_FRAGMENT */))
       : (openBlock(), createElementBlock(Fragment, { key: 1 }, [
           createTextVNode(" Copy to clipboard ")
@@ -2050,9 +2051,9 @@ var each = {
 	            execIteration(i, i, i === context.length - 1);
 	          }
 	        }
-	      } else if (commonjsGlobal.Symbol && context[commonjsGlobal.Symbol.iterator]) {
+	      } else if (typeof Symbol === 'function' && context[Symbol.iterator]) {
 	        var newContext = [];
-	        var iterator = context[commonjsGlobal.Symbol.iterator]();
+	        var iterator = context[Symbol.iterator]();
 	        for (var it = iterator.next(); !it.done; it = iterator.next()) {
 	          newContext.push(it.value);
 	        }
@@ -2294,35 +2295,35 @@ helpers.registerDefaultHelpers = registerDefaultHelpers;
 helpers.moveHelperToHooks = moveHelperToHooks;
 // istanbul ignore next
 
-function _interopRequireDefault$3(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault$4(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 var _helpersBlockHelperMissing = blockHelperMissingExports;
 
-var _helpersBlockHelperMissing2 = _interopRequireDefault$3(_helpersBlockHelperMissing);
+var _helpersBlockHelperMissing2 = _interopRequireDefault$4(_helpersBlockHelperMissing);
 
 var _helpersEach = eachExports;
 
-var _helpersEach2 = _interopRequireDefault$3(_helpersEach);
+var _helpersEach2 = _interopRequireDefault$4(_helpersEach);
 
 var _helpersHelperMissing = helperMissingExports;
 
-var _helpersHelperMissing2 = _interopRequireDefault$3(_helpersHelperMissing);
+var _helpersHelperMissing2 = _interopRequireDefault$4(_helpersHelperMissing);
 
 var _helpersIf = _ifExports;
 
-var _helpersIf2 = _interopRequireDefault$3(_helpersIf);
+var _helpersIf2 = _interopRequireDefault$4(_helpersIf);
 
 var _helpersLog = logExports;
 
-var _helpersLog2 = _interopRequireDefault$3(_helpersLog);
+var _helpersLog2 = _interopRequireDefault$4(_helpersLog);
 
 var _helpersLookup = lookupExports;
 
-var _helpersLookup2 = _interopRequireDefault$3(_helpersLookup);
+var _helpersLookup2 = _interopRequireDefault$4(_helpersLookup);
 
 var _helpersWith = _withExports;
 
-var _helpersWith2 = _interopRequireDefault$3(_helpersWith);
+var _helpersWith2 = _interopRequireDefault$4(_helpersWith);
 
 function registerDefaultHelpers(instance) {
   _helpersBlockHelperMissing2['default'](instance);
@@ -2338,7 +2339,8 @@ function moveHelperToHooks(instance, helperName, keepHelper) {
   if (instance.helpers[helperName]) {
     instance.hooks[helperName] = instance.helpers[helperName];
     if (!keepHelper) {
-      delete instance.helpers[helperName];
+      // Using delete is slow
+      instance.helpers[helperName] = undefined;
     }
   }
 }
@@ -2386,18 +2388,18 @@ decorators.__esModule = true;
 decorators.registerDefaultDecorators = registerDefaultDecorators;
 // istanbul ignore next
 
-function _interopRequireDefault$2(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault$3(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 var _decoratorsInline = inlineExports;
 
-var _decoratorsInline2 = _interopRequireDefault$2(_decoratorsInline);
+var _decoratorsInline2 = _interopRequireDefault$3(_decoratorsInline);
 
 function registerDefaultDecorators(instance) {
   _decoratorsInline2['default'](instance);
 }
 
 var loggerExports = {};
-var logger$1 = {
+var logger = {
   get exports(){ return loggerExports; },
   set exports(v){ loggerExports = v; },
 };
@@ -2449,31 +2451,9 @@ var logger$1 = {
 	exports['default'] = logger;
 	module.exports = exports['default'];
 	
-} (logger$1, loggerExports));
+} (logger, loggerExports));
 
 var protoAccess = {};
-
-var createNewLookupObject$1 = {};
-
-createNewLookupObject$1.__esModule = true;
-createNewLookupObject$1.createNewLookupObject = createNewLookupObject;
-
-var _utils$2 = utils;
-
-/**
- * Create a new object with "null"-prototype to avoid truthy results on prototype properties.
- * The resulting object can be used with "object[property]" to check if a property exists
- * @param {...object} sources a varargs parameter of source objects that will be merged
- * @returns {object}
- */
-
-function createNewLookupObject() {
-  for (var _len = arguments.length, sources = Array(_len), _key = 0; _key < _len; _key++) {
-    sources[_key] = arguments[_key];
-  }
-
-  return _utils$2.extend.apply(undefined, [Object.create(null)].concat(sources));
-}
 
 protoAccess.__esModule = true;
 protoAccess.createProtoAccessControl = createProtoAccessControl;
@@ -2481,34 +2461,39 @@ protoAccess.resultIsAllowed = resultIsAllowed;
 protoAccess.resetLoggedProperties = resetLoggedProperties;
 // istanbul ignore next
 
-function _interopRequireWildcard$1(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+function _interopRequireDefault$2(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-var _createNewLookupObject = createNewLookupObject$1;
+var _utils$2 = utils;
 
 var _logger$1 = loggerExports;
 
-var logger = _interopRequireWildcard$1(_logger$1);
+var _logger2$1 = _interopRequireDefault$2(_logger$1);
 
 var loggedProperties = Object.create(null);
 
 function createProtoAccessControl(runtimeOptions) {
-  var defaultMethodWhiteList = Object.create(null);
-  defaultMethodWhiteList['constructor'] = false;
-  defaultMethodWhiteList['__defineGetter__'] = false;
-  defaultMethodWhiteList['__defineSetter__'] = false;
-  defaultMethodWhiteList['__lookupGetter__'] = false;
-
-  var defaultPropertyWhiteList = Object.create(null);
+  // Create an object with "null"-prototype to avoid truthy results on
+  // prototype properties.
+  var propertyWhiteList = Object.create(null);
   // eslint-disable-next-line no-proto
-  defaultPropertyWhiteList['__proto__'] = false;
+  propertyWhiteList['__proto__'] = false;
+  _utils$2.extend(propertyWhiteList, runtimeOptions.allowedProtoProperties);
+
+  var methodWhiteList = Object.create(null);
+  methodWhiteList['constructor'] = false;
+  methodWhiteList['__defineGetter__'] = false;
+  methodWhiteList['__defineSetter__'] = false;
+  methodWhiteList['__lookupGetter__'] = false;
+  methodWhiteList['__lookupSetter__'] = false;
+  _utils$2.extend(methodWhiteList, runtimeOptions.allowedProtoMethods);
 
   return {
     properties: {
-      whitelist: _createNewLookupObject.createNewLookupObject(defaultPropertyWhiteList, runtimeOptions.allowedProtoProperties),
+      whitelist: propertyWhiteList,
       defaultValue: runtimeOptions.allowProtoPropertiesByDefault
     },
     methods: {
-      whitelist: _createNewLookupObject.createNewLookupObject(defaultMethodWhiteList, runtimeOptions.allowedProtoMethods),
+      whitelist: methodWhiteList,
       defaultValue: runtimeOptions.allowProtoMethodsByDefault
     }
   };
@@ -2536,7 +2521,7 @@ function checkWhiteList(protoAccessControlForType, propertyName) {
 function logUnexpecedPropertyAccessOnce(propertyName) {
   if (loggedProperties[propertyName] !== true) {
     loggedProperties[propertyName] = true;
-    logger.log('error', 'Handlebars: Access has been denied to resolve the property "' + propertyName + '" because it is not an "own property" of its parent.\n' + 'You can add a runtime option to disable the check or this warning:\n' + 'See https://handlebarsjs.com/api-reference/runtime-options.html#options-to-control-prototype-access for details');
+    _logger2$1['default'].log('error', 'Handlebars: Access has been denied to resolve the property "' + propertyName + '" because it is not an "own property" of its parent.\n' + 'You can add a runtime option to disable the check or this warning:\n' + 'See https://handlebarsjs.com/api-reference/runtime-options.html#options-to-control-prototype-access for details');
   }
 }
 
@@ -2568,7 +2553,7 @@ var _logger2 = _interopRequireDefault$1(_logger);
 
 var _internalProtoAccess$1 = protoAccess;
 
-var VERSION = '4.7.7';
+var VERSION = '4.7.9';
 base.VERSION = VERSION;
 var COMPILER_REVISION = 8;
 base.COMPILER_REVISION = COMPILER_REVISION;
@@ -2779,16 +2764,14 @@ function template(templateSpec, env) {
     }
     partial = env.VM.resolvePartial.call(this, partial, context, options);
 
-    var extendedOptions = Utils.extend({}, options, {
-      hooks: this.hooks,
-      protoAccessControl: this.protoAccessControl
-    });
+    options.hooks = this.hooks;
+    options.protoAccessControl = this.protoAccessControl;
 
-    var result = env.VM.invokePartial.call(this, partial, context, extendedOptions);
+    var result = env.VM.invokePartial.call(this, partial, context, options);
 
     if (result == null && env.compile) {
       options.partials[options.name] = env.compile(partial, templateSpec.compilerOptions, env);
-      result = options.partials[options.name](context, extendedOptions);
+      result = options.partials[options.name](context, options);
     }
     if (result != null) {
       if (options.indent) {
@@ -2837,7 +2820,7 @@ function template(templateSpec, env) {
       for (var i = 0; i < len; i++) {
         var result = depths[i] && container.lookupProperty(depths[i], name);
         if (result != null) {
-          return depths[i][name];
+          return result;
         }
       }
     },
@@ -2919,8 +2902,9 @@ function template(templateSpec, env) {
 
   ret._setup = function (options) {
     if (!options.partial) {
-      var mergedHelpers = Utils.extend({}, env.helpers, options.helpers);
-      wrapHelpersToPassLookupProperty(mergedHelpers, container);
+      var mergedHelpers = {};
+      addHelpers(mergedHelpers, env.helpers, container);
+      addHelpers(mergedHelpers, options.helpers, container);
       container.helpers = mergedHelpers;
 
       if (templateSpec.usePartial) {
@@ -2986,21 +2970,21 @@ function wrapProgram(container, i, fn, data, declaredBlockParams, blockParams, d
 function resolvePartial(partial, context, options) {
   if (!partial) {
     if (options.name === '@partial-block') {
-      partial = options.data['partial-block'];
+      partial = lookupOwnProperty(options.data, 'partial-block');
     } else {
-      partial = options.partials[options.name];
+      partial = lookupOwnProperty(options.partials, options.name);
     }
   } else if (!partial.call && !options.name) {
     // This is a dynamic partial that returned a string
     options.name = partial;
-    partial = options.partials[partial];
+    partial = lookupOwnProperty(options.partials, partial);
   }
   return partial;
 }
 
 function invokePartial(partial, context, options) {
   // Use the current closure context to save the partial-block if this partial
-  var currentPartialBlock = options.data && options.data['partial-block'];
+  var currentPartialBlock = lookupOwnProperty(options.data, 'partial-block');
   options.partial = true;
   if (options.ids) {
     options.data.contextPath = options.ids[0] || options.data.contextPath;
@@ -3042,6 +3026,12 @@ function noop() {
   return '';
 }
 
+function lookupOwnProperty(obj, name) {
+  if (obj && Object.prototype.hasOwnProperty.call(obj, name)) {
+    return obj[name];
+  }
+}
+
 function initData(context, data) {
   if (!data || !('root' in data)) {
     data = data ? _base.createFrame(data) : {};
@@ -3059,9 +3049,10 @@ function executeDecorators(fn, prog, container, depths, data, blockParams) {
   return prog;
 }
 
-function wrapHelpersToPassLookupProperty(mergedHelpers, container) {
-  Object.keys(mergedHelpers).forEach(function (helperName) {
-    var helper = mergedHelpers[helperName];
+function addHelpers(mergedHelpers, helpers, container) {
+  if (!helpers) return;
+  Object.keys(helpers).forEach(function (helperName) {
+    var helper = helpers[helperName];
     mergedHelpers[helperName] = passLookupPropertyOption(helper, container);
   });
 }
@@ -3069,7 +3060,8 @@ function wrapHelpersToPassLookupProperty(mergedHelpers, container) {
 function passLookupPropertyOption(helper, container) {
   var lookupProperty = container.lookupProperty;
   return _internalWrapHelper.wrapHelper(helper, function (options) {
-    return Utils.extend({ lookupProperty: lookupProperty }, options);
+    options.lookupProperty = lookupProperty;
+    return options;
   });
 }
 
@@ -3079,18 +3071,30 @@ var noConflict = {
   set exports(v){ noConflictExports = v; },
 };
 
+/* global globalThis */
+
 (function (module, exports) {
 
 	exports.__esModule = true;
 
 	exports['default'] = function (Handlebars) {
 	  /* istanbul ignore next */
-	  var root = typeof commonjsGlobal !== 'undefined' ? commonjsGlobal : window,
-	      $Handlebars = root.Handlebars;
+	  // https://mathiasbynens.be/notes/globalthis
+	  (function () {
+	    if (typeof globalThis === 'object') return;
+	    Object.prototype.__defineGetter__('__magic__', function () {
+	      return this;
+	    });
+	    __magic__.globalThis = __magic__; // eslint-disable-line no-undef
+	    delete Object.prototype.__magic__;
+	  })();
+
+	  var $Handlebars = globalThis.Handlebars;
+
 	  /* istanbul ignore next */
 	  Handlebars.noConflict = function () {
-	    if (root.Handlebars === Handlebars) {
-	      root.Handlebars = $Handlebars;
+	    if (globalThis.Handlebars === Handlebars) {
+	      globalThis.Handlebars = $Handlebars;
 	    }
 	    return Handlebars;
 	  };
@@ -3182,7 +3186,7 @@ function init() {
 }
 
 init();
-var Template$2 = /*#__PURE__*/runtime.template({"1":function(container,depth0,helpers,partials,data,blockParams) {
+var Template$2 = /*#__PURE__*/runtime.template({"0":function(container,depth0,helpers,partials,data,blockParams) {
     var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
@@ -3191,11 +3195,11 @@ var Template$2 = /*#__PURE__*/runtime.template({"1":function(container,depth0,he
     };
 
   return "<style>\n  "
-    + ((stack1 = ((helper = (helper = lookupProperty(helpers,"tagName") || (depth0 != null ? lookupProperty(depth0,"tagName") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(alias1,{"name":"tagName","hash":{},"data":data,"blockParams":blockParams,"loc":{"source":"stanza-snippet.html.hbs","start":{"line":3,"column":2},"end":{"line":3,"column":15}}}) : helper))) != null ? stack1 : "")
+    + ((stack1 = ((helper = (helper = lookupProperty(helpers,"tagName") || (depth0 != null ? lookupProperty(depth0,"tagName") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(alias1,{"name":"tagName","hash":{},"data":data,"blockParams":blockParams,"loc":{"source":"loader-snippet.html.hbs","start":{"line":3,"column":2},"end":{"line":3,"column":15}}}) : helper))) != null ? stack1 : "")
     + " {\n"
-    + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"styleVars") : depth0),{"name":"each","hash":{},"fn":container.program(2, data, 1, blockParams),"inverse":container.noop,"data":data,"blockParams":blockParams,"loc":{"source":"stanza-snippet.html.hbs","start":{"line":4,"column":4},"end":{"line":6,"column":13}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"styleVars") : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 1, blockParams),"inverse":container.noop,"data":data,"blockParams":blockParams,"loc":{"source":"loader-snippet.html.hbs","start":{"line":4,"column":4},"end":{"line":6,"column":13}}})) != null ? stack1 : "")
     + "  }\n</style>\n";
-},"2":function(container,depth0,helpers,partials,data,blockParams) {
+},"1":function(container,depth0,helpers,partials,data,blockParams) {
     var stack1, alias1=container.lambda, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
@@ -3216,7 +3220,7 @@ var Template$2 = /*#__PURE__*/runtime.template({"1":function(container,depth0,he
         return undefined
     };
 
-  return ((stack1 = lookupProperty(helpers,"if").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"styleVars") : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0, blockParams),"inverse":container.noop,"data":data,"blockParams":blockParams,"loc":{"source":"stanza-snippet.html.hbs","start":{"line":1,"column":0},"end":{"line":9,"column":7}}})) != null ? stack1 : "");
+  return ((stack1 = lookupProperty(helpers,"if").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"styleVars") : depth0),{"name":"if","hash":{},"fn":container.program(0, data, 0, blockParams),"inverse":container.noop,"data":data,"blockParams":blockParams,"loc":{"source":"loader-snippet.html.hbs","start":{"line":1,"column":0},"end":{"line":9,"column":7}}})) != null ? stack1 : "");
 },"useData":true,"useBlockParams":true});
 function styleSnippetTemplate(data, options, asString) {
   var html = Template$2(data, options);
@@ -3224,7 +3228,7 @@ function styleSnippetTemplate(data, options, asString) {
 }
 
 init();
-var Template$1 = /*#__PURE__*/runtime.template({"1":function(container,depth0,helpers,partials,data,blockParams) {
+var Template$1 = /*#__PURE__*/runtime.template({"0":function(container,depth0,helpers,partials,data,blockParams) {
     var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=container.hooks.helperMissing, alias3="function", alias4=container.escapeExpression, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
@@ -3233,12 +3237,21 @@ var Template$1 = /*#__PURE__*/runtime.template({"1":function(container,depth0,he
     };
 
   return "<"
-    + alias4(((helper = (helper = lookupProperty(helpers,"tagName") || (depth0 != null ? lookupProperty(depth0,"tagName") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"tagName","hash":{},"data":data,"blockParams":blockParams,"loc":{"start":{"line":2,"column":1},"end":{"line":2,"column":12}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"tagName") || (depth0 != null ? lookupProperty(depth0,"tagName") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"tagName","hash":{},"data":data,"blockParams":blockParams,"loc":{"source":"loader-snippet.html.hbs","start":{"line":2,"column":1},"end":{"line":2,"column":12}}}) : helper)))
     + "\n"
-    + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"params") : depth0),{"name":"each","hash":{},"fn":container.program(2, data, 1, blockParams),"inverse":container.noop,"data":data,"blockParams":blockParams,"loc":{"start":{"line":3,"column":2},"end":{"line":11,"column":11}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"params") : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 1, blockParams),"inverse":container.noop,"data":data,"blockParams":blockParams,"loc":{"source":"loader-snippet.html.hbs","start":{"line":3,"column":2},"end":{"line":11,"column":11}}})) != null ? stack1 : "")
     + "></"
-    + alias4(((helper = (helper = lookupProperty(helpers,"tagName") || (depth0 != null ? lookupProperty(depth0,"tagName") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"tagName","hash":{},"data":data,"blockParams":blockParams,"loc":{"start":{"line":12,"column":3},"end":{"line":12,"column":14}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"tagName") || (depth0 != null ? lookupProperty(depth0,"tagName") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"tagName","hash":{},"data":data,"blockParams":blockParams,"loc":{"source":"loader-snippet.html.hbs","start":{"line":12,"column":3},"end":{"line":12,"column":14}}}) : helper)))
     + ">\n";
+},"1":function(container,depth0,helpers,partials,data,blockParams) {
+    var stack1, alias1=depth0 != null ? depth0 : (container.nullContext || {}), lookupProperty = container.lookupProperty || function(parent, propertyName) {
+        if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
+          return parent[propertyName];
+        }
+        return undefined
+    };
+
+  return ((stack1 = lookupProperty(helpers,"if").call(alias1,(lookupProperty(helpers,"eq")||(depth0 && lookupProperty(depth0,"eq"))||container.hooks.helperMissing).call(alias1,((stack1 = blockParams[0][0]) != null ? lookupProperty(stack1,"type") : stack1),"boolean",{"name":"eq","hash":{},"data":data,"blockParams":blockParams,"loc":{"source":"loader-snippet.html.hbs","start":{"line":4,"column":8},"end":{"line":4,"column":33}}}),{"name":"if","hash":{},"fn":container.program(2, data, 0, blockParams),"inverse":container.program(4, data, 0, blockParams),"data":data,"blockParams":blockParams,"loc":{"source":"loader-snippet.html.hbs","start":{"line":4,"column":2},"end":{"line":10,"column":9}}})) != null ? stack1 : "");
 },"2":function(container,depth0,helpers,partials,data,blockParams) {
     var stack1, alias1=depth0 != null ? depth0 : (container.nullContext || {}), lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
@@ -3247,17 +3260,8 @@ var Template$1 = /*#__PURE__*/runtime.template({"1":function(container,depth0,he
         return undefined
     };
 
-  return ((stack1 = lookupProperty(helpers,"if").call(alias1,(lookupProperty(helpers,"eq")||(depth0 && lookupProperty(depth0,"eq"))||container.hooks.helperMissing).call(alias1,((stack1 = blockParams[0][0]) != null ? lookupProperty(stack1,"type") : stack1),"boolean",{"name":"eq","hash":{},"data":data,"blockParams":blockParams,"loc":{"start":{"line":4,"column":8},"end":{"line":4,"column":33}}}),{"name":"if","hash":{},"fn":container.program(3, data, 0, blockParams),"inverse":container.program(6, data, 0, blockParams),"data":data,"blockParams":blockParams,"loc":{"start":{"line":4,"column":2},"end":{"line":10,"column":9}}})) != null ? stack1 : "");
+  return ((stack1 = lookupProperty(helpers,"if").call(alias1,(lookupProperty(helpers,"eq")||(depth0 && lookupProperty(depth0,"eq"))||container.hooks.helperMissing).call(alias1,((stack1 = blockParams[1][0]) != null ? lookupProperty(stack1,"value") : stack1),"true",{"name":"eq","hash":{},"data":data,"blockParams":blockParams,"loc":{"source":"loader-snippet.html.hbs","start":{"line":5,"column":8},"end":{"line":5,"column":31}}}),{"name":"if","hash":{},"fn":container.program(3, data, 0, blockParams),"inverse":container.noop,"data":data,"blockParams":blockParams,"loc":{"source":"loader-snippet.html.hbs","start":{"line":5,"column":2},"end":{"line":7,"column":9}}})) != null ? stack1 : "");
 },"3":function(container,depth0,helpers,partials,data,blockParams) {
-    var stack1, alias1=depth0 != null ? depth0 : (container.nullContext || {}), lookupProperty = container.lookupProperty || function(parent, propertyName) {
-        if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
-          return parent[propertyName];
-        }
-        return undefined
-    };
-
-  return ((stack1 = lookupProperty(helpers,"if").call(alias1,(lookupProperty(helpers,"eq")||(depth0 && lookupProperty(depth0,"eq"))||container.hooks.helperMissing).call(alias1,((stack1 = blockParams[1][0]) != null ? lookupProperty(stack1,"value") : stack1),"true",{"name":"eq","hash":{},"data":data,"blockParams":blockParams,"loc":{"start":{"line":5,"column":8},"end":{"line":5,"column":31}}}),{"name":"if","hash":{},"fn":container.program(4, data, 0, blockParams),"inverse":container.noop,"data":data,"blockParams":blockParams,"loc":{"start":{"line":5,"column":2},"end":{"line":7,"column":9}}})) != null ? stack1 : "");
-},"4":function(container,depth0,helpers,partials,data,blockParams) {
     var stack1, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
@@ -3268,7 +3272,7 @@ var Template$1 = /*#__PURE__*/runtime.template({"1":function(container,depth0,he
   return "  "
     + container.escapeExpression(container.lambda(((stack1 = blockParams[2][0]) != null ? lookupProperty(stack1,"name") : stack1), depth0))
     + "\n";
-},"6":function(container,depth0,helpers,partials,data,blockParams) {
+},"4":function(container,depth0,helpers,partials,data,blockParams) {
     var stack1, alias1=container.lambda, alias2=container.escapeExpression, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
@@ -3281,7 +3285,7 @@ var Template$1 = /*#__PURE__*/runtime.template({"1":function(container,depth0,he
     + "=\""
     + alias2(alias1(((stack1 = blockParams[1][0]) != null ? lookupProperty(stack1,"value") : stack1), depth0))
     + "\"\n";
-},"8":function(container,depth0,helpers,partials,data) {
+},"5":function(container,depth0,helpers,partials,data) {
     var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=container.hooks.helperMissing, alias3="function", alias4=container.escapeExpression, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
@@ -3290,9 +3294,9 @@ var Template$1 = /*#__PURE__*/runtime.template({"1":function(container,depth0,he
     };
 
   return "<"
-    + alias4(((helper = (helper = lookupProperty(helpers,"tagName") || (depth0 != null ? lookupProperty(depth0,"tagName") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"tagName","hash":{},"data":data,"loc":{"start":{"line":14,"column":1},"end":{"line":14,"column":12}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"tagName") || (depth0 != null ? lookupProperty(depth0,"tagName") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"tagName","hash":{},"data":data,"loc":{"source":"loader-snippet.html.hbs","start":{"line":14,"column":1},"end":{"line":14,"column":12}}}) : helper)))
     + "></"
-    + alias4(((helper = (helper = lookupProperty(helpers,"tagName") || (depth0 != null ? lookupProperty(depth0,"tagName") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"tagName","hash":{},"data":data,"loc":{"start":{"line":14,"column":15},"end":{"line":14,"column":26}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"tagName") || (depth0 != null ? lookupProperty(depth0,"tagName") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"tagName","hash":{},"data":data,"loc":{"source":"loader-snippet.html.hbs","start":{"line":14,"column":15},"end":{"line":14,"column":26}}}) : helper)))
     + ">\n";
 },"compiler":[8,">= 4.3.0"],"main":function(container,depth0,helpers,partials,data,blockParams) {
     var stack1, lookupProperty = container.lookupProperty || function(parent, propertyName) {
@@ -3302,7 +3306,7 @@ var Template$1 = /*#__PURE__*/runtime.template({"1":function(container,depth0,he
         return undefined
     };
 
-  return ((stack1 = lookupProperty(helpers,"if").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"params") : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0, blockParams),"inverse":container.program(8, data, 0, blockParams),"data":data,"blockParams":blockParams,"loc":{"start":{"line":1,"column":0},"end":{"line":15,"column":7}}})) != null ? stack1 : "");
+  return ((stack1 = lookupProperty(helpers,"if").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"params") : depth0),{"name":"if","hash":{},"fn":container.program(0, data, 0, blockParams),"inverse":container.program(5, data, 0, blockParams),"data":data,"blockParams":blockParams,"loc":{"source":"loader-snippet.html.hbs","start":{"line":1,"column":0},"end":{"line":15,"column":7}}})) != null ? stack1 : "");
 },"useData":true,"useBlockParams":true});
 function stanzaSnippetTemplate(data, options, asString) {
   var html = Template$1(data, options);
@@ -3319,7 +3323,7 @@ var Template = /*#__PURE__*/runtime.template({"compiler":[8,">= 4.3.0"],"main":f
     };
 
   return "<script type=\"module\" src=\""
-    + container.escapeExpression(((helper = (helper = lookupProperty(helpers,"scriptSrc") || (depth0 != null ? lookupProperty(depth0,"scriptSrc") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : (container.nullContext || {}),{"name":"scriptSrc","hash":{},"data":data,"loc":{"source":"stanza-snippet.html.hbs","start":{"line":1,"column":27},"end":{"line":1,"column":40}}}) : helper)))
+    + container.escapeExpression(((helper = (helper = lookupProperty(helpers,"scriptSrc") || (depth0 != null ? lookupProperty(depth0,"scriptSrc") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : (container.nullContext || {}),{"name":"scriptSrc","hash":{},"data":data,"loc":{"start":{"line":1,"column":27},"end":{"line":1,"column":40}}}) : helper)))
     + "\" async></script>\n";
 },"useData":true});
 function loaderSnippetTemplate(data, options, asString) {
@@ -3424,21 +3428,15 @@ function render$2(_ctx, _cache, $props, $setup, $data, $options) {
 script$6.render = render$2;
 script$6.__file = "node_modules/togostanza/src/components/StanzaPreviewer.vue";
 
-const _withScopeId = n => (pushScopeId("data-v-43688ce6"),n=n(),popScopeId(),n);
 const _hoisted_1$5 = { class: "table table-borderless border mb-1" };
-const _hoisted_2$5 = /*#__PURE__*/ _withScopeId(() => /*#__PURE__*/createBaseVNode("th", null, "Author", -1 /* HOISTED */));
-const _hoisted_3$5 = { class: "mb-0" };
-const _hoisted_4$5 = /*#__PURE__*/ _withScopeId(() => /*#__PURE__*/createBaseVNode("th", null, "Contributors", -1 /* HOISTED */));
-const _hoisted_5$5 = {
+const _hoisted_2$5 = { class: "mb-0" };
+const _hoisted_3$5 = {
   key: 0,
   class: "list-unstyled mb-0"
 };
-const _hoisted_6$4 = /*#__PURE__*/ _withScopeId(() => /*#__PURE__*/createBaseVNode("th", null, "License", -1 /* HOISTED */));
-const _hoisted_7$3 = /*#__PURE__*/ _withScopeId(() => /*#__PURE__*/createBaseVNode("th", null, "Created", -1 /* HOISTED */));
-const _hoisted_8$3 = /*#__PURE__*/ _withScopeId(() => /*#__PURE__*/createBaseVNode("th", null, "Updated", -1 /* HOISTED */));
-const _hoisted_9$2 = { class: "text-end" };
-const _hoisted_10$2 = ["href"];
-const _hoisted_11$2 = ["innerHTML"];
+const _hoisted_4$5 = { class: "text-end" };
+const _hoisted_5$5 = ["href"];
+const _hoisted_6$4 = ["innerHTML"];
 
 
 var script$5 = {
@@ -3459,19 +3457,19 @@ return (_ctx, _cache) => {
     createBaseVNode("table", _hoisted_1$5, [
       createBaseVNode("tbody", null, [
         createBaseVNode("tr", null, [
-          _hoisted_2$5,
+          _cache[0] || (_cache[0] = createBaseVNode("th", null, "Author", -1 /* CACHED */)),
           createBaseVNode("td", null, [
-            createBaseVNode("address", _hoisted_3$5, toDisplayString(__props.metadata['stanza:author'] || '-'), 1 /* TEXT */)
+            createBaseVNode("address", _hoisted_2$5, toDisplayString(__props.metadata['stanza:author'] || '-'), 1 /* TEXT */)
           ])
         ]),
         createBaseVNode("tr", null, [
-          _hoisted_4$5,
+          _cache[1] || (_cache[1] = createBaseVNode("th", null, "Contributors", -1 /* CACHED */)),
           createBaseVNode("td", null, [
             (
               __props.metadata['stanza:contributor'] &&
               __props.metadata['stanza:contributor'].length > 0
             )
-              ? (openBlock(), createElementBlock("ul", _hoisted_5$5, [
+              ? (openBlock(), createElementBlock("ul", _hoisted_3$5, [
                   (openBlock(true), createElementBlock(Fragment, null, renderList(__props.metadata['stanza:contributor'], (contributor) => {
                     return (openBlock(), createElementBlock("li", { key: contributor }, toDisplayString(contributor), 1 /* TEXT */))
                   }), 128 /* KEYED_FRAGMENT */))
@@ -3482,28 +3480,28 @@ return (_ctx, _cache) => {
           ])
         ]),
         createBaseVNode("tr", null, [
-          _hoisted_6$4,
+          _cache[2] || (_cache[2] = createBaseVNode("th", null, "License", -1 /* CACHED */)),
           createBaseVNode("td", null, toDisplayString(__props.metadata['stanza:license'] || '-'), 1 /* TEXT */)
         ]),
         createBaseVNode("tr", null, [
-          _hoisted_7$3,
+          _cache[3] || (_cache[3] = createBaseVNode("th", null, "Created", -1 /* CACHED */)),
           createBaseVNode("td", null, toDisplayString(__props.metadata['stanza:created'] || '-'), 1 /* TEXT */)
         ]),
         createBaseVNode("tr", null, [
-          _hoisted_8$3,
+          _cache[4] || (_cache[4] = createBaseVNode("th", null, "Updated", -1 /* CACHED */)),
           createBaseVNode("td", null, toDisplayString(__props.metadata['stanza:updated'] || '-'), 1 /* TEXT */)
         ])
       ])
     ]),
-    createBaseVNode("div", _hoisted_9$2, [
+    createBaseVNode("div", _hoisted_4$5, [
       createBaseVNode("a", {
         href: `./${__props.metadata['@id']}/metadata.json`
-      }, "Download JSON", 8 /* PROPS */, _hoisted_10$2)
+      }, "Download JSON", 8 /* PROPS */, _hoisted_5$5)
     ]),
     createBaseVNode("div", {
       innerHTML: __props.readme,
       class: "mt-4"
-    }, null, 8 /* PROPS */, _hoisted_11$2)
+    }, null, 8 /* PROPS */, _hoisted_6$4)
   ], 64 /* STABLE_FRAGMENT */))
 }
 }
@@ -3561,12 +3559,12 @@ const _hoisted_3$4 = {
 const _hoisted_4$4 = { class: "text-muted" };
 const _hoisted_5$4 = { class: "fs-5" };
 const _hoisted_6$3 = { class: "text-muted" };
-const _hoisted_7$2 = { class: "input-group" };
-const _hoisted_8$2 = ["value"];
+const _hoisted_7$1 = { class: "input-group" };
+const _hoisted_8$1 = ["value"];
 const _hoisted_9$1 = ["value"];
 const _hoisted_10$1 = { class: "input-group-text" };
-const _hoisted_11$1 = ["checked", "id"];
-const _hoisted_12$1 = ["for"];
+const _hoisted_11 = ["checked", "id"];
+const _hoisted_12 = ["for"];
 const _hoisted_13 = ["type", "value"];
 const _hoisted_14 = ["disabled"];
 const _hoisted_15 = { class: "form-text text-muted" };
@@ -3583,7 +3581,7 @@ function render$1(_ctx, _cache, $props, $setup, $data, $options) {
       ]),
       createBaseVNode("small", _hoisted_6$3, toDisplayString(_ctx.type || 'string'), 1 /* TEXT */)
     ]),
-    createBaseVNode("div", _hoisted_7$2, [
+    createBaseVNode("div", _hoisted_7$1, [
       (_ctx.formType === 'single-choice')
         ? (openBlock(), createElementBlock("select", {
             key: 0,
@@ -3597,7 +3595,7 @@ function render$1(_ctx, _cache, $props, $setup, $data, $options) {
                 key: choice
               }, toDisplayString(choice), 9 /* TEXT, PROPS */, _hoisted_9$1))
             }), 128 /* KEYED_FRAGMENT */))
-          ], 40 /* PROPS, HYDRATE_EVENTS */, _hoisted_8$2))
+          ], 40 /* PROPS, NEED_HYDRATION */, _hoisted_8$1))
         : (_ctx.formType === 'boolean')
           ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
               createBaseVNode("div", _hoisted_10$1, [
@@ -3607,12 +3605,12 @@ function render$1(_ctx, _cache, $props, $setup, $data, $options) {
                   checked: _ctx.input.valueParsed.value,
                   onChange: _cache[1] || (_cache[1] = $event => (_ctx.input.setValueStr($event.target.checked.toString()))),
                   id: _ctx.name
-                }, null, 40 /* PROPS, HYDRATE_EVENTS */, _hoisted_11$1)
+                }, null, 40 /* PROPS, NEED_HYDRATION */, _hoisted_11)
               ]),
               createBaseVNode("label", {
                 class: "input-group-text flex-fill bg-body",
                 for: _ctx.name
-              }, toDisplayString(_ctx.label), 9 /* TEXT, PROPS */, _hoisted_12$1)
+              }, toDisplayString(_ctx.label), 9 /* TEXT, PROPS */, _hoisted_12)
             ], 64 /* STABLE_FRAGMENT */))
           : (openBlock(), createElementBlock("input", {
               key: 2,
@@ -3620,7 +3618,7 @@ function render$1(_ctx, _cache, $props, $setup, $data, $options) {
               value: _ctx.input.valueStr.value,
               onInput: _cache[2] || (_cache[2] = $event => (_ctx.input.setValueStr($event.target.value))),
               class: normalizeClass(["form-control mw-100", { 'form-control-color': _ctx.formType === 'color' }])
-            }, null, 42 /* CLASS, PROPS, HYDRATE_EVENTS */, _hoisted_13)),
+            }, null, 42 /* CLASS, PROPS, NEED_HYDRATION */, _hoisted_13)),
       (_ctx.input.hasDefault)
         ? (openBlock(), createElementBlock("button", {
             key: 3,
@@ -3663,12 +3661,12 @@ var script$3 = {
 },
   setup(__props) {
 
-const { paramFieldGroups } = __props;
+
 
 // paramFieldGroups:
 //   [['data', [ParamField, ParamField, ...]], ['axis', undefined], ...]
 
-const firstActiveParamFieldGroupPath = paramFieldGroups
+const firstActiveParamFieldGroupPath = __props.paramFieldGroups
   .find(([_, parameters]) => parameters && parameters.length > 0)[0]
   .join('-');
 
@@ -3768,8 +3766,8 @@ var script$2 = {
 },
   setup(__props) {
 
-const { styleFieldGroups } = __props;
-const first = styleFieldGroups.find(
+
+const first = __props.styleFieldGroups.find(
   ([_, styleField]) => styleField && styleField.length > 0
 );
 const firstActiveStyleFieldGroupPath = first ? first[0].join('-') : null;
@@ -3839,17 +3837,15 @@ return (_ctx, _cache) => {
 
 script$2.__file = "node_modules/togostanza/src/components/HelpStylesPane.vue";
 
-const _hoisted_1$1 = /*#__PURE__*/createBaseVNode("h2", { class: "my-3" }, "Outgoing Events", -1 /* HOISTED */);
-const _hoisted_2$1 = { class: "row row-cols-2" };
-const _hoisted_3$1 = { class: "text-muted" };
-const _hoisted_4$1 = {
+const _hoisted_1$1 = { class: "row row-cols-2" };
+const _hoisted_2$1 = { class: "text-muted" };
+const _hoisted_3$1 = {
   key: 0,
   class: "fst-italic"
 };
-const _hoisted_5$1 = /*#__PURE__*/createBaseVNode("h2", { class: "my-3" }, "Incoming Events", -1 /* HOISTED */);
-const _hoisted_6$1 = { class: "row row-cols-2" };
-const _hoisted_7$1 = { class: "text-muted" };
-const _hoisted_8$1 = {
+const _hoisted_4$1 = { class: "row row-cols-2" };
+const _hoisted_5$1 = { class: "text-muted" };
+const _hoisted_6$1 = {
   key: 1,
   class: "fst-italic"
 };
@@ -3865,16 +3861,16 @@ var script$1 = {
 },
   setup(__props) {
 
-const { metadata } = __props;
 
-const outgoingEvents = (metadata['stanza:outgoingEvent'] || []).map((event) => {
+
+const outgoingEvents = (__props.metadata['stanza:outgoingEvent'] || []).map((event) => {
   return {
     name: event['stanza:key'],
     description: event['stanza:description'],
   };
 });
 
-const incomingEvents = (metadata['stanza:incomingEvent'] || []).map((event) => {
+const incomingEvents = (__props.metadata['stanza:incomingEvent'] || []).map((event) => {
   return {
     name: event['stanza:key'],
     description: event['stanza:description'],
@@ -3883,35 +3879,35 @@ const incomingEvents = (metadata['stanza:incomingEvent'] || []).map((event) => {
 
 return (_ctx, _cache) => {
   return (openBlock(), createElementBlock(Fragment, null, [
-    _hoisted_1$1,
-    createBaseVNode("div", _hoisted_2$1, [
+    _cache[0] || (_cache[0] = createBaseVNode("h2", { class: "my-3" }, "Outgoing Events", -1 /* CACHED */)),
+    createBaseVNode("div", _hoisted_1$1, [
       (openBlock(true), createElementBlock(Fragment, null, renderList(unref(outgoingEvents), ({ name, description }) => {
         return (openBlock(), createElementBlock("div", {
           key: name,
           class: "col"
         }, [
           createBaseVNode("div", null, toDisplayString(name), 1 /* TEXT */),
-          createBaseVNode("div", _hoisted_3$1, toDisplayString(description), 1 /* TEXT */)
+          createBaseVNode("div", _hoisted_2$1, toDisplayString(description), 1 /* TEXT */)
         ]))
       }), 128 /* KEYED_FRAGMENT */))
     ]),
     (unref(outgoingEvents).length === 0)
-      ? (openBlock(), createElementBlock("p", _hoisted_4$1, " No events defined. "))
+      ? (openBlock(), createElementBlock("p", _hoisted_3$1, " No events defined. "))
       : createCommentVNode("v-if", true),
-    _hoisted_5$1,
-    createBaseVNode("div", _hoisted_6$1, [
+    _cache[1] || (_cache[1] = createBaseVNode("h2", { class: "my-3" }, "Incoming Events", -1 /* CACHED */)),
+    createBaseVNode("div", _hoisted_4$1, [
       (openBlock(true), createElementBlock(Fragment, null, renderList(unref(incomingEvents), ({ name, description }) => {
         return (openBlock(), createElementBlock("div", {
           key: name,
           class: "col"
         }, [
           createBaseVNode("div", null, toDisplayString(name), 1 /* TEXT */),
-          createBaseVNode("div", _hoisted_7$1, toDisplayString(description), 1 /* TEXT */)
+          createBaseVNode("div", _hoisted_5$1, toDisplayString(description), 1 /* TEXT */)
         ]))
       }), 128 /* KEYED_FRAGMENT */))
     ]),
     (unref(incomingEvents).length === 0)
-      ? (openBlock(), createElementBlock("p", _hoisted_8$1, " No events defined. "))
+      ? (openBlock(), createElementBlock("p", _hoisted_6$1, " No events defined. "))
       : createCommentVNode("v-if", true)
   ], 64 /* STABLE_FRAGMENT */))
 }
@@ -4164,58 +4160,28 @@ const _hoisted_1 = { class: "display-4" };
 const _hoisted_2 = { class: "lead" };
 const _hoisted_3 = { class: "row" };
 const _hoisted_4 = { class: "col-lg-6" };
-const _hoisted_5 = /*#__PURE__*/createBaseVNode("nav", {
-  class: "nav nav-tabs",
-  role: "tablist"
-}, [
-  /*#__PURE__*/createBaseVNode("a", {
-    class: "nav-link active",
-    href: "#tabpane-parameters",
-    "data-bs-toggle": "tab",
-    role: "tab"
-  }, "Parameters"),
-  /*#__PURE__*/createBaseVNode("a", {
-    class: "nav-link",
-    href: "#tabpane-styles",
-    "data-bs-toggle": "tab",
-    role: "tab"
-  }, "Styles"),
-  /*#__PURE__*/createBaseVNode("a", {
-    class: "nav-link",
-    href: "#tabpane-events",
-    "data-bs-toggle": "tab",
-    role: "tab"
-  }, "Events"),
-  /*#__PURE__*/createBaseVNode("a", {
-    class: "nav-link",
-    href: "#tabpane-about",
-    "data-bs-toggle": "tab",
-    role: "tab"
-  }, "About")
-], -1 /* HOISTED */);
-const _hoisted_6 = { class: "tab-content mt-3" };
-const _hoisted_7 = {
+const _hoisted_5 = { class: "tab-content mt-3" };
+const _hoisted_6 = {
   class: "tab-pane px-lg-5",
   id: "tabpane-about",
   role: "tabpanel"
 };
-const _hoisted_8 = {
+const _hoisted_7 = {
   class: "tab-pane active",
   id: "tabpane-parameters",
   role: "tabpanel"
 };
-const _hoisted_9 = {
+const _hoisted_8 = {
   class: "tab-pane",
   id: "tabpane-styles",
   role: "tabpanel"
 };
-const _hoisted_10 = {
+const _hoisted_9 = {
   class: "tab-pane",
   id: "tabpane-events",
   role: "tabpanel"
 };
-const _hoisted_11 = { class: "col-lg-6" };
-const _hoisted_12 = /*#__PURE__*/createBaseVNode("hr", { class: "d-lg-none mb-4" }, null, -1 /* HOISTED */);
+const _hoisted_10 = { class: "col-lg-6" };
 
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_HelpAboutPane = resolveComponent("HelpAboutPane");
@@ -4231,27 +4197,55 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       createBaseVNode("p", _hoisted_2, toDisplayString(_ctx.metadata['stanza:definition']), 1 /* TEXT */),
       createBaseVNode("div", _hoisted_3, [
         createBaseVNode("div", _hoisted_4, [
-          _hoisted_5,
-          createBaseVNode("div", _hoisted_6, [
-            createBaseVNode("div", _hoisted_7, [
+          _cache[0] || (_cache[0] = createBaseVNode("nav", {
+            class: "nav nav-tabs",
+            role: "tablist"
+          }, [
+            createBaseVNode("a", {
+              class: "nav-link active",
+              href: "#tabpane-parameters",
+              "data-bs-toggle": "tab",
+              role: "tab"
+            }, "Parameters"),
+            createBaseVNode("a", {
+              class: "nav-link",
+              href: "#tabpane-styles",
+              "data-bs-toggle": "tab",
+              role: "tab"
+            }, "Styles"),
+            createBaseVNode("a", {
+              class: "nav-link",
+              href: "#tabpane-events",
+              "data-bs-toggle": "tab",
+              role: "tab"
+            }, "Events"),
+            createBaseVNode("a", {
+              class: "nav-link",
+              href: "#tabpane-about",
+              "data-bs-toggle": "tab",
+              role: "tab"
+            }, "About")
+          ], -1 /* CACHED */)),
+          createBaseVNode("div", _hoisted_5, [
+            createBaseVNode("div", _hoisted_6, [
               createVNode(_component_HelpAboutPane, {
                 metadata: _ctx.metadata,
                 readme: _ctx.readme
               }, null, 8 /* PROPS */, ["metadata", "readme"])
             ]),
-            createBaseVNode("div", _hoisted_8, [
+            createBaseVNode("div", _hoisted_7, [
               createVNode(_component_HelpParametersPane, { paramFieldGroups: _ctx.paramFieldGroups }, null, 8 /* PROPS */, ["paramFieldGroups"])
             ]),
-            createBaseVNode("div", _hoisted_9, [
+            createBaseVNode("div", _hoisted_8, [
               createVNode(_component_HelpStylesPane, { styleFieldGroups: _ctx.styleFieldGroups }, null, 8 /* PROPS */, ["styleFieldGroups"])
             ]),
-            createBaseVNode("div", _hoisted_10, [
+            createBaseVNode("div", _hoisted_9, [
               createVNode(_component_HelpEventsPane, { metadata: _ctx.metadata }, null, 8 /* PROPS */, ["metadata"])
             ])
           ])
         ]),
-        createBaseVNode("div", _hoisted_11, [
-          _hoisted_12,
+        createBaseVNode("div", _hoisted_10, [
+          _cache[1] || (_cache[1] = createBaseVNode("hr", { class: "d-lg-none mb-4" }, null, -1 /* CACHED */)),
           createVNode(_component_StanzaPreviewer, {
             metadata: _ctx.metadata,
             params: _ctx.params,

@@ -1,5 +1,5 @@
-import { S as Stanza, d as defineStanzaElement } from './stanza-33919c9f.js';
-import './stanza-f94b87e1.js';
+import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
+import './stanza-644a6e8e.js';
 
 class GenePublication extends Stanza {
   async render() {
@@ -121,7 +121,7 @@ var metadata = {
 };
 
 var templates = [
-  ["stanza.html.hbs", {"1":function(container,depth0,helpers,partials,data) {
+  ["stanza.html.hbs", {"0":function(container,depth0,helpers,partials,data) {
     var helper, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
@@ -132,7 +132,7 @@ var templates = [
   return "  <div class=\"alert alert-danger\">"
     + container.escapeExpression(((helper = (helper = lookupProperty(helpers,"message") || (depth0 != null ? lookupProperty(depth0,"message") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : (container.nullContext || {}),{"name":"message","hash":{},"data":data,"loc":{"start":{"line":2,"column":34},"end":{"line":2,"column":45}}}) : helper)))
     + "</div>\n";
-},"3":function(container,depth0,helpers,partials,data) {
+},"1":function(container,depth0,helpers,partials,data) {
     return "  <table id=\"dataTable\" style=\"width:100%\">\n  </table>\n";
 },"compiler":[8,">= 4.3.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1, lookupProperty = container.lookupProperty || function(parent, propertyName) {
@@ -142,7 +142,7 @@ var templates = [
         return undefined
     };
 
-  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"error") : depth0),{"name":"with","hash":{},"fn":container.program(1, data, 0),"inverse":container.program(3, data, 0),"data":data,"loc":{"start":{"line":1,"column":0},"end":{"line":6,"column":9}}})) != null ? stack1 : "");
+  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"error") : depth0),{"name":"with","hash":{},"fn":container.program(0, data, 0),"inverse":container.program(1, data, 0),"data":data,"loc":{"start":{"line":1,"column":0},"end":{"line":6,"column":9}}})) != null ? stack1 : "");
 },"useData":true}]
 ];
 

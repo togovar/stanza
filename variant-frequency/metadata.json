@@ -37,6 +37,13 @@
       "stanza:key": "no_data_message",
       "stanza:example": "No data found.",
       "stanza:description": "Message displayed when there are zero data"
+    },
+    {
+      "stanza:key": "check_local_auth_status",
+      "stanza:type": "boolean",
+      "stanza:example": true,
+      "stanza:label": "Check auth status on localhost",
+      "stanza:description": "When true, auth status is checked even on localhost. Default: false"
     }
   ],
   "stanza:about-link-placement": "bottom-right"
