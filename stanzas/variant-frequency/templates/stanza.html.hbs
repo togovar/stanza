@@ -81,8 +81,16 @@
                     <span
                       class='dataset'
                       data-frequency='{{level}}'
+                      data-allele-count='{{count}}'
                       data-dataset='{{dataset}}'
-                    ></span>
+                    >
+                      {{#if has_homozygote_marker}}
+                        <span class='marker homozygote-marker'></span>
+                      {{/if}}
+                      {{#if has_hemizygote_marker}}
+                        <span class='marker hemizygote-marker'></span>
+                      {{/if}}
+                    </span>
                   </div>
                 {{/if}}
               </td>

@@ -1,23 +1,25 @@
 @use "@/assets/css/foundation/variables" as *;
 
 .within-sticky-table-header {
-  overflow: auto;
   max-height: 300px;
+  overflow: auto;
+
   .table {
     > thead {
       > tr {
         > th {
           position: sticky;
           top: 0;
-          background-color: white;
           z-index: var(--z-index-sticky-table-header);
+          background-color: white;
+
           &::before {
-            content: "";
-            width: 100%;
-            border-bottom: solid 1px black;
-            left: 0;
-            bottom: -1px;
             position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            content: "";
+            border-bottom: solid 1px black;
           }
         }
       }

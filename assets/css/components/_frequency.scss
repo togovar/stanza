@@ -1,0 +1,242 @@
+@use "../foundation/variables" as *;
+
+$frequency-block-count: 6;
+$frequency-block-gap: 1px;
+$vertical-block-width: 5px;
+$vertical-block-height: 2px;
+$vertical-dataset-gap: 5px;
+$vertical-graph-width: $vertical-block-width + 4px;
+$vertical-graph-height: ($vertical-block-height * $frequency-block-count) +
+  (($frequency-block-gap * ($frequency-block-count - 1)) + 4px);
+$horizontal-block-width: 4px;
+$horizontal-block-height: 12px;
+$horizontal-graph-width: ($horizontal-block-width * $frequency-block-count) +
+  (($frequency-block-gap * ($frequency-block-count - 1)) + 4px);
+$horizontal-graph-height: $horizontal-block-height + 4px;
+$frequency-block-counts: (
+  "<0.0001": 1,
+  "<0.001": 2,
+  "<0.01": 3,
+  "<0.05": 4,
+  "<0.5": 5,
+  "≥0.5": 6,
+);
+$frequency-na-border: #d4d3d1;
+$frequency-na-background: #f4f4f4;
+$frequency-marker-color: $COLOR_SIGN_DANGEROUS;
+$frequency-marker-size: 7px;
+$frequency-marker-offset: -5px;
+$frequency-marker-gap: 1px;
+
+@mixin frequency-dataset-color($color) {
+  --frequency-dataset-color: #{$color};
+}
+
+@mixin frequency-dataset-colors {
+  &[data-dataset="gem_j_wga"],
+  &[data-dataset="GEM-J WGA"] {
+    @include frequency-dataset-color($COLOR_DATASET_GEM_J);
+  }
+
+  &[data-dataset="jga_wgs"],
+  &[data-dataset="JGA-WGS"],
+  &[data-dataset="jga_wes"],
+  &[data-dataset="JGA-WES"],
+  &[data-dataset="jga_snp"],
+  &[data-dataset="JGA-SNP"] {
+    @include frequency-dataset-color($COLOR_DATASET_JGA);
+  }
+
+  &[data-dataset="tommo"],
+  &[data-dataset="ToMMo"],
+  &[data-dataset^="ToMMo"] {
+    @include frequency-dataset-color($COLOR_DATASET_TOMMO);
+  }
+
+  &[data-dataset="ncbn"],
+  &[data-dataset="NCBN"] {
+    @include frequency-dataset-color($COLOR_DATASET_NCBN);
+  }
+
+  &[data-dataset="hgvd"],
+  &[data-dataset="HGVD"] {
+    @include frequency-dataset-color($COLOR_DATASET_HGVD);
+  }
+
+  &[data-dataset="bbj"],
+  &[data-dataset="BBJ"] {
+    @include frequency-dataset-color($COLOR_DATASET_BBJ);
+  }
+}
+
+@mixin frequency-na {
+  background-color: $frequency-na-background;
+  border-color: $frequency-na-border;
+
+  &::before {
+    display: none;
+  }
+}
+
+@mixin frequency-singleton {
+  background-color: var(--color-singleton);
+}
+
+@mixin frequency-marker {
+  > .marker {
+    position: absolute;
+    top: $frequency-marker-offset;
+    z-index: 1;
+    box-sizing: border-box;
+    display: block;
+    width: $frequency-marker-size;
+    height: $frequency-marker-size;
+    background-color: $frequency-marker-color;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 1.5px;
+  }
+
+  > .marker.homozygote-marker {
+    top: $frequency-marker-offset;
+    right: $frequency-marker-offset;
+    background-image: url("./assets/icons/slashmark.svg");
+    background-size: cover;
+  }
+
+  > .marker.hemizygote-marker {
+    top: calc(
+      #{$frequency-marker-offset + $frequency-marker-size +
+        $frequency-marker-gap}
+    );
+    right: $frequency-marker-offset;
+    background-image: url("./assets/icons/slashmark-hemi.svg");
+    background-size: cover;
+
+    &:only-child {
+      top: $frequency-marker-offset;
+      right: $frequency-marker-offset;
+    }
+  }
+}
+
+@mixin vertical-frequency-blocks {
+  &::before {
+    position: absolute;
+    bottom: 1px;
+    left: 1px;
+    display: none;
+    width: $vertical-block-width;
+    content: "";
+    background-image: repeating-linear-gradient(
+      to top,
+      var(--frequency-dataset-color) 0,
+      var(--frequency-dataset-color) $vertical-block-height,
+      transparent $vertical-block-height,
+      transparent ($vertical-block-height + $frequency-block-gap)
+    );
+  }
+
+  @each $level, $count in $frequency-block-counts {
+    @if $count > 0 {
+      &[data-frequency="#{$level}"]::before {
+        display: block;
+        height: ($count * $vertical-block-height) +
+          (($count - 1) * $frequency-block-gap);
+      }
+    }
+  }
+}
+
+@mixin horizontal-frequency-blocks {
+  &::before {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    display: none;
+    height: $horizontal-block-height;
+    content: "";
+    background-image: repeating-linear-gradient(
+      to right,
+      var(--frequency-dataset-color) 0,
+      var(--frequency-dataset-color) $horizontal-block-width,
+      transparent $horizontal-block-width,
+      transparent ($horizontal-block-width + $frequency-block-gap)
+    );
+  }
+
+  @each $level, $count in $frequency-block-counts {
+    @if $count > 0 {
+      &[data-frequency="#{$level}"]::before {
+        display: block;
+        width: ($count * $horizontal-block-width) +
+          (($count - 1) * $frequency-block-gap);
+      }
+    }
+  }
+}
+
+// ============================================================
+// 縦型周波数グラフ (.frequency-graph)
+// バリアント一覧などで使うコンパクトな縦棒グラフ
+// ============================================================
+.frequency-graph {
+  font-size: 0;
+  white-space: nowrap;
+
+  > .dataset {
+    @include frequency-dataset-colors;
+    @include frequency-marker;
+    @include vertical-frequency-blocks;
+
+    --frequency-dataset-color: #{$COLOR_DATASET_FOREIGN};
+
+    position: relative;
+    box-sizing: border-box;
+    display: inline-block;
+    width: $vertical-graph-width;
+    height: $vertical-graph-height;
+    margin-right: $vertical-dataset-gap;
+    vertical-align: middle;
+    background-color: white;
+    border: solid 1px var(--frequency-dataset-color);
+
+    &[data-allele-count="1"] {
+      @include frequency-singleton;
+    }
+
+    &[data-frequency="na"] {
+      @include frequency-na;
+    }
+  }
+}
+
+// ============================================================
+// 横型アレル頻度グラフ (.allele-frequency-graph)
+// バリアント詳細画面で使用する横棒グラフ
+// ============================================================
+.allele-frequency-graph > .dataset {
+  @include frequency-dataset-colors;
+  @include frequency-marker;
+  @include horizontal-frequency-blocks;
+
+  --frequency-dataset-color: #{$COLOR_DATASET_FOREIGN};
+
+  position: relative;
+  box-sizing: border-box;
+  display: inline-block;
+  width: $horizontal-graph-width;
+  height: $horizontal-graph-height;
+  margin-right: 1px;
+  vertical-align: middle;
+  background-color: white;
+  border: solid 1px var(--frequency-dataset-color);
+
+  &[data-allele-count="1"] {
+    @include frequency-singleton;
+  }
+
+  &[data-frequency="na"] {
+    @include frequency-na;
+  }
+}

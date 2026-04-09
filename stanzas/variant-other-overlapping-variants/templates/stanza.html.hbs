@@ -54,7 +54,15 @@
                     class="dataset"
                     data-dataset="{{this.source}}"
                     data-frequency="{{this.level}}"
-                  ></div>
+                    data-allele-count="{{this.count}}"
+                  >
+                    {{#if this.has_homozygote_marker}}
+                      <span class="marker homozygote-marker"></span>
+                    {{/if}}
+                    {{#if this.has_hemizygote_marker}}
+                      <span class="marker hemizygote-marker"></span>
+                    {{/if}}
+                  </div>
                 {{/each}}
               </div>
             </td>
