@@ -7393,7 +7393,7 @@ class VariantFrequency extends Stanza {
                     // アレル頻度メーターの目盛り計算
                     // ============================================================
                     // ★ まず数値のまま buildFrequencyDisplay() を呼び出してメーターレベルを計算する
-                    const ac = parseInt(String(frequencyData.ac)); // アルテルアレル数（例: 1538）
+                    const ac = parseInt(String(frequencyData.ac), 10); // アルテルアレル数（例: 1538）
                     const freq = parseFloat(String(frequencyData.af)); // アレル頻度（例: 0.101）
                     // buildFrequencyDisplay() が返す { frequency, count, level } を frequencyData にマージ
                     // level はCSSの data-frequency 属性値として使われ、メーターの目盛り数を決定する
