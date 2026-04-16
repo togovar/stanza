@@ -1,5 +1,5 @@
 import { e as ensureAllDatasets, S as SO, a as CONSEQUENCE, A as ALPHAMISSENSE, b as SIFT, P as POLYPHEN } from './constants-f43484af.js';
-import { b as buildFrequencyDisplay } from './frequency-0e5f07a7.js';
+import { b as buildFrequencyMarkerState, a as buildFrequencyDisplay } from './frequency-9d3406e7.js';
 
 const floatFormatter = (digits) => {
     return new Intl.NumberFormat("en", {
@@ -96,11 +96,10 @@ const transformRecord = (record, assembly) => {
     }
     record.frequencies = ensureAllDatasets(record.frequencies, assembly);
     record.frequencies.forEach((entry) => {
+        const markerState = buildFrequencyMarkerState(entry);
         Object.assign(entry, buildFrequencyDisplay(entry.ac, entry.af), {
-            // ホモ接合マーカーは aac が 1 以上のときだけ表示する
-            has_homozygote_marker: Number(entry.aac) >= 1,
-            // ヘミ接合体マーカーは hac が 1 以上のときだけ表示する
-            has_hemizygote_marker: Number(entry.hac) >= 1,
+            has_homozygote_marker: markerState.has_homozygote_marker,
+            has_hemizygote_marker: markerState.has_hemizygote_marker,
         });
     });
     Object.assign(record, consequence(record.most_severe_consequence));
@@ -130,4 +129,4 @@ const transformRecord = (record, assembly) => {
 };
 
 export { alphaMissense as a, polyphen as p, refAlt as r, sift as s, transformRecord as t };
-//# sourceMappingURL=display-028519be.js.map
+//# sourceMappingURL=display-1b5adb7a.js.map

@@ -1,7 +1,7 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { h as hierarchy } from './transform-ddf65f5a.js';
 import { D as DATASETS } from './constants-f43484af.js';
-import { b as buildFrequencyDisplay } from './frequency-0e5f07a7.js';
+import { b as buildFrequencyMarkerState, a as buildFrequencyDisplay, f as formatLocaleInteger } from './frequency-9d3406e7.js';
 
 var global$1 = (typeof global !== "undefined" ? global :
             typeof self !== "undefined" ? self :
@@ -7392,44 +7392,31 @@ class VariantFrequency extends Stanza {
                     // ============================================================
                     // アレル頻度メーターの目盛り計算
                     // ============================================================
-                    // ★ まず数値のまま buildFrequencyDisplay() を呼び出してメーターレベルを計算する
-                    const ac = parseInt(String(frequencyData.ac), 10); // アルテルアレル数（例: 1538）
-                    const freq = parseFloat(String(frequencyData.af)); // アレル頻度（例: 0.101）
-                    // buildFrequencyDisplay() が返す { frequency, count, level } を frequencyData にマージ
-                    // level はCSSの data-frequency 属性値として使われ、メーターの目盛り数を決定する
-                    Object.assign(frequencyData, buildFrequencyDisplay(ac, freq));
-                    // ★ buildFrequencyDisplay() の計算が終わった後で、表示用にカンマ区切りの文字列に変換する
-                    // 例: 1538 → "1,538"
-                    const hasNumericValue = (v) => v !== undefined &&
-                        v !== null &&
-                        v !== "" &&
-                        !Number.isNaN(Number(v));
-                    const localeString = (v) => hasNumericValue(v)
-                        ? parseInt(String(v), 10).toLocaleString()
-                        : undefined;
-                    // ホモ接合マーカーは aac が 1 以上のときだけ表示する
-                    frequencyData.has_homozygote_marker = Number(frequencyData.aac) >= 1;
-                    // ヘミ接合マーカーは hac が 1 以上のときだけ表示する
-                    frequencyData.has_hemizygote_marker = Number(frequencyData.hac) >= 1;
+                    // 共通 helper で頻度レベルとマーカー表示条件を計算する。
+                    // level はCSSの data-frequency 属性値として使われ、メーターの目盛り数を決定する。
+                    const markerState = buildFrequencyMarkerState(frequencyData);
+                    Object.assign(frequencyData, buildFrequencyDisplay(frequencyData.ac, frequencyData.af));
+                    frequencyData.has_homozygote_marker =
+                        markerState.has_homozygote_marker;
+                    frequencyData.has_hemizygote_marker =
+                        markerState.has_hemizygote_marker;
                     // ヘミ接合体カラムは 0 を含め、数値があれば表示する
-                    const hasHemizygoteValue = hasNumericValue(frequencyData.hac) ||
-                        hasNumericValue(frequencyData.hrc) ||
-                        hasNumericValue(frequencyData.hoc);
-                    frequencyData.ac = localeString(frequencyData.ac); // Alt Allele Count
-                    frequencyData.an = localeString(frequencyData.an); // Total Allele Count
-                    frequencyData.aac = localeString(frequencyData.aac); // Alt/Alt Homozygote Count
-                    frequencyData.arc = localeString(frequencyData.arc); // Alt/Ref Heterozygote Count
-                    frequencyData.aoc = localeString(frequencyData.aoc); // Alt/OtherAlts Count
-                    frequencyData.rrc = localeString(frequencyData.rrc); // Ref/Ref Homozygote Count
-                    frequencyData.roc = localeString(frequencyData.roc); // Ref/OtherAlts Count
-                    frequencyData.ooc = localeString(frequencyData.ooc); // OtherAlts/OtherAlts Count
+                    const hasHemizygoteValue = markerState.has_hemizygote_value;
+                    frequencyData.ac = formatLocaleInteger(frequencyData.ac); // Alt Allele Count
+                    frequencyData.an = formatLocaleInteger(frequencyData.an); // Total Allele Count
+                    frequencyData.aac = formatLocaleInteger(frequencyData.aac); // Alt/Alt Homozygote Count
+                    frequencyData.arc = formatLocaleInteger(frequencyData.arc); // Alt/Ref Heterozygote Count
+                    frequencyData.aoc = formatLocaleInteger(frequencyData.aoc); // Alt/OtherAlts Count
+                    frequencyData.rrc = formatLocaleInteger(frequencyData.rrc); // Ref/Ref Homozygote Count
+                    frequencyData.roc = formatLocaleInteger(frequencyData.roc); // Ref/OtherAlts Count
+                    frequencyData.ooc = formatLocaleInteger(frequencyData.ooc); // OtherAlts/OtherAlts Count
                     // ヘミ接合体カラムが必要かを判定（0を含め、数値があれば列を表示する）
                     if (!hasHemizygote && hasHemizygoteValue) {
                         hasHemizygote = true;
                     }
-                    frequencyData.hac = localeString(frequencyData.hac); // Hemizygote Alt
-                    frequencyData.hrc = localeString(frequencyData.hrc); // Hemizygote Ref
-                    frequencyData.hoc = localeString(frequencyData.hoc); // Hemizygote OtherAlts
+                    frequencyData.hac = formatLocaleInteger(frequencyData.hac); // Hemizygote Alt
+                    frequencyData.hrc = formatLocaleInteger(frequencyData.hrc); // Hemizygote Ref
+                    frequencyData.hoc = formatLocaleInteger(frequencyData.hoc); // Hemizygote OtherAlts
                     // ---- JGA-SNP専用: 見出し行の挿入 ----
                     // JGA-SNPはAPIレスポンスに depth=1 の見出しデータが存在しないため、
                     // 集団が切り替わるタイミングで手動で見出し行を挿入する

@@ -100,7 +100,7 @@ $frequency-marker-gap: 1px;
   > .marker.homozygote-marker {
     top: $frequency-marker-offset;
     right: $frequency-marker-offset;
-    background-image: url("./assets/icons/slashmark.svg");
+    background-image: url("./assets/icons/homozygote.svg");
     background-size: cover;
   }
 
@@ -110,7 +110,7 @@ $frequency-marker-gap: 1px;
         $frequency-marker-gap}
     );
     right: $frequency-marker-offset;
-    background-image: url("./assets/icons/slashmark-hemi.svg");
+    background-image: url("./assets/icons/hemizygote.svg");
     background-size: cover;
 
     &:only-child {

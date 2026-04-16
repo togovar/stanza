@@ -750,13 +750,13 @@ table.dataTable, table.dataTable th, table.dataTable td {
 .frequency-graph > .dataset > .marker.homozygote-marker {
   top: -5px;
   right: -5px;
-  background-image: url("./assets/icons/slashmark.svg");
+  background-image: url("./assets/icons/homozygote.svg");
   background-size: cover;
 }
 .frequency-graph > .dataset > .marker.hemizygote-marker {
   top: calc(3px);
   right: -5px;
-  background-image: url("./assets/icons/slashmark-hemi.svg");
+  background-image: url("./assets/icons/hemizygote.svg");
   background-size: cover;
 }
 .frequency-graph > .dataset > .marker.hemizygote-marker:only-child {
@@ -853,13 +853,13 @@ table.dataTable, table.dataTable th, table.dataTable td {
 .allele-frequency-graph > .dataset > .marker.homozygote-marker {
   top: -5px;
   right: -5px;
-  background-image: url("./assets/icons/slashmark.svg");
+  background-image: url("./assets/icons/homozygote.svg");
   background-size: cover;
 }
 .allele-frequency-graph > .dataset > .marker.hemizygote-marker {
   top: calc(3px);
   right: -5px;
-  background-image: url("./assets/icons/slashmark-hemi.svg");
+  background-image: url("./assets/icons/hemizygote.svg");
   background-size: cover;
 }
 .allele-frequency-graph > .dataset > .marker.hemizygote-marker:only-child {

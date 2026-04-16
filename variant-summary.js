@@ -1,8 +1,8 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { u as unwrapValueFromBinding } from './utils-97dc77a0.js';
-import { r as refAlt } from './display-028519be.js';
+import { r as refAlt } from './display-1b5adb7a.js';
 import './constants-f43484af.js';
-import './frequency-0e5f07a7.js';
+import './frequency-9d3406e7.js';
 
 class VariantSummary extends Stanza {
   async render() {

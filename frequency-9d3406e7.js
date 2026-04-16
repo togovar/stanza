@@ -3,6 +3,12 @@ const frequencyFormatter = new Intl.NumberFormat("en", {
     minimumFractionDigits: frequencyDisplayDigits,
     maximumFractionDigits: frequencyDisplayDigits,
 });
+const hasNumericValue = (value) => {
+    return (value !== undefined &&
+        value !== null &&
+        value !== "" &&
+        !Number.isNaN(Number(value)));
+};
 const toNumericValue = (value) => {
     return Number.parseFloat(String(value));
 };
@@ -58,6 +64,23 @@ const buildFrequencyDisplay = (count, value) => {
         level: resolveFrequencyLevel(alleleCount, alleleFrequency),
     };
 };
+const formatLocaleInteger = (value) => {
+    return hasNumericValue(value)
+        ? Number.parseInt(String(value), 10).toLocaleString()
+        : undefined;
+};
+const buildFrequencyMarkerState = (entry) => {
+    return {
+        // ホモ接合マーカーは aac が 1 以上のときだけ表示する
+        has_homozygote_marker: Number(entry.aac) >= 1,
+        // ヘミ接合体マーカーは hac が 1 以上のときだけ表示する
+        has_hemizygote_marker: Number(entry.hac) >= 1,
+        // ヘミ接合体の値が存在するかどうか
+        has_hemizygote_value: hasNumericValue(entry.hac) ||
+            hasNumericValue(entry.hrc) ||
+            hasNumericValue(entry.hoc),
+    };
+};
 
-export { buildFrequencyDisplay as b };
-//# sourceMappingURL=frequency-0e5f07a7.js.map
+export { buildFrequencyDisplay as a, buildFrequencyMarkerState as b, formatLocaleInteger as f };
+//# sourceMappingURL=frequency-9d3406e7.js.map
