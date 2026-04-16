@@ -6,7 +6,11 @@ import {
   SO,
   ensureAllDatasets,
 } from "./constants";
-import { buildFrequencyDisplay, type NumericInput } from "./frequency";
+import {
+  buildFrequencyDisplay,
+  buildFrequencyMarkerState,
+  type NumericInput,
+} from "./frequency";
 
 type LabelMap = Record<string, { label?: string }>;
 
@@ -167,11 +171,11 @@ export const transformRecord = (
   ) as FrequencyEntry[];
 
   record.frequencies.forEach((entry) => {
+    const markerState = buildFrequencyMarkerState(entry);
+
     Object.assign(entry, buildFrequencyDisplay(entry.ac, entry.af), {
-      // ホモ接合マーカーは aac が 1 以上のときだけ表示する
-      has_homozygote_marker: Number(entry.aac) >= 1,
-      // ヘミ接合体マーカーは hac が 1 以上のときだけ表示する
-      has_hemizygote_marker: Number(entry.hac) >= 1,
+      has_homozygote_marker: markerState.has_homozygote_marker,
+      has_hemizygote_marker: markerState.has_hemizygote_marker,
     });
   });
 

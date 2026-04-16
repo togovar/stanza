@@ -16,11 +16,33 @@ export interface FrequencyResult {
   level: FrequencyLevel;
 }
 
+export interface FrequencyMarkerInput {
+  aac?: NumericInput;
+  hac?: NumericInput;
+  hrc?: NumericInput;
+  hoc?: NumericInput;
+}
+
+export interface FrequencyMarkerState {
+  has_homozygote_marker: boolean;
+  has_hemizygote_marker: boolean;
+  has_hemizygote_value: boolean;
+}
+
 const frequencyDisplayDigits = 4;
 const frequencyFormatter = new Intl.NumberFormat("en", {
   minimumFractionDigits: frequencyDisplayDigits,
   maximumFractionDigits: frequencyDisplayDigits,
 });
+
+export const hasNumericValue = (value: NumericInput): boolean => {
+  return (
+    value !== undefined &&
+    value !== null &&
+    value !== "" &&
+    !Number.isNaN(Number(value))
+  );
+};
 
 const toNumericValue = (value: NumericInput): number => {
   return Number.parseFloat(String(value));
@@ -82,5 +104,29 @@ export const buildFrequencyDisplay = (
     frequency: formatFrequencyValue(value),
     count,
     level: resolveFrequencyLevel(alleleCount, alleleFrequency),
+  };
+};
+
+export const formatLocaleInteger = (
+  value: NumericInput,
+): string | undefined => {
+  return hasNumericValue(value)
+    ? Number.parseInt(String(value), 10).toLocaleString()
+    : undefined;
+};
+
+export const buildFrequencyMarkerState = (
+  entry: FrequencyMarkerInput,
+): FrequencyMarkerState => {
+  return {
+    // ホモ接合マーカーは aac が 1 以上のときだけ表示する
+    has_homozygote_marker: Number(entry.aac) >= 1,
+    // ヘミ接合体マーカーは hac が 1 以上のときだけ表示する
+    has_hemizygote_marker: Number(entry.hac) >= 1,
+    // ヘミ接合体の値が存在するかどうか
+    has_hemizygote_value:
+      hasNumericValue(entry.hac) ||
+      hasNumericValue(entry.hrc) ||
+      hasNumericValue(entry.hoc),
   };
 };
