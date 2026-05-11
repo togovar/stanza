@@ -6,6 +6,7 @@ import {
   buildFrequencyMarkerState,
   formatLocaleInteger,
 } from "@/lib/frequency";
+import { setupFloatingPopover } from "@/lib/floating-popover";
 import {
   downloadCSVMenuItem,
   downloadJSONMenuItem,
@@ -84,6 +85,9 @@ const isLocalhostHost = (hostname: string): boolean => {
 export default class VariantFrequency extends Stanza {
   /** ダウンロードボタン用に保持するデータ */
   data: FrequencyData[] = [];
+
+  /** 再描画時に popover のイベントリスナーを解除するために保持 */
+  cleanupFrequencyPopover?: () => void;
 
   // ============================================================
   // menu() — 右上のダウンロードメニューを構成
@@ -384,6 +388,13 @@ export default class VariantFrequency extends Stanza {
           result: { resultObject },
           hasHemizygote,
         },
+      });
+      this.cleanupFrequencyPopover?.();
+      this.cleanupFrequencyPopover = setupFloatingPopover(this.root, {
+        triggerSelector: ".frequency-popover-trigger",
+        panelSelector: ".frequency-popover-panel",
+        arrowSelector: ".frequency-popover-arrow",
+        floatingRootSelector: "main",
       });
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e);

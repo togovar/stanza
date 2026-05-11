@@ -9,7 +9,75 @@
           <th rowspan='2'>Dataset</th>
           <th rowspan='2'>Population</th>
           <th colspan='4'>Allele count</th>
-          <th colspan='{{#if ../hasHemizygote}}9{{else}}6{{/if}}'>Genotype count</th>
+          <th class='genotype-count-heading' colspan='{{#if ../hasHemizygote}}9{{else}}6{{/if}}'>
+            Genotype count
+            <span class='frequency-popover'>
+              <button
+                class='frequency-popover-trigger'
+                type='button'
+                aria-label='Show genotype count descriptions'
+                aria-describedby='genotype-count-popover'
+              ></button>
+              <span
+                class='frequency-popover-panel'
+                id='genotype-count-popover'
+                role='tooltip'
+              >
+                <span class='frequency-popover-arrow'></span>
+                <span class='frequency-popover-title'>
+                  <span class='frequency-popover-title-main'>Diploid regions in autosomes and chrX</span>
+                  <span class='frequency-popover-title-sub'>all chrX regions in females and pseudoautosomal regions (PARs) in males</span>
+                </span>
+                <span class='frequency-popover-list'>
+                  <span class='frequency-popover-item'>
+                    <span class='frequency-popover-term'>Alt / Alt</span>
+                    <span class='frequency-popover-description'>Homozygous for the target alternate allele</span>
+                  </span>
+                  <span class='frequency-popover-item'>
+                    <span class='frequency-popover-term'>Alt / Ref</span>
+                    <span class='frequency-popover-description'>Heterozygous for the target alternate allele and the reference allele</span>
+                  </span>
+                  <span class='frequency-popover-item'>
+                    <span class='frequency-popover-term'>Alt / OtherAlts</span>
+                    <span class='frequency-popover-description'>Heterozygous for the target alternate allele and another alternate allele</span>
+                  </span>
+                  <span class='frequency-popover-item'>
+                    <span class='frequency-popover-term'>Ref / Ref</span>
+                    <span class='frequency-popover-description'>Homozygous for the reference allele</span>
+                  </span>
+                  <span class='frequency-popover-item'>
+                    <span class='frequency-popover-term'>Ref / OtherAlts</span>
+                    <span class='frequency-popover-description'>Heterozygous for the reference allele and another alternate allele</span>
+                  </span>
+                  <span class='frequency-popover-item'>
+                    <span class='frequency-popover-term'>OtherAlts / OtherAlts</span>
+                    <span class='frequency-popover-description'>Homozygous or heterozygous for other alternate allele(s)</span>
+                  </span>
+                </span>
+                {{#if ../hasHemizygote}}
+                  <span class='frequency-popover-section'>
+                    <span class='frequency-popover-title'>
+                      <span class='frequency-popover-title-main'>Haploid regions in non-pseudoautosomal regions of chrX and chrY in males</span>
+                    </span>
+                    <span class='frequency-popover-list'>
+                      <span class='frequency-popover-item'>
+                        <span class='frequency-popover-term'>Hemi_Alt</span>
+                        <span class='frequency-popover-description'>Hemizygous for the target alternate allele</span>
+                      </span>
+                      <span class='frequency-popover-item'>
+                        <span class='frequency-popover-term'>Hemi_Ref</span>
+                        <span class='frequency-popover-description'>Hemizygous for the reference allele</span>
+                      </span>
+                      <span class='frequency-popover-item'>
+                        <span class='frequency-popover-term'>Hemi_Other_Alt</span>
+                        <span class='frequency-popover-description'>Hemizygous for another alternate allele</span>
+                      </span>
+                    </span>
+                  </span>
+                {{/if}}
+              </span>
+            </span>
+          </th>
           <th class='filter_status' rowspan='2'>Filter status</th>
           <th rowspan='2'>Quality score</th>
         </tr>

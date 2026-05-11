@@ -1,4 +1,5 @@
 @use "@/assets/css/common";
+@use "@/assets/css/components/frequency-popover";
 @use "@/assets/css/foundation/variables" as *;
 @use "sass:color";
 
@@ -76,6 +77,10 @@ main {
           color: $COLOR_BLACK;
           border: none;
           border-left: 1px solid #dee2e6;
+        }
+
+        &.genotype-count-heading {
+          position: relative;
         }
 
         &.frequency {
