@@ -94,6 +94,10 @@ export default class VariantFrequency extends Stanza {
     this.cleanupFrequencyPopovers = [];
   }
 
+  disconnectedCallback() {
+    this.cleanupRenderedPopovers();
+  }
+
   // ============================================================
   // menu() — 右上のダウンロードメニューを構成
   // ============================================================

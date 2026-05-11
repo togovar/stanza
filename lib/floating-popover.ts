@@ -105,10 +105,14 @@ export const setupFloatingPopover = (
   };
 
   const hidePanel = () => {
+    if (hideTimer !== undefined) {
+      window.clearTimeout(hideTimer);
+    }
     hideTimer = window.setTimeout(() => {
       panel.removeAttribute("data-open");
       cleanupAutoUpdate?.();
       cleanupAutoUpdate = undefined;
+      hideTimer = undefined;
     }, hideDelay);
   };
 
