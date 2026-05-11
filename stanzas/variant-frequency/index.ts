@@ -87,7 +87,7 @@ export default class VariantFrequency extends Stanza {
   data: FrequencyData[] = [];
 
   /** 再描画時に popover のイベントリスナーを解除するために保持 */
-  cleanupFrequencyPopover?: () => void;
+  cleanupFrequencyPopovers: (() => void)[] = [];
 
   // ============================================================
   // menu() — 右上のダウンロードメニューを構成
@@ -389,13 +389,23 @@ export default class VariantFrequency extends Stanza {
           hasHemizygote,
         },
       });
-      this.cleanupFrequencyPopover?.();
-      this.cleanupFrequencyPopover = setupFloatingPopover(this.root, {
-        triggerSelector: ".frequency-popover-trigger",
-        panelSelector: ".frequency-popover-panel",
-        arrowSelector: ".frequency-popover-arrow",
-        floatingRootSelector: "main",
-      });
+      this.cleanupFrequencyPopovers.forEach((cleanup) => cleanup());
+      this.cleanupFrequencyPopovers = [
+        setupFloatingPopover(this.root, {
+          triggerSelector: ".frequency-popover-trigger",
+          panelSelector: ".frequency-popover-panel",
+          arrowSelector: ".frequency-popover-arrow",
+          floatingRootSelector: "main",
+        }),
+        setupFloatingPopover(this.root, {
+          triggerSelector: ".filter-status-popover-trigger",
+          panelSelector: ".filter-status-popover-panel",
+          arrowSelector: ".filter-status-popover-arrow",
+          floatingRootSelector: "main",
+          placement: "top",
+          hideDelay: 300,
+        }),
+      ];
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e);
 

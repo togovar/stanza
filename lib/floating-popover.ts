@@ -70,7 +70,7 @@ export const setupFloatingPopover = (
         left: `${x}px`,
         top: `${y}px`,
       });
-      panel.dataset.placement = computedPlacement.split("-")[0];
+      panel.dataset.placement = computedPlacement;
 
       if (!arrowElement) {
         return;
@@ -89,7 +89,7 @@ export const setupFloatingPopover = (
         left: arrowX != null ? `${arrowX}px` : "",
         right: "",
         top: arrowY != null ? `${arrowY}px` : "",
-        [staticSide]: "-5px",
+        [staticSide]: "-6px",
       });
     });
   };

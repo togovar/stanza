@@ -78,7 +78,29 @@
               </span>
             </span>
           </th>
-          <th class='filter_status' rowspan='2'>Filter status</th>
+          <th class='filter_status' rowspan='2'>
+            Filter status
+            <span class='filter-status-popover'>
+              <button
+                class='filter-status-popover-trigger'
+                type='button'
+                aria-label='Show filter status descriptions'
+                aria-describedby='filter-status-popover'
+              ></button>
+              <span
+                class='filter-status-popover-panel'
+                id='filter-status-popover'
+                role='tooltip'
+              >
+                <span class='filter-status-popover-arrow'></span>
+                <span class='filter-status-popover-content'>
+                  Variant quality filter status reported by the source dataset.<br>
+                  PASS indicates the variant passed all quality filters.<br>
+                  Other values indicate the variant failed one or more filters.
+                </span>
+              </span>
+            </span>
+          </th>
           <th rowspan='2'>Quality score</th>
         </tr>
         <tr>
