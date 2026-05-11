@@ -121,10 +121,17 @@ export const setupFloatingPopover = (
   signal.addEventListener("abort", () => {
     if (hideTimer !== undefined) {
       window.clearTimeout(hideTimer);
+      hideTimer = undefined;
     }
+    panel.removeAttribute("data-open");
     cleanupAutoUpdate?.();
+    cleanupAutoUpdate = undefined;
     if (originalParent && panel.parentNode !== originalParent) {
-      originalParent.insertBefore(panel, originalNextSibling);
+      if (originalNextSibling?.parentNode === originalParent) {
+        originalParent.insertBefore(panel, originalNextSibling);
+      } else {
+        originalParent.appendChild(panel);
+      }
     }
   });
 
