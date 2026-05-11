@@ -23,8 +23,7 @@ $frequency-block-counts: (
 );
 $frequency-na-border: #d4d3d1;
 $frequency-na-background: #f4f4f4;
-$frequency-marker-color: $COLOR_SIGN_DANGEROUS;
-$frequency-marker-size: 7px;
+$frequency-marker-size: 9px;
 $frequency-marker-offset: -5px;
 $frequency-marker-gap: 1px;
 
@@ -91,7 +90,6 @@ $frequency-marker-gap: 1px;
     display: block;
     width: $frequency-marker-size;
     height: $frequency-marker-size;
-    background-color: $frequency-marker-color;
     background-repeat: no-repeat;
     background-position: center;
     border-radius: 1.5px;

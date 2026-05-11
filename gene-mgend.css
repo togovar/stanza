@@ -7,7 +7,9 @@
   --border-table-bottom: 0.5px solid #444;
   --z-index-sticky-table-header: 10;
   --z-index-togostanza-menu: 10000;
+  --z-index-frequency-popover: 10010;
   --char-lock: "\f023";
+  --char-circle-info: "\f05a";
   --char-excramation-triangle: "\f071";
 }
 
@@ -740,9 +742,8 @@ table.dataTable, table.dataTable th, table.dataTable td {
   z-index: 1;
   box-sizing: border-box;
   display: block;
-  width: 7px;
-  height: 7px;
-  background-color: #ff5a54;
+  width: 9px;
+  height: 9px;
   background-repeat: no-repeat;
   background-position: center;
   border-radius: 1.5px;
@@ -754,7 +755,7 @@ table.dataTable, table.dataTable th, table.dataTable td {
   background-size: cover;
 }
 .frequency-graph > .dataset > .marker.hemizygote-marker {
-  top: calc(3px);
+  top: calc(5px);
   right: -5px;
   background-image: url("./assets/icons/hemizygote.svg");
   background-size: cover;
@@ -843,9 +844,8 @@ table.dataTable, table.dataTable th, table.dataTable td {
   z-index: 1;
   box-sizing: border-box;
   display: block;
-  width: 7px;
-  height: 7px;
-  background-color: #ff5a54;
+  width: 9px;
+  height: 9px;
   background-repeat: no-repeat;
   background-position: center;
   border-radius: 1.5px;
@@ -857,7 +857,7 @@ table.dataTable, table.dataTable th, table.dataTable td {
   background-size: cover;
 }
 .allele-frequency-graph > .dataset > .marker.hemizygote-marker {
-  top: calc(3px);
+  top: calc(5px);
   right: -5px;
   background-image: url("./assets/icons/hemizygote.svg");
   background-size: cover;

@@ -1,0 +1,252 @@
+@use "@/assets/css/foundation/variables" as *;
+@use "sass:color";
+
+main {
+  .frequency-popover,
+  .filter-status-popover {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+
+    .frequency-popover-trigger,
+    .filter-status-popover-trigger {
+      position: relative;
+      box-sizing: border-box;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      color: $COLOR_GRAY;
+      cursor: help;
+      background-color: transparent;
+      border: none;
+      transform: translateY(-2px);
+
+      &::before {
+        font-family: FontAwesome;
+        font-size: 10px;
+        content: var(--char-circle-info);
+      }
+
+      &:focus-visible {
+        outline: 2px solid color.adjust($COLOR_KEY, $lightness: 15%);
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  .frequency-popover-panel,
+  .filter-status-popover-panel {
+    --popover-bg-color: white;
+    --popover-fg-color: #444;
+    --popover-border-color: transparent;
+    --popover-arrow-color: white;
+    --popover-arrow-filter: none;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: var(--z-index-frequency-popover);
+    display: block;
+    max-width: min(44rem, calc(100vw - 48px));
+    padding: 10px;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.25;
+    color: var(--popover-fg-color);
+    text-align: left;
+    white-space: normal;
+    pointer-events: none;
+    background-color: var(--popover-bg-color);
+    border: 1px solid var(--popover-border-color);
+    border-radius: 7px;
+    box-shadow: 0 10px 26px rgb(0 0 0 / 18%);
+    opacity: 0;
+    transition: opacity 120ms ease;
+
+    .frequency-popover-arrow,
+    .filter-status-popover-arrow {
+      position: absolute;
+      width: 12px;
+      height: 6px;
+      pointer-events: none;
+      filter: var(--popover-arrow-filter);
+
+      &::before,
+      &::after {
+        position: absolute;
+        content: "";
+      }
+    }
+
+    &[data-placement^="top"] {
+      .frequency-popover-arrow,
+      .filter-status-popover-arrow {
+        &::before {
+          top: 0;
+          left: 0;
+          border-top: 6px solid var(--popover-arrow-color);
+          border-right: 6px solid transparent;
+          border-left: 6px solid transparent;
+        }
+
+        &::after {
+          top: -1px;
+          left: 1px;
+          width: 10px;
+          height: 2px;
+          background-color: var(--popover-arrow-color);
+        }
+      }
+    }
+
+    &[data-placement^="bottom"] {
+      .frequency-popover-arrow,
+      .filter-status-popover-arrow {
+        &::before {
+          bottom: 0;
+          left: 0;
+          border-right: 6px solid transparent;
+          border-bottom: 6px solid var(--popover-arrow-color);
+          border-left: 6px solid transparent;
+        }
+
+        &::after {
+          bottom: -1px;
+          left: 1px;
+          width: 10px;
+          height: 2px;
+          background-color: var(--popover-arrow-color);
+        }
+      }
+    }
+
+    &[data-placement^="left"] {
+      .frequency-popover-arrow,
+      .filter-status-popover-arrow {
+        width: 6px;
+        height: 12px;
+
+        &::before {
+          top: 0;
+          left: 0;
+          border-top: 6px solid transparent;
+          border-bottom: 6px solid transparent;
+          border-left: 6px solid var(--popover-arrow-color);
+        }
+
+        &::after {
+          top: 1px;
+          left: -1px;
+          width: 2px;
+          height: 10px;
+          background-color: var(--popover-arrow-color);
+        }
+      }
+    }
+
+    &[data-placement^="right"] {
+      .frequency-popover-arrow,
+      .filter-status-popover-arrow {
+        width: 6px;
+        height: 12px;
+
+        &::before {
+          top: 0;
+          right: 0;
+          border-top: 6px solid transparent;
+          border-right: 6px solid var(--popover-arrow-color);
+          border-bottom: 6px solid transparent;
+        }
+
+        &::after {
+          top: 1px;
+          right: -1px;
+          width: 2px;
+          height: 10px;
+          background-color: var(--popover-arrow-color);
+        }
+      }
+    }
+
+    &[data-open="true"] {
+      pointer-events: auto;
+      opacity: 1;
+    }
+
+    .frequency-popover-title {
+      display: block;
+      margin-bottom: 6px;
+      line-height: 1.2;
+
+      .frequency-popover-title-main {
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .frequency-popover-title-sub {
+        display: block;
+        font-size: 12px;
+        font-weight: 400;
+      }
+    }
+
+    .frequency-popover-section {
+      display: block;
+      padding-top: 14px;
+    }
+
+    .frequency-popover-list {
+      display: block;
+    }
+
+    .frequency-popover-item {
+      display: block;
+      padding: 7px 0;
+      border-top: 1px solid #d5dbe0;
+
+      &:first-child {
+        padding-top: 0;
+        border-top: none;
+      }
+
+      &:last-child {
+        padding-bottom: 0;
+      }
+
+      .frequency-popover-term {
+        display: inline-block;
+        padding: 2px 6px;
+        margin-bottom: 2px;
+        font-weight: 700;
+        line-height: 1.1;
+        color: $COLOR_BLACK;
+        background-color: #f3f5f7;
+        border-radius: 3px;
+      }
+
+      .frequency-popover-description {
+        display: block;
+      }
+    }
+  }
+
+  .filter-status-popover-panel {
+    --popover-bg-color: #{$COLOR_BLACK};
+    --popover-fg-color: white;
+    --popover-border-color: white;
+    --popover-arrow-color: #{$COLOR_BLACK};
+    --popover-arrow-filter: none;
+
+    max-width: 24rem;
+    padding: 0.4rem 0.6rem;
+    font-size: 12px;
+
+    .filter-status-popover-content {
+      display: block;
+      margin: 0;
+    }
+  }
+}
