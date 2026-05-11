@@ -51,12 +51,14 @@ export const setupFloatingPopover = (
     : undefined;
 
   floatingRoot?.appendChild(panel);
+  panel.setAttribute("aria-hidden", "true");
 
   let hideTimer: number | undefined;
   let cleanupAutoUpdate: (() => void) | undefined;
+  let isOpenRequested = false;
 
   const updatePanelPosition = () => {
-    void computePosition(trigger, panel, {
+    return computePosition(trigger, panel, {
       placement,
       strategy: "fixed",
       middleware: [
@@ -95,21 +97,29 @@ export const setupFloatingPopover = (
   };
 
   const showPanel = () => {
+    isOpenRequested = true;
+    panel.removeAttribute("aria-hidden");
     if (hideTimer !== undefined) {
       window.clearTimeout(hideTimer);
       hideTimer = undefined;
     }
-    panel.setAttribute("data-open", "true");
-    cleanupAutoUpdate ??= autoUpdate(trigger, panel, updatePanelPosition);
-    updatePanelPosition();
+    void updatePanelPosition().then(() => {
+      if (!isOpenRequested || signal.aborted) {
+        return;
+      }
+      panel.setAttribute("data-open", "true");
+      cleanupAutoUpdate ??= autoUpdate(trigger, panel, updatePanelPosition);
+    });
   };
 
   const hidePanel = () => {
+    isOpenRequested = false;
     if (hideTimer !== undefined) {
       window.clearTimeout(hideTimer);
     }
     hideTimer = window.setTimeout(() => {
       panel.removeAttribute("data-open");
+      panel.setAttribute("aria-hidden", "true");
       cleanupAutoUpdate?.();
       cleanupAutoUpdate = undefined;
       hideTimer = undefined;
@@ -123,11 +133,13 @@ export const setupFloatingPopover = (
   panel.addEventListener("mouseenter", showPanel, { signal });
   panel.addEventListener("mouseleave", hidePanel, { signal });
   signal.addEventListener("abort", () => {
+    isOpenRequested = false;
     if (hideTimer !== undefined) {
       window.clearTimeout(hideTimer);
       hideTimer = undefined;
     }
     panel.removeAttribute("data-open");
+    panel.setAttribute("aria-hidden", "true");
     cleanupAutoUpdate?.();
     cleanupAutoUpdate = undefined;
     if (originalParent && panel.parentNode !== originalParent) {
