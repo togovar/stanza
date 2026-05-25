@@ -4,7 +4,7 @@
   },
   "@id": "variant-frequency",
   "stanza:label": "Variant / Frequency",
-  "stanza:definition": "Display alternative allele frequencies of the variant",
+  "stanza:definition": "Display alternate allele frequencies of the variant",
   "stanza:type": "Stanza",
   "stanza:display": "Table",
   "stanza:provider": "TogoVar",

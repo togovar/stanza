@@ -6,6 +6,7 @@ import {
   buildFrequencyMarkerState,
   formatLocaleInteger,
 } from "@/lib/frequency";
+import { setupFloatingPopover } from "@/lib/floating-popover";
 import {
   downloadCSVMenuItem,
   downloadJSONMenuItem,
@@ -84,6 +85,18 @@ const isLocalhostHost = (hostname: string): boolean => {
 export default class VariantFrequency extends Stanza {
   /** ダウンロードボタン用に保持するデータ */
   data: FrequencyData[] = [];
+
+  /** 再描画時に popover のイベントリスナーを解除するために保持 */
+  cleanupFrequencyPopovers: (() => void)[] = [];
+
+  private cleanupRenderedPopovers() {
+    this.cleanupFrequencyPopovers.forEach((cleanup) => cleanup());
+    this.cleanupFrequencyPopovers = [];
+  }
+
+  disconnectedCallback() {
+    this.cleanupRenderedPopovers();
+  }
 
   // ============================================================
   // menu() — 右上のダウンロードメニューを構成
@@ -377,6 +390,7 @@ export default class VariantFrequency extends Stanza {
       );
 
       // HTMLテンプレートに渡してレンダリング
+      this.cleanupRenderedPopovers();
       this.renderTemplate({
         template: "stanza.html.hbs",
         parameters: {
@@ -385,10 +399,27 @@ export default class VariantFrequency extends Stanza {
           hasHemizygote,
         },
       });
+      this.cleanupFrequencyPopovers = [
+        setupFloatingPopover(this.root, {
+          triggerSelector: ".frequency-popover-trigger",
+          panelSelector: ".frequency-popover-panel",
+          arrowSelector: ".frequency-popover-arrow",
+          floatingRootSelector: "main",
+        }),
+        setupFloatingPopover(this.root, {
+          triggerSelector: ".filter-status-popover-trigger",
+          panelSelector: ".filter-status-popover-panel",
+          arrowSelector: ".filter-status-popover-arrow",
+          floatingRootSelector: "main",
+          placement: "top",
+          hideDelay: 300,
+        }),
+      ];
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e);
 
       this.data = [];
+      this.cleanupRenderedPopovers();
       this.renderTemplate({
         template: "stanza.html.hbs",
         parameters: {
