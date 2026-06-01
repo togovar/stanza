@@ -7,7 +7,7 @@
   --border-table-bottom: 0.5px solid #444;
   --z-index-sticky-table-header: 10;
   --z-index-togostanza-menu: 10000;
-  --z-index-frequency-popover: 10010;
+  --z-index-frequency-popover: 10300;
   --char-lock: "\f023";
   --char-circle-info: "\f05a";
   --char-excramation-triangle: "\f071";
@@ -1375,7 +1375,7 @@ main .filter-status-popover-panel {
   display: block;
   max-width: min(44rem, 100vw - 48px);
   padding: 10px;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 400;
   line-height: 1.25;
   color: var(--popover-fg-color);
@@ -1511,19 +1511,19 @@ main .filter-status-popover-panel[data-open=true] {
 main .frequency-popover-panel .frequency-popover-title,
 main .filter-status-popover-panel .frequency-popover-title {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 3px;
   line-height: 1.2;
 }
 main .frequency-popover-panel .frequency-popover-title .frequency-popover-title-main,
 main .filter-status-popover-panel .frequency-popover-title .frequency-popover-title-main {
   display: block;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 700;
 }
 main .frequency-popover-panel .frequency-popover-title .frequency-popover-title-sub,
 main .filter-status-popover-panel .frequency-popover-title .frequency-popover-title-sub {
   display: block;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 400;
 }
 main .frequency-popover-panel .frequency-popover-section,
@@ -1537,8 +1537,11 @@ main .filter-status-popover-panel .frequency-popover-list {
 }
 main .frequency-popover-panel .frequency-popover-item,
 main .filter-status-popover-panel .frequency-popover-item {
-  display: block;
-  padding: 7px 0;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  column-gap: 4px;
+  align-items: start;
+  padding: 4px 0;
   border-top: 1px solid #d5dbe0;
 }
 main .frequency-popover-panel .frequency-popover-item:first-child,
@@ -1554,7 +1557,6 @@ main .frequency-popover-panel .frequency-popover-item .frequency-popover-term,
 main .filter-status-popover-panel .frequency-popover-item .frequency-popover-term {
   display: inline-block;
   padding: 2px 6px;
-  margin-bottom: 2px;
   font-weight: 700;
   line-height: 1.1;
   color: #444;
@@ -1563,7 +1565,7 @@ main .filter-status-popover-panel .frequency-popover-item .frequency-popover-ter
 }
 main .frequency-popover-panel .frequency-popover-item .frequency-popover-description,
 main .filter-status-popover-panel .frequency-popover-item .frequency-popover-description {
-  display: block;
+  display: inline-block;
 }
 main .filter-status-popover-panel {
   --popover-bg-color: #444;
@@ -1573,7 +1575,7 @@ main .filter-status-popover-panel {
   --popover-arrow-filter: none;
   max-width: 24rem;
   padding: 0.4rem 0.6rem;
-  font-size: 12px;
+  font-size: 10px;
 }
 main .filter-status-popover-panel .filter-status-popover-content {
   display: block;
