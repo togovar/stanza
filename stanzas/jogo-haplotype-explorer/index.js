@@ -9,6 +9,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
     
     const tgv_api = this.params.togovar_api + "?formatter=jogo";
     const tgv_bdy = '{"query":{"and":[{"gene":{"relation":"eq","terms":[#hgncid]}},{"significance":{"relation":"ne","terms":["NA"]}}]}}';
+    let tgv_opt = {method: 'POST', headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}};
     let region_name = this.params.region_name;
     let symbol = this.params.symbol;
     let hgncid = this.params.hgnc_id;
