@@ -8,9 +8,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
     const aa = {Gly: "G", Ala: "A", Leu: "L", Met: "M", Phe: "F", Trp: "W", Lys: "K", Gln: "Q", Glu: "E", Ser: "S", Pro: "P", Val: "V", Ile: "I", Cys: "C", Tyr: "Y", His: "H", Arg: "R", Asn: "N", Asp: "D", Thr: "T", Ter: "X"};
     
     const tgv_api = this.params.togovar_api + "?formatter=jogo";
-    const tgv_bdy = '{"offset":#offset,"limit":#limit,"query":{"and":[{"gene":{"relation":"eq","terms":[#hgncid]}},{"or":[{"significance":{"relation":"eq","source":["mgend"],"terms":["P","LP","US","LB","B","DR","O","NP"]}},{"significance":{"relation":"eq","source":["clinvar"],"terms":["P","LP","PLP","LPLP","ERA","LRA","URA","US","LB","B","CI","DR","CS","RF","A","PR","AF","O","NP","AN"]}}]}]}}';
-    let tgv_opt = {method: 'POST', headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}};
-
+    const tgv_bdy = '{"query":{"and":[{"gene":{"relation":"eq","terms":[#hgncid]}},{"significance":{"relation":"ne","terms":["NA"]}}]}}';
     let region_name = this.params.region_name;
     let symbol = this.params.symbol;
     let hgncid = this.params.hgnc_id;
@@ -785,24 +783,14 @@ export default class JogoHaplotypeExplorer extends Stanza {
       }
     );
     
-    // get clinical significance from TogoVr
+    // get clinical significance from TogoVar
     const getClinSig = async (hgncid) => {
-      let filtered = false;
-      const limit = 1000;
-      let offset = 0;
-      let count = 0;
       let clin_sig = {};
-      while (filtered === false || filtered > count) {
-	tgv_opt.body = tgv_bdy.replace(/#hgncid/, hgncid).replace(/#offset/, offset).replace(/#limit/, limit);
-	const togovar = await fetch(tgv_api, tgv_opt).then(res => res.json());
-	if (togovar.statistics) filtered = togovar.statistics.filtered;
-	else filtered = 0; // for 'formatter=jogo' option in TogoVar API (w/o offset-limit scroll)
-	if (togovar.data.length > 0) {
-	  for (const d of togovar.data) {
-	    clin_sig[d.reference + d.position + d.alternate] = d;
-	  }
-	  offset = '["' + togovar.data[togovar.data.length - 1].chromosome + '","' + togovar.data[togovar.data.length - 1].position + '","' + togovar.data[togovar.data.length - 1].reference + '","' + togovar.data[togovar.data.length - 1].alternate + '"]';
-	  count += limit;
+      tgv_opt.body = tgv_bdy.replace(/#hgncid/, hgncid);
+      const togovar = await fetch(tgv_api, tgv_opt).then(res => res.json());
+      if (togovar.data.length > 0) {
+	for (const d of togovar.data) {
+	  clin_sig[d.reference + d.position + d.alternate] = d;
 	}
       }
       return clin_sig;
