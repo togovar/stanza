@@ -955,11 +955,12 @@ export default class JogoHaplotypeExplorer extends Stanza {
           console.warn("getClinSig(hgncid_jogo) failed:", e);
 	}
       }
-      
+
       // clin_sig で追加レンダリング
       const clin_sig = finalClinSig || {};
       // add clinical significance to variant data
       for (const [i, v] of variant.entries()) {
+	console.log(v);
 	const popup_id =  v.ref + v.pos + v.alt;
 	if (clin_sig[popup_id]) {
 	  const tgv = clin_sig[popup_id];
@@ -984,9 +985,9 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	  if (tgv.id) {
 	    popup_id2tgv[popup_id] = tgv.id;
 	    popup_id2info[popup_id] = "TogoVar: <a href='" + togovar_url + tgv.id + "' target='" + tgv.id + "'>" + tgv.id + "</a><br>" + popup_id2info[popup_id];
-	    popup_id2flag[popup_id] = true;
 	  }
 	  popup_id2info[popup_id] += "<br>Clinical significance:<br>" + uniq.join("<br>");
+	  popup_id2flag[popup_id] = true;
 	}
       }
     } catch (e) {
