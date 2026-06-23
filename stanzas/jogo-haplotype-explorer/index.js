@@ -960,7 +960,6 @@ export default class JogoHaplotypeExplorer extends Stanza {
       const clin_sig = finalClinSig || {};
       // add clinical significance to variant data
       for (const [i, v] of variant.entries()) {
-	console.log(v);
 	const popup_id =  v.ref + v.pos + v.alt;
 	if (clin_sig[popup_id]) {
 	  const tgv = clin_sig[popup_id];
