@@ -984,6 +984,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	  if (tgv.id) {
 	    popup_id2tgv[popup_id] = tgv.id;
 	    popup_id2info[popup_id] = "TogoVar: <a href='" + togovar_url + tgv.id + "' target='" + tgv.id + "'>" + tgv.id + "</a><br>" + popup_id2info[popup_id];
+	    popup_id2flag[popup_id] = true;
 	  }
 	  popup_id2info[popup_id] += "<br>Clinical significance:<br>" + uniq.join("<br>");
 	}
