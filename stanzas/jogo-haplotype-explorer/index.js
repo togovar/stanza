@@ -47,6 +47,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
     let popup_id2title = {};
     let popup_id2info = {};
     let popup_id2tgv = {};
+    let popup_id2flag = {};
     let popup_id_current = false;
     let hapid2var = {};
     let prev_order = {};
@@ -142,9 +143,12 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	  count: v.haplotypeid_count,
 	  pop: pop
 	});
+	const truncateText = (str, maxLength = 30) => {
+	  return str.length > maxLength ? str.slice(0, maxLength) + "..." : str;
+	};
 	popup_id2title[v.ref + v.pos + v.alt] = make_var_title(v) + "<br>";
-	popup_id2info[v.ref + v.pos + v.alt] = cons + "<br>HGVSc: " + v.snpeff_hgvs_c;
-	if (v.snpeff_hgvs_p) popup_id2info[v.ref + v.pos + v.alt] += "<br>HGVSp: " + v.snpeff_hgvs_p;
+	popup_id2info[v.ref + v.pos + v.alt] = cons + "<br>HGVSc: " + truncateText(v.snpeff_hgvs_c, 30);
+	if (v.snpeff_hgvs_p) popup_id2info[v.ref + v.pos + v.alt] += "<br>HGVSp: " + truncateText(v.snpeff_hgvs_p, 30);
       }
       return variant;
     }
@@ -304,7 +308,10 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	}
 	if (!popup_id2tgv[popup_id] && popup_id.match(/[A-Z]+\d+[A-Z]+$/)) {
 	  popup_id2tgv[popup_id] = "-";
-	  get_additional_tgv(popup_id, popup_el);
+	  if (! popup_id2flag[popup_id]) {
+	    popup_id2flag[popup_id] = true;
+	    get_additional_tgv(popup_id, popup_el);
+	  }
 	}	  
       })
       el.addEventListener("click", async (e) => {
