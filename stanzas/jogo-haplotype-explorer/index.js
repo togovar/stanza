@@ -7,7 +7,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
     //// variables
     const aa = {Gly: "G", Ala: "A", Leu: "L", Met: "M", Phe: "F", Trp: "W", Lys: "K", Gln: "Q", Glu: "E", Ser: "S", Pro: "P", Val: "V", Ile: "I", Cys: "C", Tyr: "Y", His: "H", Arg: "R", Asn: "N", Asp: "D", Thr: "T", Ter: "X"};
     
-    const tgv_api = this.params.togovar_api + "?formatter=jogo";
+    const tgv_api = this.params.togovar_api;
     const tgv_bdy = '{"query":{"and":[{"gene":{"relation":"eq","terms":[#hgncid]}},{"significance":{"relation":"ne","terms":["NA"]}}]}}';
     let tgv_opt = {method: 'POST', headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}};
     let region_name = this.params.region_name;
@@ -795,7 +795,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
     const getClinSig = async (hgncid) => {
       let clin_sig = {};
       tgv_opt.body = tgv_bdy.replace(/#hgncid/, hgncid);
-      const togovar = await fetch(tgv_api, tgv_opt).then(res => res.json());
+      const togovar = await fetch(tgv_api + "?formatter=jogo", tgv_opt).then(res => res.json());
       if (togovar.data.length > 0) {
 	for (const d of togovar.data) {
 	  clin_sig[d.reference + d.position + d.alternate] = d;
