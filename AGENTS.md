@@ -82,7 +82,7 @@
 - 既存stanzaの多くは JavaScript、`variant-frequency` と一部 `lib/` は TypeScript。ファイル変換は必要な場合だけ行う。
 - 新規TypeScriptではできるだけ `any` を避け、外部APIレスポンスは `unknown` から絞り込むか、stanza内で必要な範囲のinterfaceを定義する。
 - `togostanza-build.mjs` は、Togostanza標準処理だけでは不安定な `.ts` / `.tsx` 変換を補うRollupプラグインを追加している。拡張子なし相対importもここで解決しているため、変更時はJS/TS混在のビルドに影響する。
-- 型チェックは `tsconfig.json` の対象に `stanzas/**/*.js`, `stanzas/**/*.ts`, `lib/**/*.js`, `lib/**/*.ts`, `types/**/*.d.ts` が含まれる。ただし現状 `package.json` に `typecheck` script はない。必要なら `npx tsc --noEmit` で確認する。
+- 型チェックは `tsconfig.json` の対象に `stanzas/**/*.js`, `stanzas/**/*.ts`, `lib/**/*.js`, `lib/**/*.ts`, `types/**/*.d.ts` が含まれる。`npm run typecheck` で確認する。
 - 既存JSをTSへ変換する場合は、Togostanzaの読み込み、`metadata.json`、テンプレートに渡すデータ構造、importパスへの影響を確認する。
 - `console.log` はESLintで禁止。必要なログは `console.warn` または `console.error` を使う。
 
@@ -129,8 +129,7 @@
 変更後は可能な範囲で以下を実行する。
 
 ```bash
-npm run lint
-npm run build
+npm run validate
 ```
 
 必要に応じた個別確認:
@@ -139,17 +138,17 @@ npm run build
 npm run lint:js
 npm run lint:css
 npm run lint:css:fix
-npx tsc --noEmit
+npm run typecheck
+npm run build
 ```
 
 ローカル表示確認:
 
 ```bash
-npm start
+npm run dev
 ```
 
-- このリポジトリには現状 `npm run typecheck` は定義されていない。
-- READMEには `yarn run` と書かれているが、`package.json` 上の起動scriptは `start`。実行時は `npm start` またはユーザー指定のyarnコマンドを使う。
+- `package.json` では `dev` と `start` のどちらも Togostanza の開発サーバーを起動する。通常の開発案内では `npm run dev` を優先し、npm標準の起動口として `npm start` も残す。
 - Node/npm/yarn がPATHにない場合や、ネットワーク制限で依存取得・外部フォント・外部API確認ができない場合は、その事実を報告する。
 - `style.scss` だけの軽微な変更なら `npm run lint:css`、JS/TSだけの変更なら `npm run lint:js` のように、変更範囲に応じて小さく確認してから全体確認へ進む。
 - APIや認証に関わるstanzaは、成功時・空データ時・エラー時・未ログイン時など、実装が分岐する状態を意識して確認する。

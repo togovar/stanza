@@ -23,8 +23,10 @@ npm install
 ローカルでstanzaを配信します。
 
 ```bash
-npm start
+npm run dev
 ```
+
+`npm start` でも同じ開発サーバーを起動できます。
 
 Togostanzaのジェネレーターで新しいstanzaを作成します。
 
@@ -54,10 +56,14 @@ npm run lint
 npm run lint:js
 npm run lint:css
 npm run lint:css:fix
-npx tsc --noEmit
+npm run typecheck
 ```
 
-`typecheck` スクリプトは定義していないため、型チェックだけを行う場合は `npx tsc --noEmit` を使います。
+lint、型チェック、ビルドをまとめて確認する場合:
+
+```bash
+npm run validate
+```
 
 ## ディレクトリ構成
 
