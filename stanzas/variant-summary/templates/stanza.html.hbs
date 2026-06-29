@@ -2,30 +2,25 @@
   <div class="alert alert-danger">{{message}}</div>
 {{else}}
   <div>
-    <table class="table -horizontalkeyvalue">
-      {{#with result}}
-        <tr>
-          <th>Variant type</th>
-          <td class="variant-type-value"><span class="variant-value">{{type}}</span></td>
-          <th>Ref / Alt</th>
-          <td>
-            <div class="ref-alt">
-              <span class='ref' data-sum='{{ref_length}}'>{{ref}}</span><span class='arrow'></span><span
-                class='alt' data-sum='{{alt_length}}'>{{alt}}</span>
-            </div>
-          </td>
-        </tr>
+    {{#with result}}
+      <dl class="variant-summary-list">
+        <dt>Variant type</dt>
+        <dd class="variant-type-value"><span class="variant-value">{{type}}</span></dd>
 
-        <tr>
-          <th>Position</th>
-          <td>
-            <span class="chromosome">{{chr}}</span>:<span class='position'>{{position}}</span> <span
-              class='assembly'>({{assembly}})</span>
-          </td>
-          <th></th>
-          <td></td>
-        </tr>
-      {{/with}}
-    </table>
+        <dt>Ref / Alt</dt>
+        <dd>
+          <div class="ref-alt">
+            <span class="ref" data-sum="{{ref_length}}">{{ref}}</span><span class="arrow"></span><span
+              class="alt" data-sum="{{alt_length}}">{{alt}}</span>
+          </div>
+        </dd>
+
+        <dt>Position</dt>
+        <dd>
+          <span class="chromosome">{{chr}}</span>:<span class="position">{{position}}</span> <span
+            class="assembly">({{assembly}})</span>
+        </dd>
+      </dl>
+    {{/with}}
   </div>
 {{/with}}

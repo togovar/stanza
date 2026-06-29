@@ -1,25 +1,52 @@
 @use "@/assets/css/common";
 
 main {
-  .table {
+  // key-value ペアを2列グリッドで並べる説明リスト。
+  // dt が「項目名」、dd が「値」に対応し、4カラムのグリッドに配置される。
+  // 例: [Variant type] [SNV] [Ref / Alt] [A→T]
+  //     [Position]     [chr1:12345 (GRCh38)]
+  .variant-summary-list {
+    display: grid;
+    grid-template-columns: 77px 1fr 77px 1fr;
     width: 100%;
-    table-layout: fixed;
+    margin: 0;
+    font-family: "Roboto Condensed", sans-serif;
 
-    > tbody > tr {
-      > {
-        th {
-          width: 77px;
-          text-align: right;
-        }
+    dt,
+    dd {
+      // align-self はデフォルトの stretch のままにして、セルをロー全体の高さに引き伸ばす。
+      // align-self: center にすると各セルが内容高さで縮み、border-bottom がバラバラな位置に引かれる。
+      display: flex;
+      align-items: center;
+      padding: 3px 0;
+      line-height: 1.2;
+      border-bottom: 1px solid #dee2e6;
+    }
 
-        td {
-          padding-left: 12px;
+    dt {
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--color-black);
+      text-align: right;
+    }
 
-          .chromosome {
-            font-weight: bold;
-          }
-        }
+    dd {
+      // ブラウザデフォルトの margin-left をリセットする
+      padding-left: 12px;
+      margin: 0;
+      font-size: 14px;
+      color: #444;
+      white-space: nowrap;
+
+      .chromosome {
+        font-weight: bold;
       }
+    }
+
+    // 最終行（Position行）にはボーダーを引かない
+    dt:last-of-type,
+    dd:last-of-type {
+      border-bottom: none;
     }
   }
 }
