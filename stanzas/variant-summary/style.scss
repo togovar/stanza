@@ -7,7 +7,10 @@ main {
   //     [Position]     [chr1:12345 (GRCh38)]
   .variant-summary-list {
     display: grid;
-    grid-template-columns: 77px 1fr 77px 1fr;
+
+    // max-content で各 dt 列をラベルの最大幅に自動調整する。
+    // 固定px だと "HGNC/Approved symbol" のような長いラベルが溢れるため。
+    grid-template-columns: max-content 1fr max-content 1fr;
     width: 100%;
     margin: 0;
     font-family: "Roboto Condensed", sans-serif;

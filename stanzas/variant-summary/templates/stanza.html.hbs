@@ -4,8 +4,11 @@
   <div>
     {{#with result}}
       <dl class="variant-summary-list">
-        <dt>Variant type</dt>
-        <dd class="variant-type-value"><span class="variant-value">{{type}}</span></dd>
+        <dt>Position</dt>
+        <dd>
+          <span class="chromosome">{{chr}}</span>:<span class="position">{{position}}</span>
+          <span class="assembly">({{assembly}})</span>
+        </dd>
 
         <dt>Ref / Alt</dt>
         <dd>
@@ -15,11 +18,19 @@
           </div>
         </dd>
 
-        <dt>Position</dt>
-        <dd>
-          <span class="chromosome">{{chr}}</span>:<span class="position">{{position}}</span> <span
-            class="assembly">({{assembly}})</span>
-        </dd>
+        {{#if ../gene}}
+          <dt>HGNC/Approved symbol</dt>
+          <dd>
+            {{#if ../gene.hgnc_url}}
+              <a href="{{../gene.hgnc_url}}" target="_blank" rel="noopener noreferrer">{{../gene.symbol}}</a>
+            {{else}}
+              {{../gene.symbol}}
+            {{/if}}
+          </dd>
+
+          <dt>HGNC/Approved name</dt>
+          <dd>{{../gene.approved_name}}</dd>
+        {{/if}}
       </dl>
     {{/with}}
   </div>
