@@ -63,6 +63,7 @@
 - 新しいstanzaは原則 `stanzas/<stanza-id>/` に閉じる。複数stanzaで使う処理だけ `lib/` や `assets/css/components/` に移す。
 - stanza専用の見た目は各 `style.scss` に書く。複数stanzaで再利用する表・バッジ・頻度表示などは `assets/css/components/` を確認してから追加する。
 - 共通データ変換や表示整形は既存の `lib/display.ts`, `lib/frequency.ts`, `lib/constants.js`, `lib/table.js`, `lib/floating-popover.ts` を優先する。
+- 複数stanzaで共有するTypeScript型定義は `lib/types.ts` に置く。TogoVar検索APIのレスポンス型（`TogoVarApiResponse`, `VariantData`, `SignificanceEntry`, `DiseaseCondition`, `ExternalLinks` など）はここから import する。
 - `assets/vendor/` は同梱済みの外部ライブラリ置き場。新規追加は必要性、ライセンス、ビルドへの影響を確認する。
 - フォントやアイコンを参照する場合は、既存の `assets/fontello.*`, `assets/fontawesome-webfont.svg`, `assets/icons/` の使い方に合わせる。
 
@@ -80,7 +81,7 @@
 ## TypeScript / JavaScript 方針
 
 - 既存stanzaの多くは JavaScript、`variant-frequency` と一部 `lib/` は TypeScript。ファイル変換は必要な場合だけ行う。
-- 新規TypeScriptではできるだけ `any` を避け、外部APIレスポンスは `unknown` から絞り込むか、stanza内で必要な範囲のinterfaceを定義する。
+- 新規TypeScriptではできるだけ `any` を避け、外部APIレスポンスは `unknown` から絞り込むか、stanza内で必要な範囲のinterfaceを定義する。TogoVar検索APIを使うstanzaは先に `lib/types.ts` を確認し、共有型があれば import して使う。stanza固有の型（テンプレートへ渡すデータ構造など）はstanza内に定義する。
 - `togostanza-build.mjs` は、Togostanza標準処理だけでは不安定な `.ts` / `.tsx` 変換を補うRollupプラグインを追加している。拡張子なし相対importもここで解決しているため、変更時はJS/TS混在のビルドに影響する。
 - 型チェックは `tsconfig.json` の対象に `stanzas/**/*.js`, `stanzas/**/*.ts`, `lib/**/*.js`, `lib/**/*.ts`, `types/**/*.d.ts` が含まれる。`npm run typecheck` で確認する。
 - 既存JSをTSへ変換する場合は、Togostanzaの読み込み、`metadata.json`、テンプレートに渡すデータ構造、importパスへの影響を確認する。

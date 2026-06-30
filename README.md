@@ -119,7 +119,7 @@ togostanza-build.mjs
 
 ## コントリビュータ向けメモ
 
-- 複数stanzaで共有する表示ロジックは `lib/` に置きます。
+- 複数stanzaで共有する表示ロジックは `lib/` に置きます。TogoVar検索APIのレスポンス型など複数stanzaで使うTypeScript型は `lib/types.ts` に定義しています。
 - 共通SCSSコンポーネントは `assets/css/components/` に置き、`assets/css/common.scss` から読み込みます。
 - stanza固有の処理やスタイルは、できるだけ各 `stanzas/<stanza-id>/` ディレクトリ内に閉じます。
 - stanzaパラメータを追加・変更する場合は、実装と `metadata.json` の両方を更新します。
