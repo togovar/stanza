@@ -77,6 +77,8 @@ stanzas/
       stanza.html.hbs
 lib/
   複数stanzaで共有するJavaScript/TypeScriptユーティリティ
+types/
+  型定義を持たないnpmパッケージ向けのambient module宣言（.d.ts）
 assets/
   css/
   icons/

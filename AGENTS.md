@@ -51,6 +51,7 @@
       README.md                    stanza個別説明
       assets/                      stanza専用アセット
   lib/                             複数stanzaで共有するJS/TS処理
+  types/                           サードパーティ製パッケージの ambient module 宣言（.d.ts のみ）
   assets/
     css/common.scss                複数stanzaで共有するスタイル入口
     css/components/                共通UI部品のSCSS
@@ -84,6 +85,7 @@
 - 新規TypeScriptではできるだけ `any` を避け、外部APIレスポンスは `unknown` から絞り込むか、stanza内で必要な範囲のinterfaceを定義する。TogoVar検索APIを使うstanzaは先に `lib/types.ts` を確認し、共有型があれば import して使う。stanza固有の型（テンプレートへ渡すデータ構造など）はstanza内に定義する。
 - `togostanza-build.mjs` は、Togostanza標準処理だけでは不安定な `.ts` / `.tsx` 変換を補うRollupプラグインを追加している。拡張子なし相対importもここで解決しているため、変更時はJS/TS混在のビルドに影響する。
 - 型チェックは `tsconfig.json` の対象に `stanzas/**/*.js`, `stanzas/**/*.ts`, `lib/**/*.js`, `lib/**/*.ts`, `types/**/*.d.ts` が含まれる。`npm run typecheck` で確認する。
+- 型定義を持たないnpmパッケージを TypeScript から import する場合は、`types/<パッケージ名>.d.ts` に `declare module` で最小限の型を宣言する。`lib/` は実行時コードの置き場なので型宣言ファイルは置かない。
 - 既存JSをTSへ変換する場合は、Togostanzaの読み込み、`metadata.json`、テンプレートに渡すデータ構造、importパスへの影響を確認する。
 - `console.log` はESLintで禁止。必要なログは `console.warn` または `console.error` を使う。
 
