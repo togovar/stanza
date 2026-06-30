@@ -2,48 +2,20 @@ import Stanza from "togostanza/stanza";
 
 import { CLINICAL_SIGNIFICANCE } from "@/lib/constants";
 import { rowSpanize } from "@/lib/table";
+import type {
+  TogoVarApiResponse,
+  DiseaseCondition,
+} from "@/lib/types";
 
 // ============================================================
-// 型定義
+// このスタンザ固有の型定義
 // ============================================================
-
-/** MGeND API レスポンスのトップレベル構造 */
-interface MGeNDApiResponse {
-  data: MGeNDVariantData[];
-}
-
-/** バリアントごとのデータ（有意性情報と外部リンクを含む） */
-interface MGeNDVariantData {
-  significance: SignificanceEntry[];
-  external_link: {
-    mgend: MGeNDExternalLink[];
-  };
-}
-
-/** 臨床有意性エントリ（ソース・疾患条件・解釈を含む） */
-interface SignificanceEntry {
-  source: string;
-  conditions: DiseaseCondition[];
-  interpretations: string[];
-}
-
-/** 疾患条件（MedGenコードと疾患名） */
-interface DiseaseCondition {
-  name?: string;
-  medgen?: string;
-}
-
-/** MGeND外部リンク情報 */
-interface MGeNDExternalLink {
-  title: string;
-  xref: string;
-}
 
 /** テンプレートへ渡す1行分の表示データ */
 interface ConditionRow {
   /** MGeNDエントリのタイトル */
   title: string;
-  /** MGeNDエントリの外部参照ID */
+  /** MGeNDエントリの外部参照URL */
   xref: string;
   /** 疾患名のHTML（リンク付きまたはプレーンテキスト） */
   conditionHtml: string;
@@ -92,11 +64,12 @@ function buildConditionHtml(condition: DiseaseCondition): string {
  * APIレスポンスからMGeNDソースの条件行を抽出し、整形して返す。
  * 疾患条件がない場合は "others" 行として扱う。
  */
-function buildConditionRows(apiResponse: MGeNDApiResponse): ConditionRow[] {
+function buildConditionRows(apiResponse: TogoVarApiResponse): ConditionRow[] {
   const conditionRows: ConditionRow[] = [];
 
   apiResponse.data.forEach((variantData) => {
-    const mgendLink = variantData.external_link.mgend[0];
+    const mgendLink = variantData.external_links.mgend?.[0];
+    if (!mgendLink) return;
 
     variantData.significance.forEach((significanceEntry) => {
       if (significanceEntry.source !== "mgend") return;
@@ -198,7 +171,7 @@ export default class VariantMGeND extends Stanza {
         throw new Error(`${dataUrl} returned status ${response.status}`);
       }
 
-      const apiResponse: MGeNDApiResponse = await response.json();
+      const apiResponse: TogoVarApiResponse = await response.json();
 
       this.renderTemplate({
         template: "stanza.html.hbs",
