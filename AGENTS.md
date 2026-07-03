@@ -21,15 +21,15 @@
 
 ## 技術スタック
 
-| レイヤー | 技術 |
-| --- | --- |
-| stanza基盤 | Togostanza 3.x |
+| レイヤー       | 技術                                     |
+| -------------- | ---------------------------------------- |
+| stanza基盤     | Togostanza 3.x                           |
 | フロントエンド | JavaScript / TypeScript / Web Components |
-| テンプレート | Handlebars (`*.html.hbs`) |
-| スタイル | SCSS |
-| 可視化・表 | d3 / d3-hierarchy / jQuery / DataTables |
-| 共通処理 | `lib/` と `assets/css/` |
-| パッケージ | npm / yarn |
+| テンプレート   | Handlebars (`*.html.hbs`)                |
+| スタイル       | SCSS                                     |
+| 可視化・表     | d3 / d3-hierarchy / jQuery / DataTables  |
+| 共通処理       | `lib/` と `assets/css/`                  |
+| パッケージ     | npm / yarn                               |
 
 - Node.js は `package.json` の `engines.node` に従い、現在は `20.19.x` 前提。
 - READMEでは yarn が案内されているが、`package-lock.json` と npm scripts も存在する。作業時は既存のロックファイルとユーザー指定を優先する。
@@ -112,8 +112,11 @@
 
 ## API / データ方針
 
+- 開発方針として、データはできるだけRDFで統合する。新規stanzaやAPI選定に迷う場合はsparqlist（RDF/SPARQL経由）を優先し、安易にTogoVar検索API（Elasticsearchベース）へ統一しない。
+- `variant-frequency`, `variant-mgend`, `gene-mgend`, `disease-mgend`, `gene-protein-structure` などバリアント関連の一部stanzaがTogoVar検索API（`data-url`、`tgv_id` など）を使っているのは例外的な歴史的経緯。バリアントデータ量が多く、RDFストア（virtuoso）では検索性能が出ないため、やむを得ずElasticsearchで実装されたREST APIを使っている。この理由を理解せずに他stanzaもTogoVar APIへ統一する変更は提案・実施しない。
 - SPARQListを使うstanzaでは、既存の `this.params?.sparqlist || "/sparqlist"` のようなベースURL指定に合わせる。
 - TogoVar検索APIを使うstanzaでは、`data-url`、`assembly`、`tgv_id` など `metadata.json` のパラメータと実装を同期させる。
+- sparqlistのクエリ本体（`github.com/togovar/sparqlist`）はこのリポジトリの範囲外で、直接編集する権限運用にはなっていない。開発はfork（`github.com/PENQEinc/togovar-sparqlist`）で行い、`togovar/sparqlist` の `develop` へPRを出す運用（このリポジトリ自身のorigin/upstream構成と同じ）。sparqlist側のクエリ追加・修正が必要な場合は、この作業では対応不可と判断し、ユーザーに別リポジトリでの対応を依頼する（運用手順は `README.md` を参照）。
 - APIレスポンスの表示整形は、重複実装する前に `lib/display.ts` と `lib/frequency.ts` を確認する。
 - dataset、consequence、variant type、prediction labelなどのマスタ値は `lib/constants.js` を確認する。
 - 頻度表示は `buildFrequencyDisplay()` と `buildFrequencyMarkerState()` の既存ロジックを優先し、stanza間で表示仕様がずれないようにする。

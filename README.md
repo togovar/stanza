@@ -119,6 +119,29 @@ togostanza-build.mjs
 - `variant-summary`
 - `variant-transcript`
 
+## 関連リポジトリとの開発フロー
+
+このリポジトリの一部stanzaはsparqlist（`github.com/togovar/sparqlist`）やTogoVarフロントエンド（`github.com/togovar/togovar`）と連携します。それぞれ別リポジトリで、sparqlistの画面から直接クエリを編集する運用にはなっていません。変更が必要な場合は以下のフローに従います。
+
+### togovar/sparqlist
+
+このリポジトリ（`nbdc-forked-togovar-stanza`）と同じく、`github.com/togovar/sparqlist` は `github.com/PENQEinc/togovar-sparqlist` としてforkして開発します。
+
+1. `PENQEinc/togovar-sparqlist` をローカルにgit cloneし、`upstream` に `togovar/sparqlist` を設定する（このリポジトリの `origin`/`upstream` 構成と同様）。
+2. `develop` を最新化した上でfeature branchを作成し、変更をcommitする。
+3. `PENQEinc/togovar-sparqlist` のfeature branchから `togovar/sparqlist` の `develop` へPRを出す（Assigneesにバックエンド担当を指定すると通知が届く）。
+4. バックエンド担当がmergeとstagingへのdeployを行う。
+
+通常の開発では、featureが完成した時点で以下いずれかの方法でバックエンド担当にstagingへの反映を依頼します。
+
+- fork上のfeature branchから `togovar/sparqlist` の `develop` へPRを出し（Assigneesにバックエンド担当を指定）、コメントやSlackなどでstagingへの反映を依頼する（推奨）。
+- fork上の `develop` を最新化してからPRを出し、Slackなどでstagingへの反映を依頼する。
+
+### togovar/togovar（フロントエンド）
+
+- 通常: `feature` → `staging` へPRを出す（Assignee: バックエンド担当）。
+- hotfix（本番を至急修正したい場合）: `master` からbranchしたfeature branchで変更し、`master` へPRを出す。マージとdeployはバックエンド担当が行う。hotfixのcommitは、開発者側の変更とconflictしないよう、原則バックエンド担当が`develop`へmergeする（機能に影響しない部分はすぐには`develop`へmergeされないこともある）。
+
 ## コントリビュータ向けメモ
 
 - 複数stanzaで共有する表示ロジックは `lib/` に置きます。TogoVar検索APIのレスポンス型など複数stanzaで使うTypeScript型は `lib/types.ts` に定義しています。
