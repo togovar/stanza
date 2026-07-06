@@ -10,8 +10,6 @@ main {
 
     // max-content で各 dt 列をラベルの最大幅に自動調整する。
     // 固定px だと "HGNC/Approved symbol" のような長いラベルが溢れるため。
-    // max-content で各 dt 列をラベルの最大幅に自動調整する。
-    // 固定px だと "HGNC/Approved symbol" のような長いラベルが溢れるため。
     grid-template-columns: max-content 1fr max-content 1fr;
 
     // column-gap を使うと列間が空白トラックになり border-bottom が途切れる。
