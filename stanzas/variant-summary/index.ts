@@ -1,9 +1,12 @@
 import Stanza from "togostanza/stanza";
-import { unwrapValueFromBinding } from "togostanza/utils";
 
 import * as display from "@/lib/display";
 import { ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
-import type { SparqlistStanzaParams } from "@/lib/types";
+import { buildSparqlistApiUrl, fetchSparqlBindings } from "@/lib/sparqlist";
+import type {
+  SparqlistStanzaParams,
+  SparqlistTemplateRenderParams,
+} from "@/lib/types";
 
 // ============================================================
 // 型定義
@@ -61,62 +64,11 @@ interface GeneDisplayData {
 }
 
 /** renderTemplate に渡すパラメータ全体。エラー時は result を持たない。 */
-interface TemplateRenderParams {
-  params: SparqlistStanzaParams;
-  result?: VariantSummaryDisplayData;
+interface TemplateRenderParams
+  extends SparqlistTemplateRenderParams<VariantSummaryDisplayData> {
   /** 遺伝子情報。バリアントが遺伝子領域外の場合は undefined。 */
   gene?: GeneDisplayData;
-  error?: {
-    message: string;
-  };
 }
-
-// ============================================================
-// URL 組み立て
-// ============================================================
-
-/**
- * SPARQList の variant_summary エンドポイント URL を組み立てる。
- * URLSearchParams でクエリをエスケープする。
- */
-const buildVariantSummaryApiUrl = ({
-  sparqlist,
-  tgv_id,
-}: SparqlistStanzaParams): string => {
-  if (!sparqlist) {
-    throw new Error("sparqlist parameter is required");
-  }
-
-  const queryString = new URLSearchParams({
-    tgv_id: String(tgv_id ?? ""),
-  }).toString();
-
-  return `${sparqlist}/api/variant_summary?${queryString}`;
-};
-
-// ============================================================
-// API 取得
-// ============================================================
-
-/**
- * variant_summary エンドポイントからバリアント基本情報を取得する。
- * HTTP エラーは Error を throw して呼び出し元でハンドリングする。
- */
-const fetchVariantSummaryFromApi = async (
-  apiUrl: string,
-): Promise<VariantSummarySparqlBinding[]> => {
-  const response = await fetch(apiUrl, {
-    method: "GET",
-    headers: { Accept: "application/json" },
-  });
-
-  if (!response.ok) {
-    throw new Error(`${apiUrl} returns status ${response.status}`);
-  }
-
-  const json = await response.json();
-  return unwrapValueFromBinding(json) as VariantSummarySparqlBinding[];
-};
 
 // ============================================================
 // データ変換（バインディング → 表示データ）
@@ -187,8 +139,9 @@ export default class VariantSummary extends Stanza {
     const templateParams: TemplateRenderParams = { params };
 
     try {
-      const summaryApiUrl = buildVariantSummaryApiUrl(params);
-      const bindings = await fetchVariantSummaryFromApi(summaryApiUrl);
+      const summaryApiUrl = buildSparqlistApiUrl("variant_summary", params);
+      const bindings =
+        await fetchSparqlBindings<VariantSummarySparqlBinding>(summaryApiUrl);
       const firstBinding = bindings[0];
       if (firstBinding) {
         templateParams.result =

@@ -9,6 +9,15 @@ export interface SparqlistStanzaParams {
   tgv_id?: string;
 }
 
+/** SPARQList を叩く stanza が renderTemplate へ渡す共通パラメータ形。エラー時は result を持たない。 */
+export interface SparqlistTemplateRenderParams<TResult> {
+  params: SparqlistStanzaParams;
+  result?: TResult;
+  error?: {
+    message: string;
+  };
+}
+
 /** 疾患条件（MedGenコードと疾患名） */
 export interface DiseaseCondition {
   name?: string;

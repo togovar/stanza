@@ -1,10 +1,13 @@
 import Stanza from "togostanza/stanza";
-import { unwrapValueFromBinding } from "togostanza/utils";
 
 import { alphaMissense, polyphen, sift } from "@/lib/display";
 import { ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
+import { buildSparqlistApiUrl, fetchSparqlBindings } from "@/lib/sparqlist";
 import type { NumericInput } from "@/lib/frequency";
-import type { SparqlistStanzaParams } from "@/lib/types";
+import type {
+  SparqlistStanzaParams,
+  SparqlistTemplateRenderParams,
+} from "@/lib/types";
 
 // ============================================================
 // 型定義
@@ -64,13 +67,9 @@ interface TranscriptDisplayRow
 }
 
 /** renderTemplate に渡すパラメータ全体。エラー時は result を持たない。 */
-interface TemplateRenderParams {
-  params: SparqlistStanzaParams;
-  result?: TranscriptDisplayRow[];
-  error?: {
-    message: string;
-  };
-}
+type TemplateRenderParams = SparqlistTemplateRenderParams<
+  TranscriptDisplayRow[]
+>;
 
 // ============================================================
 // 定数
@@ -81,52 +80,6 @@ interface TemplateRenderParams {
  * `enst_id` と連結してトランスクリプトのリンクURLを生成する。
  */
 const ENSEMBL_IDENTIFIER_BASE_URL = "http://identifiers.org/ensembl/";
-
-// ============================================================
-// URL 組み立て / API 取得
-// ============================================================
-
-/**
- * SPARQList の variant_transcript エンドポイント URL を組み立てる。
- * URLSearchParams でクエリをエスケープすることで、tgv_id に特殊文字が入っても安全。
- */
-const buildSparqlistApiUrl = ({
-  sparqlist,
-  tgv_id,
-}: SparqlistStanzaParams): string => {
-  if (!sparqlist) {
-    throw new Error("sparqlist parameter is required");
-  }
-
-  const queryString = new URLSearchParams({
-    tgv_id: String(tgv_id ?? ""),
-  }).toString();
-
-  return `${sparqlist}/api/variant_transcript?${queryString}`;
-};
-
-/**
- * SPARQList からトランスクリプトデータを取得してバインディング配列を返す。
- * HTTP エラーは Error を throw し、呼び出し元の render() でまとめてハンドリングする。
- * fetch をここに分離することで、render() 本体にエラー分岐を持ち込まずに済む。
- */
-const fetchTranscriptDataFromApi = async (
-  apiUrl: string,
-): Promise<TranscriptSparqlBinding[]> => {
-  const response = await fetch(apiUrl, {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`${apiUrl} returns status ${response.status}`);
-  }
-
-  const json = await response.json();
-  return unwrapValueFromBinding(json) as TranscriptSparqlBinding[];
-};
 
 // ============================================================
 // データ変換（バインディング → 表示行）
@@ -212,8 +165,9 @@ export default class VariantTranscript extends Stanza {
     const templateParams: TemplateRenderParams = { params };
 
     try {
-      const apiUrl = buildSparqlistApiUrl(params);
-      const sparqlBindings = await fetchTranscriptDataFromApi(apiUrl);
+      const apiUrl = buildSparqlistApiUrl("variant_transcript", params);
+      const sparqlBindings =
+        await fetchSparqlBindings<TranscriptSparqlBinding>(apiUrl);
       templateParams.result = sparqlBindings.map(convertBindingToDisplayRow);
     } catch (error) {
       templateParams.error = {

@@ -1,19 +1,13 @@
 import Stanza from "togostanza/stanza";
-import { unwrapValueFromBinding } from "togostanza/utils";
 
 import { CLINICAL_SIGNIFICANCE, REVIEW_STATUS, ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
+import { buildSparqlistApiUrl, fetchSparqlBindings } from "@/lib/sparqlist";
 import { rowSpanize } from "@/lib/table";
+import type { SparqlistStanzaParams } from "@/lib/types";
 
 // ============================================================
 // 型定義
 // ============================================================
-
-/** SPARQListが返すSPARQL JSONフォーマット全体 */
-interface SparqlJsonResponse {
-  results?: {
-    bindings?: Array<Record<string, { value?: string }>>;
-  };
-}
 
 /**
  * unwrapValueFromBinding後の生バインディング。
@@ -93,25 +87,11 @@ export default class VariantClinVar extends Stanza {
     let templateParams: { result: ClinVarRow[] } | { error: { message: string } };
 
     try {
-      if (!this.params?.sparqlist) {
-        throw new Error("sparqlist parameter is required");
-      }
-
-      const sparqlistUrl = this.params.sparqlist.concat(
-        `/api/variant_clinvar?tgv_id=${this.params.tgv_id}`
+      const apiUrl = buildSparqlistApiUrl(
+        "variant_clinvar",
+        this.params as SparqlistStanzaParams,
       );
-
-      const response = await fetch(sparqlistUrl, {
-        method: "GET",
-        headers: { Accept: "application/json" },
-      });
-
-      if (!response.ok) {
-        throw new Error(`${sparqlistUrl} returned status ${response.status}`);
-      }
-
-      const json: SparqlJsonResponse = await response.json();
-      const rawBindings = unwrapValueFromBinding(json) as ClinVarRawBinding[];
+      const rawBindings = await fetchSparqlBindings<ClinVarRawBinding>(apiUrl);
 
       templateParams = { result: rawBindings.map(buildClinVarRow) };
     } catch (e) {
