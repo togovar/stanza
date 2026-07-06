@@ -2,10 +2,12 @@ import Stanza from 'togostanza/stanza';
 
 import * as d3 from 'd3';
 
+import {ROBOTO_CONDENSED_CSS_URL} from '@/lib/constants';
+
 export default class GeneProteinBrowser extends Stanza {
   async render() {
 
-    this.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
+    this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
     this.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Mono:200,400,500,600");
     
     this.renderTemplate(

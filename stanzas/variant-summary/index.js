@@ -1,12 +1,12 @@
 import Stanza from "togostanza/stanza";
-import {grouping, unwrapValueFromBinding} from "togostanza/utils";
+import {unwrapValueFromBinding} from "togostanza/utils";
 
-import uniq from "@/lib/uniq";
 import * as display from "@/lib/display";
+import {ROBOTO_CONDENSED_CSS_URL} from "@/lib/constants";
 
 export default class VariantSummary extends Stanza {
   async render() {
-    this.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
+    this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
     const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/variant_summary?tgv_id=${this.params.tgv_id}`);
 
@@ -25,8 +25,7 @@ export default class VariantSummary extends Stanza {
       let binding = bindings[0];
 
       if (binding) {
-        [binding.chr, binding.assembly] = binding.reference.split("/").slice(-2);
-
+        Object.assign(binding, display.referenceToChrAssembly(binding.reference));
         Object.assign(binding, display.refAlt(binding.ref, binding.alt));
       }
 

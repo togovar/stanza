@@ -1,6 +1,6 @@
 import Stanza from "togostanza/stanza";
 import { hierarchy } from "d3-hierarchy";
-import { DATASETS } from "@/lib/constants";
+import { DATASETS, ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
 import {
   buildFrequencyDisplay,
   buildFrequencyMarkerState,
@@ -120,9 +120,7 @@ export default class VariantFrequency extends Stanza {
 
   async render() {
     // フォントの読み込み
-    this.importWebFontCSS(
-      "https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900",
-    );
+    this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
     // データセットアイコン用フォント
     this.importWebFontCSS(
       new URL("./assets/fontello.css", import.meta.url).href,
