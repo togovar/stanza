@@ -119,6 +119,13 @@ togostanza-build.mjs
 - `variant-summary`
 - `variant-transcript`
 
+## このリポジトリのブランチ運用
+
+- featureブランチは `staging` から作成します。
+- 変更が完成したら `staging` へPRを出します。レビューは社内の別担当者に依頼します。
+- `staging` への反映（マージ）は弊社の判断で行います。
+- `master` への反映は、お客さん（TogoVar側）から依頼があったタイミングで行います。実際のdeployはバックエンド担当に依頼します。
+
 ## 関連リポジトリとの開発フロー
 
 このリポジトリの一部stanzaはsparqlist（`github.com/togovar/sparqlist`）やTogoVarフロントエンド（`github.com/togovar/togovar`）と連携します。それぞれ別リポジトリで、sparqlistの画面から直接クエリを編集する運用にはなっていません。変更が必要な場合は以下のフローに従います。
