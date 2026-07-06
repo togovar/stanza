@@ -1,5 +1,6 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { S as Selection, r as root } from './transform-ddf65f5a.js';
+import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-e5a261c0.js';
 
 function select(selector) {
   return typeof selector === "string"
@@ -10,7 +11,7 @@ function select(selector) {
 class GeneProteinBrowser extends Stanza {
   async render() {
 
-    this.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
+    this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
     this.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Mono:200,400,500,600");
     
     this.renderTemplate(

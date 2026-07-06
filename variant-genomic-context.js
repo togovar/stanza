@@ -1,5 +1,8 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { u as unwrapValueFromBinding } from './utils-97dc77a0.js';
+import { r as referenceToChrAssembly } from './display-ee766017.js';
+import './constants-e5a261c0.js';
+import './frequency-9d3406e7.js';
 
 class VariantSummary extends Stanza {
   async render() {
@@ -22,7 +25,7 @@ class VariantSummary extends Stanza {
         return {error: {message: `Failed to obtain genomic position for ${this.params.tgv_id}`}};
       }
 
-      const chr = binding.reference.split("/").slice(-2)[0];
+      const { chr } = referenceToChrAssembly(binding.reference);
       const from = parseInt(binding.position);
       const to = from + Math.max(binding.ref.length - 1, 0);
       const range = parseInt(this.params.margin) || 50;
@@ -75,7 +78,7 @@ var metadata = {
 	"stanza:parameter": [
 	{
 		"stanza:key": "tgv_id",
-		"stanza:example": "tgv132831",
+		"stanza:example": "tgv219804",
 		"stanza:description": "TogoVar ID",
 		"stanza:required": true
 	},

@@ -1,11 +1,11 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
-import { t as transformRecord } from './display-1b5adb7a.js';
-import './constants-f43484af.js';
+import { t as transformRecord } from './display-ee766017.js';
+import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-e5a261c0.js';
 import './frequency-9d3406e7.js';
 
 class VariantSummary extends Stanza {
   async render() {
-    this.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
+    this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
     const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/variant_other_alternative_alleles?tgv_id=${this.params.tgv_id}`);
 

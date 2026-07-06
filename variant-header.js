@@ -1,10 +1,11 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { u as unwrapValueFromBinding } from './utils-97dc77a0.js';
 import { u as uniq } from './uniq-f80b7f40.js';
+import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-e5a261c0.js';
 
 class VariantHeader extends Stanza {
   async render() {
-    this.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
+    this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
     const sparqlist = (this.params.sparqlist || "/sparqlist").concat(`/api/tgv2rs?tgv_id=${this.params.tgv_id}`);
 

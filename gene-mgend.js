@@ -1,10 +1,10 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
-import { C as CLINICAL_SIGNIFICANCE } from './constants-f43484af.js';
+import { R as ROBOTO_CONDENSED_CSS_URL, C as CLINICAL_SIGNIFICANCE } from './constants-e5a261c0.js';
 import { r as rowSpanize } from './table-1f1dea97.js';
 
 class GeneMGeND extends Stanza {
   async render() {
-    this.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
+    this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
     const { "data-url": dataURL, term } = this.params;
 

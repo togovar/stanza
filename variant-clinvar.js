@@ -1,11 +1,11 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { u as unwrapValueFromBinding } from './utils-97dc77a0.js';
-import { R as REVIEW_STATUS, C as CLINICAL_SIGNIFICANCE } from './constants-f43484af.js';
+import { R as ROBOTO_CONDENSED_CSS_URL, a as REVIEW_STATUS, C as CLINICAL_SIGNIFICANCE } from './constants-e5a261c0.js';
 import { r as rowSpanize } from './table-1f1dea97.js';
 
 class VariantSummary extends Stanza {
   async render() {
-    this.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
+    this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
     const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/variant_clinvar?tgv_id=${this.params.tgv_id}`);
 

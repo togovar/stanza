@@ -1,4 +1,4 @@
-import { e as ensureAllDatasets, S as SO, a as CONSEQUENCE, A as ALPHAMISSENSE, b as SIFT, P as POLYPHEN } from './constants-f43484af.js';
+import { e as ensureAllDatasets, S as SO, b as CONSEQUENCE, A as ALPHAMISSENSE, c as SIFT, P as POLYPHEN } from './constants-e5a261c0.js';
 import { b as buildFrequencyMarkerState, a as buildFrequencyDisplay } from './frequency-9d3406e7.js';
 
 const floatFormatter = (digits) => {
@@ -28,6 +28,17 @@ const refAlt = (ref, alt) => {
         ref_length: refLength,
         alt_length: altLength,
     };
+};
+/**
+ * reference URI の末尾2セグメントから染色体名とアセンブリ名を取り出す。
+ * 例: "http://identifiers.org/hco/1/GRCh38" → { chr: "1", assembly: "GRCh38" }
+ */
+const referenceToChrAssembly = (referenceUri) => {
+    if (!referenceUri) {
+        return {};
+    }
+    const [chr, assembly] = referenceUri.split("/").slice(-2);
+    return { chr, assembly };
 };
 const variantType = (accession) => ({
     type: SO[String(accession)]?.label || "Unknown",
@@ -128,5 +139,5 @@ const transformRecord = (record, assembly) => {
     return record;
 };
 
-export { alphaMissense as a, polyphen as p, refAlt as r, sift as s, transformRecord as t };
-//# sourceMappingURL=display-1b5adb7a.js.map
+export { refAlt as a, alphaMissense as b, polyphen as p, referenceToChrAssembly as r, sift as s, transformRecord as t };
+//# sourceMappingURL=display-ee766017.js.map

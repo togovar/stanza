@@ -1,12 +1,12 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { u as unwrapValueFromBinding } from './utils-97dc77a0.js';
-import { r as refAlt } from './display-1b5adb7a.js';
-import './constants-f43484af.js';
+import { r as referenceToChrAssembly, a as refAlt } from './display-ee766017.js';
+import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-e5a261c0.js';
 import './frequency-9d3406e7.js';
 
 class VariantSummary extends Stanza {
   async render() {
-    this.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
+    this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
     const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/variant_summary?tgv_id=${this.params.tgv_id}`);
 
@@ -25,8 +25,7 @@ class VariantSummary extends Stanza {
       let binding = bindings[0];
 
       if (binding) {
-        [binding.chr, binding.assembly] = binding.reference.split("/").slice(-2);
-
+        Object.assign(binding, referenceToChrAssembly(binding.reference));
         Object.assign(binding, refAlt(binding.ref, binding.alt));
       }
 

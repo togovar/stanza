@@ -1,12 +1,12 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { u as unwrapValueFromBinding } from './utils-97dc77a0.js';
-import { a as alphaMissense, s as sift, p as polyphen } from './display-1b5adb7a.js';
-import './constants-f43484af.js';
+import { b as alphaMissense, s as sift, p as polyphen } from './display-ee766017.js';
+import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-e5a261c0.js';
 import './frequency-9d3406e7.js';
 
 class VariantTranscript extends Stanza {
   async render() {
-    this.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
+    this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
     const sparqlist = (this.params.sparqlist || "/sparqlist").concat(`/api/variant_transcript?tgv_id=${this.params.tgv_id}`);
 

@@ -1,3 +1,7 @@
+// TogoVar標準フォント。複数stanzaでimportWebFontCSSに渡す共通URL。
+const ROBOTO_CONDENSED_CSS_URL =
+  "https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900";
+
 const DATASETS = [
   {
     "value": "gem_j_wga",
@@ -1350,5 +1354,5 @@ const POLYPHEN = {
   },
 };
 
-export { ALPHAMISSENSE as A, CLINICAL_SIGNIFICANCE as C, DATASETS as D, POLYPHEN as P, REVIEW_STATUS as R, SO as S, CONSEQUENCE as a, SIFT as b, ensureAllDatasets as e };
-//# sourceMappingURL=constants-f43484af.js.map
+export { ALPHAMISSENSE as A, CLINICAL_SIGNIFICANCE as C, DATASETS as D, POLYPHEN as P, ROBOTO_CONDENSED_CSS_URL as R, SO as S, REVIEW_STATUS as a, CONSEQUENCE as b, SIFT as c, ensureAllDatasets as e };
+//# sourceMappingURL=constants-e5a261c0.js.map
