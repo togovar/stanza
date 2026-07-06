@@ -15,10 +15,6 @@ import type {
 /**
  * variant_summary API のバインディングローデータ。
  * reference フィールドは "…/chr/assembly" 形式の URI で、表示前に分解が必要。
- *
- * 検証用: variant_summary の SPARQL が gene/hgnc/symbol/approved_name も
- * 直接返すようになった fix/variant_summary ブランチに合わせて追加している。
- * このブランチがマージされるまでの暫定対応。
  */
 interface VariantSummarySparqlBinding {
   /** 染色体・アセンブリを含む参照ゲノムURI（例: "http://identifiers.org/hco/1/GRCh38"） */
@@ -99,9 +95,6 @@ const convertSummaryBindingToDisplayData = (
 
 /**
  * variant_summary バインディングから遺伝子表示データを組み立てる。
- *
- * 検証用: gene/hgnc/symbol/approved_name が variant_summary の結果に
- * 直接含まれるようになった fix/variant_summary ブランチに合わせている。
  * バリアントが遺伝子領域外の場合は symbol 等が undefined になるため、
  * その場合は表示データなし（undefined）として扱う。
  */
@@ -126,9 +119,8 @@ const convertSummaryBindingToGeneDisplayData = (
 export default class VariantSummary extends Stanza {
   /**
    * Togostanza フレームワークが描画ごとに呼び出すエントリーポイント。
-   *
-   * 検証用: variant_summary の結果に gene/hgnc/symbol/approved_name も
-   * 含まれる fix/variant_summary ブランチに合わせ、1回の fetch のみ行う。
+   * variant_summary の結果に gene/hgnc/symbol/approved_name も含まれるため、
+   * 1回の fetch のみで済ませている。
    */
   async render(): Promise<void> {
     // フォントは描画前に非同期ロード開始しておく（ロード完了を待たず続行する）
