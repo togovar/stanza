@@ -1,10 +1,11 @@
 import Stanza from "togostanza/stanza";
 
 import {transformRecord} from "@/lib/display";
+import {ROBOTO_CONDENSED_CSS_URL} from "@/lib/constants";
 
 export default class VariantSummary extends Stanza {
   async render() {
-    this.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
+    this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
     const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/variant_other_alternative_alleles?tgv_id=${this.params.tgv_id}`)
 

@@ -1,9 +1,11 @@
 import Stanza from "togostanza/stanza";
 import {grouping, unwrapValueFromBinding} from "togostanza/utils";
 
+import {ROBOTO_CONDENSED_CSS_URL} from "@/lib/constants";
+
 export default class VariantGene extends Stanza {
   async render() {
-    this.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
+    this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
     const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/variant_gene?tgv_id=${this.params.tgv_id}`);
 

@@ -82,6 +82,21 @@ export const refAlt = (
   };
 };
 
+/**
+ * reference URI の末尾2セグメントから染色体名とアセンブリ名を取り出す。
+ * 例: "http://identifiers.org/hco/1/GRCh38" → { chr: "1", assembly: "GRCh38" }
+ */
+export const referenceToChrAssembly = (
+  referenceUri?: string,
+): { chr?: string; assembly?: string } => {
+  if (!referenceUri) {
+    return {};
+  }
+
+  const [chr, assembly] = referenceUri.split("/").slice(-2);
+  return { chr, assembly };
+};
+
 export const variantType = (accession?: string): { type: string } => ({
   type: (SO as LabelMap)[String(accession)]?.label || "Unknown",
 });
