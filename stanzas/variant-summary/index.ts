@@ -1,7 +1,6 @@
 import Stanza from "togostanza/stanza";
 
 import * as display from "@/lib/display";
-import { DEFAULT_SPARQLIST_BASE_URL } from "@/lib/sparqlist";
 
 // ============================================================
 // 型定義
@@ -31,6 +30,10 @@ interface SparqlJsonResponse {
 /**
  * variant_summary API のバインディングローデータ。
  * reference フィールドは "…/chr/assembly" 形式の URI で、表示前に分解が必要。
+ *
+ * 検証用: variant_summary の SPARQL が gene/hgnc/symbol/approved_name も
+ * 直接返すようになった fix/variant_summary ブランチに合わせて追加している。
+ * このブランチがマージされるまでの暫定対応。
  */
 interface VariantSummarySparqlBinding {
   /** 染色体・アセンブリを含む参照ゲノムURI（例: "http://identifiers.org/hco/1/GRCh38"） */
@@ -39,29 +42,21 @@ interface VariantSummarySparqlBinding {
   position?: string;
   ref?: string;
   alt?: string;
-}
-
-/**
- * variant_gene API のバインディングローデータ。
- * 同一遺伝子の synonym ごとに1行返るため、複数行の束をまとめて変換する。
- */
-interface GeneApiSparqlBinding {
-  variant?: string;
   gene?: string; // Ensembl 遺伝子 URI
   hgnc?: string; // "http://identifiers.org/hgnc/{id}" 形式のURI。リンクに直接使える。
   symbol?: string; // HGNC 承認シンボル（例: "PLEKHG5"）
   approved_name?: string; // HGNC 承認名（例: "pleckstrin homology and RhoGEF..."）
-  synonym?: string; // 別名（バインディングが synonym 数だけ繰り返される）
 }
 
 /**
  * Handlebars テンプレートへ渡す variant_summary の表示データ。
  * reference URI を分解した chr / assembly を追加し、
  * ref / alt は表示用に整形済みの値に差し替えてある。
+ * gene/hgnc/symbol/approved_name は GeneDisplayData 側で扱うため除外する。
  */
 interface VariantSummaryDisplayData extends Omit<
   VariantSummarySparqlBinding,
-  "reference"
+  "reference" | "gene" | "hgnc" | "symbol" | "approved_name"
 > {
   chr?: string;
   assembly?: string;
@@ -87,7 +82,7 @@ interface GeneDisplayData {
 interface TemplateRenderParams {
   params: StanzaInputParams;
   result?: VariantSummaryDisplayData;
-  /** 遺伝子情報。variant_gene API が空を返した場合は undefined。 */
+  /** 遺伝子情報。バリアントが遺伝子領域外の場合は undefined。 */
   gene?: GeneDisplayData;
   error?: {
     message: string;
@@ -135,28 +130,15 @@ const buildVariantSummaryApiUrl = ({
   sparqlist,
   tgv_id,
 }: StanzaInputParams): string => {
-  const baseUrl = sparqlist || DEFAULT_SPARQLIST_BASE_URL;
+  if (!sparqlist) {
+    throw new Error("sparqlist parameter is required");
+  }
+
   const queryString = new URLSearchParams({
     tgv_id: String(tgv_id ?? ""),
   }).toString();
 
-  return `${baseUrl}/api/variant_summary?${queryString}`;
-};
-
-/**
- * SPARQList の variant_gene エンドポイント URL を組み立てる。
- * variant_summary と同じ tgv_id パラメータで遺伝子情報を取得する。
- */
-const buildVariantGeneApiUrl = ({
-  sparqlist,
-  tgv_id,
-}: StanzaInputParams): string => {
-  const baseUrl = sparqlist || DEFAULT_SPARQLIST_BASE_URL;
-  const queryString = new URLSearchParams({
-    tgv_id: String(tgv_id ?? ""),
-  }).toString();
-
-  return `${baseUrl}/api/variant_gene?${queryString}`;
+  return `${sparqlist}/api/variant_summary?${queryString}`;
 };
 
 // ============================================================
@@ -181,27 +163,6 @@ const fetchVariantSummaryFromApi = async (
 
   const sparqlResponse = (await response.json()) as SparqlJsonResponse;
   return unwrapSparqlResponse<VariantSummarySparqlBinding>(sparqlResponse);
-};
-
-/**
- * variant_gene エンドポイントから遺伝子情報を取得する。
- * バリアントが遺伝子領域外にある場合は空配列が返る。
- * HTTP エラーは Error を throw して呼び出し元でハンドリングする。
- */
-const fetchVariantGeneFromApi = async (
-  apiUrl: string,
-): Promise<GeneApiSparqlBinding[]> => {
-  const response = await fetch(apiUrl, {
-    method: "GET",
-    headers: { Accept: "application/json" },
-  });
-
-  if (!response.ok) {
-    throw new Error(`${apiUrl} returns status ${response.status}`);
-  }
-
-  const sparqlResponse = (await response.json()) as SparqlJsonResponse;
-  return unwrapSparqlResponse<GeneApiSparqlBinding>(sparqlResponse);
 };
 
 // ============================================================
@@ -249,24 +210,24 @@ const convertSummaryBindingToDisplayData = (
 };
 
 /**
- * variant_gene のバインディング配列から遺伝子表示データを組み立てる。
+ * variant_summary バインディングから遺伝子表示データを組み立てる。
  *
- * 同一遺伝子について synonym ごとに1行返るため、先頭バインディングの値を代表値として使う。
- * バリアントが複数遺伝子にまたがる場合でも、サマリー表示では先頭遺伝子のみ表示する。
- * 詳細は variant-gene stanza を参照。
+ * 検証用: gene/hgnc/symbol/approved_name が variant_summary の結果に
+ * 直接含まれるようになった fix/variant_summary ブランチに合わせている。
+ * バリアントが遺伝子領域外の場合は symbol 等が undefined になるため、
+ * その場合は表示データなし（undefined）として扱う。
  */
-const convertGeneBindingsToDisplayData = (
-  bindings: GeneApiSparqlBinding[],
+const convertSummaryBindingToGeneDisplayData = (
+  binding: VariantSummarySparqlBinding,
 ): GeneDisplayData | undefined => {
-  const firstBinding = bindings[0];
-  if (!firstBinding) {
+  if (!binding.symbol) {
     return undefined;
   }
 
   return {
-    symbol: firstBinding.symbol,
-    hgnc_url: firstBinding.hgnc, // identifiers.org URI はそのままリンク href に使える
-    approved_name: firstBinding.approved_name,
+    symbol: binding.symbol,
+    hgnc_url: binding.hgnc, // identifiers.org URI はそのままリンク href に使える
+    approved_name: binding.approved_name,
   };
 };
 
@@ -277,46 +238,33 @@ const convertGeneBindingsToDisplayData = (
 export default class VariantSummary extends Stanza {
   /**
    * Togostanza フレームワークが描画ごとに呼び出すエントリーポイント。
-   * variant_summary と variant_gene の2つの API を並列取得して描画する。
-   * 遺伝子取得が失敗してもバリアント基本情報は表示できるよう、
-   * Promise.allSettled で独立してエラーハンドリングする。
+   *
+   * 検証用: variant_summary の結果に gene/hgnc/symbol/approved_name も
+   * 含まれる fix/variant_summary ブランチに合わせ、1回の fetch のみ行う。
    */
   async render(): Promise<void> {
     // フォントは描画前に非同期ロード開始しておく（ロード完了を待たず続行する）
     this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
     const params = this.params as StanzaInputParams;
-    const summaryApiUrl = buildVariantSummaryApiUrl(params);
-    const geneApiUrl = buildVariantGeneApiUrl(params);
-
-    // 2つの API を並列取得。一方が失敗しても他方の表示を妨げない。
-    const [summaryOutcome, geneOutcome] = await Promise.allSettled([
-      fetchVariantSummaryFromApi(summaryApiUrl),
-      fetchVariantGeneFromApi(geneApiUrl),
-    ]);
 
     const templateParams: TemplateRenderParams = { params };
 
-    if (summaryOutcome.status === "fulfilled") {
-      const firstBinding = summaryOutcome.value[0];
+    try {
+      const summaryApiUrl = buildVariantSummaryApiUrl(params);
+      const bindings = await fetchVariantSummaryFromApi(summaryApiUrl);
+      const firstBinding = bindings[0];
       if (firstBinding) {
         templateParams.result =
           convertSummaryBindingToDisplayData(firstBinding);
+        templateParams.gene =
+          convertSummaryBindingToGeneDisplayData(firstBinding);
       }
-    } else {
+    } catch (reason) {
       templateParams.error = {
-        message:
-          summaryOutcome.reason instanceof Error
-            ? summaryOutcome.reason.message
-            : String(summaryOutcome.reason),
+        message: reason instanceof Error ? reason.message : String(reason),
       };
     }
-
-    if (geneOutcome.status === "fulfilled") {
-      // 空配列の場合は undefined が返り、テンプレートの {{#if gene}} が false になる
-      templateParams.gene = convertGeneBindingsToDisplayData(geneOutcome.value);
-    }
-    // 遺伝子取得失敗はサイレントに無視（サマリー表示には必須ではないため）
 
     this.renderTemplate({
       template: "stanza.html.hbs",

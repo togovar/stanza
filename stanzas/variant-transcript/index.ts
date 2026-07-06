@@ -2,7 +2,6 @@ import Stanza from "togostanza/stanza";
 
 import { alphaMissense, polyphen, sift } from "@/lib/display";
 import type { NumericInput } from "@/lib/frequency";
-import { DEFAULT_SPARQLIST_BASE_URL } from "@/lib/sparqlist";
 
 // ============================================================
 // 型定義
@@ -117,12 +116,15 @@ const buildSparqlistApiUrl = ({
   sparqlist,
   tgv_id,
 }: StanzaInputParams): string => {
-  const baseUrl = sparqlist || DEFAULT_SPARQLIST_BASE_URL;
+  if (!sparqlist) {
+    throw new Error("sparqlist parameter is required");
+  }
+
   const queryString = new URLSearchParams({
     tgv_id: String(tgv_id ?? ""),
   }).toString();
 
-  return `${baseUrl}/api/variant_transcript?${queryString}`;
+  return `${sparqlist}/api/variant_transcript?${queryString}`;
 };
 
 /**
@@ -246,12 +248,12 @@ export default class VariantTranscript extends Stanza {
     this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
     const params = this.params as StanzaInputParams;
-    const apiUrl = buildSparqlistApiUrl(params);
 
     // 初期状態は params のみ。取得成功時に result、失敗時に error を追加する
     const templateParams: TemplateRenderParams = { params };
 
     try {
+      const apiUrl = buildSparqlistApiUrl(params);
       const sparqlBindings = await fetchTranscriptDataFromApi(apiUrl);
       templateParams.result = sparqlBindings.map(convertBindingToDisplayRow);
     } catch (error) {

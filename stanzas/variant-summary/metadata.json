@@ -23,9 +23,9 @@
     },
     {
       "stanza:key": "sparqlist",
-      "stanza:example": "https://grch38.togovar.org/sparqlist",
-      "stanza:description": "SPARQList URL",
-      "stanza:required": false
+      "stanza:example": "http://localhost:3000",
+      "stanza:description": "SPARQList URL (required; no trailing /sparqlist). Example currently points to a local dev server for testing the unmerged fix/variant_summary branch — revert to the production URL once that sparqlist PR is merged.",
+      "stanza:required": true
     }
   ],
   "stanza:about-link-placement": "bottom-right",

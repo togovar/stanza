@@ -24,8 +24,8 @@
     {
       "stanza:key": "sparqlist",
       "stanza:example": "https://grch38.togovar.org/sparqlist",
-      "stanza:description": "SPARQList URL",
-      "stanza:required": false
+      "stanza:description": "SPARQList URL (required)",
+      "stanza:required": true
     }
   ],
   "stanza:about-link-placement": "bottom-right",
