@@ -3,7 +3,10 @@ import Stanza from "togostanza/stanza";
 import { CLINICAL_SIGNIFICANCE, REVIEW_STATUS, ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
 import { buildSparqlistApiUrl, fetchSparqlBindings } from "@/lib/sparqlist";
 import { rowSpanize } from "@/lib/table";
-import type { SparqlistStanzaParams } from "@/lib/types";
+import type {
+  SparqlistStanzaParams,
+  SparqlistTemplateRenderParams,
+} from "@/lib/types";
 
 // ============================================================
 // 型定義
@@ -44,9 +47,12 @@ interface ClinVarRow {
   last_evaluated: string | undefined;
   condition: {
     label: string | undefined;
-    url: string;
+    url: string | undefined;
   };
 }
+
+/** renderTemplate に渡すパラメータ全体。エラー時は result を持たない。 */
+type TemplateRenderParams = SparqlistTemplateRenderParams<ClinVarRow[]>;
 
 // ============================================================
 // ヘルパー関数
@@ -71,7 +77,10 @@ function buildClinVarRow(rawBinding: ClinVarRawBinding): ClinVarRow {
     last_evaluated: rawBinding.last_evaluated,
     condition: {
       label: rawBinding.condition,
-      url: `https://identifiers.org/medgen:${rawBinding.medgen}`,
+      // medgen が無い疾患名では identifiers.org へのリンクを生成しない(壊れたURLを避ける)
+      url: rawBinding.medgen
+        ? `https://identifiers.org/medgen:${rawBinding.medgen}`
+        : undefined,
     },
   };
 }
@@ -84,27 +93,24 @@ export default class VariantClinVar extends Stanza {
   async render() {
     this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
-    let templateParams: { result: ClinVarRow[] } | { error: { message: string } };
+    const params = this.params as SparqlistStanzaParams;
+    const templateParams: TemplateRenderParams = { params };
 
     try {
-      const apiUrl = buildSparqlistApiUrl(
-        "variant_clinvar",
-        this.params as SparqlistStanzaParams,
-      );
+      const apiUrl = buildSparqlistApiUrl("variant_clinvar", params);
       const rawBindings = await fetchSparqlBindings<ClinVarRawBinding>(apiUrl);
 
-      templateParams = { result: rawBindings.map(buildClinVarRow) };
+      templateParams.result = rawBindings.map(buildClinVarRow);
     } catch (e) {
       console.error(e);
-      templateParams = { error: { message: (e as Error).message } };
+      templateParams.error = {
+        message: e instanceof Error ? e.message : String(e),
+      };
     }
 
     this.renderTemplate({
       template: "stanza.html.hbs",
-      parameters: {
-        params: this.params,
-        ...templateParams,
-      },
+      parameters: templateParams,
     });
 
     // テーブルの連続する同一セルを結合（rowspan処理）

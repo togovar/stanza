@@ -43,7 +43,11 @@
             {{last_evaluated}}
           </td>
           <td class="condition rowspan-ignore">
-            <a href="{{condition.url}}">{{condition.label}}</a>
+            {{#if condition.url}}
+              <a href="{{condition.url}}">{{condition.label}}</a>
+            {{else}}
+              {{condition.label}}
+            {{/if}}
           </td>
         </tr>
       {{else}}

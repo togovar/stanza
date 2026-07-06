@@ -148,6 +148,7 @@ export default class VariantSummary extends Stanza {
       templateParams.gene =
         convertSummaryBindingToGeneDisplayData(firstBinding);
     } catch (reason) {
+      console.error(reason);
       templateParams.error = {
         message: reason instanceof Error ? reason.message : String(reason),
       };
