@@ -140,6 +140,11 @@ export default class VariantSummary extends Stanza {
           convertSummaryBindingToDisplayData(firstBinding);
         templateParams.gene =
           convertSummaryBindingToGeneDisplayData(firstBinding);
+      } else {
+        // tgv_id に該当するバインディングがない場合は空表示にせず、明示的にエラーを出す
+        templateParams.error = {
+          message: `Variant not found for ${params.tgv_id}`,
+        };
       }
     } catch (reason) {
       templateParams.error = {
