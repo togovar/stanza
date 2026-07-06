@@ -2,7 +2,11 @@ import Stanza from "togostanza/stanza";
 
 import * as display from "@/lib/display";
 import { ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
-import { buildSparqlistApiUrl, fetchSparqlBindings } from "@/lib/sparqlist";
+import {
+  buildSparqlistApiUrl,
+  fetchSparqlBindings,
+  requireFirstBinding,
+} from "@/lib/sparqlist";
 import type {
   SparqlistStanzaParams,
   SparqlistTemplateRenderParams,
@@ -134,18 +138,15 @@ export default class VariantSummary extends Stanza {
       const summaryApiUrl = buildSparqlistApiUrl("variant_summary", params);
       const bindings =
         await fetchSparqlBindings<VariantSummarySparqlBinding>(summaryApiUrl);
-      const firstBinding = bindings[0];
-      if (firstBinding) {
-        templateParams.result =
-          convertSummaryBindingToDisplayData(firstBinding);
-        templateParams.gene =
-          convertSummaryBindingToGeneDisplayData(firstBinding);
-      } else {
-        // tgv_id に該当するバインディングがない場合は空表示にせず、明示的にエラーを出す
-        templateParams.error = {
-          message: `Variant not found for ${params.tgv_id}`,
-        };
-      }
+      const firstBinding = requireFirstBinding(
+        bindings,
+        `Variant not found for ${params.tgv_id}`,
+      );
+
+      templateParams.result =
+        convertSummaryBindingToDisplayData(firstBinding);
+      templateParams.gene =
+        convertSummaryBindingToGeneDisplayData(firstBinding);
     } catch (reason) {
       templateParams.error = {
         message: reason instanceof Error ? reason.message : String(reason),

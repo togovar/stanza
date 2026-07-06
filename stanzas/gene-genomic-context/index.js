@@ -1,6 +1,8 @@
 import Stanza from "togostanza/stanza";
 import {unwrapValueFromBinding} from "togostanza/utils";
 
+import {requireFirstBinding} from "@/lib/sparqlist";
+
 export default class GeneJbrowse extends Stanza {
   async render() {
     const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/gene_genomic_context?hgnc_id=${this.params.hgnc_id}`);
@@ -16,11 +18,10 @@ export default class GeneJbrowse extends Stanza {
       }
       throw new Error(sparqlist + " returns status " + res.status);
     }).then(data => {
-      const binding = unwrapValueFromBinding(data)[0];
-
-      if (!binding) {
-        return {error: {message: `Failed to obtain genomic position for ${this.params.hgnc_id}`}};
-      }
+      const binding = requireFirstBinding(
+        unwrapValueFromBinding(data),
+        `Failed to obtain genomic position for ${this.params.hgnc_id}`,
+      );
 
       const chr = binding.chromosome;
       const start = parseInt(binding.start);

@@ -42,3 +42,21 @@ export const fetchSparqlBindings = async <T>(
   const json = await response.json();
   return unwrapValueFromBinding(json) as T[];
 };
+
+/**
+ * バインディング配列から該当する1件(先頭)を取り出す。
+ * 空の場合は notFoundMessage を持つ Error を throw する。
+ * こうすることで、該当データなしのケースも呼び出し元の catch へ合流させ、
+ * result・error のどちらもセットされない「空表示」を防ぐ。
+ */
+export const requireFirstBinding = <T>(
+  bindings: T[],
+  notFoundMessage: string,
+): T => {
+  const firstBinding = bindings[0];
+  if (!firstBinding) {
+    throw new Error(notFoundMessage);
+  }
+
+  return firstBinding;
+};

@@ -122,7 +122,7 @@
 - APIレスポンスの表示整形は、重複実装する前に `lib/display.ts` と `lib/frequency.ts` を確認する。
 - dataset、consequence、variant type、prediction labelなどのマスタ値は `lib/constants.js` を確認する。
 - 頻度表示は `buildFrequencyDisplay()` と `buildFrequencyMarkerState()` の既存ロジックを優先し、stanza間で表示仕様がずれないようにする。
-- 外部APIが空データを返す場合、表示崩れではなく「データなし」または空テーブルとして成立するか確認する。
+- 外部APIが空データを返す場合、表示崩れではなく「データなし」または空テーブルとして成立するか確認する。ただし「指定したID(`tgv_id`/`hgnc_id`など)に対応する1件のバインディングが存在しない」場合は、result・errorのどちらも未設定のまま空表示になっていないか必ず確認する(result/errorの両方が unset だと空の`<div>`だけが描画され、ユーザーに何も伝わらない)。この「先頭バインディングを取得し、無ければ通知する」処理は `lib/sparqlist.ts` の `requireFirstBinding(bindings, notFoundMessage)` に共通化されているので、新規・既存問わず優先して使う。複数件を扱うstanza(トランスクリプト一覧など)で結果が0件なのが正常な状態(例: 遺伝子領域外のバリアントで関連遺伝子が無い)の場合は、これを使わず空リスト・空テーブルのまま成立させてよい。
 
 ## コメント規約
 
