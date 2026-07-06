@@ -90,7 +90,7 @@ function buildClinVarRow(rawBinding: ClinVarRawBinding): ClinVarRow {
 // ============================================================
 
 export default class VariantClinVar extends Stanza {
-  async render() {
+  async render(): Promise<void> {
     this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
     const params = this.params as SparqlistStanzaParams;
