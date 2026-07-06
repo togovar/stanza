@@ -2,6 +2,7 @@ import Stanza from "togostanza/stanza";
 import { unwrapValueFromBinding } from "togostanza/utils";
 
 import * as display from "@/lib/display";
+import { ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
 import type { SparqlistStanzaParams } from "@/lib/types";
 
 // ============================================================
@@ -71,14 +72,6 @@ interface TemplateRenderParams {
 }
 
 // ============================================================
-// 定数
-// ============================================================
-
-/** TogoVar 標準フォント。stanza 初期化時に一度だけロード開始する。 */
-const ROBOTO_CONDENSED_CSS_URL =
-  "https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900";
-
-// ============================================================
 // URL 組み立て
 // ============================================================
 
@@ -130,23 +123,6 @@ const fetchVariantSummaryFromApi = async (
 // ============================================================
 
 /**
- * reference URI の末尾2セグメントから染色体名とアセンブリ名を取り出す。
- * 例: "http://identifiers.org/hco/1/GRCh38" → { chr: "1", assembly: "GRCh38" }
- */
-const extractChrAndAssemblyFromUri = (
-  referenceUri: string | undefined,
-): { chr?: string; assembly?: string } => {
-  if (!referenceUri) {
-    return {};
-  }
-
-  const segments = referenceUri.split("/");
-  const [assembly, chr] = segments.slice(-2).reverse();
-
-  return { chr, assembly };
-};
-
-/**
  * variant_summary バインディング1件をテンプレート表示データへ変換する。
  *
  * 変換内容:
@@ -160,7 +136,7 @@ const convertSummaryBindingToDisplayData = (
 
   const displayData: VariantSummaryDisplayData = {
     ...sharedFields,
-    ...extractChrAndAssemblyFromUri(reference),
+    ...display.referenceToChrAssembly(reference),
   };
 
   // ref / alt の長さが4文字を超える場合は "ACGT..." に省略する（display.refAlt の仕様）

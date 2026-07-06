@@ -2,6 +2,7 @@ import Stanza from "togostanza/stanza";
 import { unwrapValueFromBinding } from "togostanza/utils";
 
 import { alphaMissense, polyphen, sift } from "@/lib/display";
+import { ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
 import type { NumericInput } from "@/lib/frequency";
 import type { SparqlistStanzaParams } from "@/lib/types";
 
@@ -80,10 +81,6 @@ interface TemplateRenderParams {
  * `enst_id` と連結してトランスクリプトのリンクURLを生成する。
  */
 const ENSEMBL_IDENTIFIER_BASE_URL = "http://identifiers.org/ensembl/";
-
-/** TogoVar 標準フォント。stanza 初期化時に一度だけロード開始する。 */
-const ROBOTO_CONDENSED_CSS_URL =
-  "https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900";
 
 // ============================================================
 // URL 組み立て / API 取得

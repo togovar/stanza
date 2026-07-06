@@ -1,7 +1,7 @@
 import Stanza from "togostanza/stanza";
 import { unwrapValueFromBinding } from "togostanza/utils";
 
-import { CLINICAL_SIGNIFICANCE, REVIEW_STATUS } from "@/lib/constants";
+import { CLINICAL_SIGNIFICANCE, REVIEW_STATUS, ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
 import { rowSpanize } from "@/lib/table";
 
 // ============================================================
@@ -88,9 +88,7 @@ function buildClinVarRow(rawBinding: ClinVarRawBinding): ClinVarRow {
 
 export default class VariantClinVar extends Stanza {
   async render() {
-    this.importWebFontCSS(
-      "https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900"
-    );
+    this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
     let templateParams: { result: ClinVarRow[] } | { error: { message: string } };
 

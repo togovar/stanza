@@ -1,6 +1,6 @@
 import Stanza from "togostanza/stanza";
 
-import { CLINICAL_SIGNIFICANCE } from "@/lib/constants";
+import { CLINICAL_SIGNIFICANCE, ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
 import { rowSpanize } from "@/lib/table";
 import type {
   TogoVarApiResponse,
@@ -151,9 +151,7 @@ function groupAndSortByInterpretation(conditionRows: ConditionRow[]): ConditionR
 
 export default class VariantMGeND extends Stanza {
   async render() {
-    this.importWebFontCSS(
-      "https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900"
-    );
+    this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
     const { "data-url": dataUrl, tgv_id } = this.params;
 
