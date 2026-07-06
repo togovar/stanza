@@ -3,6 +3,12 @@
 // variant-mgend / disease-mgend / gene-mgend 等で共有する
 // ============================================================
 
+/** SPARQList を叩く stanza が共通して受け取る入力パラメータ。 */
+export interface SparqlistStanzaParams {
+  sparqlist?: string;
+  tgv_id?: string;
+}
+
 /** 疾患条件（MedGenコードと疾患名） */
 export interface DiseaseCondition {
   name?: string;

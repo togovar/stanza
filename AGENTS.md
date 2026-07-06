@@ -64,7 +64,7 @@
 - 新しいstanzaは原則 `stanzas/<stanza-id>/` に閉じる。複数stanzaで使う処理だけ `lib/` や `assets/css/components/` に移す。
 - stanza専用の見た目は各 `style.scss` に書く。複数stanzaで再利用する表・バッジ・頻度表示などは `assets/css/components/` を確認してから追加する。
 - 共通データ変換や表示整形は既存の `lib/display.ts`, `lib/frequency.ts`, `lib/constants.js`, `lib/table.js`, `lib/floating-popover.ts` を優先する。
-- 複数stanzaで共有するTypeScript型定義は `lib/types.ts` に置く。TogoVar検索APIのレスポンス型（`TogoVarApiResponse`, `VariantData`, `SignificanceEntry`, `DiseaseCondition`, `ExternalLinks` など）はここから import する。
+- 複数stanzaで共有するTypeScript型定義は `lib/types.ts` に置く。TogoVar検索APIのレスポンス型（`TogoVarApiResponse`, `VariantData`, `SignificanceEntry`, `DiseaseCondition`, `ExternalLinks` など）や、SPARQListを使うstanzaの入力パラメータ型（`SparqlistStanzaParams`）はここから import する。
 - `assets/vendor/` は同梱済みの外部ライブラリ置き場。新規追加は必要性、ライセンス、ビルドへの影響を確認する。
 - フォントやアイコンを参照する場合は、既存の `assets/fontello.*`, `assets/fontawesome-webfont.svg`, `assets/icons/` の使い方に合わせる。
 
@@ -114,7 +114,8 @@
 
 - 開発方針として、データはできるだけRDFで統合する。新規stanzaやAPI選定に迷う場合はsparqlist（RDF/SPARQL経由）を優先し、安易にTogoVar検索API（Elasticsearchベース）へ統一しない。
 - `variant-frequency`, `variant-mgend`, `gene-mgend`, `disease-mgend`, `gene-protein-structure` などバリアント関連の一部stanzaがTogoVar検索API（`data-url`、`tgv_id` など）を使っているのは例外的な歴史的経緯。バリアントデータ量が多く、RDFストア（virtuoso）では検索性能が出ないため、やむを得ずElasticsearchで実装されたREST APIを使っている。この理由を理解せずに他stanzaもTogoVar APIへ統一する変更は提案・実施しない。
-- SPARQListを使うstanzaでは、既存の `this.params?.sparqlist || "/sparqlist"` のようなベースURL指定に合わせる。
+- SPARQListを使うstanzaのベースURL指定には2パターンが存在する。多くの既存stanzaは `this.params?.sparqlist || "/sparqlist"` のように未指定時は相対パスにフォールバックする。一方 `variant-summary`/`variant-transcript`/`variant-clinvar` は `sparqlist` を必須化し、未指定なら `throw new Error("sparqlist parameter is required")` する方式に変更済み(暗黙のフォールバックだと埋め込み先の設定ミスに気づきにくいため)。既存stanzaを触る場合はそのstanzaの現在の方式を踏襲し、フォールバック方式を「間違い」として無断でどちらかへ書き換えない。
+- SPARQL JSONのbinding unwrap処理(`{ value: "..." }` ラッパーを剥がしてプレーンオブジェクト配列にする)は自作せず、`togostanza/utils` の `unwrapValueFromBinding`(型宣言は `types/togostanza-utils.d.ts`)を使う。
 - TogoVar検索APIを使うstanzaでは、`data-url`、`assembly`、`tgv_id` など `metadata.json` のパラメータと実装を同期させる。
 - sparqlistのクエリ本体（`github.com/togovar/sparqlist`）はこのリポジトリの範囲外で、直接編集する権限運用にはなっていない。開発はfork（`github.com/PENQEinc/togovar-sparqlist`）で行い、`togovar/sparqlist` の `develop` へPRを出す運用（このリポジトリ自身のorigin/upstream構成と同じ）。sparqlist側のクエリ追加・修正が必要な場合は、この作業では対応不可と判断し、ユーザーに別リポジトリでの対応を依頼する（運用手順は `README.md` を参照）。
 - APIレスポンスの表示整形は、重複実装する前に `lib/display.ts` と `lib/frequency.ts` を確認する。

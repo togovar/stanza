@@ -1,31 +1,12 @@
 import Stanza from "togostanza/stanza";
+import { unwrapValueFromBinding } from "togostanza/utils";
 
 import * as display from "@/lib/display";
+import type { SparqlistStanzaParams } from "@/lib/types";
 
 // ============================================================
 // 型定義
 // ============================================================
-
-/** stanza が受け取る入力パラメータ。sparqlist は省略可能でデフォルトURLにフォールバックする。 */
-interface StanzaInputParams {
-  sparqlist?: string;
-  tgv_id?: string;
-}
-
-/** SPARQList JSON レスポンスの各セルが持つ値ラッパー形式。 */
-interface SparqlCellValue {
-  value?: string;
-}
-
-/**
- * SPARQList が返す SPARQL JSON フォーマット全体。
- * 実データは `results.bindings` 配列に入る。
- */
-interface SparqlJsonResponse {
-  results?: {
-    bindings?: Array<Record<string, SparqlCellValue>>;
-  };
-}
 
 /**
  * variant_summary API のバインディングローデータ。
@@ -80,7 +61,7 @@ interface GeneDisplayData {
 
 /** renderTemplate に渡すパラメータ全体。エラー時は result を持たない。 */
 interface TemplateRenderParams {
-  params: StanzaInputParams;
+  params: SparqlistStanzaParams;
   result?: VariantSummaryDisplayData;
   /** 遺伝子情報。バリアントが遺伝子領域外の場合は undefined。 */
   gene?: GeneDisplayData;
@@ -98,27 +79,6 @@ const ROBOTO_CONDENSED_CSS_URL =
   "https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900";
 
 // ============================================================
-// 共通ユーティリティ
-// ============================================================
-
-/**
- * SPARQL JSON の `{ value: "..." }` ラッパーを剥がし、
- * フィールド名→値の単純なオブジェクト配列へ正規化する汎用関数。
- * 型パラメータで呼び出し側が期待する binding 型を指定する。
- */
-const unwrapSparqlResponse = <T>(response: SparqlJsonResponse): T[] => {
-  const bindings = response.results?.bindings ?? [];
-
-  return bindings.map((binding) => {
-    const unwrapped = Object.fromEntries(
-      Object.entries(binding).map(([key, cell]) => [key, cell.value]),
-    );
-
-    return unwrapped as T;
-  });
-};
-
-// ============================================================
 // URL 組み立て
 // ============================================================
 
@@ -129,7 +89,7 @@ const unwrapSparqlResponse = <T>(response: SparqlJsonResponse): T[] => {
 const buildVariantSummaryApiUrl = ({
   sparqlist,
   tgv_id,
-}: StanzaInputParams): string => {
+}: SparqlistStanzaParams): string => {
   if (!sparqlist) {
     throw new Error("sparqlist parameter is required");
   }
@@ -161,8 +121,8 @@ const fetchVariantSummaryFromApi = async (
     throw new Error(`${apiUrl} returns status ${response.status}`);
   }
 
-  const sparqlResponse = (await response.json()) as SparqlJsonResponse;
-  return unwrapSparqlResponse<VariantSummarySparqlBinding>(sparqlResponse);
+  const json = await response.json();
+  return unwrapValueFromBinding(json) as VariantSummarySparqlBinding[];
 };
 
 // ============================================================
@@ -246,7 +206,7 @@ export default class VariantSummary extends Stanza {
     // フォントは描画前に非同期ロード開始しておく（ロード完了を待たず続行する）
     this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
-    const params = this.params as StanzaInputParams;
+    const params = this.params as SparqlistStanzaParams;
 
     const templateParams: TemplateRenderParams = { params };
 

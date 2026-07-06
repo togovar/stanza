@@ -1,32 +1,13 @@
 import Stanza from "togostanza/stanza";
+import { unwrapValueFromBinding } from "togostanza/utils";
 
 import { alphaMissense, polyphen, sift } from "@/lib/display";
 import type { NumericInput } from "@/lib/frequency";
+import type { SparqlistStanzaParams } from "@/lib/types";
 
 // ============================================================
 // 型定義
 // ============================================================
-
-/** stanza が受け取る入力パラメータ。sparqlist は省略可能でデフォルトURLにフォールバックする。 */
-interface StanzaInputParams {
-  sparqlist?: string;
-  tgv_id?: string;
-}
-
-/** SPARQList JSON レスポンスの各セルが持つ値ラッパー形式。 */
-interface SparqlCellValue {
-  value?: string;
-}
-
-/**
- * SPARQList が返す SPARQL JSON フォーマット全体。
- * 実データは `results.bindings` 配列に入る。
- */
-interface SparqlJsonResponse {
-  results?: {
-    bindings?: Array<Record<string, SparqlCellValue>>;
-  };
-}
 
 /**
  * SPARQL バインディングをそのまま表すローデータ型。
@@ -83,7 +64,7 @@ interface TranscriptDisplayRow
 
 /** renderTemplate に渡すパラメータ全体。エラー時は result を持たない。 */
 interface TemplateRenderParams {
-  params: StanzaInputParams;
+  params: SparqlistStanzaParams;
   result?: TranscriptDisplayRow[];
   error?: {
     message: string;
@@ -115,7 +96,7 @@ const ROBOTO_CONDENSED_CSS_URL =
 const buildSparqlistApiUrl = ({
   sparqlist,
   tgv_id,
-}: StanzaInputParams): string => {
+}: SparqlistStanzaParams): string => {
   if (!sparqlist) {
     throw new Error("sparqlist parameter is required");
   }
@@ -125,25 +106,6 @@ const buildSparqlistApiUrl = ({
   }).toString();
 
   return `${sparqlist}/api/variant_transcript?${queryString}`;
-};
-
-/**
- * SPARQL JSON の `{ value: "..." }` ラッパーを剥がし、
- * フィールド名→値の単純なオブジェクト配列へ正規化する。
- * アプリコードとテンプレートがラッパー構造を意識しなくて済むようにここで吸収する。
- */
-const normalizeSparqlBindings = (
-  response: SparqlJsonResponse,
-): TranscriptSparqlBinding[] => {
-  const bindings = response.results?.bindings ?? [];
-
-  return bindings.map((binding) => {
-    const unwrapped = Object.fromEntries(
-      Object.entries(binding).map(([key, cell]) => [key, cell.value]),
-    );
-
-    return unwrapped as TranscriptSparqlBinding;
-  });
 };
 
 /**
@@ -165,8 +127,8 @@ const fetchTranscriptDataFromApi = async (
     throw new Error(`${apiUrl} returns status ${response.status}`);
   }
 
-  const sparqlResponse = (await response.json()) as SparqlJsonResponse;
-  return normalizeSparqlBindings(sparqlResponse);
+  const json = await response.json();
+  return unwrapValueFromBinding(json) as TranscriptSparqlBinding[];
 };
 
 // ============================================================
@@ -247,7 +209,7 @@ export default class VariantTranscript extends Stanza {
     // フォントは描画前に非同期ロード開始しておく（ロード完了を待たず続行する）
     this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
-    const params = this.params as StanzaInputParams;
+    const params = this.params as SparqlistStanzaParams;
 
     // 初期状態は params のみ。取得成功時に result、失敗時に error を追加する
     const templateParams: TemplateRenderParams = { params };
