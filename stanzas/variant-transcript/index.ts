@@ -2,6 +2,7 @@ import Stanza from "togostanza/stanza";
 
 import { alphaMissense, polyphen, sift } from "@/lib/display";
 import type { NumericInput } from "@/lib/frequency";
+import { DEFAULT_SPARQLIST_BASE_URL } from "@/lib/sparqlist";
 
 // ============================================================
 // 型定義
@@ -93,9 +94,6 @@ interface TemplateRenderParams {
 // ============================================================
 // 定数
 // ============================================================
-
-/** stanza パラメータに sparqlist が指定されていない場合のデフォルトベースURL。 */
-const DEFAULT_SPARQLIST_BASE_URL = "/sparqlist";
 
 /**
  * Ensembl Identifiers.org の URI プレフィックス。

@@ -1,6 +1,7 @@
 import Stanza from "togostanza/stanza";
 
 import * as display from "@/lib/display";
+import { DEFAULT_SPARQLIST_BASE_URL } from "@/lib/sparqlist";
 
 // ============================================================
 // 型定義
@@ -46,11 +47,11 @@ interface VariantSummarySparqlBinding {
  */
 interface GeneApiSparqlBinding {
   variant?: string;
-  gene?: string;         // Ensembl 遺伝子 URI
-  hgnc?: string;         // "http://identifiers.org/hgnc/{id}" 形式のURI。リンクに直接使える。
-  symbol?: string;       // HGNC 承認シンボル（例: "PLEKHG5"）
+  gene?: string; // Ensembl 遺伝子 URI
+  hgnc?: string; // "http://identifiers.org/hgnc/{id}" 形式のURI。リンクに直接使える。
+  symbol?: string; // HGNC 承認シンボル（例: "PLEKHG5"）
   approved_name?: string; // HGNC 承認名（例: "pleckstrin homology and RhoGEF..."）
-  synonym?: string;      // 別名（バインディングが synonym 数だけ繰り返される）
+  synonym?: string; // 別名（バインディングが synonym 数だけ繰り返される）
 }
 
 /**
@@ -58,8 +59,10 @@ interface GeneApiSparqlBinding {
  * reference URI を分解した chr / assembly を追加し、
  * ref / alt は表示用に整形済みの値に差し替えてある。
  */
-interface VariantSummaryDisplayData
-  extends Omit<VariantSummarySparqlBinding, "reference"> {
+interface VariantSummaryDisplayData extends Omit<
+  VariantSummarySparqlBinding,
+  "reference"
+> {
   chr?: string;
   assembly?: string;
   /** display.refAlt() が展開する表示用フィールド群 */
@@ -94,9 +97,6 @@ interface TemplateRenderParams {
 // ============================================================
 // 定数
 // ============================================================
-
-/** stanza パラメータに sparqlist が指定されていない場合のデフォルトベースURL。 */
-const DEFAULT_SPARQLIST_BASE_URL = "/sparqlist";
 
 /** TogoVar 標準フォント。stanza 初期化時に一度だけロード開始する。 */
 const ROBOTO_CONDENSED_CSS_URL =
@@ -300,7 +300,8 @@ export default class VariantSummary extends Stanza {
     if (summaryOutcome.status === "fulfilled") {
       const firstBinding = summaryOutcome.value[0];
       if (firstBinding) {
-        templateParams.result = convertSummaryBindingToDisplayData(firstBinding);
+        templateParams.result =
+          convertSummaryBindingToDisplayData(firstBinding);
       }
     } else {
       templateParams.error = {

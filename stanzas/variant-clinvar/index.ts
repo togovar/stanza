@@ -2,6 +2,7 @@ import Stanza from "togostanza/stanza";
 import { unwrapValueFromBinding } from "togostanza/utils";
 
 import { CLINICAL_SIGNIFICANCE, REVIEW_STATUS } from "@/lib/constants";
+import { DEFAULT_SPARQLIST_BASE_URL } from "@/lib/sparqlist";
 import { rowSpanize } from "@/lib/table";
 
 // ============================================================
@@ -92,7 +93,7 @@ export default class VariantClinVar extends Stanza {
       "https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900"
     );
 
-    const sparqlistUrl = (this.params?.sparqlist || "/sparqlist").concat(
+    const sparqlistUrl = (this.params?.sparqlist || DEFAULT_SPARQLIST_BASE_URL).concat(
       `/api/variant_clinvar?tgv_id=${this.params.tgv_id}`
     );
 
