@@ -1,6 +1,10 @@
 import Stanza from "togostanza/stanza";
 
-import { CLINICAL_SIGNIFICANCE, REVIEW_STATUS, ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
+import {
+  CLINICAL_SIGNIFICANCE,
+  REVIEW_STATUS,
+  ROBOTO_CONDENSED_CSS_URL,
+} from "@/lib/constants";
 import { buildSparqlistApiUrl, fetchSparqlBindings } from "@/lib/sparqlist";
 import { rowSpanize } from "@/lib/table";
 import type {
@@ -73,14 +77,14 @@ function buildClinVarRow(rawBinding: ClinVarRawBinding): ClinVarRow {
     rcv_stars: REVIEW_STATUS[rawBinding.rcv_review_status ?? ""]?.stars ?? 0,
     interpretation: rawBinding.interpretation,
     // 解釈ラベルを小文字に揃えてCLINICAL_SIGNIFICANCEのキーと照合する
-    significance_class: CLINICAL_SIGNIFICANCE[rawBinding.interpretation?.toLowerCase() ?? ""]?.key,
+    significance_class:
+      CLINICAL_SIGNIFICANCE[rawBinding.interpretation?.toLowerCase() ?? ""]
+        ?.key,
     last_evaluated: rawBinding.last_evaluated,
     condition: {
       label: rawBinding.condition,
-      // medgen が無い疾患名では identifiers.org へのリンクを生成しない(壊れたURLを避ける)
-      url: rawBinding.medgen
-        ? `https://identifiers.org/medgen:${rawBinding.medgen}`
-        : undefined,
+      // TogoVar内部の疾患ページへのリンク。medgen が無い疾患名ではリンクを生成しない。
+      url: rawBinding.medgen ? `/disease/${rawBinding.medgen}` : undefined,
     },
   };
 }
