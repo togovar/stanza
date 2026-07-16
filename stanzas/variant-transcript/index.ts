@@ -170,7 +170,6 @@ export default class VariantTranscript extends Stanza {
         await fetchSparqlBindings<TranscriptSparqlBinding>(apiUrl);
       templateParams.result = sparqlBindings.map(convertBindingToDisplayRow);
     } catch (error) {
-      console.error(error);
       templateParams.error = {
         message: error instanceof Error ? error.message : String(error),
       };

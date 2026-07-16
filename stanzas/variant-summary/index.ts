@@ -58,7 +58,7 @@ interface VariantSummaryDisplayData extends Omit<
  */
 interface GeneDisplayData {
   symbol?: string;
-  /** HGNC の identifiers.org URI。テンプレートでリンクの href に直接使える。 */
+  /** TogoVar内部の遺伝子ページへのリンク(`/gene/{hgnc_id}`)。テンプレートでリンクの href に直接使える。 */
   hgnc_url?: string;
   approved_name?: string;
 }
@@ -111,7 +111,8 @@ const convertSummaryBindingToGeneDisplayData = (
 
   return {
     symbol: binding.symbol,
-    hgnc_url: binding.hgnc, // identifiers.org URI はそのままリンク href に使える
+    // TogoVar内部の遺伝子ページへのリンク。hgnc は "http://identifiers.org/hgnc/{id}" 形式のURIなので末尾のIDを取り出す。
+    hgnc_url: binding.hgnc ? `/gene/${binding.hgnc.split("/").pop()}` : undefined,
     approved_name: binding.approved_name,
   };
 };
@@ -148,7 +149,6 @@ export default class VariantSummary extends Stanza {
       templateParams.gene =
         convertSummaryBindingToGeneDisplayData(firstBinding);
     } catch (reason) {
-      console.error(reason);
       templateParams.error = {
         message: reason instanceof Error ? reason.message : String(reason),
       };
