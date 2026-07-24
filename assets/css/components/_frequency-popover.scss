@@ -17,7 +17,7 @@ main {
       align-items: center;
       justify-content: center;
       padding: 0;
-      color: $COLOR_GRAY;
+      color: var(--color-gray);
       cursor: help;
       background-color: transparent;
       border: none;
@@ -224,7 +224,7 @@ main {
         padding: 2px 6px;
         font-weight: 700;
         line-height: 1.1;
-        color: $COLOR_BLACK;
+        color: var(--color-black);
         background-color: #f3f5f7;
         border-radius: 3px;
       }
@@ -236,10 +236,10 @@ main {
   }
 
   .filter-status-popover-panel {
-    --popover-bg-color: #{$COLOR_BLACK};
+    --popover-bg-color: var(--color-black);
     --popover-fg-color: white;
     --popover-border-color: white;
-    --popover-arrow-color: #{$COLOR_BLACK};
+    --popover-arrow-color: var(--color-black);
     --popover-arrow-filter: none;
 
     max-width: 24rem;
