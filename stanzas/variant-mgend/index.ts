@@ -25,24 +25,13 @@ interface ConditionRow {
   medgen?: string;
   /** 解釈分類コード（グループ化に使用） */
   interpretationClass: string;
-  /** 解釈ラベル（CLINICAL_SIGNIFICANCEのプロパティ名） */
+  /** 解釈ラベル（CLINICAL_SIGNIFICANCEのlabel） */
   interpretationLabel: string | null;
 }
 
 // ============================================================
 // ヘルパー関数
 // ============================================================
-
-/**
- * CLINICAL_SIGNIFICANCEのキー値からプロパティ名（ラベル）を返す。
- * 例: "P" → "pathogenic"
- */
-function findInterpretationLabel(interpretationKey: string): string | null {
-  const matchedEntry = Object.entries(CLINICAL_SIGNIFICANCE).find(
-    ([, value]) => value.key === interpretationKey
-  );
-  return matchedEntry ? matchedEntry[0] : null;
-}
 
 /**
  * 疾患条件のMedGenコードと名前からHTML文字列を生成する。
@@ -75,7 +64,8 @@ function buildConditionRows(apiResponse: TogoVarApiResponse): ConditionRow[] {
       if (significanceEntry.source !== "mgend") return;
 
       const interpretationClass = significanceEntry.interpretations[0];
-      const interpretationLabel = findInterpretationLabel(interpretationClass);
+      const interpretationLabel =
+        CLINICAL_SIGNIFICANCE[interpretationClass]?.label ?? null;
 
       // 疾患条件が紐づいていない場合は "others" として1行追加
       if (significanceEntry.conditions.length === 0) {

@@ -63,6 +63,21 @@ type TemplateRenderParams = SparqlistTemplateRenderParams<ClinVarRow[]>;
 // ============================================================
 
 /**
+ * ClinVarの解釈ラベル（例: "Pathogenic"）からCLINICAL_SIGNIFICANCEの
+ * 短いコード（例: "P"）を大文字小文字を無視して逆引きする。
+ */
+function findSignificanceClass(
+  interpretation: string | undefined
+): string | undefined {
+  if (!interpretation) return undefined;
+
+  const matchedEntry = Object.entries(CLINICAL_SIGNIFICANCE).find(
+    ([, value]) => value.label.toLowerCase() === interpretation.toLowerCase()
+  );
+  return matchedEntry?.[0];
+}
+
+/**
  * 生バインディングをテンプレート用の表示行に変換する。
  * 元のコードはバインディングを直接書き換えていたが、
  * 元データを保ちつつ新しいオブジェクトを返す形に改めた。
@@ -76,10 +91,7 @@ function buildClinVarRow(rawBinding: ClinVarRawBinding): ClinVarRow {
     rcv_review_status: rawBinding.rcv_review_status,
     rcv_stars: REVIEW_STATUS[rawBinding.rcv_review_status ?? ""]?.stars ?? 0,
     interpretation: rawBinding.interpretation,
-    // 解釈ラベルを小文字に揃えてCLINICAL_SIGNIFICANCEのキーと照合する
-    significance_class:
-      CLINICAL_SIGNIFICANCE[rawBinding.interpretation?.toLowerCase() ?? ""]
-        ?.key,
+    significance_class: findSignificanceClass(rawBinding.interpretation),
     last_evaluated: rawBinding.last_evaluated,
     condition: {
       label: rawBinding.condition,
