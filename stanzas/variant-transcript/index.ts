@@ -115,6 +115,11 @@ const createEnsemblTranscriptLink = (
  *
  * スコアの分類ロジックは lib/display に集約されているため、ここでは変換の順番と
  * Object.assign によるフィールド合成だけを担う。
+ *
+ * TODO: CADD (PHRED score) は表示列（テンプレート側 <th>CADD (PHRED score)</th>）を
+ * 先行して用意済みだが、ここでの取得・変換は未実装。TranscriptSparqlBinding に
+ * cadd フィールドを追加し、alphaMissense/sift/polyphen と同様に
+ * lib/display 側へ分類ロジックを追加した上で Object.assign する想定。
  */
 const convertBindingToDisplayRow = (
   binding: TranscriptSparqlBinding,

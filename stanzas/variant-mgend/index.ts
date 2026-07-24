@@ -174,6 +174,9 @@ export default class VariantMGeND extends Stanza {
         template: "stanza.html.hbs",
         parameters: {
           params: this.params,
+          error: {
+            message: error instanceof Error ? error.message : String(error),
+          },
         },
       });
     }

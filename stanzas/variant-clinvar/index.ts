@@ -63,16 +63,28 @@ type TemplateRenderParams = SparqlistTemplateRenderParams<ClinVarRow[]>;
 // ============================================================
 
 /**
+ * 大文字小文字と、区切り文字（アンダースコア/スペース）の揺れを吸収して比較できる形に正規化する。
+ * ClinVarの解釈テキストには "association_not found" のようにアンダースコアと
+ * スペースが混在する値があり、単純な toLowerCase() 比較だと label 側の
+ * "Association not found" と一致しないため、区切り文字も揃える。
+ */
+function normalizeInterpretationText(text: string): string {
+  return text.toLowerCase().replace(/[_\s]+/g, " ").trim();
+}
+
+/**
  * ClinVarの解釈ラベル（例: "Pathogenic"）からCLINICAL_SIGNIFICANCEの
- * 短いコード（例: "P"）を大文字小文字を無視して逆引きする。
+ * 短いコード（例: "P"）を逆引きする。
  */
 function findSignificanceClass(
   interpretation: string | undefined
 ): string | undefined {
   if (!interpretation) return undefined;
 
+  const normalizedInterpretation = normalizeInterpretationText(interpretation);
   const matchedEntry = Object.entries(CLINICAL_SIGNIFICANCE).find(
-    ([, value]) => value.label.toLowerCase() === interpretation.toLowerCase()
+    ([, value]) =>
+      normalizeInterpretationText(value.label) === normalizedInterpretation
   );
   return matchedEntry?.[0];
 }
