@@ -1,7 +1,5 @@
 @use "@/assets/css/common";
 @use "@/assets/css/components/frequency-popover";
-@use "@/assets/css/foundation/variables" as *;
-@use "sass:color";
 
 main {
   .variant-frequency-scroll {
@@ -220,11 +218,8 @@ main {
               margin-bottom: 4px;
               font-size: 12px;
               color: var(--color-black);
-              background-color: color.adjust(
-                $COLOR_SIGN_WARNING,
-                $lightness: 45%
-              );
-              border-color: color.adjust($COLOR_SIGN_WARNING, $lightness: -2%);
+              background-color: var(--color-sign-warning-light);
+              border-color: var(--color-sign-warning-dark);
               border-style: solid;
               border-width: 1px;
               border-radius: 4px;
@@ -235,7 +230,7 @@ main {
                 left: 6px;
                 margin-right: 4px;
                 font-family: FontAwesome;
-                color: color.adjust($COLOR_SIGN_WARNING, $lightness: -2%);
+                color: var(--color-sign-warning-dark);
                 content: var(--char-excramation-triangle);
                 transform: translateY(-50%);
               }

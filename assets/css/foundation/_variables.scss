@@ -11,6 +11,9 @@ $COLOR_SIGN_DANGEROUS: #ff5a54;
 :host {
   // color: brand
   --color-key: #{$COLOR_KEY};
+
+  // stanza固有、TogoVarフロント側の変数一覧には対応するトークンなし(focusのoutline用)
+  --color-key-light: #{color.adjust($COLOR_KEY, $lightness: 15%)};
   --color-key-dark1: #117f93;
   --color-key-dark2: #0f6272;
 
@@ -37,8 +40,14 @@ $COLOR_SIGN_DANGEROUS: #ff5a54;
   // color: clinical significance
   --color-sign-safe: #04af58;
   --color-sign-normal: #{$COLOR_SIGN_NORMAL};
+  --color-sign-normal-light: #{color.adjust($COLOR_SIGN_NORMAL, $lightness: 42%)};
+  --color-sign-normal-dark: #{color.adjust($COLOR_SIGN_NORMAL, $lightness: -2%)};
   --color-sign-warning: #{$COLOR_SIGN_WARNING};
+  --color-sign-warning-light: #{color.adjust($COLOR_SIGN_WARNING, $lightness: 45%)};
+  --color-sign-warning-dark: #{color.adjust($COLOR_SIGN_WARNING, $lightness: -2%)};
   --color-sign-dangerous: #{$COLOR_SIGN_DANGEROUS};
+  --color-sign-dangerous-light: #{color.adjust($COLOR_SIGN_DANGEROUS, $lightness: 30%)};
+  --color-sign-dangerous-dark: #{color.adjust($COLOR_SIGN_DANGEROUS, $lightness: -2%)};
   --color-sign-modifier: #c654ff;
   --color-sign-other: #9c8200;
   --color-sign-unknown: #bbba7e;

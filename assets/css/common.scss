@@ -1,13 +1,13 @@
 @charset "UTF-8";
-@use "foundation/variables" as *;
+@use "foundation/variables";
 @use "components/badge";
+@use "components/clinical-significance";
 @use "components/dataset-icon";
 @use "components/dataTable_wrapper";
 @use "components/frequency";
 @use "components/table";
 @use "components/variant-function";
 @use "components/within-sticky-table-header";
-@use "sass:color";
 
 main {
   font-family: "Roboto Condensed", sans-serif;
@@ -70,18 +70,18 @@ ul {
   border-radius: 4px;
 
   &.alert-danger {
-    background-color: color.adjust($COLOR_SIGN_DANGEROUS, $lightness: 30%);
-    border-color: color.adjust($COLOR_SIGN_DANGEROUS, $lightness: -2%);
+    background-color: var(--color-sign-dangerous-light);
+    border-color: var(--color-sign-dangerous-dark);
   }
 
   &.alert-warning {
-    background-color: color.adjust($COLOR_SIGN_WARNING, $lightness: 45%);
-    border-color: color.adjust($COLOR_SIGN_WARNING, $lightness: -2%);
+    background-color: var(--color-sign-warning-light);
+    border-color: var(--color-sign-warning-dark);
   }
 
   &.alert-info {
-    background-color: color.adjust($COLOR_SIGN_NORMAL, $lightness: 42%);
-    border-color: color.adjust($COLOR_SIGN_NORMAL, $lightness: -2%);
+    background-color: var(--color-sign-normal-light);
+    border-color: var(--color-sign-normal-dark);
   }
 }
 
@@ -230,140 +230,6 @@ ul {
 
   &[data-function="AMBIGUOUS"] {
     background-color: var(--color-sign-unknown);
-  }
-}
-
-.clinical-significance {
-  &::before {
-    display: inline-block;
-    width: 18px;
-    height: 18px;
-    margin-right: 3px;
-    font-size: 10px;
-    font-weight: bold;
-    line-height: 18px;
-    vertical-align: top;
-    text-align: center;
-    content: attr(data-sign) "";
-    border-style: solid;
-    border-width: 1px;
-    border-radius: 9px;
-  }
-
-  &[data-sign="P"]::before {
-    color: var(--color-sign-dangerous);
-    background-color: #ffeeed;
-    border-color: var(--color-sign-dangerous);
-  }
-
-  &[data-sign="LP"]::before {
-    color: var(--color-sign-warning);
-    background-color: #fff7e6;
-    border-color: var(--color-sign-warning);
-  }
-
-  &[data-sign="US"]::before {
-    color: var(--color-gray);
-    background-color: #eaeae9;
-    border-color: var(--color-gray);
-  }
-
-  &[data-sign="LB"]::before {
-    color: var(--color-sign-normal);
-    background-color: #f3f9e6;
-    border-color: var(--color-sign-normal);
-  }
-
-  &[data-sign="B"]::before {
-    color: var(--color-sign-safe);
-    background-color: #e5fbe7;
-    border-color: var(--color-sign-safe);
-  }
-
-  &[data-sign="CI"]::before {
-    color: var(--color-sign-modifier);
-    background-color: #f9edff;
-    border-color: var(--color-sign-modifier);
-  }
-
-  &[data-sign="DR"]::before,
-  &[data-sign="A"]::before,
-  &[data-sign="RF"]::before,
-  &[data-sign="PR"]::before,
-  &[data-sign="AF"]::before,
-  &[data-sign="O"]::before {
-    color: var(--color-sign-other);
-    background-color: #fff7cf;
-    border-color: var(--color-sign-other);
-  }
-
-  &[data-sign="NP"]::before,
-  &[data-sign="AN"]::before {
-    color: var(--color-black);
-    background-color: white;
-    border-color: var(--color-gray);
-  }
-}
-
-.clinical-significance-full {
-  padding: 0 7px;
-  font-size: 12px;
-  font-weight: bold;
-  border: 1px solid transparent;
-  border-radius: 8.5px;
-
-  &[data-sign="P"] {
-    color: var(--color-sign-dangerous);
-    background-color: #ffeeed;
-    border-color: var(--color-sign-dangerous);
-  }
-
-  &[data-sign="LP"] {
-    color: var(--color-sign-warning);
-    background-color: #fff7e6;
-    border-color: var(--color-sign-warning);
-  }
-
-  &[data-sign="US"] {
-    color: var(--color-gray);
-    background-color: #eaeae9;
-    border-color: var(--color-gray);
-  }
-
-  &[data-sign="LB"] {
-    color: var(--color-sign-normal);
-    background-color: #f3f9e6;
-    border-color: var(--color-sign-normal);
-  }
-
-  &[data-sign="B"] {
-    color: var(--color-sign-safe);
-    background-color: #e5fbe7;
-    border-color: var(--color-sign-safe);
-  }
-
-  &[data-sign="CI"] {
-    color: var(--color-sign-modifier);
-    background-color: #f9edff;
-    border-color: var(--color-sign-modifier);
-  }
-
-  &[data-sign="DR"],
-  &[data-sign="A"],
-  &[data-sign="RF"],
-  &[data-sign="PR"],
-  &[data-sign="AF"],
-  &[data-sign="O"] {
-    color: var(--color-sign-other);
-    background-color: #fff7cf;
-    border-color: var(--color-sign-other);
-  }
-
-  &[data-sign="NP"],
-  &[data-sign="AN"] {
-    color: var(--color-black);
-    background-color: white;
-    border-color: var(--color-gray);
   }
 }
 
