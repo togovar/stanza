@@ -39,18 +39,24 @@ $COLOR_SIGN_DANGEROUS: #ff5a54;
 
   // color: clinical significance
   --color-sign-safe: #04af58;
+  --color-sign-safe-light: #{color.adjust(#04af58, $lightness: 60%)};
   --color-sign-normal: #{$COLOR_SIGN_NORMAL};
   --color-sign-normal-light: #{color.adjust($COLOR_SIGN_NORMAL, $lightness: 42%)};
   --color-sign-normal-dark: #{color.adjust($COLOR_SIGN_NORMAL, $lightness: -2%)};
   --color-sign-warning: #{$COLOR_SIGN_WARNING};
   --color-sign-warning-light: #{color.adjust($COLOR_SIGN_WARNING, $lightness: 45%)};
   --color-sign-warning-dark: #{color.adjust($COLOR_SIGN_WARNING, $lightness: -2%)};
+  --color-sign-lowdangerous: #ff953c;
+  --color-sign-lowdangerous-light: #{color.adjust(#ff953c, $lightness: 28%)};
   --color-sign-dangerous: #{$COLOR_SIGN_DANGEROUS};
   --color-sign-dangerous-light: #{color.adjust($COLOR_SIGN_DANGEROUS, $lightness: 30%)};
   --color-sign-dangerous-dark: #{color.adjust($COLOR_SIGN_DANGEROUS, $lightness: -2%)};
   --color-sign-modifier: #c654ff;
+  --color-sign-modifier-light: #{color.adjust(#c654ff, $lightness: 30%)};
   --color-sign-other: #9c8200;
+  --color-sign-other-light: #{color.adjust(#9c8200, $lightness: 60%)};
   --color-sign-unknown: #bbba7e;
+  --color-sign-unknown-light: #{color.adjust(#bbba7e, $lightness: 35%)};
 
   // table (stanza固有、TogoVarフロント側の変数一覧には対応するトークンなし)
   --color-table-border: #dee2e6;
