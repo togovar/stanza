@@ -1,19 +1,9 @@
 // color.adjust() でコンパイル時に色を計算するためだけに使用
 @use "sass:color";
 
-// コンパイル時の color.adjust() が必要な箇所でのみ参照するSCSS変数。
-// それ以外は :host の CSS カスタムプロパティ(--color-*)を直接使うこと。
-$COLOR_KEY: #62d5d9;
-$COLOR_SIGN_NORMAL: #9dcf3a;
-$COLOR_SIGN_WARNING: #ffae00;
-$COLOR_SIGN_DANGEROUS: #ff5a54;
-
 :host {
-  // color: brand
-  --color-key: #{$COLOR_KEY};
-
   // stanza固有、TogoVarフロント側の変数一覧には対応するトークンなし(focusのoutline用)
-  --color-key-light: #{color.adjust($COLOR_KEY, $lightness: 15%)};
+  --color-key-light: #{color.adjust(#62d5d9, $lightness: 15%)};
   --color-key-dark1: #117f93;
   --color-key-dark2: #0f6272;
 
@@ -29,7 +19,7 @@ $COLOR_SIGN_DANGEROUS: #ff5a54;
   --color-mutation-alt: #ff6682;
 
   // color: datasets
-  --color-dataset-jga: #{$COLOR_KEY};
+  --color-dataset-jga: #62d5d9;
   --color-dataset-tommo: #ca678d;
   --color-dataset-hgvd: #005b80;
   --color-dataset-ncbn: #234b7c;
@@ -40,17 +30,17 @@ $COLOR_SIGN_DANGEROUS: #ff5a54;
   // color: clinical significance
   --color-sign-safe: #04af58;
   --color-sign-safe-light: #{color.adjust(#04af58, $lightness: 60%)};
-  --color-sign-normal: #{$COLOR_SIGN_NORMAL};
-  --color-sign-normal-light: #{color.adjust($COLOR_SIGN_NORMAL, $lightness: 42%)};
-  --color-sign-normal-dark: #{color.adjust($COLOR_SIGN_NORMAL, $lightness: -2%)};
-  --color-sign-warning: #{$COLOR_SIGN_WARNING};
-  --color-sign-warning-light: #{color.adjust($COLOR_SIGN_WARNING, $lightness: 45%)};
-  --color-sign-warning-dark: #{color.adjust($COLOR_SIGN_WARNING, $lightness: -2%)};
+  --color-sign-normal: #9dcf3a;
+  --color-sign-normal-light: #{color.adjust(#9dcf3a, $lightness: 42%)};
+  --color-sign-normal-dark: #{color.adjust(#9dcf3a, $lightness: -2%)};
+  --color-sign-warning: #ffae00;
+  --color-sign-warning-light: #{color.adjust(#ffae00, $lightness: 45%)};
+  --color-sign-warning-dark: #{color.adjust(#ffae00, $lightness: -2%)};
   --color-sign-lowdangerous: #ff953c;
   --color-sign-lowdangerous-light: #{color.adjust(#ff953c, $lightness: 28%)};
-  --color-sign-dangerous: #{$COLOR_SIGN_DANGEROUS};
-  --color-sign-dangerous-light: #{color.adjust($COLOR_SIGN_DANGEROUS, $lightness: 30%)};
-  --color-sign-dangerous-dark: #{color.adjust($COLOR_SIGN_DANGEROUS, $lightness: -2%)};
+  --color-sign-dangerous: #ff5a54;
+  --color-sign-dangerous-light: #{color.adjust(#ff5a54, $lightness: 30%)};
+  --color-sign-dangerous-dark: #{color.adjust(#ff5a54, $lightness: -2%)};
   --color-sign-modifier: #c654ff;
   --color-sign-modifier-light: #{color.adjust(#c654ff, $lightness: 30%)};
   --color-sign-other: #9c8200;
