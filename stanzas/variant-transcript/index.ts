@@ -1,6 +1,6 @@
 import Stanza from "togostanza/stanza";
 
-import { alphaMissense, polyphen, sift } from "@/lib/display";
+import { alphaMissense, caddPhred, polyphen, sift } from "@/lib/display";
 import { ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
 import { buildSparqlistApiUrl, fetchSparqlBindings } from "@/lib/sparqlist";
 import type { NumericInput } from "@/lib/frequency";
@@ -28,6 +28,7 @@ interface TranscriptSparqlBinding {
   consequence_label?: string;
   hgvs_c?: string;
   hgvs_p?: string;
+  cadd_phred?: NumericInput;
   alpha_missense?: NumericInput;
   sift?: NumericInput;
   polyphen?: NumericInput;
@@ -49,12 +50,20 @@ interface EnsemblTranscriptLink {
 interface TranscriptDisplayRow
   extends Omit<
     TranscriptSparqlBinding,
-    "transcript" | "consequence_label" | "alpha_missense" | "sift" | "polyphen"
+    | "transcript"
+    | "consequence_label"
+    | "cadd_phred"
+    | "alpha_missense"
+    | "sift"
+    | "polyphen"
   > {
   /** URIではなくラベルとリンクURLに変換済み */
   transcript: EnsemblTranscriptLink;
   /** カンマ区切り文字列から配列に変換済み（{{#each}} で扱いやすくするため） */
   consequence_label: string[];
+  cadd_phred?: string;
+  cadd_phred_class?: string;
+  cadd_phred_label?: string;
   alpha_missense?: string;
   alpha_missense_class?: string;
   alpha_missense_label?: string;
@@ -111,15 +120,11 @@ const createEnsemblTranscriptLink = (
  * 変換内容:
  * - transcript URI → EnsemblTranscriptLink（ラベル + URL）
  * - consequence_label カンマ区切り文字列 → string 配列
- * - AlphaMissense / SIFT / PolyPhen 生スコア → 表示文字列 + CSS クラス + ラベル
+ * - CADD (PHRED score) / AlphaMissense / SIFT / PolyPhen 生スコア
+ *   → 表示文字列 + CSS クラス + ラベル
  *
- * スコアの分類ロジックは lib/display に集約されているため、ここでは変換の順番と
+ * スコアの変換ロジックは lib/display に集約されているため、ここでは変換の順番と
  * Object.assign によるフィールド合成だけを担う。
- *
- * TODO: CADD (PHRED score) は表示列（テンプレート側 <th>CADD (PHRED score)</th>）を
- * 先行して用意済みだが、ここでの取得・変換は未実装。TranscriptSparqlBinding に
- * cadd フィールドを追加し、alphaMissense/sift/polyphen と同様に
- * lib/display 側へ分類ロジックを追加した上で Object.assign する想定。
  */
 const convertBindingToDisplayRow = (
   binding: TranscriptSparqlBinding,
@@ -128,6 +133,7 @@ const convertBindingToDisplayRow = (
   const {
     transcript: _transcriptUri,
     consequence_label: rawConsequenceLabel,
+    cadd_phred: caddPhredScore,
     alpha_missense: alphaMissenseScore,
     sift: siftScore,
     polyphen: polyphenScore,
@@ -142,7 +148,8 @@ const convertBindingToDisplayRow = (
       : [],
   };
 
-  // lib/display の共通関数でスコアを「表示値・CSS クラス・ラベル」の3フィールドへ展開する
+  // lib/display の共通関数でスコアを表示用フィールドへ展開する
+  Object.assign(displayRow, caddPhred(caddPhredScore));
   Object.assign(displayRow, alphaMissense(alphaMissenseScore));
   Object.assign(displayRow, sift(siftScore));
   Object.assign(displayRow, polyphen(polyphenScore));

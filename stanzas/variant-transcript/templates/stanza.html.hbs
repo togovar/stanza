@@ -9,9 +9,6 @@
         <th>Consequence type</th>
         <th>HGVS(cDNA)</th>
         <th>HGVS(Amino acid seq.)</th>
-        {{!-- CADD (PHRED score): 表示列は先行して用意しているが、
-              index.ts側でのCADDスコア取得・変換の実装はまだ行っていないため、
-              現時点ではこの列は常に空になる。実装予定。 --}}
         <th>CADD (PHRED score)</th>
         <th>AlphaMissense</th>
         <th>SIFT</th>
@@ -36,9 +33,8 @@
           <td class="cadd">
             <span
               class="variant-function"
-              data-function="{{cadd_class}}"
-            >{{cadd}}</span>
-            <span class="cadd-label">{{cadd_label}}</span>
+              data-function="{{cadd_phred_class}}"
+            >{{cadd_phred}}</span>
           </td>
           <td class="alphamissense">
             <span

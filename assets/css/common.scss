@@ -231,6 +231,18 @@ ul {
   &[data-function="AMBIGUOUS"] {
     background-color: var(--color-sign-unknown);
   }
+
+  &[data-function="CADD_HIGH"] {
+    background-color: var(--color-sign-dangerous);
+  }
+
+  &[data-function="CADD_MODERATE"] {
+    background-color: var(--color-sign-warning);
+  }
+
+  &[data-function="CADD_LOW"] {
+    background-color: var(--color-sign-safe);
+  }
 }
 
 .star-rating {
