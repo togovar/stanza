@@ -19,7 +19,13 @@
     <tbody>
       {{#each result}}
         <tr>
-          <td><a href="{{transcript.url}}">{{transcript.label}}</a></td>
+          <td>
+            {{#if transcript.url}}
+              <a href="{{transcript.url}}">{{transcript.label}}</a>
+            {{else}}
+              {{transcript.label}}
+            {{/if}}
+          </td>
           <td><a href="{{gene_xref}}">{{gene_symbol}}</a></td>
           <td>
             <ul class="no-bullet">
