@@ -5,11 +5,13 @@ import type { SparqlistStanzaParams } from "./types";
 /**
  * SPARQList の API エンドポイント URL を組み立てる。
  * sparqlist が未指定の場合は throw する(暗黙のフォールバックだと埋め込み側の設定ミスに気づきにくいため)。
- * URLSearchParams で tgv_id と追加パラメータをエスケープする。
+ * tgv_id と variant(VCF表記 CHROM-POS-REF-ALT) を両方クエリに含める。
+ * sparqlist側は tgv_id があればそれを優先し、無ければ variant で解決する(どちらも無ければエラー)。
+ * URLSearchParams で値と追加パラメータをエスケープする。
  */
 export const buildSparqlistApiUrl = (
   endpoint: string,
-  { sparqlist, tgv_id }: SparqlistStanzaParams,
+  { sparqlist, tgv_id, variant }: SparqlistStanzaParams,
   additionalParams: Record<string, string | undefined> = {},
 ): string => {
   if (!sparqlist) {
@@ -18,6 +20,7 @@ export const buildSparqlistApiUrl = (
 
   const queryParams = new URLSearchParams({
     tgv_id: String(tgv_id ?? ""),
+    variant: String(variant ?? ""),
   });
   Object.entries(additionalParams).forEach(([key, value]) => {
     if (value !== undefined) {
@@ -30,6 +33,15 @@ export const buildSparqlistApiUrl = (
 
   return `${baseUrl}/api/${endpoint}?${queryString}`;
 };
+
+/**
+ * エラーメッセージ表示用に、tgv_id / variant のうち指定されている方の識別子を返す。
+ * どちらも無い場合は空文字を返す。
+ */
+export const describeVariantIdentifier = ({
+  tgv_id,
+  variant,
+}: SparqlistStanzaParams): string => tgv_id || variant || "";
 
 /**
  * SPARQList エンドポイントから SPARQL バインディングを取得し、

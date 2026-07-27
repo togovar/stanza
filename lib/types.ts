@@ -3,10 +3,16 @@
 // variant-mgend / disease-mgend / gene-mgend 等で共有する
 // ============================================================
 
-/** SPARQList を叩く stanza が共通して受け取る入力パラメータ。 */
+/**
+ * SPARQList を叩く stanza が共通して受け取る入力パラメータ。
+ * tgv_id を持たないバリアント（TogoVar未登録のバリアント）を表示するため、
+ * tgv_id の代わりに VCF表記(CHROM-POS-REF-ALT)の variant でも解決できる。
+ * どちらかが必須で、両方指定された場合は tgv_id を優先する（sparqlist側の解決ロジックと合わせる）。
+ */
 export interface SparqlistStanzaParams {
   sparqlist?: string;
   tgv_id?: string;
+  variant?: string;
 }
 
 /** SPARQList を叩く stanza が renderTemplate へ渡す共通パラメータ形。エラー時は result を持たない。 */

@@ -4,6 +4,7 @@ import * as display from "@/lib/display";
 import { ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
 import {
   buildSparqlistApiUrl,
+  describeVariantIdentifier,
   fetchSparqlBindings,
   requireFirstBinding,
 } from "@/lib/sparqlist";
@@ -141,7 +142,7 @@ export default class VariantSummary extends Stanza {
         await fetchSparqlBindings<VariantSummarySparqlBinding>(summaryApiUrl);
       const firstBinding = requireFirstBinding(
         bindings,
-        `Variant not found for ${params.tgv_id}`,
+        `Variant not found for ${describeVariantIdentifier(params)}`,
       );
 
       templateParams.result =

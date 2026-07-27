@@ -8,7 +8,13 @@ export default class VariantHeader extends Stanza {
   async render() {
     this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
-    const sparqlist = (this.params.sparqlist || "/sparqlist").concat(`/api/tgv2rs?tgv_id=${this.params.tgv_id}`);
+    // tgv_id が無いバリアント（TogoVar未登録）は variant(CHROM-POS-REF-ALT) で解決する。
+    // sparqlist側は tgv_id があれば優先し、無ければ variant を使う。
+    const queryString = new URLSearchParams({
+      tgv_id: this.params.tgv_id ?? "",
+      variant: this.params.variant ?? "",
+    }).toString();
+    const sparqlist = (this.params.sparqlist || "/sparqlist").concat(`/api/tgv2rs?${queryString}`);
 
     const r = await fetch(sparqlist, {
       method: "GET",
