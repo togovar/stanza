@@ -26,7 +26,7 @@ main {
       align-items: center;
       padding: 3px 0;
       line-height: 1.2;
-      border-bottom: 1px solid #dee2e6;
+      border-bottom: 1px solid var(--color-table-border);
     }
 
     dt {
@@ -34,7 +34,6 @@ main {
       font-size: 12px;
       font-weight: bold;
       color: var(--color-black);
-      text-align: right;
     }
 
     dd {
@@ -43,7 +42,7 @@ main {
       padding-left: 12px;
       margin: 0;
       font-size: 14px;
-      color: #444;
+      color: var(--color-black);
       white-space: nowrap;
 
       .chromosome {
