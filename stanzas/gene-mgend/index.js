@@ -99,7 +99,9 @@ export default class GeneMGeND extends Stanza {
                 const safeName = condition.name ? escapeHtml(condition.name) : undefined;
                 let conditionHtml;
                 if (condition.medgen && safeName) {
-                  conditionHtml = `<a href='/disease/${condition.medgen}'>${safeName}</a>`;
+                  // href 属性値としてエスケープ（引用符混入による属性破壊/XSSを防ぐ）
+                  const safeMedgen = encodeURIComponent(condition.medgen);
+                  conditionHtml = `<a href='/disease/${safeMedgen}'>${safeName}</a>`;
                 } else if (safeName) {
                   conditionHtml = safeName;
                 } else {

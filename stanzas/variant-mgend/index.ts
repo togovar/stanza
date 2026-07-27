@@ -44,7 +44,9 @@ function buildConditionHtml(condition: DiseaseCondition): string {
   const safeName = condition.name ? escapeHtml(condition.name) : undefined;
 
   if (condition.medgen && safeName) {
-    return `<a href="/disease/${condition.medgen}">${safeName}</a>`;
+    // href 属性値としてエスケープ（引用符混入による属性破壊/XSSを防ぐ）
+    const safeMedgen = encodeURIComponent(condition.medgen);
+    return `<a href="/disease/${safeMedgen}">${safeName}</a>`;
   }
   if (safeName) {
     return safeName;
