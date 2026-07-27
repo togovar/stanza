@@ -69,7 +69,10 @@ type TemplateRenderParams = SparqlistTemplateRenderParams<ClinVarRow[]>;
  * "Association not found" と一致しないため、区切り文字も揃える。
  */
 function normalizeInterpretationText(text: string): string {
-  return text.toLowerCase().replace(/[_\s]+/g, " ").trim();
+  return text
+    .toLowerCase()
+    .replace(/[_\s]+/g, " ")
+    .trim();
 }
 
 /**
@@ -77,14 +80,14 @@ function normalizeInterpretationText(text: string): string {
  * 短いコード（例: "P"）を逆引きする。
  */
 function findSignificanceClass(
-  interpretation: string | undefined
+  interpretation: string | undefined,
 ): string | undefined {
   if (!interpretation) return undefined;
 
   const normalizedInterpretation = normalizeInterpretationText(interpretation);
   const matchedEntry = Object.entries(CLINICAL_SIGNIFICANCE).find(
     ([, value]) =>
-      normalizeInterpretationText(value.label) === normalizedInterpretation
+      normalizeInterpretationText(value.label) === normalizedInterpretation,
   );
   return matchedEntry?.[0];
 }
@@ -108,7 +111,9 @@ function buildClinVarRow(rawBinding: ClinVarRawBinding): ClinVarRow {
     condition: {
       label: rawBinding.condition,
       // TogoVar内部の疾患ページへのリンク。medgen が無い疾患名ではリンクを生成しない。
-      url: rawBinding.medgen ? `/disease/${rawBinding.medgen}` : undefined,
+      url: rawBinding.medgen
+        ? `/disease/${encodeURIComponent(rawBinding.medgen)}`
+        : undefined,
     },
   };
 }
