@@ -50,6 +50,10 @@ export interface ExternalLinks {
 export interface VariantData {
   id: string;
   significance: SignificanceEntry[];
+  // 実際のTogoVar variant APIレスポンス（variant-mgendが叩くエンドポイント）で
+  // 動作確認済みのフィールド名。gene-mgend/disease-mgend側のJS実装は
+  // external_link（単数形）を参照しているが、別エンドポイントのレスポンス形状であり、
+  // ここを単数形に変更するとvariant-mgendでリンクが取得できなくなる。
   external_links: ExternalLinks;
 }
 

@@ -1,11 +1,11 @@
 import Stanza from "togostanza/stanza";
 
-import { CLINICAL_SIGNIFICANCE, ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
+import {
+  CLINICAL_SIGNIFICANCE,
+  ROBOTO_CONDENSED_CSS_URL,
+} from "@/lib/constants";
 import { rowSpanize } from "@/lib/table";
-import type {
-  TogoVarApiResponse,
-  DiseaseCondition,
-} from "@/lib/types";
+import type { TogoVarApiResponse, DiseaseCondition } from "@/lib/types";
 
 // ============================================================
 // このスタンザ固有の型定義
@@ -33,6 +33,23 @@ interface ConditionRow {
 // ヘルパー関数
 // ============================================================
 
+const HTML_ESCAPE_MAP: Record<string, string> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
+};
+
+/**
+ * HTML特殊文字をエスケープする。
+ * conditionHtml はテンプレート側で {{{conditionHtml}}} と生HTMLとして
+ * 挿入されるため、API由来の疾患名に `<`/`&` 等が含まれるとXSSになり得る。
+ */
+function escapeHtml(text: string): string {
+  return text.replace(/[&<>"']/g, (character) => HTML_ESCAPE_MAP[character]);
+}
+
 /**
  * 疾患条件のMedGenコードと名前からHTML文字列を生成する。
  * - MedGenコードと名前が両方ある → 疾患ページへのリンク
@@ -40,11 +57,13 @@ interface ConditionRow {
  * - どちらもない → "others"
  */
 function buildConditionHtml(condition: DiseaseCondition): string {
-  if (condition.medgen && condition.name) {
-    return `<a href='/disease/${condition.medgen}'>${condition.name}</a>`;
+  const safeName = condition.name ? escapeHtml(condition.name) : undefined;
+
+  if (condition.medgen && safeName) {
+    return `<a href="/disease/${condition.medgen}">${safeName}</a>`;
   }
-  if (condition.name) {
-    return condition.name;
+  if (safeName) {
+    return safeName;
   }
   return "others";
 }
@@ -104,7 +123,9 @@ function buildConditionRows(apiResponse: TogoVarApiResponse): ConditionRow[] {
  * 同一MedGenコードを持つ重複行は除去する。
  * 最終的にグループを解除して平坦化した配列を返す。
  */
-function groupAndSortByInterpretation(conditionRows: ConditionRow[]): ConditionRow[] {
+function groupAndSortByInterpretation(
+  conditionRows: ConditionRow[],
+): ConditionRow[] {
   // 解釈分類コードをキーにグループ化
   const groupedByClass = conditionRows.reduce<Record<string, ConditionRow[]>>(
     (accumulator, row) => {
@@ -115,14 +136,14 @@ function groupAndSortByInterpretation(conditionRows: ConditionRow[]): ConditionR
       accumulator[groupKey].push(row);
       return accumulator;
     },
-    {}
+    {},
   );
 
   // 各グループ内を疾患名で昇順ソートし、MedGenコードが重複する行を除去
   Object.keys(groupedByClass).forEach((groupKey) => {
     groupedByClass[groupKey] = groupedByClass[groupKey]
       .sort((rowA, rowB) =>
-        rowA.name.localeCompare(rowB.name, undefined, { sensitivity: "base" })
+        rowA.name.localeCompare(rowB.name, undefined, { sensitivity: "base" }),
       )
       .filter((row, index, allRows) => {
         // MedGenコードがない行（"others"等）は重複除去しない
