@@ -19,7 +19,9 @@ export const buildSparqlistApiUrl = (
     tgv_id: String(tgv_id ?? ""),
   }).toString();
 
-  return `${sparqlist}/api/${endpoint}?${queryString}`;
+  const baseUrl = sparqlist.replace(/\/+$/, "");
+
+  return `${baseUrl}/api/${endpoint}?${queryString}`;
 };
 
 /**
@@ -27,9 +29,7 @@ export const buildSparqlistApiUrl = (
  * `{ value: "..." }` ラッパーを剥がしたプレーンオブジェクト配列として返す。
  * HTTP エラーは Error を throw し、呼び出し元の render() でまとめてハンドリングする。
  */
-export const fetchSparqlBindings = async <T>(
-  apiUrl: string,
-): Promise<T[]> => {
+export const fetchSparqlBindings = async <T>(apiUrl: string): Promise<T[]> => {
   const response = await fetch(apiUrl, {
     method: "GET",
     headers: { Accept: "application/json" },
