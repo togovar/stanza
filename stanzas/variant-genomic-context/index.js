@@ -2,6 +2,7 @@ import Stanza from "togostanza/stanza";
 import {unwrapValueFromBinding} from "togostanza/utils";
 
 import {referenceToChrAssembly} from "@/lib/display";
+import {requireFirstBinding} from "@/lib/sparqlist";
 
 export default class VariantSummary extends Stanza {
   async render() {
@@ -18,11 +19,10 @@ export default class VariantSummary extends Stanza {
       }
       throw new Error(sparqlist + " returns status " + res.status);
     }).then(data => {
-      const binding = unwrapValueFromBinding(data)[0];
-
-      if (!binding) {
-        return {error: {message: `Failed to obtain genomic position for ${this.params.tgv_id}`}};
-      }
+      const binding = requireFirstBinding(
+        unwrapValueFromBinding(data),
+        `Failed to obtain genomic position for ${this.params.tgv_id}`,
+      );
 
       const { chr } = referenceToChrAssembly(binding.reference);
       const from = parseInt(binding.position);

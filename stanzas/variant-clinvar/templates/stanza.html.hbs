@@ -17,7 +17,11 @@
       {{#each result}}
         <tr>
           <td class="title">
-            <a href="{{clinvar}}">{{title}}</a>
+            <a
+              href="{{clinvar}}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >{{title}}</a>
           </td>
           <td class="review-status">
             <span class="star-rating">
@@ -43,7 +47,11 @@
             {{last_evaluated}}
           </td>
           <td class="condition rowspan-ignore">
-            <a href="{{condition.url}}">{{condition.label}}</a>
+            {{#if condition.url}}
+              <a href="{{condition.url}}">{{condition.label}}</a>
+            {{else}}
+              {{condition.label}}
+            {{/if}}
           </td>
         </tr>
       {{else}}

@@ -1,0 +1,165 @@
+.clinical-significance {
+  &::before {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    margin-right: 3px;
+    font-size: 10px;
+    font-weight: bold;
+    line-height: 18px;
+    vertical-align: top;
+    text-align: center;
+    content: attr(data-sign) "";
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 9px;
+  }
+
+  &[data-sign="P"]::before,
+  &[data-sign="LP"]::before {
+    color: var(--color-sign-dangerous);
+    background-color: var(--color-sign-dangerous-light);
+    border-color: var(--color-sign-dangerous);
+  }
+
+  &[data-sign="PLP"]::before,
+  &[data-sign="LPLP"]::before {
+    color: var(--color-sign-lowdangerous);
+    background-color: var(--color-sign-lowdangerous-light);
+    border-color: var(--color-sign-lowdangerous);
+  }
+
+  &[data-sign="ERA"]::before,
+  &[data-sign="LRA"]::before,
+  &[data-sign="URA"]::before {
+    color: var(--color-sign-warning);
+    background-color: var(--color-sign-warning-light);
+    border-color: var(--color-sign-warning);
+  }
+
+  &[data-sign="US"]::before,
+  &[data-sign="VH"]::before,
+  &[data-sign="VM"]::before,
+  &[data-sign="VL"]::before {
+    color: var(--color-sign-unknown);
+    background-color: var(--color-sign-unknown-light);
+    border-color: var(--color-sign-unknown);
+  }
+
+  &[data-sign="LB"]::before {
+    color: var(--color-sign-normal);
+    background-color: var(--color-sign-normal-light);
+    border-color: var(--color-sign-normal);
+  }
+
+  &[data-sign="B"]::before {
+    color: var(--color-sign-safe);
+    background-color: var(--color-sign-safe-light);
+    border-color: var(--color-sign-safe);
+  }
+
+  &[data-sign="CI"]::before,
+  &[data-sign="CC"]::before {
+    color: var(--color-sign-modifier);
+    background-color: var(--color-sign-modifier-light);
+    border-color: var(--color-sign-modifier);
+  }
+
+  &[data-sign="DR"]::before,
+  &[data-sign="CS"]::before,
+  &[data-sign="RF"]::before,
+  &[data-sign="A"]::before,
+  &[data-sign="PR"]::before,
+  &[data-sign="AF"]::before {
+    color: var(--color-sign-other);
+    background-color: var(--color-sign-other-light);
+    border-color: var(--color-sign-other);
+  }
+
+  &[data-sign="O"]::before,
+  &[data-sign="NP"]::before,
+  &[data-sign="NC"]::before,
+  &[data-sign="AN"]::before {
+    color: var(--color-gray);
+    background-color: white;
+    border-color: var(--color-gray);
+  }
+}
+
+.clinical-significance-full {
+  padding: 0 7px;
+  font-size: 12px;
+  font-weight: bold;
+  border: 1px solid transparent;
+  border-radius: 8.5px;
+
+  &[data-sign="P"],
+  &[data-sign="LP"] {
+    color: var(--color-sign-dangerous);
+    background-color: var(--color-sign-dangerous-light);
+    border-color: var(--color-sign-dangerous);
+  }
+
+  &[data-sign="PLP"],
+  &[data-sign="LPLP"] {
+    color: var(--color-sign-lowdangerous);
+    background-color: var(--color-sign-lowdangerous-light);
+    border-color: var(--color-sign-lowdangerous);
+  }
+
+  &[data-sign="ERA"],
+  &[data-sign="LRA"],
+  &[data-sign="URA"] {
+    color: var(--color-sign-warning);
+    background-color: var(--color-sign-warning-light);
+    border-color: var(--color-sign-warning);
+  }
+
+  &[data-sign="US"],
+  &[data-sign="VH"],
+  &[data-sign="VM"],
+  &[data-sign="VL"] {
+    color: var(--color-sign-unknown);
+    background-color: var(--color-sign-unknown-light);
+    border-color: var(--color-sign-unknown);
+  }
+
+  &[data-sign="LB"] {
+    color: var(--color-sign-normal);
+    background-color: var(--color-sign-normal-light);
+    border-color: var(--color-sign-normal);
+  }
+
+  &[data-sign="B"] {
+    color: var(--color-sign-safe);
+    background-color: var(--color-sign-safe-light);
+    border-color: var(--color-sign-safe);
+  }
+
+  &[data-sign="CI"],
+  &[data-sign="CC"] {
+    color: var(--color-sign-modifier);
+    background-color: var(--color-sign-modifier-light);
+    border-color: var(--color-sign-modifier);
+  }
+
+  &[data-sign="DR"],
+  &[data-sign="CS"],
+  &[data-sign="RF"],
+  &[data-sign="A"],
+  &[data-sign="PR"],
+  &[data-sign="AF"] {
+    color: var(--color-sign-other);
+    background-color: var(--color-sign-other-light);
+    border-color: var(--color-sign-other);
+  }
+
+  &[data-sign="O"],
+  &[data-sign="NP"],
+  &[data-sign="NC"],
+  &[data-sign="AN"] {
+    color: var(--color-gray);
+    background-color: white;
+    border-color: var(--color-gray);
+  }
+}

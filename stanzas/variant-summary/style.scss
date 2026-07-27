@@ -1,24 +1,52 @@
 @use "@/assets/css/common";
 
 main {
-  .table {
+  // key-value ペアを2列グリッドで並べる説明リスト。
+  // dt が「項目名」、dd が「値」に対応し、4カラムのグリッドに配置される。
+  // 例: [Variant type] [SNV] [Ref / Alt] [A→T]
+  //     [Position]     [chr1:12345 (GRCh38)]
+  .variant-summary-list {
+    display: grid;
+
+    // max-content で各 dt 列をラベルの最大幅に自動調整する。
+    // 固定px だと "HGNC/Approved symbol" のような長いラベルが溢れるため。
+    grid-template-columns: max-content 1fr max-content 1fr;
+
+    // column-gap を使うと列間が空白トラックになり border-bottom が途切れる。
+    // 代わりに dd の padding-right でペア間の空きを作り、border を全幅で連続させる。
     width: 100%;
-    table-layout: fixed;
+    margin: 0;
+    font-family: "Roboto Condensed", sans-serif;
 
-    > tbody > tr {
-      > {
-        th {
-          width: 77px;
-          text-align: right;
-        }
+    dt,
+    dd {
+      // align-self はデフォルトの stretch のままにして、セルをロー全体の高さに引き伸ばす。
+      // align-self: center にすると各セルが内容高さで縮み、border-bottom がバラバラな位置に引かれる。
+      display: flex;
+      align-items: center;
+      padding: 3px 0;
+      line-height: 1.2;
+      border-bottom: 1px solid var(--color-table-border);
+    }
 
-        td {
-          padding-left: 12px;
+    dt {
+      padding-left: 10px;
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--color-black);
+    }
 
-          .chromosome {
-            font-weight: bold;
-          }
-        }
+    dd {
+      // ブラウザデフォルトの margin-left をリセットする
+      padding-right: 10px;
+      padding-left: 12px;
+      margin: 0;
+      font-size: 14px;
+      color: var(--color-black);
+      white-space: nowrap;
+
+      .chromosome {
+        font-weight: bold;
       }
     }
   }

@@ -86,7 +86,7 @@ export default class DiseaseMGeND extends Stanza {
                 title: item.external_link.mgend[0].title,
                 xref: item.external_link.mgend[0].xref,
                 interpretation_class: entry.interpretations[0],
-                interpretation: getPropertyNameByKey(entry.interpretations[0]),
+                interpretation: getInterpretationLabel(entry.interpretations[0]),
               });
             }
           }
@@ -96,11 +96,8 @@ export default class DiseaseMGeND extends Stanza {
       return sortAndGroupByInterpretationClass(results)
     }
 
-    function getPropertyNameByKey(key) {
-      const entry = Object.entries(CLINICAL_SIGNIFICANCE).find(
-        ([, value]) => value.key === key
-      );
-      return entry ? entry[0] : null; // プロパティ名（キー名）を返す
+    function getInterpretationLabel(key) {
+      return CLINICAL_SIGNIFICANCE[key]?.label ?? null;
     }
 
     function sortAndGroupByInterpretationClass(results) {

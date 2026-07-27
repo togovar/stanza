@@ -2,6 +2,8 @@ import Stanza from "togostanza/stanza";
 import uniq from "@/lib/uniq";
 import {unwrapValueFromBinding} from "togostanza/utils";
 
+import {requireFirstBinding} from "@/lib/sparqlist";
+
 export default class GeneSummary extends Stanza {
   async render() {
     const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/gene_summary?hgnc_id=${this.params.hgnc_id}`);
@@ -18,7 +20,10 @@ export default class GeneSummary extends Stanza {
       throw new Error(sparqlist + " returns status " + res.status);
     }).then(json => {
       const bindings = unwrapValueFromBinding(json);
-      const binding = bindings[0];
+      const binding = requireFirstBinding(
+        bindings,
+        `Gene not found for ${this.params.hgnc_id}`,
+      );
 
       return {
         result: {

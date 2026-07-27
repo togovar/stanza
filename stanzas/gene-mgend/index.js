@@ -1,6 +1,7 @@
 import Stanza from "togostanza/stanza";
 
 import { CLINICAL_SIGNIFICANCE, ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
+import { escapeHtml } from "@/lib/html";
 import { rowSpanize } from "@/lib/table";
 
 export default class GeneMGeND extends Stanza {
@@ -90,16 +91,19 @@ export default class GeneMGeND extends Stanza {
                 name: "others",
                 medgen: "others",
                 interpretation_class: entry.interpretations[0],
-                interpretation: getPropertyNameByKey(entry.interpretations[0]),
+                interpretation: getInterpretationLabel(entry.interpretations[0]),
               });
 
             } else {
               entry.conditions.forEach(condition => {
+                const safeName = condition.name ? escapeHtml(condition.name) : undefined;
                 let conditionHtml;
-                if (condition.medgen && condition.name) {
-                  conditionHtml = `<a href='/disease/${condition.medgen}'>${condition.name}</a>`;
-                } else if (condition.name) {
-                  conditionHtml = condition.name;
+                if (condition.medgen && safeName) {
+                  // href 属性値としてエスケープ（引用符混入による属性破壊/XSSを防ぐ）
+                  const safeMedgen = encodeURIComponent(condition.medgen);
+                  conditionHtml = `<a href='/disease/${safeMedgen}'>${safeName}</a>`;
+                } else if (safeName) {
+                  conditionHtml = safeName;
                 } else {
                   conditionHtml = "others";
                 }
@@ -113,7 +117,7 @@ export default class GeneMGeND extends Stanza {
                   name: condition.name || "others",
                   medgen: condition.medgen,
                   interpretation_class: entry.interpretations[0],
-                  interpretation: getPropertyNameByKey(entry.interpretations[0]),
+                  interpretation: getInterpretationLabel(entry.interpretations[0]),
                 });
               });
             }
@@ -125,18 +129,8 @@ export default class GeneMGeND extends Stanza {
       return sortAndGroupByInterpretationClass(results);
     }
 
-    function getPropertyNameByKey(key) {
-      const entry = Object.entries(CLINICAL_SIGNIFICANCE).find(
-        ([, value]) => value.key === key
-      );
-
-      if (!entry) {
-        return null; // キーが見つからない場合は null を返す
-      }
-
-      // プロパティ名の最初の文字を大文字に変換
-      const capitalizedPropertyName = entry[0].charAt(0).toUpperCase() + entry[0].slice(1);
-      return capitalizedPropertyName;
+    function getInterpretationLabel(key) {
+      return CLINICAL_SIGNIFICANCE[key]?.label ?? null;
     }
 
     function sortAndGroupByInterpretationClass(results) {

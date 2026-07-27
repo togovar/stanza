@@ -1,5 +1,3 @@
-@use "../foundation/variables" as *;
-
 $frequency-block-count: 6;
 $frequency-block-gap: 1px;
 $vertical-block-width: 5px;
@@ -34,7 +32,7 @@ $frequency-marker-gap: 1px;
 @mixin frequency-dataset-colors {
   &[data-dataset="gem_j_wga"],
   &[data-dataset="GEM-J WGA"] {
-    @include frequency-dataset-color($COLOR_DATASET_GEM_J);
+    @include frequency-dataset-color(var(--color-dataset-gemj));
   }
 
   &[data-dataset="jga_wgs"],
@@ -43,28 +41,28 @@ $frequency-marker-gap: 1px;
   &[data-dataset="JGA-WES"],
   &[data-dataset="jga_snp"],
   &[data-dataset="JGA-SNP"] {
-    @include frequency-dataset-color($COLOR_DATASET_JGA);
+    @include frequency-dataset-color(var(--color-dataset-jga));
   }
 
   &[data-dataset="tommo"],
   &[data-dataset="ToMMo"],
   &[data-dataset^="ToMMo"] {
-    @include frequency-dataset-color($COLOR_DATASET_TOMMO);
+    @include frequency-dataset-color(var(--color-dataset-tommo));
   }
 
   &[data-dataset="ncbn"],
   &[data-dataset="NCBN"] {
-    @include frequency-dataset-color($COLOR_DATASET_NCBN);
+    @include frequency-dataset-color(var(--color-dataset-ncbn));
   }
 
   &[data-dataset="hgvd"],
   &[data-dataset="HGVD"] {
-    @include frequency-dataset-color($COLOR_DATASET_HGVD);
+    @include frequency-dataset-color(var(--color-dataset-hgvd));
   }
 
   &[data-dataset="bbj"],
   &[data-dataset="BBJ"] {
-    @include frequency-dataset-color($COLOR_DATASET_BBJ);
+    @include frequency-dataset-color(var(--color-dataset-bbj));
   }
 }
 
@@ -187,7 +185,7 @@ $frequency-marker-gap: 1px;
     @include frequency-marker;
     @include vertical-frequency-blocks;
 
-    --frequency-dataset-color: #{$COLOR_DATASET_FOREIGN};
+    --frequency-dataset-color: var(--color-dataset-foreign);
 
     position: relative;
     box-sizing: border-box;
@@ -218,7 +216,7 @@ $frequency-marker-gap: 1px;
   @include frequency-marker;
   @include horizontal-frequency-blocks;
 
-  --frequency-dataset-color: #{$COLOR_DATASET_FOREIGN};
+  --frequency-dataset-color: var(--color-dataset-foreign);
 
   position: relative;
   box-sizing: border-box;

@@ -1,5 +1,3 @@
-@use "../foundation/variables" as *;
-
 .dataset-icon {
   position: relative;
   height: 18px;
@@ -40,38 +38,38 @@
   &[data-dataset="jga_wgs"]::before,
   &[data-dataset="jga_wes"]::before,
   &[data-dataset="jga_snp"]::before {
-    color: $COLOR_DATASET_JGA;
+    color: var(--color-dataset-jga);
   }
 
   &[data-dataset="tommo"]::before {
-    color: $COLOR_DATASET_TOMMO;
+    color: var(--color-dataset-tommo);
   }
 
   &[data-dataset="ncbn"]::before {
-    color: $COLOR_DATASET_NCBN;
+    color: var(--color-dataset-ncbn);
   }
 
   &[data-dataset="hgvd"]::before,
   &[data-dataset="mgend"]::before {
-    color: $COLOR_DATASET_HGVD;
+    color: var(--color-dataset-hgvd);
   }
 
   &[data-dataset="gem_j_wga"]::before {
-    color: $COLOR_DATASET_GEM_J;
+    color: var(--color-dataset-gemj);
   }
 
   &[data-dataset="bbj"]::before {
-    color: $COLOR_DATASET_BBJ;
+    color: var(--color-dataset-bbj);
   }
 
   &[data-dataset="clinvar"]::before,
   &[data-dataset^="gnomad"]::before {
-    color: $COLOR_GRAY;
+    color: var(--color-gray);
   }
 
   &[data-dataset="clinvar"] > .properties::before,
   &[data-dataset="mgend"] > .properties::before {
-    color: $COLOR_SIGN_DANGEROUS;
+    color: var(--color-sign-dangerous);
     content: "Disease";
   }
 

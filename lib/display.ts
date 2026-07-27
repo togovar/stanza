@@ -1,5 +1,6 @@
 import {
   ALPHAMISSENSE,
+  CADD,
   CONSEQUENCE,
   POLYPHEN,
   SIFT,
@@ -107,6 +108,29 @@ export const consequence = (
   most_severe_consequence:
     (CONSEQUENCE as LabelMap)[String(accession)]?.label || "",
 });
+
+/**
+ * CADD (PHRED score) をフィルタUIと同じ閾値（>= 20 / >= 10 / < 10）で分類する。
+ */
+export const caddPhred = (value: NumericInput): Record<string, string> => {
+  const numericValue = toNumericValue(value);
+  if (Number.isNaN(numericValue)) {
+    return {};
+  }
+
+  const rank =
+    numericValue >= 20
+      ? CADD.high
+      : numericValue >= 10
+        ? CADD.moderate
+        : CADD.low;
+
+  return {
+    cadd_phred: fractionDigits3.format(numericValue),
+    cadd_phred_class: rank?.key,
+    cadd_phred_label: rank?.label,
+  };
+};
 
 export const alphaMissense = (value: NumericInput): Record<string, string> => {
   const numericValue = toNumericValue(value);

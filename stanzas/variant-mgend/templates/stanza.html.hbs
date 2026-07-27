@@ -1,7 +1,7 @@
 {{#with error}}
-  <div class='alert alert-danger'>{{message}}</div>
+  <div class="alert alert-danger">{{message}}</div>
 {{else}}
-  <table id='target' class='table'>
+  <table id="target" class="table">
     <thead>
       <tr>
         <th>Title</th>
@@ -13,22 +13,26 @@
     <tbody>
       {{#each result}}
         <tr>
-          <td class='title'>
-            <a href='{{xref}}'>{{title}}</a>
+          <td class="title">
+            <a
+              href="{{xref}}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >{{title}}</a>
           </td>
-          <td class='clinical-significance-col'>
+          <td class="clinical-significance-col">
             <span
-              class='clinical-significance-full'
-              data-sign='{{interpretation_class}}'
-            >{{interpretation}}</span>
+              class="clinical-significance-full"
+              data-sign="{{interpretationClass}}"
+            >{{interpretationLabel}}</span>
           </td>
-          <td class='condition'>
+          <td class="condition">
             {{{conditionHtml}}}
           </td>
         </tr>
       {{else}}
         <tr>
-          <td class='text-center' colspan='3'>No data</td>
+          <td class="text-center" colspan="3">No data</td>
         </tr>
       {{/each}}
     </tbody>
