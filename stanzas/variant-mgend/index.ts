@@ -4,6 +4,7 @@ import {
   CLINICAL_SIGNIFICANCE,
   ROBOTO_CONDENSED_CSS_URL,
 } from "@/lib/constants";
+import { escapeHtml } from "@/lib/html";
 import { rowSpanize } from "@/lib/table";
 import type { TogoVarApiResponse, DiseaseCondition } from "@/lib/types";
 
@@ -32,23 +33,6 @@ interface ConditionRow {
 // ============================================================
 // ヘルパー関数
 // ============================================================
-
-const HTML_ESCAPE_MAP: Record<string, string> = {
-  "&": "&amp;",
-  "<": "&lt;",
-  ">": "&gt;",
-  '"': "&quot;",
-  "'": "&#39;",
-};
-
-/**
- * HTML特殊文字をエスケープする。
- * conditionHtml はテンプレート側で {{{conditionHtml}}} と生HTMLとして
- * 挿入されるため、API由来の疾患名に `<`/`&` 等が含まれるとXSSになり得る。
- */
-function escapeHtml(text: string): string {
-  return text.replace(/[&<>"']/g, (character) => HTML_ESCAPE_MAP[character]);
-}
 
 /**
  * 疾患条件のMedGenコードと名前からHTML文字列を生成する。

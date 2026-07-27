@@ -1,6 +1,7 @@
 import Stanza from "togostanza/stanza";
 
 import { CLINICAL_SIGNIFICANCE, ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
+import { escapeHtml } from "@/lib/html";
 import { rowSpanize } from "@/lib/table";
 
 export default class GeneMGeND extends Stanza {
@@ -95,11 +96,12 @@ export default class GeneMGeND extends Stanza {
 
             } else {
               entry.conditions.forEach(condition => {
+                const safeName = condition.name ? escapeHtml(condition.name) : undefined;
                 let conditionHtml;
-                if (condition.medgen && condition.name) {
-                  conditionHtml = `<a href='/disease/${condition.medgen}'>${condition.name}</a>`;
-                } else if (condition.name) {
-                  conditionHtml = condition.name;
+                if (condition.medgen && safeName) {
+                  conditionHtml = `<a href='/disease/${condition.medgen}'>${safeName}</a>`;
+                } else if (safeName) {
+                  conditionHtml = safeName;
                 } else {
                   conditionHtml = "others";
                 }
