@@ -26095,27 +26095,30 @@ var engines = {
 	node: "20.19.x"
 };
 var scripts = {
-	build: "npx togostanza build",
-	generate: "npx togostanza generate stanza",
+	dev: "npx togostanza serve",
 	start: "npx togostanza serve",
+	generate: "npx togostanza generate stanza",
+	build: "npx togostanza build",
 	lint: "npm run lint:js && npm run lint:css",
 	"lint:js": "npm run lint:eslint lib stanzas",
 	"lint:eslint": "eslint --ignore-path .gitignore",
 	"lint:css": "stylelint \"**/*.scss\" --ignore-path .gitignore",
-	"lint:css:fix": "stylelint \"**/*.scss\" --ignore-path .gitignore --fix"
+	"lint:css:fix": "stylelint \"**/*.scss\" --ignore-path .gitignore --fix",
+	typecheck: "tsc --noEmit",
+	validate: "npm run lint && npm run typecheck && npm run build"
 };
 var dependencies = {
 	"@floating-ui/dom": "^1.7.6",
 	d3: "^7.9.0",
+	"d3-hierarchy": "^3.1.2",
 	togostanza: "3.0.0-beta.55",
 	"togostanza-utils": "github:togostanza/togostanza-utils"
 };
 var devDependencies = {
-	"d3-hierarchy": "^3.1.2",
+	"@typescript-eslint/eslint-plugin": "^6.21.0",
+	"@typescript-eslint/parser": "^6.21.0",
 	eslint: "^8.13.0",
 	"eslint-config-prettier": "^8.5.0",
-	"postcss-cssnext": "^3.1.1",
-	"postcss-import": "^15.1.0",
 	"postcss-scss": "^4.0.9",
 	stylelint: "^16.19.1",
 	"stylelint-config-recess-order": "^7.7.0",
@@ -26197,4 +26200,4 @@ script.render = render;
 script.__file = "node_modules/togostanza/src/components/Layout.vue";
 
 export { Fragment as F, createBaseVNode as a, createElementBlock as b, createBlock as c, defineComponent as d, renderList as e, createCommentVNode as f, createApp as g, ref as h, octicons as i, createTextVNode as j, computed as k, watch as l, mergeProps as m, normalizeProps as n, openBlock as o, guardReactiveProps as p, resolveDynamicComponent as q, resolveComponent as r, script as s, toDisplayString as t, createVNode as u, n as v, withCtx as w, normalizeClass as x, unref as y, normalizeStyle as z };
-//# sourceMappingURL=Layout-d67c9582.js.map
+//# sourceMappingURL=Layout-b896714a.js.map

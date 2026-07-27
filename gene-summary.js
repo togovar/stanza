@@ -1,6 +1,7 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { u as uniq } from './uniq-f80b7f40.js';
 import { u as unwrapValueFromBinding } from './utils-97dc77a0.js';
+import { r as requireFirstBinding } from './sparqlist-19d6bf99.js';
 
 class GeneSummary extends Stanza {
   async render() {
@@ -18,7 +19,10 @@ class GeneSummary extends Stanza {
       throw new Error(sparqlist + " returns status " + res.status);
     }).then(json => {
       const bindings = unwrapValueFromBinding(json);
-      const binding = bindings[0];
+      const binding = requireFirstBinding(
+        bindings,
+        `Gene not found for ${this.params.hgnc_id}`,
+      );
 
       return {
         result: {

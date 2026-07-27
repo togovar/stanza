@@ -1,7 +1,8 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { u as unwrapValueFromBinding } from './utils-97dc77a0.js';
-import { r as referenceToChrAssembly } from './display-ee766017.js';
-import './constants-e5a261c0.js';
+import { r as referenceToChrAssembly } from './display-d073ac6e.js';
+import { r as requireFirstBinding } from './sparqlist-19d6bf99.js';
+import './constants-f65ecb7f.js';
 import './frequency-9d3406e7.js';
 
 class VariantSummary extends Stanza {
@@ -19,11 +20,10 @@ class VariantSummary extends Stanza {
       }
       throw new Error(sparqlist + " returns status " + res.status);
     }).then(data => {
-      const binding = unwrapValueFromBinding(data)[0];
-
-      if (!binding) {
-        return {error: {message: `Failed to obtain genomic position for ${this.params.tgv_id}`}};
-      }
+      const binding = requireFirstBinding(
+        unwrapValueFromBinding(data),
+        `Failed to obtain genomic position for ${this.params.tgv_id}`,
+      );
 
       const { chr } = referenceToChrAssembly(binding.reference);
       const from = parseInt(binding.position);

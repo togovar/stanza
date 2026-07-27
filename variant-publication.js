@@ -1,7 +1,7 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import './stanza-644a6e8e.js';
 import { u as unwrapValueFromBinding } from './utils-97dc77a0.js';
-import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-e5a261c0.js';
+import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-f65ecb7f.js';
 
 const RS_PREFIX = "http://identifiers.org/dbsnp/";
 

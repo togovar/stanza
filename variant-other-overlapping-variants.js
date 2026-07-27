@@ -1,6 +1,6 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
-import { t as transformRecord } from './display-ee766017.js';
-import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-e5a261c0.js';
+import { t as transformRecord } from './display-d073ac6e.js';
+import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-f65ecb7f.js';
 import './frequency-9d3406e7.js';
 
 class VariantSummary extends Stanza {

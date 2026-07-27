@@ -1237,48 +1237,87 @@ const CONSEQUENCE = {
   },
 };
 
+// 短いコード(id)をキーにしたオブジェクト。TogoVarフロントのフィルタ定義に準拠。
+// "CI" はClinVarの旧表記("Conflicting interpretations of pathogenicity")との
+// 互換のために残している(新表記は"CC")。
 const CLINICAL_SIGNIFICANCE = {
-  "pathogenic": {
-    "key": "P",
+  "NA": {
+    "label": "Unassigned",
   },
-  "likely pathogenic": {
-    "key": "LP",
+  "P": {
+    "label": "Pathogenic",
   },
-  "uncertain significance": {
-    "key": "US",
+  "LP": {
+    "label": "Likely pathogenic",
   },
-  "likely benign": {
-    "key": "LB",
+  "PLP": {
+    "label": "Pathogenic, Low penetrance",
   },
-  "benign": {
-    "key": "B",
+  "LPLP": {
+    "label": "Likely pathogenic, Low penetrance",
   },
-  "conflicting interpretations of pathogenicity": {
-    "key": "CI",
+  "ERA": {
+    "label": "Established risk allele",
   },
-  "drug response": {
-    "key": "DR",
+  "LRA": {
+    "label": "Likely risk allele",
   },
-  "association": {
-    "key": "A",
+  "URA": {
+    "label": "Uncertain risk allele",
   },
-  "risk factor": {
-    "key": "RF",
+  "US": {
+    "label": "Uncertain significance",
   },
-  "protective": {
-    "key": "PR",
+  "VH": {
+    "label": "VUS-high",
   },
-  "affects": {
-    "key": "AF",
+  "VM": {
+    "label": "VUS-mid",
   },
-  "other": {
-    "key": "O",
+  "VL": {
+    "label": "VUS-low",
   },
-  "not provided": {
-    "key": "NP",
+  "LB": {
+    "label": "Likely benign",
   },
-  "association_not found": {
-    "key": "AN",
+  "B": {
+    "label": "Benign",
+  },
+  "CC": {
+    "label": "Conflicting classifications of pathogenicity",
+  },
+  "CI": {
+    "label": "Conflicting interpretations of pathogenicity",
+  },
+  "DR": {
+    "label": "Drug response",
+  },
+  "CS": {
+    "label": "Confers sensitivity",
+  },
+  "RF": {
+    "label": "Risk factor",
+  },
+  "A": {
+    "label": "Association",
+  },
+  "PR": {
+    "label": "Protective",
+  },
+  "AF": {
+    "label": "Affects",
+  },
+  "O": {
+    "label": "Other",
+  },
+  "NP": {
+    "label": "Not provided",
+  },
+  "NC": {
+    "label": "No classification",
+  },
+  "AN": {
+    "label": "Association not found",
   },
 };
 
@@ -1354,5 +1393,21 @@ const POLYPHEN = {
   },
 };
 
-export { ALPHAMISSENSE as A, CLINICAL_SIGNIFICANCE as C, DATASETS as D, POLYPHEN as P, ROBOTO_CONDENSED_CSS_URL as R, SO as S, REVIEW_STATUS as a, CONSEQUENCE as b, SIFT as c, ensureAllDatasets as e };
-//# sourceMappingURL=constants-e5a261c0.js.map
+// CADD (PHRED score) のフィルタUIと同じ閾値（>= 20 / >= 10 / < 10）。
+const CADD = {
+  "high": {
+    "key": "CADD_HIGH",
+    "label": "≥ 20"
+  },
+  "moderate": {
+    "key": "CADD_MODERATE",
+    "label": "≥ 10"
+  },
+  "low": {
+    "key": "CADD_LOW",
+    "label": "< 10"
+  },
+};
+
+export { ALPHAMISSENSE as A, CLINICAL_SIGNIFICANCE as C, DATASETS as D, POLYPHEN as P, ROBOTO_CONDENSED_CSS_URL as R, SO as S, REVIEW_STATUS as a, CONSEQUENCE as b, CADD as c, SIFT as d, ensureAllDatasets as e };
+//# sourceMappingURL=constants-f65ecb7f.js.map

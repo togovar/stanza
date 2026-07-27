@@ -1,4 +1,4 @@
-import { e as ensureAllDatasets, S as SO, b as CONSEQUENCE, A as ALPHAMISSENSE, c as SIFT, P as POLYPHEN } from './constants-e5a261c0.js';
+import { e as ensureAllDatasets, S as SO, b as CONSEQUENCE, c as CADD, A as ALPHAMISSENSE, d as SIFT, P as POLYPHEN } from './constants-f65ecb7f.js';
 import { b as buildFrequencyMarkerState, a as buildFrequencyDisplay } from './frequency-9d3406e7.js';
 
 const floatFormatter = (digits) => {
@@ -46,6 +46,25 @@ const variantType = (accession) => ({
 const consequence = (accession) => ({
     most_severe_consequence: CONSEQUENCE[String(accession)]?.label || "",
 });
+/**
+ * CADD (PHRED score) をフィルタUIと同じ閾値（>= 20 / >= 10 / < 10）で分類する。
+ */
+const caddPhred = (value) => {
+    const numericValue = toNumericValue(value);
+    if (Number.isNaN(numericValue)) {
+        return {};
+    }
+    const rank = numericValue >= 20
+        ? CADD.high
+        : numericValue >= 10
+            ? CADD.moderate
+            : CADD.low;
+    return {
+        cadd_phred: fractionDigits3.format(numericValue),
+        cadd_phred_class: rank?.key,
+        cadd_phred_label: rank?.label,
+    };
+};
 const alphaMissense = (value) => {
     const numericValue = toNumericValue(value);
     if (Number.isNaN(numericValue)) {
@@ -139,5 +158,5 @@ const transformRecord = (record, assembly) => {
     return record;
 };
 
-export { refAlt as a, alphaMissense as b, polyphen as p, referenceToChrAssembly as r, sift as s, transformRecord as t };
-//# sourceMappingURL=display-ee766017.js.map
+export { refAlt as a, alphaMissense as b, caddPhred as c, polyphen as p, referenceToChrAssembly as r, sift as s, transformRecord as t };
+//# sourceMappingURL=display-d073ac6e.js.map

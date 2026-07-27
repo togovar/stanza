@@ -1,5 +1,5 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
-import { R as ROBOTO_CONDENSED_CSS_URL, C as CLINICAL_SIGNIFICANCE } from './constants-e5a261c0.js';
+import { R as ROBOTO_CONDENSED_CSS_URL, C as CLINICAL_SIGNIFICANCE } from './constants-f65ecb7f.js';
 import { r as rowSpanize } from './table-1f1dea97.js';
 
 class DiseaseMGeND extends Stanza {
@@ -85,7 +85,7 @@ class DiseaseMGeND extends Stanza {
                 title: item.external_link.mgend[0].title,
                 xref: item.external_link.mgend[0].xref,
                 interpretation_class: entry.interpretations[0],
-                interpretation: getPropertyNameByKey(entry.interpretations[0]),
+                interpretation: getInterpretationLabel(entry.interpretations[0]),
               });
             }
           }
@@ -95,11 +95,8 @@ class DiseaseMGeND extends Stanza {
       return sortAndGroupByInterpretationClass(results)
     }
 
-    function getPropertyNameByKey(key) {
-      const entry = Object.entries(CLINICAL_SIGNIFICANCE).find(
-        ([, value]) => value.key === key
-      );
-      return entry ? entry[0] : null; // プロパティ名（キー名）を返す
+    function getInterpretationLabel(key) {
+      return CLINICAL_SIGNIFICANCE[key]?.label ?? null;
     }
 
     function sortAndGroupByInterpretationClass(results) {

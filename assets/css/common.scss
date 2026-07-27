@@ -1,13 +1,13 @@
 @charset "UTF-8";
-@use "foundation/variables" as *;
+@use "foundation/variables";
 @use "components/badge";
+@use "components/clinical-significance";
 @use "components/dataset-icon";
 @use "components/dataTable_wrapper";
 @use "components/frequency";
 @use "components/table";
 @use "components/variant-function";
 @use "components/within-sticky-table-header";
-@use "sass:color";
 
 main {
   font-family: "Roboto Condensed", sans-serif;
@@ -16,16 +16,16 @@ main {
 }
 
 a {
-  color: $COLOR_KEY_DARK;
+  color: var(--color-key-dark2);
 
   &:link {
-    color: $COLOR_KEY_DARK;
+    color: var(--color-key-dark2);
     text-decoration: underline;
   }
 
   &:active,
   &:hover {
-    color: $COLOR_KEY_DEEP;
+    color: var(--color-key-dark1);
   }
 }
 
@@ -64,24 +64,24 @@ ul {
   padding: 4px 6px;
   font-family: "Roboto Condensed", sans-serif;
   font-size: 10px;
-  color: $COLOR_BLACK;
+  color: var(--color-black);
   border-style: solid;
   border-width: 1px;
   border-radius: 4px;
 
   &.alert-danger {
-    background-color: color.adjust($COLOR_SIGN_DANGEROUS, $lightness: 30%);
-    border-color: color.adjust($COLOR_SIGN_DANGEROUS, $lightness: -2%);
+    background-color: var(--color-sign-dangerous-light);
+    border-color: var(--color-sign-dangerous-dark);
   }
 
   &.alert-warning {
-    background-color: color.adjust($COLOR_SIGN_WARNING, $lightness: 45%);
-    border-color: color.adjust($COLOR_SIGN_WARNING, $lightness: -2%);
+    background-color: var(--color-sign-warning-light);
+    border-color: var(--color-sign-warning-dark);
   }
 
   &.alert-info {
-    background-color: color.adjust($COLOR_SIGN_NORMAL, $lightness: 42%);
-    border-color: color.adjust($COLOR_SIGN_NORMAL, $lightness: -2%);
+    background-color: var(--color-sign-normal-light);
+    border-color: var(--color-sign-normal-dark);
   }
 }
 
@@ -125,16 +125,16 @@ ul {
     .ref {
       position: relative;
       padding-right: 4px;
-      color: $COLOR_REF;
+      color: var(--color-mutation-ref);
       background-color: #d8f0f4;
-      border-top: solid 1px $COLOR_REF;
-      border-bottom: solid 1px $COLOR_REF;
-      border-left: solid 1px $COLOR_REF;
+      border-top: solid 1px var(--color-mutation-ref);
+      border-bottom: solid 1px var(--color-mutation-ref);
+      border-left: solid 1px var(--color-mutation-ref);
       border-top-left-radius: 3px;
       border-bottom-left-radius: 3px;
 
       &[data-sum]::after {
-        background-color: $COLOR_REF;
+        background-color: var(--color-mutation-ref);
       }
 
       &[data-sum="0"]::after,
@@ -148,16 +148,16 @@ ul {
 
     .alt {
       padding-left: 9px;
-      color: $COLOR_ALT;
+      color: var(--color-mutation-alt);
       background-color: #fde2e7;
-      border-top: solid 1px $COLOR_ALT;
-      border-right: solid 1px $COLOR_ALT;
-      border-bottom: solid 1px $COLOR_ALT;
+      border-top: solid 1px var(--color-mutation-alt);
+      border-right: solid 1px var(--color-mutation-alt);
+      border-bottom: solid 1px var(--color-mutation-alt);
       border-top-right-radius: 3px;
       border-bottom-right-radius: 3px;
 
       &[data-sum]::after {
-        background-color: $COLOR_ALT;
+        background-color: var(--color-mutation-alt);
       }
 
       &[data-sum="0"]::after,
@@ -184,7 +184,7 @@ ul {
         right: -6px;
         border-top: 9px solid transparent;
         border-bottom: 9px solid transparent;
-        border-left: 6px solid $COLOR_KEY_DEEP;
+        border-left: 6px solid var(--color-key-dark1);
       }
 
       &::after {
@@ -206,164 +206,42 @@ ul {
 
   &[data-function="T"],
   &[data-function="B"] {
-    background-color: $COLOR_SIGN_SAFE;
+    background-color: var(--color-sign-safe);
   }
 
   &[data-function="LB"] {
-    background-color: $COLOR_SIGN_NORMAL;
+    background-color: var(--color-sign-normal);
   }
 
   &[data-function="POSSD"],
   &[data-function="LP"] {
-    background-color: $COLOR_SIGN_WARNING;
+    background-color: var(--color-sign-warning);
   }
 
   &[data-function="D"],
   &[data-function="PROBD"] {
-    background-color: $COLOR_SIGN_DANGEROUS;
+    background-color: var(--color-sign-dangerous);
   }
 
   &[data-function="U"] {
-    color: $COLOR_BLACK;
+    color: var(--color-black);
     background-color: #eaeae9;
   }
 
   &[data-function="AMBIGUOUS"] {
-    background-color: $COLOR_SIGN_UNKNOWN;
-  }
-}
-
-.clinical-significance {
-  &::before {
-    display: inline-block;
-    width: 18px;
-    height: 18px;
-    margin-right: 3px;
-    font-size: 10px;
-    font-weight: bold;
-    line-height: 18px;
-    vertical-align: top;
-    text-align: center;
-    content: attr(data-sign) "";
-    border-style: solid;
-    border-width: 1px;
-    border-radius: 9px;
+    background-color: var(--color-sign-unknown);
   }
 
-  &[data-sign="P"]::before {
-    color: $COLOR_SIGN_DANGEROUS;
-    background-color: #ffeeed;
-    border-color: $COLOR_SIGN_DANGEROUS;
+  &[data-function="CADD_HIGH"] {
+    background-color: var(--color-sign-dangerous);
   }
 
-  &[data-sign="LP"]::before {
-    color: $COLOR_SIGN_WARNING;
-    background-color: #fff7e6;
-    border-color: $COLOR_SIGN_WARNING;
+  &[data-function="CADD_MODERATE"] {
+    background-color: var(--color-sign-warning);
   }
 
-  &[data-sign="US"]::before {
-    color: $COLOR_GRAY;
-    background-color: #eaeae9;
-    border-color: $COLOR_GRAY;
-  }
-
-  &[data-sign="LB"]::before {
-    color: $COLOR_SIGN_NORMAL;
-    background-color: #f3f9e6;
-    border-color: $COLOR_SIGN_NORMAL;
-  }
-
-  &[data-sign="B"]::before {
-    color: $COLOR_SIGN_SAFE;
-    background-color: #e5fbe7;
-    border-color: $COLOR_SIGN_SAFE;
-  }
-
-  &[data-sign="CI"]::before {
-    color: $COLOR_SIGN_MODIFIER;
-    background-color: #f9edff;
-    border-color: $COLOR_SIGN_MODIFIER;
-  }
-
-  &[data-sign="DR"]::before,
-  &[data-sign="A"]::before,
-  &[data-sign="RF"]::before,
-  &[data-sign="PR"]::before,
-  &[data-sign="AF"]::before,
-  &[data-sign="O"]::before {
-    color: $COLOR_SIGN_OTHER;
-    background-color: #fff7cf;
-    border-color: $COLOR_SIGN_OTHER;
-  }
-
-  &[data-sign="NP"]::before,
-  &[data-sign="AN"]::before {
-    color: $COLOR_BLACK;
-    background-color: white;
-    border-color: $COLOR_GRAY;
-  }
-}
-
-.clinical-significance-full {
-  padding: 0 7px;
-  font-size: 12px;
-  font-weight: bold;
-  border: 1px solid transparent;
-  border-radius: 8.5px;
-
-  &[data-sign="P"] {
-    color: $COLOR_SIGN_DANGEROUS;
-    background-color: #ffeeed;
-    border-color: $COLOR_SIGN_DANGEROUS;
-  }
-
-  &[data-sign="LP"] {
-    color: $COLOR_SIGN_WARNING;
-    background-color: #fff7e6;
-    border-color: $COLOR_SIGN_WARNING;
-  }
-
-  &[data-sign="US"] {
-    color: $COLOR_GRAY;
-    background-color: #eaeae9;
-    border-color: $COLOR_GRAY;
-  }
-
-  &[data-sign="LB"] {
-    color: $COLOR_SIGN_NORMAL;
-    background-color: #f3f9e6;
-    border-color: $COLOR_SIGN_NORMAL;
-  }
-
-  &[data-sign="B"] {
-    color: $COLOR_SIGN_SAFE;
-    background-color: #e5fbe7;
-    border-color: $COLOR_SIGN_SAFE;
-  }
-
-  &[data-sign="CI"] {
-    color: $COLOR_SIGN_MODIFIER;
-    background-color: #f9edff;
-    border-color: $COLOR_SIGN_MODIFIER;
-  }
-
-  &[data-sign="DR"],
-  &[data-sign="A"],
-  &[data-sign="RF"],
-  &[data-sign="PR"],
-  &[data-sign="AF"],
-  &[data-sign="O"] {
-    color: $COLOR_SIGN_OTHER;
-    background-color: #fff7cf;
-    border-color: $COLOR_SIGN_OTHER;
-  }
-
-  &[data-sign="NP"],
-  &[data-sign="AN"] {
-    color: $COLOR_BLACK;
-    background-color: white;
-    border-color: $COLOR_GRAY;
+  &[data-function="CADD_LOW"] {
+    background-color: var(--color-sign-safe);
   }
 }
 
@@ -382,7 +260,7 @@ ul {
     overflow: hidden;
 
     &::before {
-      color: $COLOR_KEY_DEEP;
+      color: var(--color-key-dark1);
       content: "\02605\02605\02605\02605";
     }
 

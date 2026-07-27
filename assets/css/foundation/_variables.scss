@@ -1,60 +1,65 @@
+// color.adjust() でコンパイル時に色を計算するためだけに使用
 @use "sass:color";
 
-$COLOR_KEY: #46b9cc;
-$COLOR_KEY_DEEP: #249eb3;
-$COLOR_KEY_DARK: #256d80;
-$COLOR_SELECTED: #fd0;
-$COLOR_DISABLE_DEEP: #808080;
-$COLOR_DISABLE: #999;
-$COLOR_BLACK: #444;
-$COLOR_GRAY: #94928d;
-$COLOR_LIGHT_GRAY: color.adjust($COLOR_GRAY, $lightness: 35%);
-$COLOR_SEPARATOR: rgb(0 0 0 / 30%);
-$COLOR_SEPARATOR_SUB: rgb(0 0 0 / 20%);
-$COLOR_REF: #249eb3;
-$COLOR_ALT: #ff6682;
-$COLOR_DATASET_JGA: $COLOR_KEY;
-$COLOR_DATASET_JGA_LIGHT: color.adjust($COLOR_DATASET_JGA, $lightness: 35%);
-$COLOR_DATASET_TOMMO: #ca678d;
-$COLOR_DATASET_TOMMO_LIGHT: color.adjust($COLOR_DATASET_TOMMO, $lightness: 35%);
-$COLOR_DATASET_HGVD: #005b80;
-$COLOR_DATASET_NCBN: #234b7c;
-$COLOR_DATASET_MGEND: $COLOR_DATASET_HGVD;
-$COLOR_DATASET_GEM_J: #dc2828;
-$COLOR_DATASET_BBJ: #ff993f;
-$COLOR_DATASET_FOREIGN: #94928d;
-$COLOR_SIGN_SAFE: #04af58;
-$COLOR_SIGN_NORMAL: #9dcf3a;
-$COLOR_SIGN_WARNING: #ffae00;
-$COLOR_SIGN_DANGEROUS: #ff5a54;
-$COLOR_SIGN_MODIFIER: #c654ff;
-$COLOR_SIGN_OTHER: #9c8200;
-$COLOR_SIGN_UNKNOWN: #bbba7e;
-
 :host {
-  // Key colors
-  --color-key-dark: #256d80;
+  // stanza固有、TogoVarフロント側の変数一覧には対応するトークンなし(focusのoutline用)
+  --color-key-light: #{color.adjust(#62d5d9, $lightness: 15%)};
+  --color-key-dark1: #117f93;
+  --color-key-dark2: #0f6272;
 
-  // Font colors
+  // color: base
   --color-black: #444;
+  --color-gray: #94928d;
 
-  // Frequency graph colors
-  --color-singleton: #fff0c2;
+  // color: selection / states
+  --color-singleton: #{color.adjust(#fd0, $lightness: 35%)};
 
-  // Border colors
+  // color: mutation
+  --color-mutation-ref: #249eb3;
+  --color-mutation-alt: #ff6682;
+
+  // color: datasets
+  --color-dataset-jga: #62d5d9;
+  --color-dataset-tommo: #ca678d;
+  --color-dataset-hgvd: #005b80;
+  --color-dataset-ncbn: #234b7c;
+  --color-dataset-gemj: #dc2828;
+  --color-dataset-bbj: #ff993f;
+  --color-dataset-foreign: #94928d;
+
+  // color: clinical significance
+  --color-sign-safe: #04af58;
+  --color-sign-safe-light: #{color.adjust(#04af58, $lightness: 60%)};
+  --color-sign-normal: #9dcf3a;
+  --color-sign-normal-light: #{color.adjust(#9dcf3a, $lightness: 42%)};
+  --color-sign-normal-dark: #{color.adjust(#9dcf3a, $lightness: -2%)};
+  --color-sign-warning: #ffae00;
+  --color-sign-warning-light: #{color.adjust(#ffae00, $lightness: 45%)};
+  --color-sign-warning-dark: #{color.adjust(#ffae00, $lightness: -2%)};
+  --color-sign-lowdangerous: #ff953c;
+  --color-sign-lowdangerous-light: #{color.adjust(#ff953c, $lightness: 28%)};
+  --color-sign-dangerous: #ff5a54;
+  --color-sign-dangerous-light: #{color.adjust(#ff5a54, $lightness: 30%)};
+  --color-sign-dangerous-dark: #{color.adjust(#ff5a54, $lightness: -2%)};
+  --color-sign-modifier: #c654ff;
+  --color-sign-modifier-light: #{color.adjust(#c654ff, $lightness: 30%)};
+  --color-sign-other: #9c8200;
+  --color-sign-other-light: #{color.adjust(#9c8200, $lightness: 60%)};
+  --color-sign-unknown: #bbba7e;
+  --color-sign-unknown-light: #{color.adjust(#bbba7e, $lightness: 35%)};
+
+  // table (stanza固有、TogoVarフロント側の変数一覧には対応するトークンなし)
   --color-table-border: #dee2e6;
-
-  // Table
   --border-table-bottom: 0.5px solid #444;
 
-  // z-index
+  // z-index (stanza固有、TogoVarフロント側の変数一覧には対応するトークンなし)
   --z-index-sticky-table-header: 10;
   --z-index-togostanza-menu: 10000;
   --z-index-frequency-popover: 10300;
 
-  // charactor
+  // character (stanza固有、TogoVarフロント側の変数一覧には対応するトークンなし)
   // FontAwesome
   --char-lock: "\f023";
   --char-circle-info: "\f05a";
-  --char-excramation-triangle: "\f071";
+  --char-exclamation-triangle: "\f071";
 }

@@ -1,8 +1,39 @@
 @charset "UTF-8";
 :host {
-  --color-key-dark: #256d80;
+  --color-key-light: rgb(159.5923076923, 229.4769230769, 231.9076923077);
+  --color-key-dark1: #117f93;
+  --color-key-dark2: #0f6272;
   --color-black: #444;
-  --color-singleton: #fff0c2;
+  --color-gray: #94928d;
+  --color-singleton: rgb(255, 244.8, 178.5);
+  --color-mutation-ref: #249eb3;
+  --color-mutation-alt: #ff6682;
+  --color-dataset-jga: #62d5d9;
+  --color-dataset-tommo: #ca678d;
+  --color-dataset-hgvd: #005b80;
+  --color-dataset-ncbn: #234b7c;
+  --color-dataset-gemj: #dc2828;
+  --color-dataset-bbj: #ff993f;
+  --color-dataset-foreign: #94928d;
+  --color-sign-safe: #04af58;
+  --color-sign-safe-light: rgb(230.5586592179, 254.4413407821, 242.2905027933);
+  --color-sign-normal: #9dcf3a;
+  --color-sign-normal-light: rgb(242.68, 248.9657142857, 230.2342857143);
+  --color-sign-normal-dark: rgb(152.88, 204.88, 49.92);
+  --color-sign-warning: #ffae00;
+  --color-sign-warning-light: rgb(255, 246.9, 229.5);
+  --color-sign-warning-dark: rgb(244.8, 167.04, 0);
+  --color-sign-lowdangerous: #ff953c;
+  --color-sign-lowdangerous-light: rgb(255, 226.6246153846, 202.8);
+  --color-sign-dangerous: #ff5a54;
+  --color-sign-dangerous-light: rgb(255, 237.6315789474, 237);
+  --color-sign-dangerous-dark: rgb(255, 80.1578947368, 73.8);
+  --color-sign-modifier: #c654ff;
+  --color-sign-modifier-light: #f9edff;
+  --color-sign-other: #9c8200;
+  --color-sign-other-light: #fff7cf;
+  --color-sign-unknown: #bbba7e;
+  --color-sign-unknown-light: rgb(248.614213198, 248.5203045685, 242.885786802);
   --color-table-border: #dee2e6;
   --border-table-bottom: 0.5px solid #444;
   --z-index-sticky-table-header: 10;
@@ -10,7 +41,7 @@
   --z-index-frequency-popover: 10300;
   --char-lock: "\f023";
   --char-circle-info: "\f05a";
-  --char-excramation-triangle: "\f071";
+  --char-exclamation-triangle: "\f071";
 }
 
 .badge {
@@ -23,6 +54,120 @@
   background-color: #eaeae9;
   border: solid 1px #94928d;
   border-radius: 7px;
+}
+
+.clinical-significance::before {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  margin-right: 3px;
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 18px;
+  vertical-align: top;
+  text-align: center;
+  content: attr(data-sign) "";
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 9px;
+}
+.clinical-significance[data-sign=P]::before, .clinical-significance[data-sign=LP]::before {
+  color: var(--color-sign-dangerous);
+  background-color: var(--color-sign-dangerous-light);
+  border-color: var(--color-sign-dangerous);
+}
+.clinical-significance[data-sign=PLP]::before, .clinical-significance[data-sign=LPLP]::before {
+  color: var(--color-sign-lowdangerous);
+  background-color: var(--color-sign-lowdangerous-light);
+  border-color: var(--color-sign-lowdangerous);
+}
+.clinical-significance[data-sign=ERA]::before, .clinical-significance[data-sign=LRA]::before, .clinical-significance[data-sign=URA]::before {
+  color: var(--color-sign-warning);
+  background-color: var(--color-sign-warning-light);
+  border-color: var(--color-sign-warning);
+}
+.clinical-significance[data-sign=US]::before, .clinical-significance[data-sign=VH]::before, .clinical-significance[data-sign=VM]::before, .clinical-significance[data-sign=VL]::before {
+  color: var(--color-sign-unknown);
+  background-color: var(--color-sign-unknown-light);
+  border-color: var(--color-sign-unknown);
+}
+.clinical-significance[data-sign=LB]::before {
+  color: var(--color-sign-normal);
+  background-color: var(--color-sign-normal-light);
+  border-color: var(--color-sign-normal);
+}
+.clinical-significance[data-sign=B]::before {
+  color: var(--color-sign-safe);
+  background-color: var(--color-sign-safe-light);
+  border-color: var(--color-sign-safe);
+}
+.clinical-significance[data-sign=CI]::before, .clinical-significance[data-sign=CC]::before {
+  color: var(--color-sign-modifier);
+  background-color: var(--color-sign-modifier-light);
+  border-color: var(--color-sign-modifier);
+}
+.clinical-significance[data-sign=DR]::before, .clinical-significance[data-sign=CS]::before, .clinical-significance[data-sign=RF]::before, .clinical-significance[data-sign=A]::before, .clinical-significance[data-sign=PR]::before, .clinical-significance[data-sign=AF]::before {
+  color: var(--color-sign-other);
+  background-color: var(--color-sign-other-light);
+  border-color: var(--color-sign-other);
+}
+.clinical-significance[data-sign=O]::before, .clinical-significance[data-sign=NP]::before, .clinical-significance[data-sign=NC]::before, .clinical-significance[data-sign=AN]::before {
+  color: var(--color-gray);
+  background-color: white;
+  border-color: var(--color-gray);
+}
+
+.clinical-significance-full {
+  padding: 0 7px;
+  font-size: 12px;
+  font-weight: bold;
+  border: 1px solid transparent;
+  border-radius: 8.5px;
+}
+.clinical-significance-full[data-sign=P], .clinical-significance-full[data-sign=LP] {
+  color: var(--color-sign-dangerous);
+  background-color: var(--color-sign-dangerous-light);
+  border-color: var(--color-sign-dangerous);
+}
+.clinical-significance-full[data-sign=PLP], .clinical-significance-full[data-sign=LPLP] {
+  color: var(--color-sign-lowdangerous);
+  background-color: var(--color-sign-lowdangerous-light);
+  border-color: var(--color-sign-lowdangerous);
+}
+.clinical-significance-full[data-sign=ERA], .clinical-significance-full[data-sign=LRA], .clinical-significance-full[data-sign=URA] {
+  color: var(--color-sign-warning);
+  background-color: var(--color-sign-warning-light);
+  border-color: var(--color-sign-warning);
+}
+.clinical-significance-full[data-sign=US], .clinical-significance-full[data-sign=VH], .clinical-significance-full[data-sign=VM], .clinical-significance-full[data-sign=VL] {
+  color: var(--color-sign-unknown);
+  background-color: var(--color-sign-unknown-light);
+  border-color: var(--color-sign-unknown);
+}
+.clinical-significance-full[data-sign=LB] {
+  color: var(--color-sign-normal);
+  background-color: var(--color-sign-normal-light);
+  border-color: var(--color-sign-normal);
+}
+.clinical-significance-full[data-sign=B] {
+  color: var(--color-sign-safe);
+  background-color: var(--color-sign-safe-light);
+  border-color: var(--color-sign-safe);
+}
+.clinical-significance-full[data-sign=CI], .clinical-significance-full[data-sign=CC] {
+  color: var(--color-sign-modifier);
+  background-color: var(--color-sign-modifier-light);
+  border-color: var(--color-sign-modifier);
+}
+.clinical-significance-full[data-sign=DR], .clinical-significance-full[data-sign=CS], .clinical-significance-full[data-sign=RF], .clinical-significance-full[data-sign=A], .clinical-significance-full[data-sign=PR], .clinical-significance-full[data-sign=AF] {
+  color: var(--color-sign-other);
+  background-color: var(--color-sign-other-light);
+  border-color: var(--color-sign-other);
+}
+.clinical-significance-full[data-sign=O], .clinical-significance-full[data-sign=NP], .clinical-significance-full[data-sign=NC], .clinical-significance-full[data-sign=AN] {
+  color: var(--color-gray);
+  background-color: white;
+  border-color: var(--color-gray);
 }
 
 .dataset-icon {
@@ -59,28 +204,28 @@
   height: 10px;
 }
 .dataset-icon[data-dataset=jga_wgs]::before, .dataset-icon[data-dataset=jga_wes]::before, .dataset-icon[data-dataset=jga_snp]::before {
-  color: #46b9cc;
+  color: var(--color-dataset-jga);
 }
 .dataset-icon[data-dataset=tommo]::before {
-  color: #ca678d;
+  color: var(--color-dataset-tommo);
 }
 .dataset-icon[data-dataset=ncbn]::before {
-  color: #234b7c;
+  color: var(--color-dataset-ncbn);
 }
 .dataset-icon[data-dataset=hgvd]::before, .dataset-icon[data-dataset=mgend]::before {
-  color: #005b80;
+  color: var(--color-dataset-hgvd);
 }
 .dataset-icon[data-dataset=gem_j_wga]::before {
-  color: #dc2828;
+  color: var(--color-dataset-gemj);
 }
 .dataset-icon[data-dataset=bbj]::before {
-  color: #ff993f;
+  color: var(--color-dataset-bbj);
 }
 .dataset-icon[data-dataset=clinvar]::before, .dataset-icon[data-dataset^=gnomad]::before {
-  color: #94928d;
+  color: var(--color-gray);
 }
 .dataset-icon[data-dataset=clinvar] > .properties::before, .dataset-icon[data-dataset=mgend] > .properties::before {
-  color: #ff5a54;
+  color: var(--color-sign-dangerous);
   content: "Disease";
 }
 .dataset-icon[data-dataset=tommo] > .properties::after, .dataset-icon[data-dataset=gem_j_wga] > .properties::after {
@@ -719,22 +864,22 @@ table.dataTable, table.dataTable th, table.dataTable td {
   white-space: nowrap;
 }
 .frequency-graph > .dataset[data-dataset=gem_j_wga], .frequency-graph > .dataset[data-dataset="GEM-J WGA"] {
-  --frequency-dataset-color: #dc2828;
+  --frequency-dataset-color: var(--color-dataset-gemj);
 }
 .frequency-graph > .dataset[data-dataset=jga_wgs], .frequency-graph > .dataset[data-dataset=JGA-WGS], .frequency-graph > .dataset[data-dataset=jga_wes], .frequency-graph > .dataset[data-dataset=JGA-WES], .frequency-graph > .dataset[data-dataset=jga_snp], .frequency-graph > .dataset[data-dataset=JGA-SNP] {
-  --frequency-dataset-color: #46b9cc;
+  --frequency-dataset-color: var(--color-dataset-jga);
 }
 .frequency-graph > .dataset[data-dataset=tommo], .frequency-graph > .dataset[data-dataset=ToMMo], .frequency-graph > .dataset[data-dataset^=ToMMo] {
-  --frequency-dataset-color: #ca678d;
+  --frequency-dataset-color: var(--color-dataset-tommo);
 }
 .frequency-graph > .dataset[data-dataset=ncbn], .frequency-graph > .dataset[data-dataset=NCBN] {
-  --frequency-dataset-color: #234b7c;
+  --frequency-dataset-color: var(--color-dataset-ncbn);
 }
 .frequency-graph > .dataset[data-dataset=hgvd], .frequency-graph > .dataset[data-dataset=HGVD] {
-  --frequency-dataset-color: #005b80;
+  --frequency-dataset-color: var(--color-dataset-hgvd);
 }
 .frequency-graph > .dataset[data-dataset=bbj], .frequency-graph > .dataset[data-dataset=BBJ] {
-  --frequency-dataset-color: #ff993f;
+  --frequency-dataset-color: var(--color-dataset-bbj);
 }
 .frequency-graph > .dataset > .marker {
   position: absolute;
@@ -798,7 +943,7 @@ table.dataTable, table.dataTable th, table.dataTable td {
   height: 17px;
 }
 .frequency-graph > .dataset {
-  --frequency-dataset-color: #94928d;
+  --frequency-dataset-color: var(--color-dataset-foreign);
   position: relative;
   box-sizing: border-box;
   display: inline-block;
@@ -821,22 +966,22 @@ table.dataTable, table.dataTable th, table.dataTable td {
 }
 
 .allele-frequency-graph > .dataset[data-dataset=gem_j_wga], .allele-frequency-graph > .dataset[data-dataset="GEM-J WGA"] {
-  --frequency-dataset-color: #dc2828;
+  --frequency-dataset-color: var(--color-dataset-gemj);
 }
 .allele-frequency-graph > .dataset[data-dataset=jga_wgs], .allele-frequency-graph > .dataset[data-dataset=JGA-WGS], .allele-frequency-graph > .dataset[data-dataset=jga_wes], .allele-frequency-graph > .dataset[data-dataset=JGA-WES], .allele-frequency-graph > .dataset[data-dataset=jga_snp], .allele-frequency-graph > .dataset[data-dataset=JGA-SNP] {
-  --frequency-dataset-color: #46b9cc;
+  --frequency-dataset-color: var(--color-dataset-jga);
 }
 .allele-frequency-graph > .dataset[data-dataset=tommo], .allele-frequency-graph > .dataset[data-dataset=ToMMo], .allele-frequency-graph > .dataset[data-dataset^=ToMMo] {
-  --frequency-dataset-color: #ca678d;
+  --frequency-dataset-color: var(--color-dataset-tommo);
 }
 .allele-frequency-graph > .dataset[data-dataset=ncbn], .allele-frequency-graph > .dataset[data-dataset=NCBN] {
-  --frequency-dataset-color: #234b7c;
+  --frequency-dataset-color: var(--color-dataset-ncbn);
 }
 .allele-frequency-graph > .dataset[data-dataset=hgvd], .allele-frequency-graph > .dataset[data-dataset=HGVD] {
-  --frequency-dataset-color: #005b80;
+  --frequency-dataset-color: var(--color-dataset-hgvd);
 }
 .allele-frequency-graph > .dataset[data-dataset=bbj], .allele-frequency-graph > .dataset[data-dataset=BBJ] {
-  --frequency-dataset-color: #ff993f;
+  --frequency-dataset-color: var(--color-dataset-bbj);
 }
 .allele-frequency-graph > .dataset > .marker {
   position: absolute;
@@ -900,7 +1045,7 @@ table.dataTable, table.dataTable th, table.dataTable td {
   width: 29px;
 }
 .allele-frequency-graph > .dataset {
-  --frequency-dataset-color: #94928d;
+  --frequency-dataset-color: var(--color-dataset-foreign);
   position: relative;
   box-sizing: border-box;
   display: inline-block;
@@ -967,12 +1112,6 @@ table.dataTable, table.dataTable th, table.dataTable td {
 .table > tbody > tr:last-of-type > td {
   border: none;
 }
-.table.-horizontalkeyvalue > tbody > tr th {
-  text-align: right;
-}
-.table.-horizontalkeyvalue > tbody > tr td {
-  padding-left: 12px;
-}
 
 .variant-function {
   padding: 1px 8px;
@@ -1006,14 +1145,14 @@ main {
 }
 
 a {
-  color: #256d80;
+  color: var(--color-key-dark2);
 }
 a:link {
-  color: #256d80;
+  color: var(--color-key-dark2);
   text-decoration: underline;
 }
 a:active, a:hover {
-  color: #249eb3;
+  color: var(--color-key-dark1);
 }
 
 label > input {
@@ -1044,22 +1183,22 @@ ul.no-bullet {
   padding: 4px 6px;
   font-family: "Roboto Condensed", sans-serif;
   font-size: 10px;
-  color: #444;
+  color: var(--color-black);
   border-style: solid;
   border-width: 1px;
   border-radius: 4px;
 }
 .alert.alert-danger {
-  background-color: rgb(255, 237.6315789474, 237);
-  border-color: rgb(255, 80.1578947368, 73.8);
+  background-color: var(--color-sign-dangerous-light);
+  border-color: var(--color-sign-dangerous-dark);
 }
 .alert.alert-warning {
-  background-color: rgb(255, 246.9, 229.5);
-  border-color: rgb(244.8, 167.04, 0);
+  background-color: var(--color-sign-warning-light);
+  border-color: var(--color-sign-warning-dark);
 }
 .alert.alert-info {
-  background-color: rgb(242.68, 248.9657142857, 230.2342857143);
-  border-color: rgb(152.88, 204.88, 49.92);
+  background-color: var(--color-sign-normal-light);
+  border-color: var(--color-sign-normal-dark);
 }
 
 .unimplemented {
@@ -1098,32 +1237,32 @@ ul.no-bullet {
 .ref-alt > .ref {
   position: relative;
   padding-right: 4px;
-  color: #249eb3;
+  color: var(--color-mutation-ref);
   background-color: #d8f0f4;
-  border-top: solid 1px #249eb3;
-  border-bottom: solid 1px #249eb3;
-  border-left: solid 1px #249eb3;
+  border-top: solid 1px var(--color-mutation-ref);
+  border-bottom: solid 1px var(--color-mutation-ref);
+  border-left: solid 1px var(--color-mutation-ref);
   border-top-left-radius: 3px;
   border-bottom-left-radius: 3px;
 }
 .ref-alt > .ref[data-sum]::after {
-  background-color: #249eb3;
+  background-color: var(--color-mutation-ref);
 }
 .ref-alt > .ref[data-sum="0"]::after, .ref-alt > .ref[data-sum="1"]::after, .ref-alt > .ref[data-sum="2"]::after, .ref-alt > .ref[data-sum="3"]::after, .ref-alt > .ref[data-sum="4"]::after {
   display: none;
 }
 .ref-alt > .alt {
   padding-left: 9px;
-  color: #ff6682;
+  color: var(--color-mutation-alt);
   background-color: #fde2e7;
-  border-top: solid 1px #ff6682;
-  border-right: solid 1px #ff6682;
-  border-bottom: solid 1px #ff6682;
+  border-top: solid 1px var(--color-mutation-alt);
+  border-right: solid 1px var(--color-mutation-alt);
+  border-bottom: solid 1px var(--color-mutation-alt);
   border-top-right-radius: 3px;
   border-bottom-right-radius: 3px;
 }
 .ref-alt > .alt[data-sum]::after {
-  background-color: #ff6682;
+  background-color: var(--color-mutation-alt);
 }
 .ref-alt > .alt[data-sum="0"]::after, .ref-alt > .alt[data-sum="1"]::after, .ref-alt > .alt[data-sum="2"]::after, .ref-alt > .alt[data-sum="3"]::after, .ref-alt > .alt[data-sum="4"]::after {
   display: none;
@@ -1141,7 +1280,7 @@ ul.no-bullet {
   right: -6px;
   border-top: 9px solid transparent;
   border-bottom: 9px solid transparent;
-  border-left: 6px solid #249eb3;
+  border-left: 6px solid var(--color-key-dark1);
 }
 .ref-alt > .arrow::after {
   top: 1px;
@@ -1158,127 +1297,32 @@ ul.no-bullet {
   border-radius: 9px;
 }
 .variant-function[data-function=T], .variant-function[data-function=B] {
-  background-color: #04af58;
+  background-color: var(--color-sign-safe);
 }
 .variant-function[data-function=LB] {
-  background-color: #9dcf3a;
+  background-color: var(--color-sign-normal);
 }
 .variant-function[data-function=POSSD], .variant-function[data-function=LP] {
-  background-color: #ffae00;
+  background-color: var(--color-sign-warning);
 }
 .variant-function[data-function=D], .variant-function[data-function=PROBD] {
-  background-color: #ff5a54;
+  background-color: var(--color-sign-dangerous);
 }
 .variant-function[data-function=U] {
-  color: #444;
+  color: var(--color-black);
   background-color: #eaeae9;
 }
 .variant-function[data-function=AMBIGUOUS] {
-  background-color: #bbba7e;
+  background-color: var(--color-sign-unknown);
 }
-
-.clinical-significance::before {
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  margin-right: 3px;
-  font-size: 10px;
-  font-weight: bold;
-  line-height: 18px;
-  vertical-align: top;
-  text-align: center;
-  content: attr(data-sign) "";
-  border-style: solid;
-  border-width: 1px;
-  border-radius: 9px;
+.variant-function[data-function=CADD_HIGH] {
+  background-color: var(--color-sign-dangerous);
 }
-.clinical-significance[data-sign=P]::before {
-  color: #ff5a54;
-  background-color: #ffeeed;
-  border-color: #ff5a54;
+.variant-function[data-function=CADD_MODERATE] {
+  background-color: var(--color-sign-warning);
 }
-.clinical-significance[data-sign=LP]::before {
-  color: #ffae00;
-  background-color: #fff7e6;
-  border-color: #ffae00;
-}
-.clinical-significance[data-sign=US]::before {
-  color: #94928d;
-  background-color: #eaeae9;
-  border-color: #94928d;
-}
-.clinical-significance[data-sign=LB]::before {
-  color: #9dcf3a;
-  background-color: #f3f9e6;
-  border-color: #9dcf3a;
-}
-.clinical-significance[data-sign=B]::before {
-  color: #04af58;
-  background-color: #e5fbe7;
-  border-color: #04af58;
-}
-.clinical-significance[data-sign=CI]::before {
-  color: #c654ff;
-  background-color: #f9edff;
-  border-color: #c654ff;
-}
-.clinical-significance[data-sign=DR]::before, .clinical-significance[data-sign=A]::before, .clinical-significance[data-sign=RF]::before, .clinical-significance[data-sign=PR]::before, .clinical-significance[data-sign=AF]::before, .clinical-significance[data-sign=O]::before {
-  color: #9c8200;
-  background-color: #fff7cf;
-  border-color: #9c8200;
-}
-.clinical-significance[data-sign=NP]::before, .clinical-significance[data-sign=AN]::before {
-  color: #444;
-  background-color: white;
-  border-color: #94928d;
-}
-
-.clinical-significance-full {
-  padding: 0 7px;
-  font-size: 12px;
-  font-weight: bold;
-  border: 1px solid transparent;
-  border-radius: 8.5px;
-}
-.clinical-significance-full[data-sign=P] {
-  color: #ff5a54;
-  background-color: #ffeeed;
-  border-color: #ff5a54;
-}
-.clinical-significance-full[data-sign=LP] {
-  color: #ffae00;
-  background-color: #fff7e6;
-  border-color: #ffae00;
-}
-.clinical-significance-full[data-sign=US] {
-  color: #94928d;
-  background-color: #eaeae9;
-  border-color: #94928d;
-}
-.clinical-significance-full[data-sign=LB] {
-  color: #9dcf3a;
-  background-color: #f3f9e6;
-  border-color: #9dcf3a;
-}
-.clinical-significance-full[data-sign=B] {
-  color: #04af58;
-  background-color: #e5fbe7;
-  border-color: #04af58;
-}
-.clinical-significance-full[data-sign=CI] {
-  color: #c654ff;
-  background-color: #f9edff;
-  border-color: #c654ff;
-}
-.clinical-significance-full[data-sign=DR], .clinical-significance-full[data-sign=A], .clinical-significance-full[data-sign=RF], .clinical-significance-full[data-sign=PR], .clinical-significance-full[data-sign=AF], .clinical-significance-full[data-sign=O] {
-  color: #9c8200;
-  background-color: #fff7cf;
-  border-color: #9c8200;
-}
-.clinical-significance-full[data-sign=NP], .clinical-significance-full[data-sign=AN] {
-  color: #444;
-  background-color: white;
-  border-color: #94928d;
+.variant-function[data-function=CADD_LOW] {
+  background-color: var(--color-sign-safe);
 }
 
 .star-rating {
@@ -1295,7 +1339,7 @@ ul.no-bullet {
   overflow: hidden;
 }
 .star-rating > .star-rating-item::before {
-  color: #249eb3;
+  color: var(--color-key-dark1);
   content: "★★★★";
 }
 .star-rating > .star-rating-item[data-stars="0"] {
@@ -1354,7 +1398,7 @@ main .gene-info dd {
   word-break: break-word;
 }
 main .gene-info dd a {
-  color: var(--color-key-dark);
+  color: var(--color-key-dark2);
 }
 main .gene-info dt:nth-last-child(-n+4),
 main .gene-info dd:nth-last-child(-n+4) {

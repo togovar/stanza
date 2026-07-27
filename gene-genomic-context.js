@@ -1,5 +1,6 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { u as unwrapValueFromBinding } from './utils-97dc77a0.js';
+import { r as requireFirstBinding } from './sparqlist-19d6bf99.js';
 
 class GeneJbrowse extends Stanza {
   async render() {
@@ -16,11 +17,10 @@ class GeneJbrowse extends Stanza {
       }
       throw new Error(sparqlist + " returns status " + res.status);
     }).then(data => {
-      const binding = unwrapValueFromBinding(data)[0];
-
-      if (!binding) {
-        return {error: {message: `Failed to obtain genomic position for ${this.params.hgnc_id}`}};
-      }
+      const binding = requireFirstBinding(
+        unwrapValueFromBinding(data),
+        `Failed to obtain genomic position for ${this.params.hgnc_id}`,
+      );
 
       const chr = binding.chromosome;
       const start = parseInt(binding.start);
