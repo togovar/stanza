@@ -56,7 +56,7 @@
   assets/
     css/common.scss                複数stanzaで共有するスタイル入口
     css/components/                共通UI部品のSCSS
-    css/foundation/_variables.scss 色・サイズなどのSCSS変数とCSS変数
+    css/foundation/_variables.scss 色・サイズなどのCSS変数（一部はsass:colorで計算して埋め込み）
     icons/                         共通アイコン
     vendor/                        同梱している外部ライブラリ
   togostanza-build.mjs             TogostanzaビルドのRollup補助設定
@@ -95,8 +95,8 @@
 - stanza専用スタイルは `stanzas/<stanza-id>/style.scss` に置く。
 - 共通スタイルを使う場合は `@use "@/assets/css/common";` の既存パターンに合わせる。
 - 共通UI部品を追加・変更する場合は `assets/css/components/` に置き、`assets/css/common.scss` から `@use` する。
-- 色やサイズの共通値は `assets/css/foundation/_variables.scss` の既存SCSS変数・CSS変数を優先する。
-- このリポジトリは現在SCSS変数（`$COLOR_*`）も使っている。全面的なCSSカスタムプロパティ移行を別目的で混ぜない。
+- 色やサイズの共通値は `assets/css/foundation/_variables.scss` の既存CSS変数（`:host` 内の `--color-*` など）を優先する。
+- このリポジトリの色指定はCSSカスタムプロパティ（`var(--color-*)`）を基本とする。`$COLOR_*` のようなSCSS変数は新規に追加しない（`sass:color` の `color.adjust()` は、`_variables.scss` 内でCSS変数の値をコンパイル時に計算する用途にのみ使う）。
 - `stylelint-config-recess-order` を使っているため、プロパティ順はstylelintに合わせる。
 - 疑似要素は `::before` / `::after` のようにダブルコロンで書く。
 - `@import` は使わず、既存と同じく `@use` を使う。
