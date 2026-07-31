@@ -1,0 +1,31 @@
+{
+  "@context": {
+    "stanza": "http://togostanza.org/resource/stanza#"
+  },
+  "@id": "variant-links",
+  "stanza:label": "Variant / Links",
+  "stanza:definition": "",
+  "stanza:license": "MIT",
+  "stanza:author": "PENQE",
+  "stanza:contributor": [],
+  "stanza:created": "2026-07-31",
+  "stanza:updated": "2026-07-31",
+  "stanza:parameter": [
+    {
+      "stanza:key": "tgv_id",
+      "stanza:example": "tgv219804",
+      "stanza:description": "TogoVar ID",
+      "stanza:required": true
+    },
+    {
+      "stanza:key": "sparqlist",
+      "stanza:example": "https://grch38.togovar.org/sparqlist",
+      "stanza:description": "SPARQList URL (required)",
+      "stanza:required": true
+    }
+  ],
+  "stanza:menu-placement": "bottom-right",
+  "stanza:style": [],
+  "stanza:incomingEvent": [],
+  "stanza:outgoingEvent": []
+}
