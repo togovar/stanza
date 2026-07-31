@@ -1,53 +1,117 @@
 @use "@/assets/css/common";
 
 main {
-  // key-value ペアを2列グリッドで並べる説明リスト。
-  // dt が「項目名」、dd が「値」に対応し、4カラムのグリッドに配置される。
-  // 例: [Variant type] [SNV] [Ref / Alt] [A→T]
-  //     [Position]     [chr1:12345 (GRCh38)]
-  .variant-summary-list {
-    display: grid;
-
-    // max-content で各 dt 列をラベルの最大幅に自動調整する。
-    // 固定px だと "HGNC/Approved symbol" のような長いラベルが溢れるため。
-    grid-template-columns: max-content 1fr max-content 1fr;
-
-    // column-gap を使うと列間が空白トラックになり border-bottom が途切れる。
-    // 代わりに dd の padding-right でペア間の空きを作り、border を全幅で連続させる。
+  // 外部DBリンクは表の交点ではなく「項目名と値」の一覧なので dl で表現する。
+  // 見た目は従来と同じく、各行を 4カラム(ラベル・値・ラベル・値)のグリッドにする。
+  .variant-links-list {
     width: 100%;
     margin: 0;
     font-family: "Roboto Condensed", sans-serif;
 
-    dt,
-    dd {
-      // align-self はデフォルトの stretch のままにして、セルをロー全体の高さに引き伸ばす。
-      // align-self: center にすると各セルが内容高さで縮み、border-bottom がバラバラな位置に引かれる。
-      display: flex;
-      align-items: center;
-      padding: 3px 0;
-      line-height: 1.2;
+    .category-row {
+      display: grid;
+      grid-template-columns: 130px calc(50% - 130px) 90px calc(50% - 90px);
       border-bottom: 1px solid var(--color-table-border);
     }
 
-    dt {
-      padding-left: 10px;
+    .category-label {
+      padding: 4px 10px;
+      margin: 0;
       font-size: 12px;
       font-weight: bold;
+      line-height: 1.2;
       color: var(--color-black);
-    }
-
-    dd {
-      // ブラウザデフォルトの margin-left をリセットする
-      padding-right: 10px;
-      padding-left: 12px;
-      margin: 0;
-      font-size: 14px;
-      color: var(--color-black);
+      text-align: left;
       white-space: nowrap;
+      border-right: 1px solid var(--color-table-border);
 
-      .chromosome {
+      &.category-label-left {
+        grid-column: 1;
+      }
+
+      &.category-label-right {
+        grid-column: 3;
+      }
+
+      .category-link {
         font-weight: bold;
+        color: var(--color-key-dark2);
+        text-decoration: underline;
+
+        &:hover {
+          color: var(--color-key-dark1);
+        }
+      }
+
+      .caret-down {
+        display: inline-block;
+        margin-left: 4px;
+        font-family: FontAwesome;
+        font-size: 10px;
+
+        &::before {
+          content: var(--char-arrow-down-long);
+        }
       }
     }
+
+    .category-value {
+      padding: 4px 10px;
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.2;
+      color: #444;
+      text-align: left;
+      white-space: normal;
+
+      &.category-value-left {
+        grid-column: 2;
+      }
+
+      &.category-value-right {
+        grid-column: 4;
+      }
+
+      .source {
+        display: inline-block;
+      }
+
+      .source-name {
+        margin-right: 4px;
+        color: var(--color-black);
+      }
+
+      .source-link {
+        color: var(--color-key-dark2);
+
+        &:hover {
+          color: var(--color-key-dark1);
+        }
+      }
+
+      .external-link-icon {
+        display: inline-block;
+        margin-left: 3px;
+        font-family: FontAwesome;
+        font-size: 10px;
+
+        &::before {
+          content: var(--char-external-link);
+        }
+      }
+
+      .not-available {
+        color: var(--color-gray);
+      }
+    }
+  }
+
+  .variant-links-no-data {
+    padding: 14px 0 0;
+    margin: 0;
+    font-family: "Roboto Condensed", sans-serif;
+    font-size: 14px;
+    color: #444;
+    text-align: center;
   }
 }

@@ -1,37 +1,69 @@
 {{#with error}}
   <div class="alert alert-danger">{{message}}</div>
 {{else}}
-  <div>
-    {{#with result}}
-      <dl class="variant-summary-list">
-        <dt>Position</dt>
-        <dd>
-          <span class="chromosome">{{chr}}</span>:<span class="position">{{position}}</span>
-          <span class="assembly">({{assembly}})</span>
-        </dd>
+  {{#if result}}
+    <dl class="variant-links-list">
+      {{#each result}}
+        <div class="category-row">
+          {{#with left}}
+            <dt class="category-label category-label-left">
+              {{#if anchor}}
+                <a class="category-link" href="{{anchor}}">{{label}}<span class="caret-down"></span></a>
+              {{else}}
+                {{label}}
+              {{/if}}
+            </dt>
+            <dd class="category-value category-value-left">
+              {{#each sources}}
+                <span class="source">
+                  <strong class="source-name">{{name}}</strong>
+                  {{#if url}}
+                    <a
+                      class="source-link"
+                      href="{{url}}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >{{value}}<span class="external-link-icon"></span></a>
+                  {{else}}
+                    <span class="not-available">N/A</span>
+                  {{/if}}
+                </span>{{#unless @last}}, {{/unless}}
+              {{/each}}
+            </dd>
+          {{/with}}
 
-        <dt>Ref / Alt</dt>
-        <dd>
-          <div class="ref-alt">
-            <span class="ref" data-sum="{{ref_length}}">{{ref}}</span><span class="arrow"></span><span
-              class="alt" data-sum="{{alt_length}}">{{alt}}</span>
-          </div>
-        </dd>
-
-        {{#if ../gene}}
-          <dt>HGNC/Approved symbol</dt>
-          <dd>
-            {{#if ../gene.hgnc_url}}
-              <a href="{{../gene.hgnc_url}}">{{../gene.symbol}}</a>
-            {{else}}
-              {{../gene.symbol}}
-            {{/if}}
-          </dd>
-
-          <dt>HGNC/Approved name</dt>
-          <dd>{{../gene.approved_name}}</dd>
-        {{/if}}
-      </dl>
-    {{/with}}
-  </div>
+          {{#if right}}
+            {{#with right}}
+              <dt class="category-label category-label-right">
+                {{#if anchor}}
+                  <a class="category-link" href="{{anchor}}">{{label}}<span class="caret-down"></span></a>
+                {{else}}
+                  {{label}}
+                {{/if}}
+              </dt>
+              <dd class="category-value category-value-right">
+                {{#each sources}}
+                  <span class="source">
+                    <strong class="source-name">{{name}}</strong>
+                    {{#if url}}
+                      <a
+                        class="source-link"
+                        href="{{url}}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >{{value}}<span class="external-link-icon"></span></a>
+                    {{else}}
+                      <span class="not-available">N/A</span>
+                    {{/if}}
+                  </span>{{#unless @last}}, {{/unless}}
+                {{/each}}
+              </dd>
+            {{/with}}
+          {{/if}}
+        </div>
+      {{/each}}
+    </dl>
+  {{else}}
+    <p class="variant-links-no-data">No data</p>
+  {{/if}}
 {{/with}}
