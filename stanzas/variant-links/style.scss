@@ -23,7 +23,6 @@ main {
       color: var(--color-black);
       text-align: left;
       white-space: nowrap;
-      border-right: 1px solid var(--color-table-border);
 
       &.category-label-left {
         grid-column: 1;
@@ -66,6 +65,7 @@ main {
 
       &.category-value-left {
         grid-column: 2;
+        border-right: 1px solid var(--color-table-border);
       }
 
       &.category-value-right {

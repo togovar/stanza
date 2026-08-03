@@ -1,154 +1,181 @@
 import Stanza from "togostanza/stanza";
 
-import * as display from "@/lib/display";
 import { ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
-import {
-  buildSparqlistApiUrl,
-  fetchSparqlBindings,
-  requireFirstBinding,
-} from "@/lib/sparqlist";
-import type {
-  SparqlistStanzaParams,
-  SparqlistTemplateRenderParams,
-} from "@/lib/types";
+import { buildSparqlistApiUrl } from "@/lib/sparqlist";
+import type { SparqlistStanzaParams } from "@/lib/types";
 
 // ============================================================
 // 型定義
 // ============================================================
 
-/**
- * variant_summary API のバインディングローデータ。
- * reference フィールドは "…/chr/assembly" 形式の URI で、表示前に分解が必要。
- */
-interface VariantSummarySparqlBinding {
-  /** 染色体・アセンブリを含む参照ゲノムURI（例: "http://identifiers.org/hco/1/GRCh38"） */
-  reference?: string;
-  type?: string;
-  position?: string;
-  ref?: string;
-  alt?: string;
-  gene?: string; // Ensembl 遺伝子 URI
-  hgnc?: string; // "http://identifiers.org/hgnc/{id}" 形式のURI。リンクに直接使える。
-  symbol?: string; // HGNC 承認シンボル（例: "PLEKHG5"）
-  approved_name?: string; // HGNC 承認名（例: "pleckstrin homology and RhoGEF..."）
+/** 1つの外部データベースへのリンク。url が無い場合はテンプレート側で "N/A" と表示する。 */
+interface LinkSource {
+  /** データベース表示名（例: "ClinVar"） */
+  name: string;
+  /** 表示値（例: "12-111803962-G-A"）。URLが無い場合はプレーンテキストで表示する。 */
+  value?: string;
+  url?: string;
+  /** リンク先URLが無くてもデータが存在する場合は true。 */
+  available: boolean;
 }
 
-/**
- * Handlebars テンプレートへ渡す variant_summary の表示データ。
- * reference URI を分解した chr / assembly を追加し、
- * ref / alt は表示用に整形済みの値に差し替えてある。
- * gene/hgnc/symbol/approved_name は GeneDisplayData 側で扱うため除外する。
- */
-interface VariantSummaryDisplayData extends Omit<
-  VariantSummarySparqlBinding,
-  "reference" | "gene" | "hgnc" | "symbol" | "approved_name"
-> {
-  chr?: string;
-  assembly?: string;
-  /** display.refAlt() が展開する表示用フィールド群 */
-  ref?: string;
-  alt?: string;
-  ref_length?: number;
-  alt_length?: number;
+/** 表の1セル分（Clinical significance, Frequency など1カテゴリ分）。 */
+interface LinkCategory {
+  label: string;
+  /**
+   * ページ内アンカーへのリンク(例: "#clinical-significance")。
+   * 同じページに埋め込まれた他のstanza(variant-clinvarなど)の表示位置へジャンプする用途。
+   * 無い場合はテンプレート側でリンクなしのラベルとして表示する。
+   */
+  anchor?: string;
+  sources: LinkSource[];
 }
 
-/**
- * Handlebars テンプレートへ渡す遺伝子の表示データ。
- * 複数 synonym が返る binding から1遺伝子分に集約している。
- */
-interface GeneDisplayData {
-  symbol?: string;
-  /** TogoVar内部の遺伝子ページへのリンク(`/gene/{hgnc_id}`)。テンプレートでリンクの href に直接使える。 */
-  hgnc_url?: string;
-  approved_name?: string;
+/** 表の1行。right が無い場合は右側2カラムを空セルにする(例: Splicing variantの行)。 */
+interface LinkCategoryRow {
+  left: LinkCategory;
+  right?: LinkCategory;
 }
 
 /** renderTemplate に渡すパラメータ全体。エラー時は result を持たない。 */
-interface TemplateRenderParams extends SparqlistTemplateRenderParams<VariantSummaryDisplayData> {
-  /** 遺伝子情報。バリアントが遺伝子領域外の場合は undefined。 */
-  gene?: GeneDisplayData;
+interface TemplateRenderParams {
+  params: VariantLinksParams;
+  result?: LinkCategoryRow[];
+  error?: {
+    message: string;
+  };
 }
 
-// ============================================================
-// データ変換（バインディング → 表示データ）
-// ============================================================
+interface VariantLinksParams extends SparqlistStanzaParams {
+  /** chr-pos-ref-alt形式のバリアント表記。variant_links API が対応している場合に渡す。 */
+  variant?: string;
+}
 
-/**
- * variant_summary バインディング1件をテンプレート表示データへ変換する。
- *
- * 変換内容:
- * - reference URI → chr / assembly の分離
- * - ref / alt → display.refAlt() で表示文字列・長さフィールドに展開
- */
-const convertSummaryBindingToDisplayData = (
-  binding: VariantSummarySparqlBinding,
-): VariantSummaryDisplayData => {
-  const { reference, ...sharedFields } = binding;
+interface VariantLinkRawEntry {
+  category?: string;
+  source?: string;
+  title?: string | null;
+  id?: string | null;
+  url?: string | null;
+  available?: boolean;
+}
 
-  const displayData: VariantSummaryDisplayData = {
-    ...sharedFields,
-    ...display.referenceToChrAssembly(reference),
-  };
+const CATEGORY_LAYOUT = [
+  ["Clinical significance", "Cross species"],
+  ["Frequency", "Haplotype"],
+  ["Splicing variant"],
+];
 
-  // ref / alt の長さが4文字を超える場合は "ACGT..." に省略する（display.refAlt の仕様）
-  Object.assign(displayData, display.refAlt(binding.ref, binding.alt));
-
-  return displayData;
+const CATEGORY_ANCHORS: Record<string, string> = {
+  "Clinical significance": "#clinical-significance-mgend",
+  Frequency: "#frequency",
 };
 
-/**
- * variant_summary バインディングから遺伝子表示データを組み立てる。
- * バリアントが遺伝子領域外の場合は symbol 等が undefined になるため、
- * その場合は表示データなし（undefined）として扱う。
- */
-const convertSummaryBindingToGeneDisplayData = (
-  binding: VariantSummarySparqlBinding,
-): GeneDisplayData | undefined => {
-  if (!binding.symbol) {
-    return undefined;
+const buildVariantLinksApiUrl = (params: VariantLinksParams): string => {
+  if (!params.tgv_id && !params.variant) {
+    throw new Error("Either tgv_id or variant parameter is required");
   }
 
+  return buildSparqlistApiUrl("variant_links", params, {
+    variant: params.variant,
+  });
+};
+
+const fetchVariantLinks = async (
+  apiUrl: string,
+): Promise<VariantLinkRawEntry[]> => {
+  const response = await fetch(apiUrl, {
+    method: "GET",
+    headers: { Accept: "application/json" },
+  });
+
+  if (!response.ok) {
+    throw new Error(`${apiUrl} returns status ${response.status}`);
+  }
+
+  const json: unknown = await response.json();
+  if (!Array.isArray(json)) {
+    throw new Error("variant_links response must be an array");
+  }
+
+  return json as VariantLinkRawEntry[];
+};
+
+const buildLinkSource = (entry: VariantLinkRawEntry): LinkSource => ({
+  name: entry.source ?? "",
+  value: entry.title ?? entry.id ?? undefined,
+  url: entry.url ?? undefined,
+  available: entry.available === true,
+});
+
+const buildLinkCategory = (
+  category: string,
+  entriesByCategory: Map<string, VariantLinkRawEntry[]>,
+): LinkCategory | undefined => {
+  const entries = entriesByCategory.get(category);
+  if (!entries) return undefined;
+
   return {
-    symbol: binding.symbol,
-    // TogoVar内部の遺伝子ページへのリンク。hgnc は "http://identifiers.org/hgnc/{id}" 形式のURIなので末尾のIDを取り出す。
-    hgnc_url: binding.hgnc
-      ? `/gene/${binding.hgnc.split("/").pop()}`
-      : undefined,
-    approved_name: binding.approved_name,
+    label: category,
+    anchor: CATEGORY_ANCHORS[category],
+    sources: entries.map(buildLinkSource),
   };
+};
+
+const buildLinkCategoryRows = (
+  entries: VariantLinkRawEntry[],
+): LinkCategoryRow[] => {
+  const entriesByCategory = entries.reduce<Map<string, VariantLinkRawEntry[]>>(
+    (accumulator, entry) => {
+      if (!entry.category) return accumulator;
+      const categoryEntries = accumulator.get(entry.category) ?? [];
+      categoryEntries.push(entry);
+      accumulator.set(entry.category, categoryEntries);
+      return accumulator;
+    },
+    new Map(),
+  );
+
+  return CATEGORY_LAYOUT.flatMap(([leftCategory, rightCategory]) => {
+    const left = buildLinkCategory(leftCategory, entriesByCategory);
+    if (!left) return [];
+
+    const right = rightCategory
+      ? buildLinkCategory(rightCategory, entriesByCategory)
+      : undefined;
+
+    return [{ left, right }];
+  });
 };
 
 // ============================================================
 // Stanza クラス
 // ============================================================
 
-export default class VariantSummary extends Stanza {
-  /**
-   * Togostanza フレームワークが描画ごとに呼び出すエントリーポイント。
-   * variant_summary の結果に gene/hgnc/symbol/approved_name も含まれるため、
-   * 1回の fetch のみで済ませている。
-   */
+export default class VariantLinks extends Stanza {
+  /** 再描画のたびに張り直すクリックリスナーを、disconnect時にまとめて解除するために保持する。 */
+  private cleanupAnchorLinks: (() => void)[] = [];
+
+  disconnectedCallback() {
+    this.cleanupAnchorLinks.forEach((cleanup) => cleanup());
+    this.cleanupAnchorLinks = [];
+  }
+
   async render(): Promise<void> {
-    // フォントは描画前に非同期ロード開始しておく（ロード完了を待たず続行する）
     this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
-    const params = this.params as SparqlistStanzaParams;
+    const params = this.params as VariantLinksParams;
 
-    const templateParams: TemplateRenderParams = { params };
+    const templateParams: TemplateRenderParams = {
+      params,
+    };
 
     try {
-      const summaryApiUrl = buildSparqlistApiUrl("variant_summary", params);
-      const bindings =
-        await fetchSparqlBindings<VariantSummarySparqlBinding>(summaryApiUrl);
-      const firstBinding = requireFirstBinding(
-        bindings,
-        `Variant not found for ${params.tgv_id}`,
-      );
-
-      templateParams.result = convertSummaryBindingToDisplayData(firstBinding);
-      templateParams.gene =
-        convertSummaryBindingToGeneDisplayData(firstBinding);
+      const apiUrl = buildVariantLinksApiUrl(params);
+      const rawEntries = await fetchVariantLinks(apiUrl);
+      templateParams.result = buildLinkCategoryRows(rawEntries);
     } catch (reason) {
+      console.error(reason);
       templateParams.error = {
         message: reason instanceof Error ? reason.message : String(reason),
       };
@@ -158,5 +185,42 @@ export default class VariantSummary extends Stanza {
       template: "stanza.html.hbs",
       parameters: templateParams,
     });
+
+    this.setupAnchorScrolling();
+  }
+
+  /**
+   * category-link はページ内アンカー("#id")へのリンク。
+   * このstanza自身はShadow DOM内に描画されるため、ブラウザ標準のアンカー遷移(#idジャンプ)は
+   * 対象要素がライトDOM側にあれば動作するはずだが、確実にスクロールさせるため
+   * document.getElementById() で明示的に探して scrollIntoView する。
+   * 対象が見つからない場合(単体プレビュー時など)はデフォルトのリンク遷移に任せる。
+   */
+  private setupAnchorScrolling() {
+    this.cleanupAnchorLinks.forEach((cleanup) => cleanup());
+    this.cleanupAnchorLinks = [];
+
+    this.root
+      .querySelectorAll<HTMLAnchorElement>(".category-link")
+      .forEach((link) => {
+        const handleClick = (event: MouseEvent) => {
+          const targetId = link.getAttribute("href")?.replace(/^#/, "");
+          const targetElement = targetId
+            ? document.getElementById(targetId)
+            : null;
+
+          if (!targetElement) {
+            return;
+          }
+
+          event.preventDefault();
+          targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+        };
+
+        link.addEventListener("click", handleClick);
+        this.cleanupAnchorLinks.push(() =>
+          link.removeEventListener("click", handleClick),
+        );
+      });
   }
 }

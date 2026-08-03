@@ -5,19 +5,26 @@ import type { SparqlistStanzaParams } from "./types";
 /**
  * SPARQList の API エンドポイント URL を組み立てる。
  * sparqlist が未指定の場合は throw する(暗黙のフォールバックだと埋め込み側の設定ミスに気づきにくいため)。
- * URLSearchParams で tgv_id をエスケープする。
+ * URLSearchParams で tgv_id と追加パラメータをエスケープする。
  */
 export const buildSparqlistApiUrl = (
   endpoint: string,
   { sparqlist, tgv_id }: SparqlistStanzaParams,
+  additionalParams: Record<string, string | undefined> = {},
 ): string => {
   if (!sparqlist) {
     throw new Error("sparqlist parameter is required");
   }
 
-  const queryString = new URLSearchParams({
+  const queryParams = new URLSearchParams({
     tgv_id: String(tgv_id ?? ""),
-  }).toString();
+  });
+  Object.entries(additionalParams).forEach(([key, value]) => {
+    if (value !== undefined) {
+      queryParams.set(key, value);
+    }
+  });
+  const queryString = queryParams.toString();
 
   const baseUrl = sparqlist.replace(/\/+$/, "");
 

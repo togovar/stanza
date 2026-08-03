@@ -25,7 +25,11 @@
                       rel="noopener noreferrer"
                     >{{value}}<span class="external-link-icon"></span></a>
                   {{else}}
-                    <span class="not-available">N/A</span>
+                    {{#if available}}
+                      <span class="source-value">{{value}}</span>
+                    {{else}}
+                      <span class="not-available">N/A</span>
+                    {{/if}}
                   {{/if}}
                 </span>{{#unless @last}}, {{/unless}}
               {{/each}}
@@ -53,7 +57,11 @@
                         rel="noopener noreferrer"
                       >{{value}}<span class="external-link-icon"></span></a>
                     {{else}}
-                      <span class="not-available">N/A</span>
+                      {{#if available}}
+                        <span class="source-value">{{value}}</span>
+                      {{else}}
+                        <span class="not-available">N/A</span>
+                      {{/if}}
                     {{/if}}
                   </span>{{#unless @last}}, {{/unless}}
                 {{/each}}
