@@ -1331,6 +1331,7 @@ export const CLINICAL_SIGNIFICANCE = {
   CC: {
     label: "Conflicting classifications of pathogenicity",
   },
+  // CI は ClinVar の旧表記互換キー。必要性があれば再度追加。
   DR: {
     label: "Drug response",
   },
