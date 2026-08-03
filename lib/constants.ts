@@ -1335,12 +1335,6 @@ export const CLINICAL_SIGNIFICANCE = {
   CC: {
     label: "Conflicting classifications of pathogenicity",
   },
-  // CI は ClinVar の旧表記("Conflicting interpretations of pathogenicity")との
-  // 互換キー。_clinical-significance.scss の [data-sign="CI"] スタイルが
-  // 現在も残っているため、旧表記データが来た場合に備えて維持する。
-  CI: {
-    label: "Conflicting interpretations of pathogenicity",
-  },
   DR: {
     label: "Drug response",
   },
