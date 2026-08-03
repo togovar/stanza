@@ -76,8 +76,13 @@ main {
         display: inline-block;
       }
 
+      .source-separator {
+        white-space: pre;
+      }
+
       .source-name {
         margin-right: 4px;
+        font-size: 12px;
         color: var(--color-black);
       }
 

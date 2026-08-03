@@ -16,7 +16,7 @@
             <dd class="category-value category-value-left">
               {{#each sources}}
                 <span class="source">
-                  <strong class="source-name">{{name}}</strong>
+                  <span class="source-name">{{name}}</span>
                   {{#if url}}
                     <a
                       class="source-link"
@@ -31,7 +31,7 @@
                       <span class="not-available">N/A</span>
                     {{/if}}
                   {{/if}}
-                </span>{{#unless @last}}, {{/unless}}
+                </span>{{#unless @last}}<span class="source-separator">, </span>{{/unless}}
               {{/each}}
             </dd>
           {{/with}}
@@ -48,7 +48,7 @@
               <dd class="category-value category-value-right">
                 {{#each sources}}
                   <span class="source">
-                    <strong class="source-name">{{name}}</strong>
+                    <span class="source-name">{{name}}</span>
                     {{#if url}}
                       <a
                         class="source-link"
@@ -63,7 +63,7 @@
                         <span class="not-available">N/A</span>
                       {{/if}}
                     {{/if}}
-                  </span>{{#unless @last}}, {{/unless}}
+                  </span>{{#unless @last}}<span class="source-separator">, </span>{{/unless}}
                 {{/each}}
               </dd>
             {{/with}}
