@@ -69,11 +69,6 @@ $frequency-marker-gap: 1px;
   &[data-dataset="HGVD"] {
     @include frequency-dataset-color(var(--color-dataset-hgvd));
   }
-
-  &[data-dataset="bbj"],
-  &[data-dataset="BBJ"] {
-    @include frequency-dataset-color(var(--color-dataset-bbj));
-  }
 }
 
 @mixin frequency-na {

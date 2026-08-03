@@ -993,7 +993,11 @@ export const ensureAllDatasets = (frequencies, assembly) => {
           "jga_wes",
           "jga_snp",
           "tommo",
+          "tommo_jsv1",
           "ncbn",
+          "bbj1k",
+          "bbj2k",
+          "jogo",
           "gnomad_genomes",
           "gnomad_exomes",
         ];
@@ -1331,7 +1335,12 @@ export const CLINICAL_SIGNIFICANCE = {
   CC: {
     label: "Conflicting classifications of pathogenicity",
   },
-  // CI は ClinVar の旧表記互換キー。必要性があれば再度追加。
+  // CI は ClinVar の旧表記("Conflicting interpretations of pathogenicity")との
+  // 互換キー。_clinical-significance.scss の [data-sign="CI"] スタイルが
+  // 現在も残っているため、旧表記データが来た場合に備えて維持する。
+  CI: {
+    label: "Conflicting interpretations of pathogenicity",
+  },
   DR: {
     label: "Drug response",
   },
