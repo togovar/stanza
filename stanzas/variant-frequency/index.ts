@@ -241,14 +241,16 @@ export default class VariantFrequency extends Stanza {
           }
 
           // ---- データセット名の設定 ----
-          // ToMMoはアセンブリに応じて表示名が変わる
-          if (datum.value === "tommo") {
+          // ToMMoはアセンブリやデータセット種別に応じて表示名が変わる
+          if (datum.value === "tommo_jsv1") {
+            frequencyData.dataset = "ToMMo JSV1";
+          } else if (datum.value === "tommo") {
             switch (assembly) {
               case "GRCh37":
                 frequencyData.dataset = "ToMMo 8.3KJPN";
                 break;
               case "GRCh38":
-                frequencyData.dataset = "ToMMo 54KJPN";
+                frequencyData.dataset = "ToMMo 61KJPN";
                 break;
             }
           } else {
@@ -260,7 +262,18 @@ export default class VariantFrequency extends Stanza {
           }
 
           // ---- 集団ラベルの設定 ----
-          if (["gem_j_wga", "jga_wes", "tommo", "hgvd"].includes(datum.value)) {
+          if (
+            [
+              "gem_j_wga",
+              "jga_wes",
+              "tommo",
+              "tommo_jsv1",
+              "hgvd",
+              "bbj1k",
+              "bbj2k",
+              "jogo",
+            ].includes(datum.value)
+          ) {
             // 日本人単一集団データセット
             frequencyData.label = "Japanese";
           } else if (
