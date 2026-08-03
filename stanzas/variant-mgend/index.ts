@@ -62,7 +62,7 @@ function buildConditionRows(apiResponse: TogoVarApiResponse): ConditionRow[] {
   const conditionRows: ConditionRow[] = [];
 
   apiResponse.data.forEach((variantData) => {
-    const mgendLink = variantData.external_links.mgend?.[0];
+    const mgendLink = variantData.external_links?.mgend?.[0];
     if (!mgendLink) return;
 
     variantData.significance.forEach((significanceEntry) => {
