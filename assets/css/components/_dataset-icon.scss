@@ -42,7 +42,7 @@
     color: var(--color-dataset-jga);
   }
 
-  &[data-dataset="tommo"]::before {
+  &[data-dataset^="tommo"]::before {
     color: var(--color-dataset-tommo);
   }
 
