@@ -191,10 +191,10 @@ main {
             > .lock {
               &::before {
                 margin-right: 3px;
-                font-family: FontAwesome;
+                font-family: "Font Awesome 7 Free";
                 font-size: 14px;
                 color: var(--color-black);
-                content: var(--char-lock);
+                content: var(--icon-lock);
                 opacity: 0.4;
               }
             }
@@ -229,9 +229,9 @@ main {
                 top: 50%;
                 left: 6px;
                 margin-right: 4px;
-                font-family: FontAwesome;
+                font-family: "Font Awesome 7 Free";
                 color: var(--color-sign-warning-dark);
-                content: var(--char-exclamation-triangle);
+                content: var(--icon-triangle-exclamation);
                 transform: translateY(-50%);
               }
             }
@@ -298,7 +298,7 @@ togostanza--menu {
     position: absolute;
     top: 2px;
     left: 26px;
-    font-family: FontAwesome;
+    font-family: "Font Awesome 7 Free";
     font-size: 16px;
     color: #000;
     pointer-events: none;

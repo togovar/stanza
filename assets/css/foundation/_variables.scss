@@ -57,9 +57,11 @@
   --z-index-togostanza-menu: 10000;
   --z-index-frequency-popover: 10300;
 
-  // character (stanza固有、TogoVarフロント側の変数一覧には対応するトークンなし)
-  // FontAwesome
-  --char-lock: "\f023";
-  --char-circle-info: "\f05a";
-  --char-exclamation-triangle: "\f071";
+  // Font Awesome 7 Free
+  --icon-lock: "\f023";
+  --icon-circle-info: "\f05a";
+  --icon-arrow-down: "\f063";
+  --icon-triangle-exclamation: "\f071";
+  --icon-arrow-up-right-from-square: "\f08e";
+  --icon-database: "\f1c0";
 }

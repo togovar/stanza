@@ -121,10 +121,6 @@ export default class VariantFrequency extends Stanza {
   async render() {
     // フォントの読み込み
     this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
-    // データセットアイコン用フォント
-    this.importWebFontCSS(
-      new URL("./assets/fontello.css", import.meta.url).href,
-    );
 
     // ---- stanzaパラメータの取得 ----
     // data-url: APIのベースURL, assembly: GRCh37/GRCh38, tgv_id: バリアントID

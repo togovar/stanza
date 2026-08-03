@@ -1,7 +1,7 @@
 .dataset-icon {
   position: relative;
   height: 18px;
-  font-family: fontello;
+  font-family: "Font Awesome 7 Free";
 
   &::before {
     position: relative;
@@ -9,7 +9,8 @@
     display: inline-block;
     height: 18px;
     margin-right: 2px;
-    content: "\e800";
+    font-weight: 900;
+    content: var(--icon-database);
   }
 
   > .properties {
