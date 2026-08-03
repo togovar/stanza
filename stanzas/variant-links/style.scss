@@ -76,6 +76,9 @@ main {
 
       .source {
         display: inline-block;
+        max-width: 100%;
+        vertical-align: top;
+        overflow-wrap: anywhere;
       }
 
       .source-separator {
@@ -90,6 +93,7 @@ main {
 
       .source-link {
         color: var(--color-key-dark2);
+        overflow-wrap: anywhere;
 
         &:hover {
           color: var(--color-key-dark1);
@@ -109,6 +113,10 @@ main {
 
       .not-available {
         color: var(--color-gray);
+      }
+
+      .source-value {
+        overflow-wrap: anywhere;
       }
     }
 
