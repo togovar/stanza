@@ -59,8 +59,12 @@
     color: var(--color-dataset-gemj);
   }
 
-  &[data-dataset="bbj"]::before {
+  &[data-dataset^="bbj"]::before {
     color: var(--color-dataset-bbj);
+  }
+
+  &[data-dataset="jogo"]::before {
+    color: var(--color-dataset-jogo);
   }
 
   &[data-dataset="clinvar"]::before,
