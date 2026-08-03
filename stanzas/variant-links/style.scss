@@ -47,11 +47,11 @@ main {
       .caret-down {
         display: inline-block;
         margin-left: 4px;
-        font-family: FontAwesome;
+        font-family: "Font Awesome 7 Free";
         font-size: 10px;
 
         &::before {
-          content: var(--char-arrow-down-long);
+          content: var(--icon-arrow-down);
         }
       }
     }
@@ -99,11 +99,11 @@ main {
       .external-link-icon {
         display: inline-block;
         margin-left: 3px;
-        font-family: FontAwesome;
+        font-family: "Font Awesome 7 Free";
         font-size: 10px;
 
         &::before {
-          content: var(--char-external-link);
+          content: var(--icon-arrow-up-right-from-square);
         }
       }
 
