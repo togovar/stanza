@@ -14,19 +14,13 @@
     {
       "stanza:key": "tgv_id",
       "stanza:example": "tgv167913213",
-      "stanza:description": "TogoVar ID (required if variant is not provided)",
-      "stanza:required": false
+      "stanza:description": "TogoVar ID",
+      "stanza:required": true
     },
     {
-      "stanza:key": "variant",
-      "stanza:example": "12-111803962-G-A",
-      "stanza:description": "Variant identifier in chr-pos-ref-alt format (required if tgv_id is not provided)",
-      "stanza:required": false
-    },
-    {
-      "stanza:key": "sparqlist",
-      "stanza:example": "http://localhost:3000",
-      "stanza:description": "SPARQList URL (required)",
+      "stanza:key": "data-url",
+      "stanza:example": "https://stg-grch38.togovar.org/api/search/variant",
+      "stanza:description": "TogoVar variant search API URL",
       "stanza:required": true
     }
   ],

@@ -44,6 +44,10 @@ export interface ExternalLinks {
   clinvar?: ExternalLink[];
   dbsnp?: ExternalLink[];
   gnomad?: ExternalLink[];
+  tommo?: ExternalLink[];
+  jogo?: ExternalLink[];
+  sscvdb?: ExternalLink[];
+  mog?: ExternalLink[];
 }
 
 /** バリアントごとのデータ（有意性情報と外部リンクを含む） */

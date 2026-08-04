@@ -91,6 +91,14 @@ main {
         color: var(--color-black);
       }
 
+      .dataset-icon {
+        display: inline-block;
+
+        &::before {
+          font-size: 12px;
+        }
+      }
+
       .source-link {
         color: var(--color-key-dark2);
         overflow-wrap: anywhere;

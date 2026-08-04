@@ -6,22 +6,14 @@
 
 | Key | Required | Example | Description |
 | --- | --- | --- | --- |
-| `tgv_id` | No | `tgv167913213` | TogoVar ID。`variant` を指定しない場合に必要です。 |
-| `variant` | No | `12-111803962-G-A` | chr-pos-ref-alt形式のバリアント表記。`tgv_id` を指定しない場合に必要です。 |
-| `sparqlist` | Yes | `http://localhost:3000` | `variant_links` endpoint を持つSPARQList URL。 |
+| `tgv_id` | Yes | `tgv167913213` | TogoVar ID。 |
+| `data-url` | Yes | `https://stg-grch38.togovar.org/api/search/variant` | TogoVar variant search API URL。 |
 
-## Local SPARQList
+## Data Source
 
-本番の `https://grch38.togovar.org/sparqlist` に `variant_links` endpoint が未反映の場合は、
-ローカルで起動したSPARQListを指定してください。
+このstanzaは TogoVar variant search API の `external_links` を参照します。
 
 ```txt
-sparqlist=http://localhost:3000
 tgv_id=tgv167913213
-```
-
-この設定では、stanzaは次のAPIを参照します。
-
-```txt
-http://localhost:3000/api/variant_links?tgv_id=tgv167913213
+data-url=https://grch38.togovar.org/api/search/variant
 ```

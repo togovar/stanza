@@ -16,6 +16,9 @@
             <dd class="category-value category-value-left">
               {{#each sources}}
                 <span class="source">
+                  {{#if dataset}}
+                    <span class="dataset-icon" data-dataset="{{dataset}}"></span>
+                  {{/if}}
                   <span class="source-name">{{name}}</span>
                   {{#if url}}
                     <a
@@ -49,6 +52,9 @@
               <dd class="category-value category-value-right">
                 {{#each sources}}
                   <span class="source">
+                    {{#if dataset}}
+                      <span class="dataset-icon" data-dataset="{{dataset}}"></span>
+                    {{/if}}
                     <span class="source-name">{{name}}</span>
                     {{#if url}}
                       <a

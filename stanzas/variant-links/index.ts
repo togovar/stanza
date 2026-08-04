@@ -1,8 +1,7 @@
 import Stanza from "togostanza/stanza";
 
 import { ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
-import { buildSparqlistApiUrl } from "@/lib/sparqlist";
-import type { SparqlistStanzaParams } from "@/lib/types";
+import type { ExternalLink, TogoVarApiResponse } from "@/lib/types";
 
 // ============================================================
 // 型定義
@@ -12,6 +11,8 @@ import type { SparqlistStanzaParams } from "@/lib/types";
 interface LinkSource {
   /** データベース表示名（例: "ClinVar"） */
   name: string;
+  /** variant-frequency と同じ dataset icon を表示する場合に使う dataset ID。 */
+  dataset?: string;
   /** 表示値（例: "12-111803962-G-A"）。URLが無い場合はプレーンテキストで表示する。 */
   value?: string;
   url?: string;
@@ -46,106 +47,162 @@ interface TemplateRenderParams {
   };
 }
 
-interface VariantLinksParams extends SparqlistStanzaParams {
-  /** chr-pos-ref-alt形式のバリアント表記。variant_links API が対応している場合に渡す。 */
-  variant?: string;
+interface VariantLinksParams {
+  tgv_id?: string;
+  "data-url"?: string;
 }
 
-interface VariantLinkRawEntry {
-  category?: string;
-  source?: string;
-  title?: string | null;
-  id?: string | null;
-  url?: string | null;
-  available?: boolean;
-}
+type ExternalLinkKey =
+  | "clinvar"
+  | "mgend"
+  | "dbsnp"
+  | "gnomad"
+  | "tommo"
+  | "jogo"
+  | "sscvdb"
+  | "mog";
+
+type VariantExternalLinks = Partial<Record<ExternalLinkKey, ExternalLink[]>>;
 
 const CATEGORY_LAYOUT = [
   ["Clinical significance", "Cross species"],
   ["Frequency", "Haplotype"],
   ["Splicing variant"],
-];
+] as const;
 
 const CATEGORY_ANCHORS: Record<string, string> = {
   "Clinical significance": "#clinical-significance-mgend",
   Frequency: "#frequency",
 };
 
-const buildVariantLinksApiUrl = (params: VariantLinksParams): string => {
-  if (!params.tgv_id && !params.variant) {
-    throw new Error("Either tgv_id or variant parameter is required");
-  }
-
-  return buildSparqlistApiUrl("variant_links", params, {
-    variant: params.variant,
-  });
-};
-
 const fetchVariantLinks = async (
-  apiUrl: string,
-): Promise<VariantLinkRawEntry[]> => {
-  const response = await fetch(apiUrl, {
-    method: "GET",
-    headers: { Accept: "application/json" },
+  dataUrl: string,
+  tgvId: string,
+): Promise<TogoVarApiResponse> => {
+  const response = await fetch(dataUrl, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ query: { id: [tgvId] } }),
   });
 
   if (!response.ok) {
-    throw new Error(`${apiUrl} returns status ${response.status}`);
+    throw new Error(`${dataUrl} returned status ${response.status}`);
   }
 
-  const json: unknown = await response.json();
-  if (!Array.isArray(json)) {
-    throw new Error("variant_links response must be an array");
-  }
-
-  return json as VariantLinkRawEntry[];
+  return response.json() as Promise<TogoVarApiResponse>;
 };
 
-const buildLinkSource = (entry: VariantLinkRawEntry): LinkSource => ({
-  name: entry.source ?? "",
-  value: entry.title ?? entry.id ?? undefined,
-  url: entry.url ?? undefined,
-  available: entry.available === true,
+const buildSourceFromExternalLink = (
+  name: string,
+  link: ExternalLink | undefined,
+  dataset?: string,
+): LinkSource => ({
+  name,
+  dataset,
+  value: link?.title,
+  url: link?.xref,
+  available: Boolean(link),
 });
 
-const buildLinkCategory = (
-  category: string,
-  entriesByCategory: Map<string, VariantLinkRawEntry[]>,
-): LinkCategory | undefined => {
-  const entries = entriesByCategory.get(category);
-  if (!entries) return undefined;
-
-  return {
-    label: category,
-    anchor: CATEGORY_ANCHORS[category],
-    sources: entries.map(buildLinkSource),
-  };
+const firstExternalLink = (
+  externalLinks: VariantExternalLinks,
+  key: ExternalLinkKey,
+): ExternalLink | undefined => {
+  return externalLinks[key]?.[0];
 };
 
 const buildLinkCategoryRows = (
-  entries: VariantLinkRawEntry[],
+  apiResponse: TogoVarApiResponse,
 ): LinkCategoryRow[] => {
-  const entriesByCategory = entries.reduce<Map<string, VariantLinkRawEntry[]>>(
-    (accumulator, entry) => {
-      if (!entry.category) return accumulator;
-      const categoryEntries = accumulator.get(entry.category) ?? [];
-      categoryEntries.push(entry);
-      accumulator.set(entry.category, categoryEntries);
-      return accumulator;
-    },
-    new Map(),
-  );
+  const externalLinks = (apiResponse.data[0]?.external_links ??
+    {}) as VariantExternalLinks;
 
-  return CATEGORY_LAYOUT.flatMap(([leftCategory, rightCategory]) => {
-    const left = buildLinkCategory(leftCategory, entriesByCategory);
-    if (!left) return [];
+  const categories = new Map<string, LinkCategory>([
+    [
+      "Clinical significance",
+      {
+        label: "Clinical significance",
+        anchor: CATEGORY_ANCHORS["Clinical significance"],
+        sources: [
+          buildSourceFromExternalLink(
+            "ClinVar",
+            firstExternalLink(externalLinks, "clinvar"),
+          ),
+          buildSourceFromExternalLink(
+            "MGeND",
+            firstExternalLink(externalLinks, "mgend"),
+          ),
+        ],
+      },
+    ],
+    [
+      "Cross species",
+      {
+        label: "Cross species",
+        sources: [
+          buildSourceFromExternalLink(
+            "MoG+ (Mouse)",
+            firstExternalLink(externalLinks, "mog"),
+          ),
+        ],
+      },
+    ],
+    [
+      "Frequency",
+      {
+        label: "Frequency",
+        anchor: CATEGORY_ANCHORS.Frequency,
+        sources: [
+          buildSourceFromExternalLink(
+            "dbSNP",
+            firstExternalLink(externalLinks, "dbsnp"),
+          ),
+          buildSourceFromExternalLink(
+            "ToMMo",
+            firstExternalLink(externalLinks, "tommo"),
+            "tommo",
+          ),
+          buildSourceFromExternalLink(
+            "gnomAD",
+            firstExternalLink(externalLinks, "gnomad"),
+            "gnomad",
+          ),
+        ],
+      },
+    ],
+    [
+      "Haplotype",
+      {
+        label: "Haplotype",
+        sources: [
+          buildSourceFromExternalLink(
+            "JoGo",
+            firstExternalLink(externalLinks, "jogo"),
+          ),
+        ],
+      },
+    ],
+    [
+      "Splicing variant",
+      {
+        label: "Splicing variant",
+        sources: [
+          buildSourceFromExternalLink(
+            "SSCVDB",
+            firstExternalLink(externalLinks, "sscvdb"),
+          ),
+        ],
+      },
+    ],
+  ]);
 
-    const right = rightCategory
-      ? buildLinkCategory(rightCategory, entriesByCategory)
-      : undefined;
-
-    return [{ left, right }];
-  });
+  return CATEGORY_LAYOUT.map(([leftCategory, rightCategory]) => ({
+    left: categories.get(leftCategory) as LinkCategory,
+    right: rightCategory ? categories.get(rightCategory) : undefined,
+  }));
 };
 
 // ============================================================
@@ -165,15 +222,23 @@ export default class VariantLinks extends Stanza {
     this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
     const params = this.params as VariantLinksParams;
+    const dataUrl = params["data-url"];
+    const tgvId = params.tgv_id;
 
     const templateParams: TemplateRenderParams = {
       params,
     };
 
     try {
-      const apiUrl = buildVariantLinksApiUrl(params);
-      const rawEntries = await fetchVariantLinks(apiUrl);
-      templateParams.result = buildLinkCategoryRows(rawEntries);
+      if (!dataUrl) {
+        throw new Error("data-url parameter is required");
+      }
+      if (!tgvId) {
+        throw new Error("tgv_id parameter is required");
+      }
+
+      const apiResponse = await fetchVariantLinks(dataUrl, tgvId);
+      templateParams.result = buildLinkCategoryRows(apiResponse);
     } catch (reason) {
       console.error(reason);
       templateParams.error = {
