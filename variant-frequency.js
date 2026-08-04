@@ -1,6 +1,6 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { h as hierarchy } from './transform-ddf65f5a.js';
-import { R as ROBOTO_CONDENSED_CSS_URL, D as DATASETS } from './constants-f65ecb7f.js';
+import { R as ROBOTO_CONDENSED_CSS_URL, D as DATASETS } from './constants-4313dcda.js';
 import { b as buildFrequencyMarkerState, a as buildFrequencyDisplay, f as formatLocaleInteger } from './frequency-9d3406e7.js';
 
 /**
@@ -9516,8 +9516,6 @@ class VariantFrequency extends Stanza {
     async render() {
         // フォントの読み込み
         this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
-        // データセットアイコン用フォント
-        this.importWebFontCSS(new URL("./assets/fontello.css", import.meta.url).href);
         // ---- stanzaパラメータの取得 ----
         // data-url: APIのベースURL, assembly: GRCh37/GRCh38, tgv_id: バリアントID
         const { "data-url": urlBase, assembly, tgv_id, check_local_auth_status, } = this.params;
@@ -9600,14 +9598,17 @@ class VariantFrequency extends Stanza {
                         frequencyData.grandparent_id = findParent(preparedDatasets, findParent(preparedDatasets, datum.id).id)?.id;
                     }
                     // ---- データセット名の設定 ----
-                    // ToMMoはアセンブリに応じて表示名が変わる
-                    if (datum.value === "tommo") {
+                    // ToMMoはアセンブリやデータセット種別に応じて表示名が変わる
+                    if (datum.value === "tommo_jsv1") {
+                        frequencyData.dataset = "ToMMo JSV1";
+                    }
+                    else if (datum.value === "tommo") {
                         switch (assembly) {
                             case "GRCh37":
                                 frequencyData.dataset = "ToMMo 8.3KJPN";
                                 break;
                             case "GRCh38":
-                                frequencyData.dataset = "ToMMo 54KJPN";
+                                frequencyData.dataset = "ToMMo 61KJPN";
                                 break;
                         }
                     }
@@ -9616,7 +9617,16 @@ class VariantFrequency extends Stanza {
                         frequencyData.dataset = findTopParent(preparedDatasets, datum.id)?.label;
                     }
                     // ---- 集団ラベルの設定 ----
-                    if (["gem_j_wga", "jga_wes", "tommo", "hgvd"].includes(datum.value)) {
+                    if ([
+                        "gem_j_wga",
+                        "jga_wes",
+                        "tommo",
+                        "tommo_jsv1",
+                        "hgvd",
+                        "bbj1k",
+                        "bbj2k",
+                        "jogo",
+                    ].includes(datum.value)) {
                         // 日本人単一集団データセット
                         frequencyData.label = "Japanese";
                     }

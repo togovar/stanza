@@ -1,4 +1,11 @@
 @charset "UTF-8";
+@font-face {
+  font-family: "Font Awesome 7 Free";
+  font-style: normal;
+  font-weight: 900;
+  src: url("./assets/webfonts/fa-solid-900.woff2") format("woff2");
+  font-display: swap;
+}
 :host {
   --color-key-light: rgb(159.5923076923, 229.4769230769, 231.9076923077);
   --color-key-dark1: #117f93;
@@ -8,12 +15,13 @@
   --color-singleton: rgb(255, 244.8, 178.5);
   --color-mutation-ref: #249eb3;
   --color-mutation-alt: #ff6682;
+  --color-dataset-gemj: #dc2828;
   --color-dataset-jga: #62d5d9;
+  --color-dataset-bbj: #ff993f;
   --color-dataset-tommo: #ca678d;
   --color-dataset-hgvd: #005b80;
   --color-dataset-ncbn: #234b7c;
-  --color-dataset-gemj: #dc2828;
-  --color-dataset-bbj: #ff993f;
+  --color-dataset-jogo: #83063f;
   --color-dataset-foreign: #94928d;
   --color-sign-safe: #04af58;
   --color-sign-safe-light: rgb(230.5586592179, 254.4413407821, 242.2905027933);
@@ -39,9 +47,12 @@
   --z-index-sticky-table-header: 10;
   --z-index-togostanza-menu: 10000;
   --z-index-frequency-popover: 10300;
-  --char-lock: "\f023";
-  --char-circle-info: "\f05a";
-  --char-exclamation-triangle: "\f071";
+  --icon-lock: "\f023";
+  --icon-circle-info: "\f05a";
+  --icon-arrow-down: "\f063";
+  --icon-triangle-exclamation: "\f071";
+  --icon-arrow-up-right-from-square: "\f08e";
+  --icon-database: "\f1c0";
 }
 
 .badge {
@@ -101,7 +112,7 @@
   background-color: var(--color-sign-safe-light);
   border-color: var(--color-sign-safe);
 }
-.clinical-significance[data-sign=CI]::before, .clinical-significance[data-sign=CC]::before {
+.clinical-significance[data-sign=CC]::before {
   color: var(--color-sign-modifier);
   background-color: var(--color-sign-modifier-light);
   border-color: var(--color-sign-modifier);
@@ -154,7 +165,7 @@
   background-color: var(--color-sign-safe-light);
   border-color: var(--color-sign-safe);
 }
-.clinical-significance-full[data-sign=CI], .clinical-significance-full[data-sign=CC] {
+.clinical-significance-full[data-sign=CC] {
   color: var(--color-sign-modifier);
   background-color: var(--color-sign-modifier-light);
   border-color: var(--color-sign-modifier);
@@ -173,7 +184,7 @@
 .dataset-icon {
   position: relative;
   height: 18px;
-  font-family: fontello;
+  font-family: "Font Awesome 7 Free";
 }
 .dataset-icon::before {
   position: relative;
@@ -181,7 +192,8 @@
   display: inline-block;
   height: 18px;
   margin-right: 2px;
-  content: "\e800";
+  font-weight: 900;
+  content: var(--icon-database);
 }
 .dataset-icon > .properties {
   position: relative;
@@ -206,7 +218,7 @@
 .dataset-icon[data-dataset=jga_wgs]::before, .dataset-icon[data-dataset=jga_wes]::before, .dataset-icon[data-dataset=jga_snp]::before {
   color: var(--color-dataset-jga);
 }
-.dataset-icon[data-dataset=tommo]::before {
+.dataset-icon[data-dataset^=tommo]::before {
   color: var(--color-dataset-tommo);
 }
 .dataset-icon[data-dataset=ncbn]::before {
@@ -218,8 +230,11 @@
 .dataset-icon[data-dataset=gem_j_wga]::before {
   color: var(--color-dataset-gemj);
 }
-.dataset-icon[data-dataset=bbj]::before {
+.dataset-icon[data-dataset^=bbj]::before {
   color: var(--color-dataset-bbj);
+}
+.dataset-icon[data-dataset=jogo]::before {
+  color: var(--color-dataset-jogo);
 }
 .dataset-icon[data-dataset=clinvar]::before, .dataset-icon[data-dataset^=gnomad]::before {
   color: var(--color-gray);
@@ -875,11 +890,14 @@ table.dataTable, table.dataTable th, table.dataTable td {
 .frequency-graph > .dataset[data-dataset=ncbn], .frequency-graph > .dataset[data-dataset=NCBN] {
   --frequency-dataset-color: var(--color-dataset-ncbn);
 }
+.frequency-graph > .dataset[data-dataset=bbj], .frequency-graph > .dataset[data-dataset^=BBJ] {
+  --frequency-dataset-color: var(--color-dataset-bbj);
+}
+.frequency-graph > .dataset[data-dataset=jogo], .frequency-graph > .dataset[data-dataset=JoGo] {
+  --frequency-dataset-color: var(--color-dataset-jogo);
+}
 .frequency-graph > .dataset[data-dataset=hgvd], .frequency-graph > .dataset[data-dataset=HGVD] {
   --frequency-dataset-color: var(--color-dataset-hgvd);
-}
-.frequency-graph > .dataset[data-dataset=bbj], .frequency-graph > .dataset[data-dataset=BBJ] {
-  --frequency-dataset-color: var(--color-dataset-bbj);
 }
 .frequency-graph > .dataset > .marker {
   position: absolute;
@@ -977,11 +995,14 @@ table.dataTable, table.dataTable th, table.dataTable td {
 .allele-frequency-graph > .dataset[data-dataset=ncbn], .allele-frequency-graph > .dataset[data-dataset=NCBN] {
   --frequency-dataset-color: var(--color-dataset-ncbn);
 }
+.allele-frequency-graph > .dataset[data-dataset=bbj], .allele-frequency-graph > .dataset[data-dataset^=BBJ] {
+  --frequency-dataset-color: var(--color-dataset-bbj);
+}
+.allele-frequency-graph > .dataset[data-dataset=jogo], .allele-frequency-graph > .dataset[data-dataset=JoGo] {
+  --frequency-dataset-color: var(--color-dataset-jogo);
+}
 .allele-frequency-graph > .dataset[data-dataset=hgvd], .allele-frequency-graph > .dataset[data-dataset=HGVD] {
   --frequency-dataset-color: var(--color-dataset-hgvd);
-}
-.allele-frequency-graph > .dataset[data-dataset=bbj], .allele-frequency-graph > .dataset[data-dataset=BBJ] {
-  --frequency-dataset-color: var(--color-dataset-bbj);
 }
 .allele-frequency-graph > .dataset > .marker {
   position: absolute;
@@ -1394,9 +1415,9 @@ main .frequency-popover .frequency-popover-trigger::before,
 main .frequency-popover .filter-status-popover-trigger::before,
 main .filter-status-popover .frequency-popover-trigger::before,
 main .filter-status-popover .filter-status-popover-trigger::before {
-  font-family: FontAwesome;
+  font-family: "Font Awesome 7 Free";
   font-size: 10px;
-  content: var(--char-circle-info);
+  content: var(--icon-circle-info);
 }
 main .frequency-popover .frequency-popover-trigger:focus-visible,
 main .frequency-popover .filter-status-popover-trigger:focus-visible,
@@ -1761,10 +1782,10 @@ main .table > tbody > tr > td.population[data-has-child=true].open::before {
 }
 main .table > tbody > tr > td.population > .lock::before {
   margin-right: 3px;
-  font-family: FontAwesome;
+  font-family: "Font Awesome 7 Free";
   font-size: 14px;
   color: var(--color-black);
-  content: var(--char-lock);
+  content: var(--icon-lock);
   opacity: 0.4;
 }
 main .table > tbody > tr > td.num_alt_alleles {
@@ -1795,9 +1816,9 @@ main .table > tbody > tr > td.num_alt_alleles .comment::before {
   top: 50%;
   left: 6px;
   margin-right: 4px;
-  font-family: FontAwesome;
+  font-family: "Font Awesome 7 Free";
   color: var(--color-sign-warning-dark);
-  content: var(--char-exclamation-triangle);
+  content: var(--icon-triangle-exclamation);
   transform: translateY(-50%);
 }
 main .table > tbody > tr > td.num_alleles {
@@ -1845,7 +1866,7 @@ togostanza--menu::after {
   position: absolute;
   top: 2px;
   left: 26px;
-  font-family: FontAwesome;
+  font-family: "Font Awesome 7 Free";
   font-size: 16px;
   color: #000;
   pointer-events: none;

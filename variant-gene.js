@@ -1,6 +1,6 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { u as unwrapValueFromBinding, g as grouping } from './utils-97dc77a0.js';
-import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-f65ecb7f.js';
+import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-4313dcda.js';
 
 class VariantGene extends Stanza {
   async render() {

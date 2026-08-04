@@ -58,7 +58,6 @@
     border-color: var(--color-sign-safe);
   }
 
-  &[data-sign="CI"]::before,
   &[data-sign="CC"]::before {
     color: var(--color-sign-modifier);
     background-color: var(--color-sign-modifier-light);
@@ -136,7 +135,6 @@
     border-color: var(--color-sign-safe);
   }
 
-  &[data-sign="CI"],
   &[data-sign="CC"] {
     color: var(--color-sign-modifier);
     background-color: var(--color-sign-modifier-light);
