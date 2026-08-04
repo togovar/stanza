@@ -64,10 +64,10 @@
 
 - 新しいstanzaは原則 `stanzas/<stanza-id>/` に閉じる。複数stanzaで使う処理だけ `lib/` や `assets/css/components/` に移す。
 - stanza専用の見た目は各 `style.scss` に書く。複数stanzaで再利用する表・バッジ・頻度表示などは `assets/css/components/` を確認してから追加する。
-- 共通データ変換や表示整形は既存の `lib/display.ts`, `lib/frequency.ts`, `lib/constants.js`, `lib/table.js`, `lib/floating-popover.ts`, `lib/sparqlist.ts` を優先する。
+- 共通データ変換や表示整形は既存の `lib/display.ts`, `lib/frequency.ts`, `lib/constants.ts`, `lib/table.js`, `lib/floating-popover.ts`, `lib/sparqlist.ts` を優先する。
 - 複数stanzaで共有するTypeScript型定義は `lib/types.ts` に置く。TogoVar検索APIのレスポンス型（`TogoVarApiResponse`, `VariantData`, `SignificanceEntry`, `DiseaseCondition`, `ExternalLinks` など）や、SPARQListを使うstanzaの入力パラメータ型（`SparqlistStanzaParams`）・renderTemplateパラメータ型（`SparqlistTemplateRenderParams<TResult>`）はここから import する。
 - `assets/vendor/` は同梱済みの外部ライブラリ置き場。新規追加は必要性、ライセンス、ビルドへの影響を確認する。
-- フォントやアイコンを参照する場合は、既存の `assets/fontello.*`, `assets/fontawesome-webfont.svg`, `assets/icons/` の使い方に合わせる。
+- フォントやアイコンを参照する場合は、既存の `@fortawesome/fontawesome-free`, `assets/icons/` の使い方に合わせる。
 
 ## Togostanza実装方針
 
@@ -120,7 +120,7 @@
 - TogoVar検索APIを使うstanzaでは、`data-url`、`assembly`、`tgv_id` など `metadata.json` のパラメータと実装を同期させる。
 - sparqlistのクエリ本体（`github.com/togovar/sparqlist`）はこのリポジトリの範囲外で、直接編集する権限運用にはなっていない。開発はfork（`github.com/PENQEinc/togovar-sparqlist`）で行い、`togovar/sparqlist` の `develop` へPRを出す運用（このリポジトリ自身のorigin/upstream構成と同じ）。sparqlist側のクエリ追加・修正が必要な場合は、この作業では対応不可と判断し、ユーザーに別リポジトリでの対応を依頼する（運用手順は `README.md` を参照）。
 - APIレスポンスの表示整形は、重複実装する前に `lib/display.ts` と `lib/frequency.ts` を確認する。
-- dataset、consequence、variant type、prediction labelなどのマスタ値は `lib/constants.js` を確認する。
+- dataset、consequence、variant type、prediction labelなどのマスタ値は `lib/constants.ts` を確認する。
 - 頻度表示は `buildFrequencyDisplay()` と `buildFrequencyMarkerState()` の既存ロジックを優先し、stanza間で表示仕様がずれないようにする。
 - 外部APIが空データを返す場合、表示崩れではなく「データなし」または空テーブルとして成立するか確認する。ただし「指定したID(`tgv_id`/`hgnc_id`など)に対応する1件のバインディングが存在しない」場合は、result・errorのどちらも未設定のまま空表示になっていないか必ず確認する(result/errorの両方が unset だと空の`<div>`だけが描画され、ユーザーに何も伝わらない)。この「先頭バインディングを取得し、無ければ通知する」処理は `lib/sparqlist.ts` の `requireFirstBinding(bindings, notFoundMessage)` に共通化されているので、新規・既存問わず優先して使う。複数件を扱うstanza(トランスクリプト一覧など)で結果が0件なのが正常な状態(例: 遺伝子領域外のバリアントで関連遺伝子が無い)の場合は、これを使わず空リスト・空テーブルのまま成立させてよい。
 

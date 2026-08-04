@@ -55,14 +55,19 @@ $frequency-marker-gap: 1px;
     @include frequency-dataset-color(var(--color-dataset-ncbn));
   }
 
+  &[data-dataset="bbj"],
+  &[data-dataset^="BBJ"] {
+    @include frequency-dataset-color(var(--color-dataset-bbj));
+  }
+
+  &[data-dataset="jogo"],
+  &[data-dataset="JoGo"] {
+    @include frequency-dataset-color(var(--color-dataset-jogo));
+  }
+
   &[data-dataset="hgvd"],
   &[data-dataset="HGVD"] {
     @include frequency-dataset-color(var(--color-dataset-hgvd));
-  }
-
-  &[data-dataset="bbj"],
-  &[data-dataset="BBJ"] {
-    @include frequency-dataset-color(var(--color-dataset-bbj));
   }
 }
 
