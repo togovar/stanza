@@ -59,7 +59,7 @@ type ExternalLinkKey =
   | "gnomad"
   | "tommo"
   | "jogo"
-  | "sscvdb"
+  | "sscv_db"
   | "mog";
 
 type VariantExternalLinks = Partial<Record<ExternalLinkKey, ExternalLink[]>>;
@@ -161,14 +161,14 @@ const buildLinkCategoryRows = (
             firstExternalLink(externalLinks, "dbsnp"),
           ),
           buildSourceFromExternalLink(
-            "ToMMo",
-            firstExternalLink(externalLinks, "tommo"),
-            "tommo",
-          ),
-          buildSourceFromExternalLink(
             "gnomAD",
             firstExternalLink(externalLinks, "gnomad"),
             "gnomad",
+          ),
+          buildSourceFromExternalLink(
+            "ToMMo",
+            firstExternalLink(externalLinks, "tommo"),
+            "tommo",
           ),
         ],
       },
@@ -192,7 +192,7 @@ const buildLinkCategoryRows = (
         sources: [
           buildSourceFromExternalLink(
             "SSCVDB",
-            firstExternalLink(externalLinks, "sscvdb"),
+            firstExternalLink(externalLinks, "sscv_db"),
           ),
         ],
       },

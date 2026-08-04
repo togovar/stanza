@@ -46,7 +46,7 @@ export interface ExternalLinks {
   gnomad?: ExternalLink[];
   tommo?: ExternalLink[];
   jogo?: ExternalLink[];
-  sscvdb?: ExternalLink[];
+  sscv_db?: ExternalLink[];
   mog?: ExternalLink[];
 }
 
