@@ -1,7 +1,7 @@
 import Stanza from "togostanza/stanza";
 
 import { ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
-import type { ExternalLink, TogoVarApiResponse } from "@/lib/types";
+import type { ExternalLink, TogoVarApiResponse, VariantData } from "@/lib/types";
 
 // ============================================================
 // 型定義
@@ -50,6 +50,8 @@ interface TemplateRenderParams {
 interface VariantLinksParams {
   tgv_id?: string;
   "data-url"?: string;
+  sparqlist?: string;
+  mogplus_ver?: string;
 }
 
 type ExternalLinkKey =
@@ -64,6 +66,19 @@ type ExternalLinkKey =
 
 type VariantExternalLinks = Partial<Record<ExternalLinkKey, ExternalLink[]>>;
 
+interface MogplusEntry {
+  target?: string;
+  chr?: string;
+  pos?: number;
+  ref?: string;
+  alt?: string;
+  strains?: string[];
+}
+
+const DEFAULT_MOGPLUS_VERSION = "mogplus21";
+const DEFAULT_MOGPLUS_SOURCE = "GRCh38";
+const MOGPLUS_BASE_URL = "https://molossinus.brc.riken.jp";
+
 const CATEGORY_LAYOUT = [
   ["Clinical significance", "Cross species"],
   ["Frequency", "Splicing variant"],
@@ -71,6 +86,7 @@ const CATEGORY_LAYOUT = [
 
 const CATEGORY_ANCHORS: Record<string, string> = {
   "Clinical significance": "#clinical-significance-mgend",
+  "Cross species": "#cross-species",
   Frequency: "#frequency",
 };
 
@@ -113,8 +129,113 @@ const firstExternalLink = (
   return externalLinks[key]?.[0];
 };
 
+const normalizeMogplusEntry = (json: unknown): MogplusEntry | undefined => {
+  if (Array.isArray(json)) {
+    return json[0] as MogplusEntry | undefined;
+  }
+  if (typeof json !== "object" || json === null) {
+    return undefined;
+  }
+
+  const response = json as { data?: unknown[]; error?: unknown; target?: string };
+  if (response.error) {
+    return undefined;
+  }
+  if (Array.isArray(response.data)) {
+    return response.data[0] as MogplusEntry | undefined;
+  }
+  if (response.target) {
+    return response as MogplusEntry;
+  }
+
+  return undefined;
+};
+
+const buildMogplusApiUrl = (
+  sparqlist: string,
+  variant: VariantData,
+  mogplusVersion: string,
+): string => {
+  const params = new URLSearchParams({
+    source: DEFAULT_MOGPLUS_SOURCE,
+    chr: variant.chromosome,
+    pos: String(variant.position),
+    ref: variant.reference,
+    alt: variant.alternate,
+    mogplus_ver: mogplusVersion,
+  });
+
+  return `${sparqlist.replace(/\/+$/, "")}/api/variant_mogplus?${params.toString()}`;
+};
+
+const buildMogplusSourceUrl = (
+  entry: MogplusEntry,
+  mogplusVersion: string,
+): string | undefined => {
+  if (!entry.chr || !entry.pos) {
+    return undefined;
+  }
+
+  const strains = Array.isArray(entry.strains) ? entry.strains : [];
+  const strainParams = ["refGenome"].concat(
+    strains.map((strain) => strain.replace(/\//g, "_")),
+  );
+  const query = [
+    strainParams
+      .map((strain) => `strainNoSlct=${encodeURIComponent(strain)}`)
+      .join("&"),
+    `chrName=${encodeURIComponent(entry.chr)}`,
+    `chrStart=${Number(entry.pos) - 500}`,
+    `chrEnd=${Number(entry.pos) + 500}`,
+    "seqType=genome",
+    `chrName=${encodeURIComponent(entry.chr)}`,
+    "geneNameSearchText=",
+    "index=submit",
+    "presentType=disp",
+  ].join("&");
+
+  return `${MOGPLUS_BASE_URL}/${mogplusVersion}/variantTable/?${query}`;
+};
+
+const buildMogplusSource = (
+  entry: MogplusEntry | undefined,
+  mogplusVersion: string,
+): LinkSource => ({
+  name: "MoG+ (Mouse)",
+  value:
+    entry?.chr && entry.pos && entry.ref && entry.alt
+      ? `${entry.chr}-${entry.pos}-${entry.ref}-${entry.alt}`
+      : undefined,
+  url: entry ? buildMogplusSourceUrl(entry, mogplusVersion) : undefined,
+  available: Boolean(entry),
+});
+
+const fetchMogplusEntry = async (
+  sparqlist: string | undefined,
+  variant: VariantData | undefined,
+  mogplusVersion: string,
+): Promise<MogplusEntry | undefined> => {
+  if (!sparqlist || !variant) {
+    return undefined;
+  }
+
+  const apiUrl = buildMogplusApiUrl(sparqlist, variant, mogplusVersion);
+  const response = await fetch(apiUrl, {
+    method: "GET",
+    headers: { Accept: "application/json" },
+  });
+
+  if (!response.ok) {
+    throw new Error(`${apiUrl} returned status ${response.status}`);
+  }
+
+  return normalizeMogplusEntry(await response.json());
+};
+
 const buildLinkCategoryRows = (
   apiResponse: TogoVarApiResponse,
+  mogplusEntry: MogplusEntry | undefined,
+  mogplusVersion: string,
 ): LinkCategoryRow[] => {
   const externalLinks = (apiResponse.data[0]?.external_links ??
     {}) as VariantExternalLinks;
@@ -141,12 +262,8 @@ const buildLinkCategoryRows = (
       "Cross species",
       {
         label: "Cross species",
-        sources: [
-          buildSourceFromExternalLink(
-            "MoG+ (Mouse)",
-            firstExternalLink(externalLinks, "mog"),
-          ),
-        ],
+        anchor: CATEGORY_ANCHORS["Cross species"],
+        sources: [buildMogplusSource(mogplusEntry, mogplusVersion)],
       },
     ],
     [
@@ -230,7 +347,17 @@ export default class VariantLinks extends Stanza {
       }
 
       const apiResponse = await fetchVariantLinks(dataUrl, tgvId);
-      templateParams.result = buildLinkCategoryRows(apiResponse);
+      const mogplusVersion = params.mogplus_ver ?? DEFAULT_MOGPLUS_VERSION;
+      const mogplusEntry = await fetchMogplusEntry(
+        params.sparqlist,
+        apiResponse.data[0],
+        mogplusVersion,
+      );
+      templateParams.result = buildLinkCategoryRows(
+        apiResponse,
+        mogplusEntry,
+        mogplusVersion,
+      );
     } catch (reason) {
       console.error(reason);
       templateParams.error = {

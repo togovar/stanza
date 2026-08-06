@@ -53,6 +53,10 @@ export interface ExternalLinks {
 /** バリアントごとのデータ（有意性情報と外部リンクを含む） */
 export interface VariantData {
   id: string;
+  chromosome: string;
+  position: number;
+  reference: string;
+  alternate: string;
   significance: SignificanceEntry[];
   // 実際のTogoVar variant APIレスポンス（variant-mgendが叩くエンドポイント）で
   // 動作確認済みのフィールド名。gene-mgend/disease-mgend側のJS実装は

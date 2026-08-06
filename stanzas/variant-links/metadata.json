@@ -22,6 +22,18 @@
       "stanza:example": "https://stg-grch38.togovar.org/api/search/variant",
       "stanza:description": "TogoVar variant search API URL",
       "stanza:required": true
+    },
+    {
+      "stanza:key": "sparqlist",
+      "stanza:example": "https://stg-grch38.togovar.org/sparqlist",
+      "stanza:description": "SPARQList URL for MoG+ cross species links",
+      "stanza:required": false
+    },
+    {
+      "stanza:key": "mogplus_ver",
+      "stanza:example": "mogplus21",
+      "stanza:description": "MoG+ version",
+      "stanza:required": false
     }
   ],
   "stanza:menu-placement": "bottom-right",
