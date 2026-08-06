@@ -66,8 +66,7 @@ type VariantExternalLinks = Partial<Record<ExternalLinkKey, ExternalLink[]>>;
 
 const CATEGORY_LAYOUT = [
   ["Clinical significance", "Cross species"],
-  ["Frequency", "Haplotype"],
-  ["Splicing variant"],
+  ["Frequency", "Splicing variant"],
 ] as const;
 
 const CATEGORY_ANCHORS: Record<string, string> = {
@@ -161,26 +160,19 @@ const buildLinkCategoryRows = (
             firstExternalLink(externalLinks, "dbsnp"),
           ),
           buildSourceFromExternalLink(
-            "gnomAD",
-            firstExternalLink(externalLinks, "gnomad"),
-            "gnomad",
-          ),
-          buildSourceFromExternalLink(
             "ToMMo",
             firstExternalLink(externalLinks, "tommo"),
             "tommo",
           ),
-        ],
-      },
-    ],
-    [
-      "Haplotype",
-      {
-        label: "Haplotype",
-        sources: [
           buildSourceFromExternalLink(
             "JoGo",
             firstExternalLink(externalLinks, "jogo"),
+            "jogo",
+          ),
+          buildSourceFromExternalLink(
+            "gnomAD",
+            firstExternalLink(externalLinks, "gnomad"),
+            "gnomad",
           ),
         ],
       },
