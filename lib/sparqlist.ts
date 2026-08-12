@@ -3,21 +3,16 @@ import { unwrapValueFromBinding } from "togostanza/utils";
 import type { SparqlistStanzaParams } from "./types";
 
 /**
- * SPARQList の API エンドポイント URL を組み立てる。
- * sparqlist が未指定の場合は throw する(暗黙のフォールバックだと埋め込み側の設定ミスに気づきにくいため)。
- * tgv_id と variant(VCF表記 CHROM-POS-REF-ALT) は、指定された値をそれぞれクエリに含める。
+ * tgv_id / variant(VCF表記 CHROM-POS-REF-ALT) と追加パラメータから、
+ * 空文字/未指定の項目を除いたクエリ文字列を組み立てる。
  * sparqlist側は tgv_id があればそれを優先し、無ければ variant で解決する(どちらも無ければエラー)。
- * URLSearchParams で値と追加パラメータをエスケープする。
+ * sparqlist を必須化していないstanza(フォールバックURL方式)からも共通で使うため、
+ * URL全体の組み立て(buildSparqlistApiUrl)とは切り離してある。
  */
-export const buildSparqlistApiUrl = (
-  endpoint: string,
-  { sparqlist, tgv_id, variant }: SparqlistStanzaParams,
+export const buildIdentifierQueryString = (
+  { tgv_id, variant }: Pick<SparqlistStanzaParams, "tgv_id" | "variant">,
   additionalParams: Record<string, string | undefined> = {},
 ): string => {
-  if (!sparqlist) {
-    throw new Error("sparqlist parameter is required");
-  }
-
   const queryParams = new URLSearchParams();
   Object.entries({ tgv_id, variant, ...additionalParams }).forEach(
     ([key, value]) => {
@@ -26,9 +21,26 @@ export const buildSparqlistApiUrl = (
       }
     },
   );
-  const queryString = queryParams.toString();
 
-  const baseUrl = sparqlist.replace(/\/+$/, "");
+  return queryParams.toString();
+};
+
+/**
+ * SPARQList の API エンドポイント URL を組み立てる。
+ * sparqlist が未指定の場合は throw する(暗黙のフォールバックだと埋め込み側の設定ミスに気づきにくいため)。
+ * URLSearchParams で値と追加パラメータをエスケープする。
+ */
+export const buildSparqlistApiUrl = (
+  endpoint: string,
+  params: SparqlistStanzaParams,
+  additionalParams: Record<string, string | undefined> = {},
+): string => {
+  if (!params.sparqlist) {
+    throw new Error("sparqlist parameter is required");
+  }
+
+  const queryString = buildIdentifierQueryString(params, additionalParams);
+  const baseUrl = params.sparqlist.replace(/\/+$/, "");
 
   return `${baseUrl}/api/${endpoint}?${queryString}`;
 };

@@ -9,13 +9,19 @@
   "stanza:author": "PENQE",
   "stanza:contributor": [],
   "stanza:created": "2026-07-31",
-  "stanza:updated": "2026-07-31",
+  "stanza:updated": "2026-08-12",
   "stanza:parameter": [
     {
       "stanza:key": "tgv_id",
       "stanza:example": "tgv167913213",
-      "stanza:description": "TogoVar ID",
-      "stanza:required": true
+      "stanza:description": "TogoVar ID (required if variant is not given)",
+      "stanza:required": false
+    },
+    {
+      "stanza:key": "variant",
+      "stanza:example": "1-12345-A-T",
+      "stanza:description": "Variant in VCF notation CHROM-POS-REF-ALT (required if tgv_id is not given)",
+      "stanza:required": false
     },
     {
       "stanza:key": "data-url",

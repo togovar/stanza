@@ -2,21 +2,8 @@ import Stanza from "togostanza/stanza";
 
 import {transformRecord} from "@/lib/display";
 import {ROBOTO_CONDENSED_CSS_URL} from "@/lib/constants";
-
-const parseVariantParam = (variant) => {
-  if (!variant) {
-    return undefined;
-  }
-
-  const [chromosome, position, reference, alternate] = variant.split("-");
-  if (!chromosome || !position || !reference || !alternate) {
-    return undefined;
-  }
-
-  return {chromosome, position, reference, alternate};
-};
-
-const normalizeChromosome = (chromosome) => String(chromosome ?? "").replace(/^chr/i, "");
+import {buildIdentifierQueryString} from "@/lib/sparqlist";
+import {normalizeChromosome, parseVariantParam} from "@/lib/variant";
 
 const isInputVariant = (record, params) => {
   if (params.tgv_id && record.id === params.tgv_id) {
@@ -40,10 +27,7 @@ export default class VariantSummary extends Stanza {
 
     // tgv_id が無いバリアント（TogoVar未登録）は variant(CHROM-POS-REF-ALT) で解決する。
     // sparqlist側は tgv_id があれば優先し、無ければ variant を使う。
-    const queryString = new URLSearchParams({
-      tgv_id: this.params?.tgv_id ?? "",
-      variant: this.params?.variant ?? "",
-    }).toString();
+    const queryString = buildIdentifierQueryString(this.params ?? {});
     const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/variant_other_alternative_alleles?${queryString}`)
 
     const r = await fetch(sparqlist, {

@@ -53,7 +53,6 @@ export interface ExternalLinks {
   tommo?: ExternalLink[];
   jogo?: ExternalLink[];
   sscv_db?: ExternalLink[];
-  mog?: ExternalLink[];
 }
 
 /** バリアントごとのデータ（有意性情報と外部リンクを含む） */

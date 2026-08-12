@@ -1,7 +1,10 @@
 import Stanza from "togostanza/stanza";
 
 import { ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
+import { describeVariantIdentifier } from "@/lib/sparqlist";
 import type { ExternalLink, TogoVarApiResponse, VariantData } from "@/lib/types";
+import { normalizeChromosome, parseVariantParam } from "@/lib/variant";
+import type { ParsedVariant } from "@/lib/variant";
 
 // ============================================================
 // 型定義
@@ -49,6 +52,7 @@ interface TemplateRenderParams {
 
 interface VariantLinksParams {
   tgv_id?: string;
+  variant?: string;
   "data-url"?: string;
   sparqlist?: string;
   mogplus_ver?: string;
@@ -61,8 +65,7 @@ type ExternalLinkKey =
   | "gnomad"
   | "tommo"
   | "jogo"
-  | "sscv_db"
-  | "mog";
+  | "sscv_db";
 
 type VariantExternalLinks = Partial<Record<ExternalLinkKey, ExternalLink[]>>;
 
@@ -90,9 +93,9 @@ const CATEGORY_ANCHORS: Record<string, string> = {
   Frequency: "#frequency",
 };
 
-const fetchVariantLinks = async (
+const postVariantQuery = async (
   dataUrl: string,
-  tgvId: string,
+  query: Record<string, unknown>,
 ): Promise<TogoVarApiResponse> => {
   const response = await fetch(dataUrl, {
     method: "POST",
@@ -100,7 +103,7 @@ const fetchVariantLinks = async (
       Accept: "application/json",
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ query: { id: [tgvId] } }),
+    body: JSON.stringify({ query }),
   });
 
   if (!response.ok) {
@@ -109,6 +112,28 @@ const fetchVariantLinks = async (
 
   return response.json() as Promise<TogoVarApiResponse>;
 };
+
+const fetchVariantDataById = (
+  dataUrl: string,
+  tgvId: string,
+): Promise<TogoVarApiResponse> => postVariantQuery(dataUrl, { id: [tgvId] });
+
+/**
+ * tgv_id を持たないバリアント（TogoVar未登録）を variant(CHROM-POS-REF-ALT) で解決する。
+ * TogoVar検索APIは variant 表記そのものでの検索に対応していないため、
+ * jogo-haplotype-explorer と同じ location(chromosome/position) クエリで候補を取得し、
+ * reference/alternate が一致するものを呼び出し側で絞り込む。
+ */
+const fetchVariantDataByLocation = (
+  dataUrl: string,
+  parsedVariant: ParsedVariant,
+): Promise<TogoVarApiResponse> =>
+  postVariantQuery(dataUrl, {
+    location: {
+      chromosome: normalizeChromosome(parsedVariant.chromosome),
+      position: Number(parsedVariant.position),
+    },
+  });
 
 const buildSourceFromExternalLink = (
   name: string,
@@ -129,13 +154,31 @@ const firstExternalLink = (
   return externalLinks[key]?.[0];
 };
 
-const requireFirstVariantData = (
+/**
+ * tgv_id 指定時は検索結果の先頭を採用する(id指定なので1件のはず)。
+ * variant 指定時は location クエリで同一位置の候補が複数返り得るため、
+ * reference/alternate が入力と一致するものを探す(multi-allelicサイト対策)。
+ */
+const requireVariantData = (
   apiResponse: TogoVarApiResponse,
-  tgvId: string,
+  tgvId: string | undefined,
+  parsedVariant: ParsedVariant | undefined,
+  identifier: string,
 ): VariantData => {
-  const variantData = apiResponse.data[0];
+  const variantData = tgvId
+    ? apiResponse.data[0]
+    : apiResponse.data.find(
+        (data) =>
+          parsedVariant !== undefined &&
+          normalizeChromosome(data.chromosome) ===
+            normalizeChromosome(parsedVariant.chromosome) &&
+          String(data.position) === parsedVariant.position &&
+          data.reference === parsedVariant.reference &&
+          data.alternate === parsedVariant.alternate,
+      );
+
   if (!variantData) {
-    throw new Error(`Variant not found for ${tgvId}`);
+    throw new Error(`Variant not found for ${identifier}`);
   }
 
   return variantData;
@@ -200,7 +243,6 @@ const buildMogplusSourceUrl = (
     `chrStart=${Number(entry.pos) - 500}`,
     `chrEnd=${Number(entry.pos) + 500}`,
     "seqType=genome",
-    `chrName=${encodeURIComponent(entry.chr)}`,
     "geneNameSearchText=",
     "index=submit",
     "presentType=disp",
@@ -251,11 +293,11 @@ const fetchMogplusEntry = async (
 };
 
 const buildLinkCategoryRows = (
-  apiResponse: TogoVarApiResponse,
+  variantData: VariantData,
   mogplusEntry: MogplusEntry | undefined,
   mogplusVersion: string,
 ): LinkCategoryRow[] => {
-  const externalLinks = (apiResponse.data[0]?.external_links ??
+  const externalLinks = (variantData.external_links ??
     {}) as VariantExternalLinks;
 
   const categories = new Map<string, LinkCategory>([
@@ -351,6 +393,7 @@ export default class VariantLinks extends Stanza {
     const params = this.params as VariantLinksParams;
     const dataUrl = params["data-url"];
     const tgvId = params.tgv_id;
+    const parsedVariant = parseVariantParam(params.variant);
 
     const templateParams: TemplateRenderParams = {
       params,
@@ -360,12 +403,22 @@ export default class VariantLinks extends Stanza {
       if (!dataUrl) {
         throw new Error("data-url parameter is required");
       }
-      if (!tgvId) {
-        throw new Error("tgv_id parameter is required");
+      if (!tgvId && !parsedVariant) {
+        throw new Error("tgv_id or variant parameter is required");
       }
 
-      const apiResponse = await fetchVariantLinks(dataUrl, tgvId);
-      const variantData = requireFirstVariantData(apiResponse, tgvId);
+      const apiResponse = tgvId
+        ? await fetchVariantDataById(dataUrl, tgvId)
+        : await fetchVariantDataByLocation(
+            dataUrl,
+            parsedVariant as ParsedVariant,
+          );
+      const variantData = requireVariantData(
+        apiResponse,
+        tgvId,
+        parsedVariant,
+        describeVariantIdentifier(params),
+      );
       const mogplusVersion = params.mogplus_ver ?? DEFAULT_MOGPLUS_VERSION;
       const mogplusEntry = await fetchMogplusEntry(
         params.sparqlist,
@@ -373,7 +426,7 @@ export default class VariantLinks extends Stanza {
         mogplusVersion,
       );
       templateParams.result = buildLinkCategoryRows(
-        apiResponse,
+        variantData,
         mogplusEntry,
         mogplusVersion,
       );

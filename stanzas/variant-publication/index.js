@@ -2,6 +2,7 @@ import Stanza from "@/lib/stanza";
 import {unwrapValueFromBinding} from "togostanza/utils";
 
 import {ROBOTO_CONDENSED_CSS_URL} from "@/lib/constants";
+import {buildIdentifierQueryString} from "@/lib/sparqlist";
 
 const RS_PREFIX = "http://identifiers.org/dbsnp/";
 
@@ -11,10 +12,7 @@ export default class VariantPublication extends Stanza {
 
     // tgv_id が無いバリアント（TogoVar未登録）は variant(CHROM-POS-REF-ALT) で解決する。
     // sparqlist側は tgv_id があれば優先し、無ければ variant を使う。
-    const queryString = new URLSearchParams({
-      tgv_id: this.params.tgv_id ?? "",
-      variant: this.params.variant ?? "",
-    }).toString();
+    const queryString = buildIdentifierQueryString(this.params);
     const sparqlist = (this.params.sparqlist || "/sparqlist").concat(`/api/tgv2rs?${queryString}`);
 
     const r = await fetch(sparqlist, {
