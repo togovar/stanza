@@ -48,6 +48,10 @@ main {
       .chromosome {
         font-weight: bold;
       }
+
+      &:nth-of-type(odd) {
+        border-right: 1px solid var(--color-table-border);
+      }
     }
 
     @media (width <= 580px) {
@@ -56,6 +60,10 @@ main {
       dd {
         overflow-wrap: anywhere;
         white-space: normal;
+
+        &:nth-of-type(odd) {
+          border-right: none;
+        }
       }
     }
   }
