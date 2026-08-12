@@ -8,9 +8,9 @@ main {
   .variant-summary-list {
     display: grid;
 
-    // variant-links と同じ列幅にして、左右ペアの境界線を常に全体幅の50%に揃える。
-    // 左右それぞれで「dt固定幅 + dd可変幅 = 50%」になるようにしている。
-    grid-template-columns: 130px calc(50% - 130px) 120px calc(50% - 120px);
+    // max-content で各 dt 列をラベルの最大幅に自動調整する。
+    // 固定px だと "HGNC/Approved symbol" のような長いラベルが溢れるため。
+    grid-template-columns: max-content 1fr max-content 1fr;
 
     // column-gap を使うと列間が空白トラックになり border-bottom が途切れる。
     // 代わりに dd の padding-right でペア間の空きを作り、border を全幅で連続させる。
@@ -48,22 +48,14 @@ main {
       .chromosome {
         font-weight: bold;
       }
-
-      &:nth-of-type(odd) {
-        border-right: 1px solid var(--color-table-border);
-      }
     }
 
     @media (width <= 580px) {
-      grid-template-columns: 130px minmax(0, 1fr);
+      grid-template-columns: max-content minmax(0, 1fr);
 
       dd {
         overflow-wrap: anywhere;
         white-space: normal;
-
-        &:nth-of-type(odd) {
-          border-right: none;
-        }
       }
     }
   }

@@ -3,6 +3,37 @@ import Stanza from "togostanza/stanza";
 import {transformRecord} from "@/lib/display";
 import {ROBOTO_CONDENSED_CSS_URL} from "@/lib/constants";
 
+const parseVariantParam = (variant) => {
+  if (!variant) {
+    return undefined;
+  }
+
+  const [chromosome, position, reference, alternate] = variant.split("-");
+  if (!chromosome || !position || !reference || !alternate) {
+    return undefined;
+  }
+
+  return {chromosome, position, reference, alternate};
+};
+
+const normalizeChromosome = (chromosome) => String(chromosome ?? "").replace(/^chr/i, "");
+
+const isInputVariant = (record, params) => {
+  if (params.tgv_id && record.id === params.tgv_id) {
+    return true;
+  }
+
+  const variant = parseVariantParam(params.variant);
+  if (!variant) {
+    return false;
+  }
+
+  return normalizeChromosome(record.chromosome) === normalizeChromosome(variant.chromosome) &&
+    String(record.position) === variant.position &&
+    String(record.reference) === variant.reference &&
+    String(record.alternate) === variant.alternate;
+};
+
 export default class VariantSummary extends Stanza {
   async render() {
     this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
@@ -26,7 +57,7 @@ export default class VariantSummary extends Stanza {
       }
       throw new Error(sparqlist + " returns status " + res.status);
     }).then(json => {
-      let records = json.data ? json.data.filter(x => x.id !== this.params.tgv_id) : [];
+      let records = json.data ? json.data.filter(x => !isInputVariant(x, this.params)) : [];
 
       records.forEach(record => transformRecord(record, this.params.assembly));
 

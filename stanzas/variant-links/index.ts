@@ -129,6 +129,18 @@ const firstExternalLink = (
   return externalLinks[key]?.[0];
 };
 
+const requireFirstVariantData = (
+  apiResponse: TogoVarApiResponse,
+  tgvId: string,
+): VariantData => {
+  const variantData = apiResponse.data[0];
+  if (!variantData) {
+    throw new Error(`Variant not found for ${tgvId}`);
+  }
+
+  return variantData;
+};
+
 const normalizeMogplusEntry = (json: unknown): MogplusEntry | undefined => {
   if (Array.isArray(json)) {
     return json[0] as MogplusEntry | undefined;
@@ -219,17 +231,23 @@ const fetchMogplusEntry = async (
     return undefined;
   }
 
-  const apiUrl = buildMogplusApiUrl(sparqlist, variant, mogplusVersion);
-  const response = await fetch(apiUrl, {
-    method: "GET",
-    headers: { Accept: "application/json" },
-  });
+  try {
+    const apiUrl = buildMogplusApiUrl(sparqlist, variant, mogplusVersion);
+    const response = await fetch(apiUrl, {
+      method: "GET",
+      headers: { Accept: "application/json" },
+    });
 
-  if (!response.ok) {
-    throw new Error(`${apiUrl} returned status ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`${apiUrl} returned status ${response.status}`);
+    }
+
+    return normalizeMogplusEntry(await response.json());
+  } catch (error) {
+    // MoG+ は補助リンクなので、取得失敗時も他DBリンクの表示は継続する。
+    console.warn(error);
+    return undefined;
   }
-
-  return normalizeMogplusEntry(await response.json());
 };
 
 const buildLinkCategoryRows = (
@@ -347,10 +365,11 @@ export default class VariantLinks extends Stanza {
       }
 
       const apiResponse = await fetchVariantLinks(dataUrl, tgvId);
+      const variantData = requireFirstVariantData(apiResponse, tgvId);
       const mogplusVersion = params.mogplus_ver ?? DEFAULT_MOGPLUS_VERSION;
       const mogplusEntry = await fetchMogplusEntry(
         params.sparqlist,
-        apiResponse.data[0],
+        variantData,
         mogplusVersion,
       );
       templateParams.result = buildLinkCategoryRows(
