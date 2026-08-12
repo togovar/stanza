@@ -6,7 +6,15 @@ import {
 } from "@/lib/constants";
 import { escapeHtml } from "@/lib/html";
 import { rowSpanize } from "@/lib/table";
+import { describeVariantIdentifier } from "@/lib/sparqlist";
+import {
+  fetchVariantDataById,
+  fetchVariantDataByLocation,
+  requireVariantData,
+} from "@/lib/togovar-variant";
 import type { TogoVarApiResponse, DiseaseCondition } from "@/lib/types";
+import { parseVariantParam } from "@/lib/variant";
+import type { ParsedVariant } from "@/lib/variant";
 
 // ============================================================
 // このスタンザ固有の型定義
@@ -28,6 +36,12 @@ interface ConditionRow {
   interpretationClass: string;
   /** 解釈ラベル（CLINICAL_SIGNIFICANCEのlabel） */
   interpretationLabel: string | null;
+}
+
+interface VariantMGeNDParams {
+  tgv_id?: string;
+  variant?: string;
+  "data-url"?: string;
 }
 
 // ============================================================
@@ -150,29 +164,36 @@ export default class VariantMGeND extends Stanza {
   async render() {
     this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
-    const { "data-url": dataUrl, tgv_id } = this.params;
+    const params = this.params as VariantMGeNDParams;
+    const { "data-url": dataUrl, tgv_id } = params;
+    const parsedVariant = parseVariantParam(params.variant);
 
     try {
-      const response = await fetch(dataUrl, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ query: { id: [tgv_id] } }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`${dataUrl} returned status ${response.status}`);
+      if (!dataUrl) {
+        throw new Error("data-url parameter is required");
+      }
+      if (!tgv_id && !parsedVariant) {
+        throw new Error("tgv_id or variant parameter is required");
       }
 
-      const apiResponse: TogoVarApiResponse = await response.json();
+      const apiResponse: TogoVarApiResponse = tgv_id
+        ? await fetchVariantDataById(dataUrl, tgv_id)
+        : await fetchVariantDataByLocation(
+            dataUrl,
+            parsedVariant as ParsedVariant,
+          );
+      const variantData = requireVariantData(
+        apiResponse,
+        tgv_id,
+        parsedVariant,
+        describeVariantIdentifier(params),
+      );
 
       this.renderTemplate({
         template: "stanza.html.hbs",
         parameters: {
           params: this.params,
-          result: buildConditionRows(apiResponse),
+          result: buildConditionRows({ data: [variantData] }),
         },
       });
     } catch (error) {

@@ -23,15 +23,29 @@ export const parseVariantParam = (
     return undefined;
   }
 
-  const [chromosome, position, reference, alternate] = variant.split("-");
+  const parts = variant.split("-");
+  if (parts.length !== 4) {
+    return undefined;
+  }
+
+  const [chromosome, position, reference, alternate] = parts;
   if (!chromosome || !position || !reference || !alternate) {
     return undefined;
   }
 
-  return { chromosome, position, reference, alternate };
+  if (!Number.isFinite(Number(position))) {
+    return undefined;
+  }
+
+  return {
+    chromosome,
+    position,
+    reference: reference.toUpperCase(),
+    alternate: alternate.toUpperCase(),
+  };
 };
 
 /** "chr1" と "1" のような表記揺れを吸収するため、先頭の "chr" プレフィックスを取り除く。 */
 export const normalizeChromosome = (
   chromosome: string | undefined,
-): string => String(chromosome ?? "").replace(/^chr/i, "");
+): string => String(chromosome ?? "").replace(/^chr/i, "").toUpperCase();

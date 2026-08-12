@@ -2,9 +2,14 @@ import Stanza from "togostanza/stanza";
 
 import { ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
 import { describeVariantIdentifier } from "@/lib/sparqlist";
-import type { ExternalLink, TogoVarApiResponse, VariantData } from "@/lib/types";
-import { normalizeChromosome, parseVariantParam } from "@/lib/variant";
+import type { ExternalLink, VariantData } from "@/lib/types";
+import {
+  fetchVariantDataById,
+  fetchVariantDataByLocation,
+  requireVariantData,
+} from "@/lib/togovar-variant";
 import type { ParsedVariant } from "@/lib/variant";
+import { parseVariantParam } from "@/lib/variant";
 
 // ============================================================
 // 型定義
@@ -93,48 +98,6 @@ const CATEGORY_ANCHORS: Record<string, string> = {
   Frequency: "#frequency",
 };
 
-const postVariantQuery = async (
-  dataUrl: string,
-  query: Record<string, unknown>,
-): Promise<TogoVarApiResponse> => {
-  const response = await fetch(dataUrl, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ query }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`${dataUrl} returned status ${response.status}`);
-  }
-
-  return response.json() as Promise<TogoVarApiResponse>;
-};
-
-const fetchVariantDataById = (
-  dataUrl: string,
-  tgvId: string,
-): Promise<TogoVarApiResponse> => postVariantQuery(dataUrl, { id: [tgvId] });
-
-/**
- * tgv_id を持たないバリアント（TogoVar未登録）を variant(CHROM-POS-REF-ALT) で解決する。
- * TogoVar検索APIは variant 表記そのものでの検索に対応していないため、
- * jogo-haplotype-explorer と同じ location(chromosome/position) クエリで候補を取得し、
- * reference/alternate が一致するものを呼び出し側で絞り込む。
- */
-const fetchVariantDataByLocation = (
-  dataUrl: string,
-  parsedVariant: ParsedVariant,
-): Promise<TogoVarApiResponse> =>
-  postVariantQuery(dataUrl, {
-    location: {
-      chromosome: normalizeChromosome(parsedVariant.chromosome),
-      position: Number(parsedVariant.position),
-    },
-  });
-
 const buildSourceFromExternalLink = (
   name: string,
   link: ExternalLink | undefined,
@@ -152,36 +115,6 @@ const firstExternalLink = (
   key: ExternalLinkKey,
 ): ExternalLink | undefined => {
   return externalLinks[key]?.[0];
-};
-
-/**
- * tgv_id 指定時は検索結果の先頭を採用する(id指定なので1件のはず)。
- * variant 指定時は location クエリで同一位置の候補が複数返り得るため、
- * reference/alternate が入力と一致するものを探す(multi-allelicサイト対策)。
- */
-const requireVariantData = (
-  apiResponse: TogoVarApiResponse,
-  tgvId: string | undefined,
-  parsedVariant: ParsedVariant | undefined,
-  identifier: string,
-): VariantData => {
-  const variantData = tgvId
-    ? apiResponse.data[0]
-    : apiResponse.data.find(
-        (data) =>
-          parsedVariant !== undefined &&
-          normalizeChromosome(data.chromosome) ===
-            normalizeChromosome(parsedVariant.chromosome) &&
-          String(data.position) === parsedVariant.position &&
-          data.reference === parsedVariant.reference &&
-          data.alternate === parsedVariant.alternate,
-      );
-
-  if (!variantData) {
-    throw new Error(`Variant not found for ${identifier}`);
-  }
-
-  return variantData;
 };
 
 const normalizeMogplusEntry = (json: unknown): MogplusEntry | undefined => {
