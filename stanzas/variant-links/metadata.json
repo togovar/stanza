@@ -9,7 +9,7 @@
   "stanza:author": "PENQE",
   "stanza:contributor": [],
   "stanza:created": "2026-07-31",
-  "stanza:updated": "2026-08-12",
+  "stanza:updated": "2026-08-13",
   "stanza:parameter": [
     {
       "stanza:key": "tgv_id",
@@ -28,6 +28,12 @@
       "stanza:example": "https://stg-grch38.togovar.org/api/search/variant",
       "stanza:description": "TogoVar variant search API URL",
       "stanza:required": true
+    },
+    {
+      "stanza:key": "assembly",
+      "stanza:example": "GRCh38",
+      "stanza:description": "Assembly of the TogoVar variant coordinates. MoG+ lookup is enabled only for GRCh38.",
+      "stanza:required": false
     },
     {
       "stanza:key": "sparqlist",

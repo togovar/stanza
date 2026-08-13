@@ -58,6 +58,7 @@ interface TemplateRenderParams {
 interface VariantLinksParams {
   tgv_id?: string;
   variant?: string;
+  assembly?: string;
   "data-url"?: string;
   sparqlist?: string;
   mogplus_ver?: string;
@@ -84,7 +85,7 @@ interface MogplusEntry {
 }
 
 const DEFAULT_MOGPLUS_VERSION = "mogplus21";
-const DEFAULT_MOGPLUS_SOURCE = "GRCh38";
+const SUPPORTED_MOGPLUS_SOURCE = "GRCh38";
 const MOGPLUS_BASE_URL = "https://molossinus.brc.riken.jp";
 
 const CATEGORY_LAYOUT = [
@@ -117,6 +118,33 @@ const firstExternalLink = (
   return externalLinks[key]?.[0];
 };
 
+const inferAssemblyFromUrl = (url: string | undefined): string | undefined => {
+  if (!url) {
+    return undefined;
+  }
+
+  if (/grch38/i.test(url)) {
+    return "GRCh38";
+  }
+  if (/grch37/i.test(url)) {
+    return "GRCh37";
+  }
+
+  return undefined;
+};
+
+const resolveAssembly = ({
+  assembly,
+  "data-url": dataUrl,
+  sparqlist,
+}: VariantLinksParams): string | undefined => {
+  if (assembly) {
+    return assembly;
+  }
+
+  return inferAssemblyFromUrl(dataUrl) ?? inferAssemblyFromUrl(sparqlist);
+};
+
 const normalizeMogplusEntry = (json: unknown): MogplusEntry | undefined => {
   if (Array.isArray(json)) {
     return json[0] as MogplusEntry | undefined;
@@ -142,10 +170,11 @@ const normalizeMogplusEntry = (json: unknown): MogplusEntry | undefined => {
 const buildMogplusApiUrl = (
   sparqlist: string,
   variant: VariantData,
+  sourceAssembly: string,
   mogplusVersion: string,
 ): string => {
   const params = new URLSearchParams({
-    source: DEFAULT_MOGPLUS_SOURCE,
+    source: sourceAssembly,
     chr: variant.chromosome,
     pos: String(variant.position),
     ref: variant.reference,
@@ -200,14 +229,24 @@ const buildMogplusSource = (
 const fetchMogplusEntry = async (
   sparqlist: string | undefined,
   variant: VariantData | undefined,
+  sourceAssembly: string | undefined,
   mogplusVersion: string,
 ): Promise<MogplusEntry | undefined> => {
   if (!sparqlist || !variant) {
     return undefined;
   }
 
+  if (sourceAssembly !== SUPPORTED_MOGPLUS_SOURCE) {
+    return undefined;
+  }
+
   try {
-    const apiUrl = buildMogplusApiUrl(sparqlist, variant, mogplusVersion);
+    const apiUrl = buildMogplusApiUrl(
+      sparqlist,
+      variant,
+      sourceAssembly,
+      mogplusVersion,
+    );
     const response = await fetch(apiUrl, {
       method: "GET",
       headers: { Accept: "application/json" },
@@ -353,9 +392,11 @@ export default class VariantLinks extends Stanza {
         describeVariantIdentifier(params),
       );
       const mogplusVersion = params.mogplus_ver ?? DEFAULT_MOGPLUS_VERSION;
+      const sourceAssembly = resolveAssembly(params);
       const mogplusEntry = await fetchMogplusEntry(
         params.sparqlist,
         variantData,
+        sourceAssembly,
         mogplusVersion,
       );
       templateParams.result = buildLinkCategoryRows(
