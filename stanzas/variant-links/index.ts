@@ -133,13 +133,28 @@ const inferAssemblyFromUrl = (url: string | undefined): string | undefined => {
   return undefined;
 };
 
+const normalizeAssembly = (assembly: string | undefined): string | undefined => {
+  if (!assembly) {
+    return undefined;
+  }
+
+  if (/^grch38$/i.test(assembly)) {
+    return "GRCh38";
+  }
+  if (/^grch37$/i.test(assembly)) {
+    return "GRCh37";
+  }
+
+  return assembly;
+};
+
 const resolveAssembly = ({
   assembly,
   "data-url": dataUrl,
   sparqlist,
 }: VariantLinksParams): string | undefined => {
   if (assembly) {
-    return assembly;
+    return normalizeAssembly(assembly);
   }
 
   return inferAssemblyFromUrl(dataUrl) ?? inferAssemblyFromUrl(sparqlist);
