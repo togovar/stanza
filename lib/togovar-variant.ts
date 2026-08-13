@@ -85,3 +85,16 @@ export const requireVariantData = (
 
   return variantData;
 };
+
+export const fetchVariantDataByIdentifier = async (
+  dataUrl: string,
+  tgvId: string | undefined,
+  parsedVariant: ParsedVariant | undefined,
+  identifier: string,
+): Promise<VariantData> => {
+  const apiResponse = tgvId
+    ? await fetchVariantDataById(dataUrl, tgvId)
+    : await fetchVariantDataByLocation(dataUrl, parsedVariant as ParsedVariant);
+
+  return requireVariantData(apiResponse, tgvId, parsedVariant, identifier);
+};

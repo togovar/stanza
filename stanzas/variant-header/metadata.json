@@ -13,7 +13,7 @@
   "stanza:address": "daisuke.satoh@lifematics.co.jp",
   "stanza:contributor": [],
   "stanza:created": "2019-06-07",
-  "stanza:updated": "2026-07-27",
+  "stanza:updated": "2026-08-12",
   "stanza:parameter": [
     {
       "stanza:key": "tgv_id",
@@ -31,6 +31,12 @@
       "stanza:key": "sparqlist",
       "stanza:example": "https://grch38.togovar.org/sparqlist",
       "stanza:description": "SPARQList URL",
+      "stanza:required": false
+    },
+    {
+      "stanza:key": "data-url",
+      "stanza:example": "https://stg-grch38.togovar.org/api/search/variant",
+      "stanza:description": "TogoVar variant search API URL (required when variant is given without tgv_id)",
       "stanza:required": false
     }
   ],

@@ -2,7 +2,9 @@ import Stanza from "@/lib/stanza";
 import {unwrapValueFromBinding} from "togostanza/utils";
 
 import {ROBOTO_CONDENSED_CSS_URL} from "@/lib/constants";
-import {buildIdentifierQueryString} from "@/lib/sparqlist";
+import {buildIdentifierQueryString, describeVariantIdentifier} from "@/lib/sparqlist";
+import {fetchVariantDataByIdentifier} from "@/lib/togovar-variant";
+import {parseVariantParam} from "@/lib/variant";
 
 const RS_PREFIX = "http://identifiers.org/dbsnp/";
 
@@ -10,21 +12,44 @@ export default class VariantPublication extends Stanza {
   async render() {
     this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
-    // tgv_id が無いバリアント（TogoVar未登録）は variant(CHROM-POS-REF-ALT) で解決する。
-    // sparqlist側は tgv_id があれば優先し、無ければ variant を使う。
-    const queryString = buildIdentifierQueryString(this.params);
-    const sparqlist = (this.params.sparqlist || "/sparqlist").concat(`/api/tgv2rs?${queryString}`);
+    const params = this.params ?? {};
+    const parsedVariant = parseVariantParam(params.variant);
 
-    const r = await fetch(sparqlist, {
-      method: "GET",
-      headers: {
-        "Accept": "application/json",
-      },
+    const r = await Promise.resolve().then(async () => {
+      if (!params.tgv_id && !parsedVariant) {
+        throw new Error("tgv_id or variant parameter is required");
+      }
+
+      let tgvId = params.tgv_id;
+      if (!tgvId) {
+        if (!params["data-url"]) {
+          throw new Error("data-url parameter is required when variant is given without tgv_id");
+        }
+
+        const variantData = await fetchVariantDataByIdentifier(
+          params["data-url"],
+          tgvId,
+          parsedVariant,
+          describeVariantIdentifier(params),
+        );
+        tgvId = variantData.id;
+      }
+
+      // tgv2rs は variant を解釈しないため、必ず解決済みの tgv_id だけを渡す。
+      const queryString = buildIdentifierQueryString({ tgv_id: tgvId });
+      const sparqlist = (params.sparqlist || "/sparqlist").concat(`/api/tgv2rs?${queryString}`);
+
+      return fetch(sparqlist, {
+        method: "GET",
+        headers: {
+          "Accept": "application/json",
+        },
+      });
     }).then(res => {
       if (res.ok) {
         return res.json();
       }
-      throw new Error(sparqlist + " returns status " + res.status);
+      throw new Error("tgv2rs returns status " + res.status);
     }).then(json => {
       return unwrapValueFromBinding(json)[0];
     }).then(result => {
@@ -32,7 +57,7 @@ export default class VariantPublication extends Stanza {
         return;
       }
 
-      const sparqlist = (this.params.sparqlist || "/sparqlist").concat(`/api/variant_publication?rs=${result.rs.replace(RS_PREFIX, "")}`);
+      const sparqlist = (params.sparqlist || "/sparqlist").concat(`/api/variant_publication?rs=${result.rs.replace(RS_PREFIX, "")}`);
 
       return fetch(sparqlist, {
         method: "GET",
