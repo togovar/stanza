@@ -17,8 +17,8 @@ const isInputVariant = (record, params) => {
 
   return normalizeChromosome(record.chromosome) === normalizeChromosome(variant.chromosome) &&
     String(record.position) === variant.position &&
-    String(record.reference) === variant.reference &&
-    String(record.alternate) === variant.alternate;
+    String(record.reference).toUpperCase() === variant.reference &&
+    String(record.alternate).toUpperCase() === variant.alternate;
 };
 
 export default class VariantSummary extends Stanza {

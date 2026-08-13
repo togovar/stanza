@@ -75,7 +75,7 @@ export default class VariantPublication extends Stanza {
           }, {}))
         }
       }).catch(e => ({ error: { message: e.message } }));
-    });
+    }).catch(e => ({error: {message: e.message}}));
 
     const sources = [
       new URL("./assets/vendor/jquery/3.6.0/jquery.min.js", import.meta.url),
