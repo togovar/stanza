@@ -30,7 +30,7 @@
     {
       "stanza:key": "data-url",
       "stanza:example": "https://stg-grch38.togovar.org/api/search/variant",
-      "stanza:description": "TogoVar variant search API URL",
+      "stanza:description": "TogoVar API base URL or variant search API URL",
       "stanza:required": true
     }
   ],

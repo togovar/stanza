@@ -3,6 +3,13 @@ import { normalizeChromosome } from "@/lib/variant";
 import type { TogoVarApiResponse, VariantData } from "./types";
 
 const LOCATION_QUERY_LIMIT = 1000;
+const VARIANT_SEARCH_API_PATH = "/api/search/variant";
+
+export const normalizeTogoVarApiBaseUrl = (dataUrl: string): string =>
+  dataUrl.replace(/\/+$/, "").replace(/\/api\/search\/variant$/i, "");
+
+export const buildVariantSearchApiUrl = (dataUrl: string): string =>
+  `${normalizeTogoVarApiBaseUrl(dataUrl)}${VARIANT_SEARCH_API_PATH}`;
 
 const sameVariantAllele = (
   variantData: VariantData,
@@ -19,7 +26,8 @@ export const postVariantQuery = async (
   query: Record<string, unknown>,
   options: Record<string, unknown> = {},
 ): Promise<TogoVarApiResponse> => {
-  const response = await fetch(dataUrl, {
+  const apiUrl = buildVariantSearchApiUrl(dataUrl);
+  const response = await fetch(apiUrl, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -29,7 +37,7 @@ export const postVariantQuery = async (
   });
 
   if (!response.ok) {
-    throw new Error(`${dataUrl} returned status ${response.status}`);
+    throw new Error(`${apiUrl} returned status ${response.status}`);
   }
 
   return response.json() as Promise<TogoVarApiResponse>;

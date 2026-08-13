@@ -13,7 +13,10 @@ import {
   downloadTSVMenuItem,
 } from "togostanza-utils";
 import { describeVariantIdentifier } from "@/lib/sparqlist";
-import { fetchVariantDataByIdentifier } from "@/lib/togovar-variant";
+import {
+  fetchVariantDataByIdentifier,
+  normalizeTogoVarApiBaseUrl,
+} from "@/lib/togovar-variant";
 import { assertValidVariantIdentifier, parseVariantParam } from "@/lib/variant";
 
 // ============================================================
@@ -156,8 +159,7 @@ export default class VariantFrequency extends Stanza {
       return;
     }
 
-    const apiBase = urlBase.replace(/\/+$/, "");
-    const variantSearchEndpoint = `${apiBase}/api/search/variant`;
+    const apiBase = normalizeTogoVarApiBaseUrl(urlBase);
     const frequencySearchEndpoint = `${apiBase}/search`;
     let resolvedTgvId = tgv_id;
     try {
@@ -165,7 +167,7 @@ export default class VariantFrequency extends Stanza {
 
       if (!resolvedTgvId) {
         const variantData = await fetchVariantDataByIdentifier(
-          variantSearchEndpoint,
+          urlBase,
           resolvedTgvId,
           parsedVariant,
           describeVariantIdentifier(params),
