@@ -4,9 +4,7 @@ import * as display from "@/lib/display";
 import { ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
 import {
   buildSparqlistApiUrl,
-  describeVariantIdentifier,
   fetchSparqlBindings,
-  requireFirstBinding,
 } from "@/lib/sparqlist";
 import type {
   SparqlistStanzaParams,
@@ -140,10 +138,15 @@ export default class VariantSummary extends Stanza {
       const summaryApiUrl = buildSparqlistApiUrl("variant_summary", params);
       const bindings =
         await fetchSparqlBindings<VariantSummarySparqlBinding>(summaryApiUrl);
-      const firstBinding = requireFirstBinding(
-        bindings,
-        `Variant not found for ${describeVariantIdentifier(params)}`,
-      );
+      const firstBinding = bindings[0];
+
+      if (!firstBinding) {
+        this.renderTemplate({
+          template: "stanza.html.hbs",
+          parameters: templateParams,
+        });
+        return;
+      }
 
       templateParams.result =
         convertSummaryBindingToDisplayData(firstBinding);
