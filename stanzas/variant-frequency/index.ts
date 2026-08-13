@@ -156,14 +156,16 @@ export default class VariantFrequency extends Stanza {
       return;
     }
 
-    const searchEndpoint = `${urlBase.replace(/\/+$/, "")}/search`;
+    const apiBase = urlBase.replace(/\/+$/, "");
+    const variantSearchEndpoint = `${apiBase}/api/search/variant`;
+    const frequencySearchEndpoint = `${apiBase}/search`;
     let resolvedTgvId = tgv_id;
     try {
       assertValidVariantIdentifier(resolvedTgvId, params.variant, parsedVariant);
 
       if (!resolvedTgvId) {
         const variantData = await fetchVariantDataByIdentifier(
-          searchEndpoint,
+          variantSearchEndpoint,
           resolvedTgvId,
           parsedVariant,
           describeVariantIdentifier(params),
@@ -190,7 +192,7 @@ export default class VariantFrequency extends Stanza {
       term: String(resolvedTgvId),
     });
     searchParams.append("expand_dataset", "");
-    const dataURL = `${searchEndpoint}?${searchParams.toString()}`;
+    const dataURL = `${frequencySearchEndpoint}?${searchParams.toString()}`;
 
     // ---- 変数の初期化 ----
 
