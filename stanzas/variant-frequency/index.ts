@@ -12,6 +12,9 @@ import {
   downloadJSONMenuItem,
   downloadTSVMenuItem,
 } from "togostanza-utils";
+import { describeVariantIdentifier } from "@/lib/sparqlist";
+import { fetchVariantDataByIdentifier } from "@/lib/togovar-variant";
+import { parseVariantParam } from "@/lib/variant";
 
 // ============================================================
 // 型定義
@@ -60,6 +63,14 @@ interface DataNode {
   value: string;
   label: string;
   children?: DataNode[];
+}
+
+interface VariantFrequencyParams {
+  "data-url"?: string;
+  assembly?: string;
+  tgv_id?: string;
+  variant?: string;
+  check_local_auth_status?: unknown;
 }
 
 const isTruthyParam = (value: unknown): boolean => {
@@ -123,21 +134,65 @@ export default class VariantFrequency extends Stanza {
     this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
     // ---- stanzaパラメータの取得 ----
-    // data-url: APIのベースURL, assembly: GRCh37/GRCh38, tgv_id: バリアントID
+    // data-url: APIのベースURL, assembly: GRCh37/GRCh38, tgv_id/variant: バリアント識別子
     const {
       "data-url": urlBase,
       assembly,
       tgv_id,
       check_local_auth_status,
-    } = this.params;
+    } = this.params as VariantFrequencyParams;
+    const params = this.params as VariantFrequencyParams;
+    const parsedVariant = parseVariantParam(params.variant);
+
+    if (!urlBase) {
+      this.data = [];
+      this.renderTemplate({
+        template: "stanza.html.hbs",
+        parameters: {
+          params: this.params,
+          error: { message: "data-url parameter is required" },
+        },
+      });
+      return;
+    }
+
+    const searchEndpoint = `${urlBase.replace(/\/+$/, "")}/search`;
+    let resolvedTgvId = tgv_id;
+    try {
+      if (!resolvedTgvId && !parsedVariant) {
+        throw new Error("tgv_id or variant parameter is required");
+      }
+
+      if (!resolvedTgvId) {
+        const variantData = await fetchVariantDataByIdentifier(
+          searchEndpoint,
+          resolvedTgvId,
+          parsedVariant,
+          describeVariantIdentifier(params),
+        );
+        resolvedTgvId = variantData.id;
+      }
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
+
+      this.data = [];
+      this.renderTemplate({
+        template: "stanza.html.hbs",
+        parameters: {
+          params: this.params,
+          error: { message },
+        },
+      });
+      return;
+    }
 
     // バリアントIDでデータセット情報を展開して取得するAPIエンドポイント
     const searchParams = new URLSearchParams({
       quality: "0",
-      term: String(tgv_id),
+      term: String(resolvedTgvId),
     });
     searchParams.append("expand_dataset", "");
-    const dataURL = `${urlBase}/search?${searchParams.toString()}`;
+    const dataURL = `${searchEndpoint}?${searchParams.toString()}`;
 
     // ---- 変数の初期化 ----
 
