@@ -14,3 +14,4 @@
 | `check_local_auth_status` | No | `true` | localhost でもログイン状態を確認する場合は `true`。 |
 
 `tgv_id` と `variant` の両方が指定された場合は `tgv_id` を優先します。
+`variant` だけが指定された場合は TogoVar variant search API で該当バリアントを探し、TogoVar ID があればそれを `/search` の `term` に渡します。TogoVar未登録で TogoVar ID が無い場合でも、dbSNP の `rsID` が取得できれば `rsID` を `term` として頻度情報を取得します。TogoVar ID / rsID のどちらも無い場合は、variant search API の候補レコードに含まれる `frequencies` を使って表示します。

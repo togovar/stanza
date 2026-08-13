@@ -142,6 +142,7 @@ variant系stanzaは、主に SPARQList と TogoVar検索APIを使います。`va
 
 - TogoVar検索APIを使うstanzaの `data-url` は、TogoVar API base URL または `/api/search/variant` endpoint のどちらを指定しても動くように正規化しています。
 - `tgv_id` と `variant` の両方が指定された場合は、全体方針として `tgv_id` を優先します。
+- `tgv2rs` は TogoVar ID (`tgv_id`) から RefSNP ID (`rsID`) を取得するSPARQList endpointです。`variant` は直接解釈しないため、必要なstanzaでは先にTogoVar検索APIで `tgv_id` に解決してから呼び出します。
 - SPARQListを使うstanzaで `variant` を指定する場合は、対応するSPARQList endpoint 側も `variant` を解決できる必要があります。
 
 ## このリポジトリのブランチ運用
