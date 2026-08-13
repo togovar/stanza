@@ -200,7 +200,12 @@
             </tr>
           {{/each}}
         {{else}}
-          <tr><td colspan="11" class="nodata-message">{{../params.no_data_message}}</td></tr>
+          <tr>
+            <td
+              colspan="{{#if ../hasHemizygote}}17{{else}}14{{/if}}"
+              class="nodata-message text-center"
+            >{{../params.no_data_message}}</td>
+          </tr>
         {{/if}}
       </tbody>
       </table>
