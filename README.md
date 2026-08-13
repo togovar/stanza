@@ -113,11 +113,36 @@ togostanza-build.mjs
 - `variant-gene`
 - `variant-genomic-context`
 - `variant-header`
+- `variant-links`
 - `variant-mgend`
 - `variant-other-overlapping-variants`
 - `variant-publication`
 - `variant-summary`
 - `variant-transcript`
+
+### variant系stanzaの利用API
+
+variant系stanzaは、主に SPARQList と TogoVar検索APIを使います。`variant` パラメータ（VCF representation: `CHROM-POS-REF-ALT`）への対応方法はstanzaごとに異なります。
+
+| Stanza | 主なAPI | Endpoint / URL | `variant` 指定時の扱い |
+| --- | --- | --- | --- |
+| `variant-clinvar` | SPARQList | `/api/variant_clinvar` | SPARQList endpoint へ `variant` を渡す |
+| `variant-frequency` | TogoVar検索API | `/api/search/variant`, `/search`, `/auth/status` | `/api/search/variant` で `tgv_id` に解決し、頻度取得は `/search?term=<tgv_id>` を使う |
+| `variant-gene` | SPARQList | `/api/variant_gene` | SPARQList endpoint へ `variant` を渡す |
+| `variant-genomic-context` | SPARQList / JBrowse | `/api/variant_summary`, JBrowse URL | SPARQList endpoint へ `variant` を渡し、取得した座標で JBrowse を表示する |
+| `variant-header` | TogoVar検索API / SPARQList | `/api/search/variant`, `/api/tgv2rs` | TogoVar検索APIで `tgv_id` に解決してから、`tgv_id` だけを `tgv2rs` に渡す |
+| `variant-links` | TogoVar検索API / SPARQList | `/api/search/variant`, `/api/variant_mogplus` | TogoVar検索APIで外部リンクを取得する。MoG+ は GRCh38 の場合だけ SPARQList へ問い合わせる |
+| `variant-mgend` | TogoVar検索API | `/api/search/variant` | TogoVar検索APIで `tgv_id` または location 検索から該当variantを取得する |
+| `variant-other-overlapping-variants` | SPARQList | `/api/variant_other_alternative_alleles` | SPARQList endpoint へ `variant` を渡し、入力variant自身は表示から除外する |
+| `variant-publication` | TogoVar検索API / SPARQList | `/api/search/variant`, `/api/tgv2rs`, `/api/variant_publication` | TogoVar検索APIで `tgv_id` に解決し、`tgv2rs` で RefSNP ID を取得してから文献を取得する |
+| `variant-summary` | SPARQList | `/api/variant_summary` | SPARQList endpoint へ `variant` を渡す。正常な空結果は値欄を空欄表示にする |
+| `variant-transcript` | SPARQList | `/api/variant_transcript` | SPARQList endpoint へ `variant` を渡す |
+
+補足:
+
+- TogoVar検索APIを使うstanzaの `data-url` は、TogoVar API base URL または `/api/search/variant` endpoint のどちらを指定しても動くように正規化しています。
+- `tgv_id` と `variant` の両方が指定された場合は、全体方針として `tgv_id` を優先します。
+- SPARQListを使うstanzaで `variant` を指定する場合は、対応するSPARQList endpoint 側も `variant` を解決できる必要があります。
 
 ## このリポジトリのブランチ運用
 
