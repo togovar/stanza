@@ -6,8 +6,8 @@ import {buildIdentifierQueryString} from "@/lib/sparqlist";
 import {normalizeChromosome, parseVariantParam} from "@/lib/variant";
 
 const isInputVariant = (record, params) => {
-  if (params.tgv_id && record.id === params.tgv_id) {
-    return true;
+  if (params.tgv_id) {
+    return record.id === params.tgv_id;
   }
 
   const variant = parseVariantParam(params.variant);
