@@ -4,7 +4,7 @@ import {unwrapValueFromBinding} from "togostanza/utils";
 import {ROBOTO_CONDENSED_CSS_URL} from "@/lib/constants";
 import {buildIdentifierQueryString, describeVariantIdentifier} from "@/lib/sparqlist";
 import {fetchVariantDataByIdentifier} from "@/lib/togovar-variant";
-import {parseVariantParam} from "@/lib/variant";
+import {assertValidVariantIdentifier, parseVariantParam} from "@/lib/variant";
 
 const RS_PREFIX = "http://identifiers.org/dbsnp/";
 
@@ -16,9 +16,7 @@ export default class VariantPublication extends Stanza {
     const parsedVariant = parseVariantParam(params.variant);
 
     const r = await Promise.resolve().then(async () => {
-      if (!params.tgv_id && !parsedVariant) {
-        throw new Error("tgv_id or variant parameter is required");
-      }
+      assertValidVariantIdentifier(params.tgv_id, params.variant, parsedVariant);
 
       let tgvId = params.tgv_id;
       if (!tgvId) {

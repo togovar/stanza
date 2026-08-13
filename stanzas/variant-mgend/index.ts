@@ -13,7 +13,7 @@ import {
   requireVariantData,
 } from "@/lib/togovar-variant";
 import type { TogoVarApiResponse, DiseaseCondition } from "@/lib/types";
-import { parseVariantParam } from "@/lib/variant";
+import { assertValidVariantIdentifier, parseVariantParam } from "@/lib/variant";
 import type { ParsedVariant } from "@/lib/variant";
 
 // ============================================================
@@ -172,9 +172,7 @@ export default class VariantMGeND extends Stanza {
       if (!dataUrl) {
         throw new Error("data-url parameter is required");
       }
-      if (!tgv_id && !parsedVariant) {
-        throw new Error("tgv_id or variant parameter is required");
-      }
+      assertValidVariantIdentifier(tgv_id, params.variant, parsedVariant);
 
       const apiResponse: TogoVarApiResponse = tgv_id
         ? await fetchVariantDataById(dataUrl, tgv_id)

@@ -14,7 +14,7 @@ import {
 } from "togostanza-utils";
 import { describeVariantIdentifier } from "@/lib/sparqlist";
 import { fetchVariantDataByIdentifier } from "@/lib/togovar-variant";
-import { parseVariantParam } from "@/lib/variant";
+import { assertValidVariantIdentifier, parseVariantParam } from "@/lib/variant";
 
 // ============================================================
 // 型定義
@@ -159,9 +159,7 @@ export default class VariantFrequency extends Stanza {
     const searchEndpoint = `${urlBase.replace(/\/+$/, "")}/search`;
     let resolvedTgvId = tgv_id;
     try {
-      if (!resolvedTgvId && !parsedVariant) {
-        throw new Error("tgv_id or variant parameter is required");
-      }
+      assertValidVariantIdentifier(resolvedTgvId, params.variant, parsedVariant);
 
       if (!resolvedTgvId) {
         const variantData = await fetchVariantDataByIdentifier(

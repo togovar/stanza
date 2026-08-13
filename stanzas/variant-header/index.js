@@ -5,7 +5,7 @@ import uniq from "@/lib/uniq";
 import {ROBOTO_CONDENSED_CSS_URL} from "@/lib/constants";
 import {buildIdentifierQueryString, describeVariantIdentifier} from "@/lib/sparqlist";
 import {fetchVariantDataByIdentifier} from "@/lib/togovar-variant";
-import {parseVariantParam} from "@/lib/variant";
+import {assertValidVariantIdentifier, parseVariantParam} from "@/lib/variant";
 
 export default class VariantHeader extends Stanza {
   async render() {
@@ -15,9 +15,7 @@ export default class VariantHeader extends Stanza {
     const parsedVariant = parseVariantParam(params.variant);
 
     const r = await Promise.resolve().then(async () => {
-      if (!params.tgv_id && !parsedVariant) {
-        throw new Error("tgv_id or variant parameter is required");
-      }
+      assertValidVariantIdentifier(params.tgv_id, params.variant, parsedVariant);
 
       let tgvId = params.tgv_id;
       if (!tgvId) {

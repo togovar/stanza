@@ -9,7 +9,7 @@ import {
   requireVariantData,
 } from "@/lib/togovar-variant";
 import type { ParsedVariant } from "@/lib/variant";
-import { parseVariantParam } from "@/lib/variant";
+import { assertValidVariantIdentifier, parseVariantParam } from "@/lib/variant";
 
 // ============================================================
 // 型定義
@@ -375,9 +375,7 @@ export default class VariantLinks extends Stanza {
       if (!dataUrl) {
         throw new Error("data-url parameter is required");
       }
-      if (!tgvId && !parsedVariant) {
-        throw new Error("tgv_id or variant parameter is required");
-      }
+      assertValidVariantIdentifier(tgvId, params.variant, parsedVariant);
 
       const apiResponse = tgvId
         ? await fetchVariantDataById(dataUrl, tgvId)

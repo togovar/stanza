@@ -49,3 +49,21 @@ export const parseVariantParam = (
 export const normalizeChromosome = (
   chromosome: string | undefined,
 ): string => String(chromosome ?? "").replace(/^chr/i, "").toUpperCase();
+
+export const assertValidVariantIdentifier = (
+  tgvId: string | undefined,
+  variant: string | undefined,
+  parsedVariant: ParsedVariant | undefined,
+): void => {
+  if (tgvId) {
+    return;
+  }
+
+  if (!variant) {
+    throw new Error("tgv_id or variant parameter is required");
+  }
+
+  if (!parsedVariant) {
+    throw new Error("variant parameter must use CHROM-POS-REF-ALT notation");
+  }
+};
