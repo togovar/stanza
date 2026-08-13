@@ -61,7 +61,7 @@ main {
       margin: 0;
       font-size: 14px;
       line-height: 1.2;
-      color: #444;
+      color: var(--color-black);
       text-align: left;
       white-space: normal;
 
@@ -161,7 +161,7 @@ main {
     margin: 0;
     font-family: "Roboto Condensed", sans-serif;
     font-size: 14px;
-    color: #444;
+    color: var(--color-black);
     text-align: center;
   }
 }
