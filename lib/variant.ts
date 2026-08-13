@@ -50,6 +50,10 @@ export const normalizeChromosome = (
   chromosome: string | undefined,
 ): string => String(chromosome ?? "").replace(/^chr/i, "").toUpperCase();
 
+/**
+ * tgv_id が無い場合に variant の有無と形式を検証する。
+ * 未指定と malformed を分けて、ユーザーが入力ミスを直しやすいエラーにする。
+ */
 export const assertValidVariantIdentifier = (
   tgvId: string | undefined,
   variant: string | undefined,
