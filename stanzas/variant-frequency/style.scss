@@ -18,6 +18,16 @@ main {
         background-color: white;
       }
     }
+
+    .variant-frequency-no-data {
+      position: sticky;
+      left: 0;
+      width: 100%;
+      padding: 14px 0 16px;
+      font-size: 14px;
+      color: var(--color-black);
+      text-align: center;
+    }
   }
 
   // 周波数詳細テーブル本体はこの stanza 専用
@@ -279,10 +289,6 @@ main {
             &[data-filter="PASS"] {
               color: var(--color-sign-safe);
             }
-          }
-
-          &.nodata-message {
-            text-align: center;
           }
         }
       }

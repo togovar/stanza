@@ -12,6 +12,13 @@ import {
   downloadJSONMenuItem,
   downloadTSVMenuItem,
 } from "togostanza-utils";
+import { describeVariantIdentifier } from "@/lib/sparqlist";
+import {
+  fetchVariantDataByIdentifier,
+  normalizeTogoVarApiBaseUrl,
+} from "@/lib/togovar-variant";
+import { assertValidVariantIdentifier, parseVariantParam } from "@/lib/variant";
+import type { VariantData } from "@/lib/types";
 
 // ============================================================
 // 型定義
@@ -53,6 +60,11 @@ interface FrequencyData {
   has_hemizygote_marker?: boolean;
 }
 
+type FrequencyVariantData = VariantData & {
+  frequencies?: FrequencyData[];
+  existing_variations?: string[];
+};
+
 /** DATASETSの各ノード（ツリー構造）に ID・depth を付加したもの */
 interface DataNode {
   id: string;
@@ -60,6 +72,14 @@ interface DataNode {
   value: string;
   label: string;
   children?: DataNode[];
+}
+
+interface VariantFrequencyParams {
+  "data-url"?: string;
+  assembly?: string;
+  tgv_id?: string;
+  variant?: string;
+  check_local_auth_status?: unknown;
 }
 
 const isTruthyParam = (value: unknown): boolean => {
@@ -76,6 +96,22 @@ const isTruthyParam = (value: unknown): boolean => {
 
 const isLocalhostHost = (hostname: string): boolean => {
   return hostname === "localhost" || hostname === "127.0.0.1";
+};
+
+const findDbsnpIdentifier = (variantData: VariantData): string | undefined =>
+  variantData.external_links?.dbsnp?.find((link) =>
+    /^rs\d+$/iu.test(link.title),
+  )?.title;
+
+const buildFrequencySearchTerm = (
+  variantData: VariantData,
+): string | undefined => {
+  if (variantData.id) {
+    return variantData.id;
+  }
+
+  // /search は rsID でも頻度情報を引けるため、TogoVar未登録のvariantではdbSNPリンクを代替キーにする。
+  return findDbsnpIdentifier(variantData);
 };
 
 // ============================================================
@@ -123,21 +159,62 @@ export default class VariantFrequency extends Stanza {
     this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
     // ---- stanzaパラメータの取得 ----
-    // data-url: APIのベースURL, assembly: GRCh37/GRCh38, tgv_id: バリアントID
+    // data-url: APIのベースURL, assembly: GRCh37/GRCh38, tgv_id/variant: バリアント識別子
     const {
       "data-url": urlBase,
       assembly,
       tgv_id,
       check_local_auth_status,
-    } = this.params;
+    } = this.params as VariantFrequencyParams;
+    const params = this.params as VariantFrequencyParams;
+    const parsedVariant = parseVariantParam(params.variant);
 
-    // バリアントIDでデータセット情報を展開して取得するAPIエンドポイント
-    const searchParams = new URLSearchParams({
-      quality: "0",
-      term: String(tgv_id),
-    });
-    searchParams.append("expand_dataset", "");
-    const dataURL = `${urlBase}/search?${searchParams.toString()}`;
+    if (!urlBase) {
+      this.data = [];
+      this.renderTemplate({
+        template: "stanza.html.hbs",
+        parameters: {
+          params: this.params,
+          error: { message: "data-url parameter is required" },
+        },
+      });
+      return;
+    }
+
+    const apiBase = normalizeTogoVarApiBaseUrl(urlBase);
+    const frequencySearchEndpoint = `${apiBase}/search`;
+    let frequencySearchTerm = tgv_id;
+    let resolvedVariantData: FrequencyVariantData | undefined;
+    try {
+      assertValidVariantIdentifier(
+        frequencySearchTerm,
+        params.variant,
+        parsedVariant,
+      );
+
+      if (!frequencySearchTerm) {
+        const variantData = await fetchVariantDataByIdentifier(
+          urlBase,
+          frequencySearchTerm,
+          parsedVariant,
+          describeVariantIdentifier(params),
+        );
+        resolvedVariantData = variantData as FrequencyVariantData;
+        frequencySearchTerm = buildFrequencySearchTerm(variantData);
+      }
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
+
+      this.data = [];
+      this.renderTemplate({
+        template: "stanza.html.hbs",
+        parameters: {
+          params: this.params,
+          error: { message },
+        },
+      });
+      return;
+    }
 
     // ---- 変数の初期化 ----
 
@@ -200,16 +277,37 @@ export default class VariantFrequency extends Stanza {
     // ---- 頻度データの取得と処理 ----
 
     try {
-      const response = await fetch(dataURL, {
-        method: "GET",
-        headers: { Accept: "application/json" },
-      });
+      let responseDatasets: { data: FrequencyVariantData[] };
 
-      if (!response.ok) {
-        throw new Error(`${dataURL} returns status ${response.status}`);
+      if (frequencySearchTerm) {
+        // tgv_id または rsID がある場合は、従来通り /search でデータセット展開済みの頻度情報を取得する。
+        const searchParams = new URLSearchParams({
+          quality: "0",
+          term: frequencySearchTerm,
+        });
+        searchParams.append("expand_dataset", "");
+        const dataURL = `${frequencySearchEndpoint}?${searchParams.toString()}`;
+
+        const response = await fetch(dataURL, {
+          method: "GET",
+          headers: { Accept: "application/json" },
+        });
+
+        if (!response.ok) {
+          throw new Error(`${dataURL} returns status ${response.status}`);
+        }
+
+        responseDatasets = (await response.json()) as {
+          data: FrequencyVariantData[];
+        };
+      } else if (resolvedVariantData) {
+        // TogoVar ID / rsID を持たないvariantでも、variant search APIの候補レコードにfrequenciesが含まれる場合がある。
+        // その場合は /search?term=undefined へ進まず、解決済みレコード内の頻度情報をそのまま表示に使う。
+        responseDatasets = { data: [resolvedVariantData] };
+      } else {
+        responseDatasets = { data: [] };
       }
 
-      const responseDatasets = await response.json();
       // APIレスポンスからバリアントの頻度データ配列を取り出す
       const frequenciesDatasets: FrequencyData[] | undefined =
         responseDatasets.data[0]?.frequencies;

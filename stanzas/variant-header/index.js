@@ -3,27 +3,54 @@ import {unwrapValueFromBinding} from "togostanza/utils";
 
 import uniq from "@/lib/uniq";
 import {ROBOTO_CONDENSED_CSS_URL} from "@/lib/constants";
+import {buildIdentifierQueryString, describeVariantIdentifier} from "@/lib/sparqlist";
+import {fetchVariantDataByIdentifier} from "@/lib/togovar-variant";
+import {assertValidVariantIdentifier, parseVariantParam} from "@/lib/variant";
 
 export default class VariantHeader extends Stanza {
   async render() {
     this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
-    const sparqlist = (this.params.sparqlist || "/sparqlist").concat(`/api/tgv2rs?tgv_id=${this.params.tgv_id}`);
+    const params = this.params ?? {};
+    const parsedVariant = parseVariantParam(params.variant);
 
-    const r = await fetch(sparqlist, {
-      method: "GET",
-      headers: {
-        "Accept": "application/json",
-      },
+    const r = await Promise.resolve().then(async () => {
+      assertValidVariantIdentifier(params.tgv_id, params.variant, parsedVariant);
+
+      let tgvId = params.tgv_id;
+      if (!tgvId) {
+        if (!params["data-url"]) {
+          throw new Error("data-url parameter is required when variant is given without tgv_id");
+        }
+
+        const variantData = await fetchVariantDataByIdentifier(
+          params["data-url"],
+          tgvId,
+          parsedVariant,
+          describeVariantIdentifier(params),
+        );
+        tgvId = variantData.id;
+      }
+
+      // tgv2rs は variant を解釈しないため、必ず解決済みの tgv_id だけを渡す。
+      const queryString = buildIdentifierQueryString({ tgv_id: tgvId });
+      const sparqlist = (params.sparqlist || "/sparqlist").concat(`/api/tgv2rs?${queryString}`);
+
+      return fetch(sparqlist, {
+        method: "GET",
+        headers: {
+          "Accept": "application/json",
+        },
+      });
     }).then(res => {
       if (res.ok) {
         return res.json();
       }
-      throw new Error(sparqlist + " returns status " + res.status);
+      throw new Error("tgv2rs returns status " + res.status);
     }).then(data => {
       const results = unwrapValueFromBinding(data);
 
-      if (!results) {
+      if (!results?.length) {
         return {result: {xrefs: {}}};
       }
 
@@ -32,7 +59,8 @@ export default class VariantHeader extends Stanza {
           xrefs: [
             {
               name: "RefSNP ID",
-              refs: uniq(results.map(x => x.rs)).map(x => ({label: x.split("/").slice(-1)[0], url: x})),
+              refs: uniq(results.map(x => x.rs).filter(x => x))
+                .map(x => ({label: x.split("/").slice(-1)[0], url: x})),
             },
           ],
         },

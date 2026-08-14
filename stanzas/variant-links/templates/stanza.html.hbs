@@ -1,0 +1,85 @@
+{{#with error}}
+  <div class="alert alert-danger">{{message}}</div>
+{{else}}
+  {{#if result}}
+    <dl class="variant-links-list">
+      {{#each result}}
+        <div class="category-row">
+          {{#with left}}
+            <dt class="category-label category-label-left">
+              {{#if anchor}}
+                <a class="category-link" href="{{anchor}}">{{label}}<span class="caret-down"></span></a>
+              {{else}}
+                {{label}}
+              {{/if}}
+            </dt>
+            <dd class="category-value category-value-left">
+              {{#each sources}}
+                <span class="source">
+                  {{#if dataset}}
+                    <span class="dataset-icon" data-dataset="{{dataset}}"></span>
+                  {{/if}}
+                  <span class="source-name">{{name}}</span>
+                  {{#if url}}
+                    <a
+                      class="source-link"
+                      href="{{url}}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >{{value}}<span class="external-link-icon"></span></a>
+                  {{else}}
+                    {{#if available}}
+                      <span class="source-value">{{value}}</span>
+                    {{else}}
+                      <span class="not-available">N/A</span>
+                    {{/if}}
+                  {{/if}}
+                  {{#unless @last}}<span class="source-separator">, </span>{{/unless}}
+                </span>
+              {{/each}}
+            </dd>
+          {{/with}}
+
+          {{#if right}}
+            {{#with right}}
+              <dt class="category-label category-label-right">
+                {{#if anchor}}
+                  <a class="category-link" href="{{anchor}}">{{label}}<span class="caret-down"></span></a>
+                {{else}}
+                  {{label}}
+                {{/if}}
+              </dt>
+              <dd class="category-value category-value-right">
+                {{#each sources}}
+                  <span class="source">
+                    {{#if dataset}}
+                      <span class="dataset-icon" data-dataset="{{dataset}}"></span>
+                    {{/if}}
+                    <span class="source-name">{{name}}</span>
+                    {{#if url}}
+                      <a
+                        class="source-link"
+                        href="{{url}}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >{{value}}<span class="external-link-icon"></span></a>
+                    {{else}}
+                      {{#if available}}
+                        <span class="source-value">{{value}}</span>
+                      {{else}}
+                        <span class="not-available">N/A</span>
+                      {{/if}}
+                    {{/if}}
+                    {{#unless @last}}<span class="source-separator">, </span>{{/unless}}
+                  </span>
+                {{/each}}
+              </dd>
+            {{/with}}
+          {{/if}}
+        </div>
+      {{/each}}
+    </dl>
+  {{else}}
+    <p class="variant-links-no-data">No data</p>
+  {{/if}}
+{{/with}}

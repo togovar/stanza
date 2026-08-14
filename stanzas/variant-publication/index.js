@@ -2,6 +2,9 @@ import Stanza from "@/lib/stanza";
 import {unwrapValueFromBinding} from "togostanza/utils";
 
 import {ROBOTO_CONDENSED_CSS_URL} from "@/lib/constants";
+import {buildIdentifierQueryString, describeVariantIdentifier} from "@/lib/sparqlist";
+import {fetchVariantDataByIdentifier} from "@/lib/togovar-variant";
+import {assertValidVariantIdentifier, parseVariantParam} from "@/lib/variant";
 
 const RS_PREFIX = "http://identifiers.org/dbsnp/";
 
@@ -9,18 +12,42 @@ export default class VariantPublication extends Stanza {
   async render() {
     this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
-    const sparqlist = (this.params.sparqlist || "/sparqlist").concat(`/api/tgv2rs?tgv_id=${this.params.tgv_id}`);
+    const params = this.params ?? {};
+    const parsedVariant = parseVariantParam(params.variant);
 
-    const r = await fetch(sparqlist, {
-      method: "GET",
-      headers: {
-        "Accept": "application/json",
-      },
+    const r = await Promise.resolve().then(async () => {
+      assertValidVariantIdentifier(params.tgv_id, params.variant, parsedVariant);
+
+      let tgvId = params.tgv_id;
+      if (!tgvId) {
+        if (!params["data-url"]) {
+          throw new Error("data-url parameter is required when variant is given without tgv_id");
+        }
+
+        const variantData = await fetchVariantDataByIdentifier(
+          params["data-url"],
+          tgvId,
+          parsedVariant,
+          describeVariantIdentifier(params),
+        );
+        tgvId = variantData.id;
+      }
+
+      // tgv2rs は variant を解釈しないため、必ず解決済みの tgv_id だけを渡す。
+      const queryString = buildIdentifierQueryString({ tgv_id: tgvId });
+      const sparqlist = (params.sparqlist || "/sparqlist").concat(`/api/tgv2rs?${queryString}`);
+
+      return fetch(sparqlist, {
+        method: "GET",
+        headers: {
+          "Accept": "application/json",
+        },
+      });
     }).then(res => {
       if (res.ok) {
         return res.json();
       }
-      throw new Error(sparqlist + " returns status " + res.status);
+      throw new Error("tgv2rs returns status " + res.status);
     }).then(json => {
       return unwrapValueFromBinding(json)[0];
     }).then(result => {
@@ -28,7 +55,7 @@ export default class VariantPublication extends Stanza {
         return;
       }
 
-      const sparqlist = (this.params.sparqlist || "/sparqlist").concat(`/api/variant_publication?rs=${result.rs.replace(RS_PREFIX, "")}`);
+      const sparqlist = (params.sparqlist || "/sparqlist").concat(`/api/variant_publication?rs=${result.rs.replace(RS_PREFIX, "")}`);
 
       return fetch(sparqlist, {
         method: "GET",
@@ -48,7 +75,7 @@ export default class VariantPublication extends Stanza {
           }, {}))
         }
       }).catch(e => ({ error: { message: e.message } }));
-    });
+    }).catch(e => ({error: {message: e.message}}));
 
     const sources = [
       new URL("./assets/vendor/jquery/3.6.0/jquery.min.js", import.meta.url),

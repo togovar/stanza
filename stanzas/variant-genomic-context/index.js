@@ -2,11 +2,14 @@ import Stanza from "togostanza/stanza";
 import {unwrapValueFromBinding} from "togostanza/utils";
 
 import {referenceToChrAssembly} from "@/lib/display";
-import {requireFirstBinding} from "@/lib/sparqlist";
+import {buildIdentifierQueryString, describeVariantIdentifier, requireFirstBinding} from "@/lib/sparqlist";
 
 export default class VariantSummary extends Stanza {
   async render() {
-    const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/variant_summary?tgv_id=${this.params.tgv_id}`);
+    // tgv_id が無いバリアント（TogoVar未登録）は variant(CHROM-POS-REF-ALT) で解決する。
+    // sparqlist側は tgv_id があれば優先し、無ければ variant を使う。
+    const queryString = buildIdentifierQueryString(this.params ?? {});
+    const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/variant_summary?${queryString}`);
 
     const r = await fetch(sparqlist, {
       method: "GET",
@@ -21,7 +24,7 @@ export default class VariantSummary extends Stanza {
     }).then(data => {
       const binding = requireFirstBinding(
         unwrapValueFromBinding(data),
-        `Failed to obtain genomic position for ${this.params.tgv_id}`,
+        `Failed to obtain genomic position for ${describeVariantIdentifier(this.params ?? {})}`,
       );
 
       const { chr } = referenceToChrAssembly(binding.reference);

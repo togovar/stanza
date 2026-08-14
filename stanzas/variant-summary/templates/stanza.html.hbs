@@ -2,36 +2,38 @@
   <div class="alert alert-danger">{{message}}</div>
 {{else}}
   <div>
-    {{#with result}}
-      <dl class="variant-summary-list">
-        <dt>Position</dt>
-        <dd>
+    <dl class="variant-summary-list">
+      <dt>Position</dt>
+      <dd>
+        {{#with result}}
           <span class="chromosome">{{chr}}</span>:<span class="position">{{position}}</span>
           <span class="assembly">({{assembly}})</span>
-        </dd>
+        {{/with}}
+      </dd>
 
-        <dt>Ref / Alt</dt>
-        <dd>
+      <dt>Ref / Alt</dt>
+      <dd>
+        {{#with result}}
           <div class="ref-alt">
             <span class="ref" data-sum="{{ref_length}}">{{ref}}</span><span class="arrow"></span><span
               class="alt" data-sum="{{alt_length}}">{{alt}}</span>
           </div>
+        {{/with}}
+      </dd>
+
+      {{#if gene}}
+        <dt>HGNC/Approved symbol</dt>
+        <dd>
+          {{#if gene.hgnc_url}}
+            <a href="{{gene.hgnc_url}}">{{gene.symbol}}</a>
+          {{else}}
+            {{gene.symbol}}
+          {{/if}}
         </dd>
 
-        {{#if ../gene}}
-          <dt>HGNC/Approved symbol</dt>
-          <dd>
-            {{#if ../gene.hgnc_url}}
-              <a href="{{../gene.hgnc_url}}">{{../gene.symbol}}</a>
-            {{else}}
-              {{../gene.symbol}}
-            {{/if}}
-          </dd>
-
-          <dt>HGNC/Approved name</dt>
-          <dd>{{../gene.approved_name}}</dd>
-        {{/if}}
-      </dl>
-    {{/with}}
+        <dt>HGNC/Approved name</dt>
+        <dd>{{gene.approved_name}}</dd>
+      {{/if}}
+    </dl>
   </div>
 {{/with}}

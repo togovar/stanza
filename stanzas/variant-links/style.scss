@@ -1,0 +1,167 @@
+@use "@/assets/css/common";
+
+main {
+  // 外部DBリンクは表の交点ではなく「項目名と値」の一覧なので dl で表現する。
+  // 見た目は従来と同じく、各行を 4カラム(ラベル・値・ラベル・値)のグリッドにする。
+  .variant-links-list {
+    width: 100%;
+    margin: 0;
+    font-family: "Roboto Condensed", sans-serif;
+
+    .category-row {
+      display: grid;
+
+      // variant-summary と同じ列幅にして、左右ペアの境界線を常に全体幅の50%に揃える。
+      grid-template-columns: 130px calc(50% - 130px) 120px calc(50% - 120px);
+      border-bottom: 1px solid var(--color-table-border);
+    }
+
+    .category-label {
+      padding: 4px 10px;
+      margin: 0;
+      font-size: 12px;
+      font-weight: bold;
+      line-height: 1.2;
+      color: var(--color-black);
+      text-align: left;
+      white-space: nowrap;
+
+      &.category-label-left {
+        grid-column: 1;
+      }
+
+      &.category-label-right {
+        grid-column: 3;
+      }
+
+      .category-link {
+        font-weight: bold;
+        color: var(--color-key-dark2);
+        text-decoration: underline;
+
+        &:hover {
+          color: var(--color-key-dark1);
+        }
+      }
+
+      .caret-down {
+        display: inline-block;
+        margin-left: 4px;
+        font-family: "Font Awesome 7 Free";
+        font-size: 10px;
+
+        &::before {
+          content: var(--icon-arrow-down);
+        }
+      }
+    }
+
+    .category-value {
+      padding: 4px 10px;
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.2;
+      color: var(--color-black);
+      text-align: left;
+      white-space: normal;
+
+      &.category-value-left {
+        grid-column: 2;
+        border-right: 1px solid var(--color-table-border);
+      }
+
+      &.category-value-right {
+        grid-column: 4;
+      }
+
+      .source {
+        display: inline-block;
+        max-width: 100%;
+        vertical-align: top;
+        overflow-wrap: anywhere;
+      }
+
+      .source-separator {
+        white-space: pre;
+      }
+
+      .source-name {
+        margin-right: 4px;
+        font-size: 12px;
+        color: var(--color-black);
+      }
+
+      .dataset-icon {
+        display: inline-block;
+
+        &::before {
+          font-size: 12px;
+        }
+      }
+
+      .source-link {
+        color: var(--color-key-dark2);
+        overflow-wrap: anywhere;
+
+        &:hover {
+          color: var(--color-key-dark1);
+        }
+      }
+
+      .external-link-icon {
+        display: inline-block;
+        margin-left: 3px;
+        font-family: "Font Awesome 7 Free";
+        font-size: 10px;
+
+        &::before {
+          content: var(--icon-arrow-up-right-from-square);
+        }
+      }
+
+      .not-available {
+        color: var(--color-gray);
+      }
+
+      .source-value {
+        overflow-wrap: anywhere;
+      }
+    }
+
+    @media (width <= 580px) {
+      .category-row {
+        grid-template-columns: 130px minmax(0, 1fr);
+        border-bottom: none;
+      }
+
+      .category-label {
+        border-bottom: 1px solid var(--color-table-border);
+
+        &.category-label-left,
+        &.category-label-right {
+          grid-column: 1;
+        }
+      }
+
+      .category-value {
+        overflow-wrap: anywhere;
+        border-bottom: 1px solid var(--color-table-border);
+
+        &.category-value-left,
+        &.category-value-right {
+          grid-column: 2;
+          border-right: none;
+        }
+      }
+    }
+  }
+
+  .variant-links-no-data {
+    padding: 14px 0 0;
+    margin: 0;
+    font-family: "Roboto Condensed", sans-serif;
+    font-size: 14px;
+    color: var(--color-black);
+    text-align: center;
+  }
+}

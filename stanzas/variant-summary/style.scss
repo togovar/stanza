@@ -48,6 +48,23 @@ main {
       .chromosome {
         font-weight: bold;
       }
+
+      &:nth-of-type(odd) {
+        border-right: 1px solid var(--color-table-border);
+      }
+    }
+
+    @media (width <= 580px) {
+      grid-template-columns: max-content minmax(0, 1fr);
+
+      dd {
+        overflow-wrap: anywhere;
+        white-space: normal;
+
+        &:nth-of-type(odd) {
+          border-right: none;
+        }
+      }
     }
   }
 }
