@@ -139,9 +139,19 @@ const fetchMogplusEntry = async (sparqlist, variant, sourceAssembly, mogplusVers
         return undefined;
     }
 };
-const buildLinkCategoryRows = (variantData, mogplusEntry, mogplusVersion) => {
+const buildLinkCategoryRows = (variantData, mogplusEntry, mogplusVersion, sourceAssembly) => {
     const externalLinks = (variantData.external_links ??
         {});
+    const frequencySources = [
+        buildSourceFromExternalLink("dbSNP", firstExternalLink(externalLinks, "dbsnp")),
+        buildSourceFromExternalLink("ToMMo", firstExternalLink(externalLinks, "tommo"), "tommo"),
+        ...(sourceAssembly === "GRCh37"
+            ? []
+            : [
+                buildSourceFromExternalLink("JoGo", firstExternalLink(externalLinks, "jogo"), "jogo"),
+            ]),
+        buildSourceFromExternalLink("gnomAD", firstExternalLink(externalLinks, "gnomad"), "gnomad"),
+    ];
     const categories = new Map([
         [
             "Clinical significance",
@@ -167,12 +177,7 @@ const buildLinkCategoryRows = (variantData, mogplusEntry, mogplusVersion) => {
             {
                 label: "Frequency",
                 anchor: CATEGORY_ANCHORS.Frequency,
-                sources: [
-                    buildSourceFromExternalLink("dbSNP", firstExternalLink(externalLinks, "dbsnp")),
-                    buildSourceFromExternalLink("ToMMo", firstExternalLink(externalLinks, "tommo"), "tommo"),
-                    buildSourceFromExternalLink("JoGo", firstExternalLink(externalLinks, "jogo"), "jogo"),
-                    buildSourceFromExternalLink("gnomAD", firstExternalLink(externalLinks, "gnomad"), "gnomad"),
-                ],
+                sources: frequencySources,
             },
         ],
         [
@@ -221,7 +226,7 @@ class VariantLinks extends Stanza {
             const mogplusVersion = params.mogplus_ver ?? DEFAULT_MOGPLUS_VERSION;
             const sourceAssembly = resolveAssembly(params);
             const mogplusEntry = await fetchMogplusEntry(params.sparqlist, variantData, sourceAssembly, mogplusVersion);
-            templateParams.result = buildLinkCategoryRows(variantData, mogplusEntry, mogplusVersion);
+            templateParams.result = buildLinkCategoryRows(variantData, mogplusEntry, mogplusVersion, sourceAssembly);
         }
         catch (reason) {
             console.error(reason);
@@ -305,7 +310,7 @@ var metadata = {
 	{
 		"stanza:key": "assembly",
 		"stanza:example": "GRCh38",
-		"stanza:description": "Assembly of the TogoVar variant coordinates. MoG+ lookup is enabled only for GRCh38.",
+		"stanza:description": "Assembly of the TogoVar variant coordinates. MoG+ lookup is enabled only for GRCh38, and JoGo links are hidden for GRCh37.",
 		"stanza:required": false
 	},
 	{
