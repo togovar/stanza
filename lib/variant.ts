@@ -1,7 +1,7 @@
 // ============================================================
 // variant パラメータ(VCF表記 CHROM-POS-REF-ALT)共通処理
-// tgv_id を持たないバリアント（TogoVar未登録）を chromosome/position/reference/alternate
-// で解決するために、複数stanza(variant-other-overlapping-variants, variant-links)から使う。
+// tgv_id を持たないバリアント（TogoVar未登録）を扱うため、
+// VCF表記の variant パラメータを複数の variant 系stanzaで共通利用する。
 // ============================================================
 
 /** variant パラメータを分解した結果。 */
