@@ -2,27 +2,54 @@ import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { u as unwrapValueFromBinding } from './utils-97dc77a0.js';
 import { u as uniq } from './uniq-f80b7f40.js';
 import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-4313dcda.js';
+import { a as buildIdentifierQueryString, d as describeVariantIdentifier } from './sparqlist-47ca0758.js';
+import { f as fetchVariantDataByIdentifier } from './togovar-variant-0e8288d9.js';
+import { p as parseVariantParam, a as assertValidVariantIdentifier } from './variant-0dd96a22.js';
 
 class VariantHeader extends Stanza {
   async render() {
     this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
-    const sparqlist = (this.params.sparqlist || "/sparqlist").concat(`/api/tgv2rs?tgv_id=${this.params.tgv_id}`);
+    const params = this.params ?? {};
+    const parsedVariant = parseVariantParam(params.variant);
 
-    const r = await fetch(sparqlist, {
-      method: "GET",
-      headers: {
-        "Accept": "application/json",
-      },
+    const r = await Promise.resolve().then(async () => {
+      assertValidVariantIdentifier(params.tgv_id, params.variant, parsedVariant);
+
+      let tgvId = params.tgv_id;
+      if (!tgvId) {
+        if (!params["data-url"]) {
+          throw new Error("data-url parameter is required when variant is given without tgv_id");
+        }
+
+        const variantData = await fetchVariantDataByIdentifier(
+          params["data-url"],
+          tgvId,
+          parsedVariant,
+          describeVariantIdentifier(params),
+        );
+        tgvId = variantData.id;
+      }
+
+      // tgv2rs は variant を解釈しないため、必ず解決済みの tgv_id だけを渡す。
+      const queryString = buildIdentifierQueryString({ tgv_id: tgvId });
+      const sparqlist = (params.sparqlist || "/sparqlist").concat(`/api/tgv2rs?${queryString}`);
+
+      return fetch(sparqlist, {
+        method: "GET",
+        headers: {
+          "Accept": "application/json",
+        },
+      });
     }).then(res => {
       if (res.ok) {
         return res.json();
       }
-      throw new Error(sparqlist + " returns status " + res.status);
+      throw new Error("tgv2rs returns status " + res.status);
     }).then(data => {
       const results = unwrapValueFromBinding(data);
 
-      if (!results) {
+      if (!results?.length) {
         return {result: {xrefs: {}}};
       }
 
@@ -31,7 +58,8 @@ class VariantHeader extends Stanza {
           xrefs: [
             {
               name: "RefSNP ID",
-              refs: uniq(results.map(x => x.rs)).map(x => ({label: x.split("/").slice(-1)[0], url: x})),
+              refs: uniq(results.map(x => x.rs).filter(x => x))
+                .map(x => ({label: x.split("/").slice(-1)[0], url: x})),
             },
           ],
         },
@@ -69,18 +97,30 @@ var metadata = {
 	"stanza:contributor": [
 ],
 	"stanza:created": "2019-06-07",
-	"stanza:updated": "2022-04-15",
+	"stanza:updated": "2026-08-12",
 	"stanza:parameter": [
 	{
 		"stanza:key": "tgv_id",
 		"stanza:example": "tgv219804",
-		"stanza:description": "TogoVar ID",
-		"stanza:required": true
+		"stanza:description": "TogoVar ID (required if variant is not given)",
+		"stanza:required": false
+	},
+	{
+		"stanza:key": "variant",
+		"stanza:example": "1-12345-A-T",
+		"stanza:description": "Variant in VCF notation CHROM-POS-REF-ALT (required if tgv_id is not given)",
+		"stanza:required": false
 	},
 	{
 		"stanza:key": "sparqlist",
 		"stanza:example": "https://stg-grch38.togovar.org/sparqlist",
 		"stanza:description": "SPARQList URL",
+		"stanza:required": false
+	},
+	{
+		"stanza:key": "data-url",
+		"stanza:example": "https://stg-grch38.togovar.org/api/search/variant",
+		"stanza:description": "TogoVar API base URL or variant search API URL (required when variant is given without tgv_id)",
 		"stanza:required": false
 	}
 ],

@@ -1388,10 +1388,49 @@ togostanza--menu {
   cursor: pointer;
 }
 
-main .table.gene > tbody > tr > th {
-  width: 139px;
-  text-align: right;
+main .variant-gene-list {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr);
+  width: 100%;
+  margin: 0;
+  font-family: "Roboto Condensed", sans-serif;
 }
-main .table.gene > tbody > tr > td {
-  padding-left: 13px;
+main .variant-gene-list dt,
+main .variant-gene-list dd {
+  display: flex;
+  align-items: center;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  line-height: 1.2;
+  border-bottom: 1px solid var(--color-table-border);
+}
+main .variant-gene-list dt {
+  padding-left: 10px;
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--color-black);
+  white-space: nowrap;
+}
+main .variant-gene-list dd {
+  padding-right: 10px;
+  padding-left: 12px;
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-black);
+  overflow-wrap: anywhere;
+}
+main .variant-gene-list dd a {
+  color: var(--color-key-dark2);
+}
+main .variant-gene-list dd a:hover {
+  color: var(--color-key-dark1);
+}
+main .variant-gene-list .gene-values {
+  padding: 0;
+  margin: 0;
+  line-height: 1.2;
+  list-style: none;
+}
+main .variant-gene-list .gene-values li + li {
+  margin-top: 2px;
 }

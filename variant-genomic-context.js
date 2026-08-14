@@ -1,13 +1,16 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { u as unwrapValueFromBinding } from './utils-97dc77a0.js';
 import { r as referenceToChrAssembly } from './display-a7e019c1.js';
-import { r as requireFirstBinding } from './sparqlist-19d6bf99.js';
+import { a as buildIdentifierQueryString, r as requireFirstBinding, d as describeVariantIdentifier } from './sparqlist-47ca0758.js';
 import './constants-4313dcda.js';
 import './frequency-9d3406e7.js';
 
 class VariantSummary extends Stanza {
   async render() {
-    const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/variant_summary?tgv_id=${this.params.tgv_id}`);
+    // tgv_id が無いバリアント（TogoVar未登録）は variant(CHROM-POS-REF-ALT) で解決する。
+    // sparqlist側は tgv_id があれば優先し、無ければ variant を使う。
+    const queryString = buildIdentifierQueryString(this.params ?? {});
+    const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/variant_summary?${queryString}`);
 
     const r = await fetch(sparqlist, {
       method: "GET",
@@ -22,7 +25,7 @@ class VariantSummary extends Stanza {
     }).then(data => {
       const binding = requireFirstBinding(
         unwrapValueFromBinding(data),
-        `Failed to obtain genomic position for ${this.params.tgv_id}`,
+        `Failed to obtain genomic position for ${describeVariantIdentifier(this.params ?? {})}`,
       );
 
       const { chr } = referenceToChrAssembly(binding.reference);
@@ -74,13 +77,19 @@ var metadata = {
 	"stanza:contributor": [
 ],
 	"stanza:created": "2015-02-03",
-	"stanza:updated": "2022-04-15",
+	"stanza:updated": "2026-07-27",
 	"stanza:parameter": [
 	{
 		"stanza:key": "tgv_id",
 		"stanza:example": "tgv219804",
-		"stanza:description": "TogoVar ID",
-		"stanza:required": true
+		"stanza:description": "TogoVar ID (required if variant is not given)",
+		"stanza:required": false
+	},
+	{
+		"stanza:key": "variant",
+		"stanza:example": "1-12345-A-T",
+		"stanza:description": "Variant in VCF notation CHROM-POS-REF-ALT (required if tgv_id is not given)",
+		"stanza:required": false
 	},
 	{
 		"stanza:key": "assembly",

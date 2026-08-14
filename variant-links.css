@@ -1388,493 +1388,132 @@ togostanza--menu {
   cursor: pointer;
 }
 
-main .frequency-popover,
-main .filter-status-popover {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  vertical-align: middle;
+main .variant-links-list {
+  width: 100%;
+  margin: 0;
+  font-family: "Roboto Condensed", sans-serif;
 }
-main .frequency-popover .frequency-popover-trigger,
-main .frequency-popover .filter-status-popover-trigger,
-main .filter-status-popover .frequency-popover-trigger,
-main .filter-status-popover .filter-status-popover-trigger {
-  position: relative;
-  box-sizing: border-box;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  color: var(--color-gray);
-  cursor: help;
-  background-color: transparent;
-  border: none;
-  transform: translateY(-2px);
+main .variant-links-list .category-row {
+  display: grid;
+  grid-template-columns: 130px calc(50% - 130px) 120px calc(50% - 120px);
+  border-bottom: 1px solid var(--color-table-border);
 }
-main .frequency-popover .frequency-popover-trigger::before,
-main .frequency-popover .filter-status-popover-trigger::before,
-main .filter-status-popover .frequency-popover-trigger::before,
-main .filter-status-popover .filter-status-popover-trigger::before {
+main .variant-links-list .category-label {
+  padding: 4px 10px;
+  margin: 0;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 1.2;
+  color: var(--color-black);
+  text-align: left;
+  white-space: nowrap;
+}
+main .variant-links-list .category-label.category-label-left {
+  grid-column: 1;
+}
+main .variant-links-list .category-label.category-label-right {
+  grid-column: 3;
+}
+main .variant-links-list .category-label .category-link {
+  font-weight: bold;
+  color: var(--color-key-dark2);
+  text-decoration: underline;
+}
+main .variant-links-list .category-label .category-link:hover {
+  color: var(--color-key-dark1);
+}
+main .variant-links-list .category-label .caret-down {
+  display: inline-block;
+  margin-left: 4px;
   font-family: "Font Awesome 7 Free";
   font-size: 10px;
-  content: var(--icon-circle-info);
 }
-main .frequency-popover .frequency-popover-trigger:focus-visible,
-main .frequency-popover .filter-status-popover-trigger:focus-visible,
-main .filter-status-popover .frequency-popover-trigger:focus-visible,
-main .filter-status-popover .filter-status-popover-trigger:focus-visible {
-  outline: 2px solid var(--color-key-light);
-  outline-offset: 2px;
+main .variant-links-list .category-label .caret-down::before {
+  content: var(--icon-arrow-down);
 }
-main .frequency-popover-panel,
-main .filter-status-popover-panel {
-  --popover-bg-color: white;
-  --popover-fg-color: #444;
-  --popover-border-color: transparent;
-  --popover-arrow-color: white;
-  --popover-arrow-filter: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: var(--z-index-frequency-popover);
-  display: block;
-  max-width: min(44rem, 100vw - 48px);
-  padding: 10px;
-  font-size: 10px;
-  font-weight: 400;
-  line-height: 1.25;
-  color: var(--popover-fg-color);
+main .variant-links-list .category-value {
+  padding: 4px 10px;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.2;
+  color: var(--color-black);
   text-align: left;
   white-space: normal;
-  pointer-events: none;
-  background-color: var(--popover-bg-color);
-  border: 1px solid var(--popover-border-color);
-  border-radius: 7px;
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.18);
-  opacity: 0;
-  transition: opacity 120ms ease;
 }
-main .frequency-popover-panel .frequency-popover-arrow,
-main .frequency-popover-panel .filter-status-popover-arrow,
-main .filter-status-popover-panel .frequency-popover-arrow,
-main .filter-status-popover-panel .filter-status-popover-arrow {
-  position: absolute;
-  width: 12px;
-  height: 6px;
-  pointer-events: none;
-  filter: var(--popover-arrow-filter);
+main .variant-links-list .category-value.category-value-left {
+  grid-column: 2;
+  border-right: 1px solid var(--color-table-border);
 }
-main .frequency-popover-panel .frequency-popover-arrow::before, main .frequency-popover-panel .frequency-popover-arrow::after,
-main .frequency-popover-panel .filter-status-popover-arrow::before,
-main .frequency-popover-panel .filter-status-popover-arrow::after,
-main .filter-status-popover-panel .frequency-popover-arrow::before,
-main .filter-status-popover-panel .frequency-popover-arrow::after,
-main .filter-status-popover-panel .filter-status-popover-arrow::before,
-main .filter-status-popover-panel .filter-status-popover-arrow::after {
-  position: absolute;
-  content: "";
+main .variant-links-list .category-value.category-value-right {
+  grid-column: 4;
 }
-main .frequency-popover-panel[data-placement^=top] .frequency-popover-arrow::before,
-main .frequency-popover-panel[data-placement^=top] .filter-status-popover-arrow::before,
-main .filter-status-popover-panel[data-placement^=top] .frequency-popover-arrow::before,
-main .filter-status-popover-panel[data-placement^=top] .filter-status-popover-arrow::before {
-  top: 0;
-  left: 0;
-  border-top: 6px solid var(--popover-arrow-color);
-  border-right: 6px solid transparent;
-  border-left: 6px solid transparent;
-}
-main .frequency-popover-panel[data-placement^=top] .frequency-popover-arrow::after,
-main .frequency-popover-panel[data-placement^=top] .filter-status-popover-arrow::after,
-main .filter-status-popover-panel[data-placement^=top] .frequency-popover-arrow::after,
-main .filter-status-popover-panel[data-placement^=top] .filter-status-popover-arrow::after {
-  top: -1px;
-  left: 1px;
-  width: 10px;
-  height: 2px;
-  background-color: var(--popover-arrow-color);
-}
-main .frequency-popover-panel[data-placement^=bottom] .frequency-popover-arrow::before,
-main .frequency-popover-panel[data-placement^=bottom] .filter-status-popover-arrow::before,
-main .filter-status-popover-panel[data-placement^=bottom] .frequency-popover-arrow::before,
-main .filter-status-popover-panel[data-placement^=bottom] .filter-status-popover-arrow::before {
-  bottom: 0;
-  left: 0;
-  border-right: 6px solid transparent;
-  border-bottom: 6px solid var(--popover-arrow-color);
-  border-left: 6px solid transparent;
-}
-main .frequency-popover-panel[data-placement^=bottom] .frequency-popover-arrow::after,
-main .frequency-popover-panel[data-placement^=bottom] .filter-status-popover-arrow::after,
-main .filter-status-popover-panel[data-placement^=bottom] .frequency-popover-arrow::after,
-main .filter-status-popover-panel[data-placement^=bottom] .filter-status-popover-arrow::after {
-  bottom: -1px;
-  left: 1px;
-  width: 10px;
-  height: 2px;
-  background-color: var(--popover-arrow-color);
-}
-main .frequency-popover-panel[data-placement^=left] .frequency-popover-arrow,
-main .frequency-popover-panel[data-placement^=left] .filter-status-popover-arrow,
-main .filter-status-popover-panel[data-placement^=left] .frequency-popover-arrow,
-main .filter-status-popover-panel[data-placement^=left] .filter-status-popover-arrow {
-  width: 6px;
-  height: 12px;
-}
-main .frequency-popover-panel[data-placement^=left] .frequency-popover-arrow::before,
-main .frequency-popover-panel[data-placement^=left] .filter-status-popover-arrow::before,
-main .filter-status-popover-panel[data-placement^=left] .frequency-popover-arrow::before,
-main .filter-status-popover-panel[data-placement^=left] .filter-status-popover-arrow::before {
-  top: 0;
-  left: 0;
-  border-top: 6px solid transparent;
-  border-bottom: 6px solid transparent;
-  border-left: 6px solid var(--popover-arrow-color);
-}
-main .frequency-popover-panel[data-placement^=left] .frequency-popover-arrow::after,
-main .frequency-popover-panel[data-placement^=left] .filter-status-popover-arrow::after,
-main .filter-status-popover-panel[data-placement^=left] .frequency-popover-arrow::after,
-main .filter-status-popover-panel[data-placement^=left] .filter-status-popover-arrow::after {
-  top: 1px;
-  left: -1px;
-  width: 2px;
-  height: 10px;
-  background-color: var(--popover-arrow-color);
-}
-main .frequency-popover-panel[data-placement^=right] .frequency-popover-arrow,
-main .frequency-popover-panel[data-placement^=right] .filter-status-popover-arrow,
-main .filter-status-popover-panel[data-placement^=right] .frequency-popover-arrow,
-main .filter-status-popover-panel[data-placement^=right] .filter-status-popover-arrow {
-  width: 6px;
-  height: 12px;
-}
-main .frequency-popover-panel[data-placement^=right] .frequency-popover-arrow::before,
-main .frequency-popover-panel[data-placement^=right] .filter-status-popover-arrow::before,
-main .filter-status-popover-panel[data-placement^=right] .frequency-popover-arrow::before,
-main .filter-status-popover-panel[data-placement^=right] .filter-status-popover-arrow::before {
-  top: 0;
-  right: 0;
-  border-top: 6px solid transparent;
-  border-right: 6px solid var(--popover-arrow-color);
-  border-bottom: 6px solid transparent;
-}
-main .frequency-popover-panel[data-placement^=right] .frequency-popover-arrow::after,
-main .frequency-popover-panel[data-placement^=right] .filter-status-popover-arrow::after,
-main .filter-status-popover-panel[data-placement^=right] .frequency-popover-arrow::after,
-main .filter-status-popover-panel[data-placement^=right] .filter-status-popover-arrow::after {
-  top: 1px;
-  right: -1px;
-  width: 2px;
-  height: 10px;
-  background-color: var(--popover-arrow-color);
-}
-main .frequency-popover-panel[data-open=true],
-main .filter-status-popover-panel[data-open=true] {
-  pointer-events: auto;
-  opacity: 1;
-}
-main .frequency-popover-panel .frequency-popover-title,
-main .filter-status-popover-panel .frequency-popover-title {
-  display: block;
-  margin-bottom: 3px;
-  line-height: 1.2;
-}
-main .frequency-popover-panel .frequency-popover-title .frequency-popover-title-main,
-main .filter-status-popover-panel .frequency-popover-title .frequency-popover-title-main {
-  display: block;
-  font-size: 10px;
-  font-weight: 700;
-}
-main .frequency-popover-panel .frequency-popover-title .frequency-popover-title-sub,
-main .filter-status-popover-panel .frequency-popover-title .frequency-popover-title-sub {
-  display: block;
-  font-size: 10px;
-  font-weight: 400;
-}
-main .frequency-popover-panel .frequency-popover-section,
-main .filter-status-popover-panel .frequency-popover-section {
-  display: block;
-  padding-top: 14px;
-}
-main .frequency-popover-panel .frequency-popover-list,
-main .filter-status-popover-panel .frequency-popover-list {
-  display: block;
-}
-main .frequency-popover-panel .frequency-popover-item,
-main .filter-status-popover-panel .frequency-popover-item {
-  display: grid;
-  grid-template-columns: max-content minmax(0, 1fr);
-  column-gap: 4px;
-  align-items: start;
-  padding: 4px 0;
-  border-top: 1px solid #d5dbe0;
-}
-main .frequency-popover-panel .frequency-popover-item:first-child,
-main .filter-status-popover-panel .frequency-popover-item:first-child {
-  padding-top: 0;
-  border-top: none;
-}
-main .frequency-popover-panel .frequency-popover-item:last-child,
-main .filter-status-popover-panel .frequency-popover-item:last-child {
-  padding-bottom: 0;
-}
-main .frequency-popover-panel .frequency-popover-item .frequency-popover-term,
-main .filter-status-popover-panel .frequency-popover-item .frequency-popover-term {
+main .variant-links-list .category-value .source {
   display: inline-block;
-  padding: 2px 6px;
-  font-weight: 700;
-  line-height: 1.1;
+  max-width: 100%;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+main .variant-links-list .category-value .source-separator {
+  white-space: pre;
+}
+main .variant-links-list .category-value .source-name {
+  margin-right: 4px;
+  font-size: 12px;
   color: var(--color-black);
-  background-color: #f3f5f7;
-  border-radius: 3px;
 }
-main .frequency-popover-panel .frequency-popover-item .frequency-popover-description,
-main .filter-status-popover-panel .frequency-popover-item .frequency-popover-description {
+main .variant-links-list .category-value .dataset-icon {
   display: inline-block;
 }
-main .filter-status-popover-panel {
-  --popover-bg-color: var(--color-black);
-  --popover-fg-color: white;
-  --popover-border-color: white;
-  --popover-arrow-color: var(--color-black);
-  --popover-arrow-filter: none;
-  max-width: 24rem;
-  padding: 0.4rem 0.6rem;
+main .variant-links-list .category-value .dataset-icon::before {
+  font-size: 12px;
+}
+main .variant-links-list .category-value .source-link {
+  color: var(--color-key-dark2);
+  overflow-wrap: anywhere;
+}
+main .variant-links-list .category-value .source-link:hover {
+  color: var(--color-key-dark1);
+}
+main .variant-links-list .category-value .external-link-icon {
+  display: inline-block;
+  margin-left: 3px;
+  font-family: "Font Awesome 7 Free";
   font-size: 10px;
 }
-main .filter-status-popover-panel .filter-status-popover-content {
-  display: block;
+main .variant-links-list .category-value .external-link-icon::before {
+  content: var(--icon-arrow-up-right-from-square);
+}
+main .variant-links-list .category-value .not-available {
+  color: var(--color-gray);
+}
+main .variant-links-list .category-value .source-value {
+  overflow-wrap: anywhere;
+}
+@media (width <= 580px) {
+  main .variant-links-list .category-row {
+    grid-template-columns: 130px minmax(0, 1fr);
+    border-bottom: none;
+  }
+  main .variant-links-list .category-label {
+    border-bottom: 1px solid var(--color-table-border);
+  }
+  main .variant-links-list .category-label.category-label-left, main .variant-links-list .category-label.category-label-right {
+    grid-column: 1;
+  }
+  main .variant-links-list .category-value {
+    overflow-wrap: anywhere;
+    border-bottom: 1px solid var(--color-table-border);
+  }
+  main .variant-links-list .category-value.category-value-left, main .variant-links-list .category-value.category-value-right {
+    grid-column: 2;
+    border-right: none;
+  }
+}
+main .variant-links-no-data {
+  padding: 14px 0 0;
   margin: 0;
-}
-
-main .variant-frequency-scroll {
-  overflow: auto;
-  resize: vertical;
-  background-color: white;
-}
-main .variant-frequency-scroll .table {
-  border-spacing: 0;
-  border-collapse: separate;
-}
-main .variant-frequency-scroll .table > thead {
-  position: sticky;
-  top: -1px;
-  z-index: var(--z-index-sticky-table-header);
-  background-color: white;
-}
-main .variant-frequency-scroll .variant-frequency-no-data {
-  position: sticky;
-  left: 0;
-  width: 100%;
-  padding: 14px 0 16px;
+  font-family: "Roboto Condensed", sans-serif;
   font-size: 14px;
   color: var(--color-black);
   text-align: center;
-}
-main .frequency-detail {
-  width: 100%;
-}
-main .frequency-detail > tbody > tr > td {
-  line-height: 18px;
-}
-main .frequency-detail > tbody > tr > td .dataset-icon {
-  display: inline-block;
-  margin-right: 0.2em;
-  vertical-align: middle;
-}
-main .frequency-detail > tbody > tr > td.alt, main .frequency-detail > tbody > tr > td.total, main .frequency-detail > tbody > tr > td.frequency {
-  text-align: right;
-}
-main .frequency-detail > tbody > tr > td.alt {
-  font-weight: bold;
-  color: var(--color-mutation-alt);
-}
-main .frequency-detail > tbody > tr > td.alt::after {
-  margin-left: 0.5em;
-  font-size: 10px;
-  color: var(--color-black);
-  content: "/";
-}
-main .frequency-detail > tbody > tr > td.total {
-  font-size: 10px;
-}
-main .table > thead > tr > th {
-  padding-right: 4px;
-  white-space: nowrap;
-}
-main .table > thead > tr > th[rowspan] {
-  vertical-align: bottom;
-}
-main .table > thead > tr > th[colspan] {
-  padding-top: 3px;
-  padding-bottom: 0;
-  padding-left: 7px;
-  font-size: 10px;
-  color: var(--color-black);
-  border: none;
-  border-left: 1px solid #dee2e6;
-}
-main .table > thead > tr > th.genotype-count-heading {
-  position: relative;
-}
-main .table > thead > tr > th.frequency {
-  padding-left: 20px;
-}
-main .table > thead > tr > th.num_genotype_hetero, main .table > thead > tr > th.num_genotype_ref_homo {
-  padding-left: 17px;
-}
-main .table > thead > tr > th.alt, main .table > thead > tr > th.filter_status {
-  padding-left: 7px;
-  border-left: 1px solid #dee2e6;
-}
-main .table > thead > tr:nth-of-type(2) > th.num-th {
-  padding-top: 0;
-}
-main .table > tbody > tr {
-  border-bottom: 1px solid #dee2e6;
-}
-main .table > tbody > tr[data-depth="1"], main .table > tbody > tr[data-depth="2"], main .table > tbody > tr[data-depth="3"] {
-  display: none;
-}
-main .table > tbody > tr.show-by-total, main .table > tbody > tr.show-by-sub, main .table > tbody > tr.show {
-  display: table-row;
-}
-main .table > tbody > tr.close-by-total, main .table > tbody > tr.close-by-sub {
-  display: none;
-}
-main .table > tbody > tr > td {
-  padding-right: 5px;
-}
-main .table > tbody > tr > td.dataset {
-  padding-left: 14px;
-  white-space: nowrap;
-}
-main .table > tbody > tr > td.dataset[data-depth="0"][data-has-child=false], main .table > tbody > tr > td.dataset[data-depth="0"][data-has-child=true] {
-  border-top: none;
-}
-main .table > tbody > tr > td.dataset[data-depth="1"], main .table > tbody > tr > td.dataset[data-depth="2"], main .table > tbody > tr > td.dataset[data-depth="3"] {
-  visibility: hidden;
-  border: none;
-}
-main .table > tbody > tr > td.population[data-depth="0"][data-has-child=true] {
-  padding-left: 12px;
-}
-main .table > tbody > tr > td.population[data-depth="1"] {
-  padding-left: 28px;
-}
-main .table > tbody > tr > td.population[data-depth="2"] {
-  padding-left: 44px;
-}
-main .table > tbody > tr > td.population[data-depth="3"] {
-  padding-left: 60px;
-}
-main .table > tbody > tr > td.population[data-has-child=true] {
-  cursor: pointer;
-}
-main .table > tbody > tr > td.population[data-has-child=true]::before {
-  position: relative;
-  right: 4px;
-  bottom: 2px;
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  content: "";
-  border-right: 1px solid var(--color-black);
-  border-bottom: 1px solid var(--color-black);
-  transform: rotate(-45deg);
-}
-main .table > tbody > tr > td.population[data-has-child=true].open::before {
-  right: 0;
-  bottom: 3px;
-  margin-right: 3px;
-  transform: rotate(45deg);
-}
-main .table > tbody > tr > td.population > .lock::before {
-  margin-right: 3px;
-  font-family: "Font Awesome 7 Free";
-  font-size: 14px;
-  color: var(--color-black);
-  content: var(--icon-lock);
-  opacity: 0.4;
-}
-main .table > tbody > tr > td.num_alt_alleles {
-  color: var(--color-mutation-alt);
-  text-align: right;
-  border-left: 1px solid #dee2e6;
-}
-main .table > tbody > tr > td.num_alt_alleles .slash {
-  margin-right: 4px;
-  margin-left: 7px;
-  font-size: 10px;
-  color: var(--color-black);
-}
-main .table > tbody > tr > td.num_alt_alleles .comment {
-  position: relative;
-  padding: 3px 6px 3px 23px;
-  margin-bottom: 4px;
-  font-size: 12px;
-  color: var(--color-black);
-  background-color: var(--color-sign-warning-light);
-  border-color: var(--color-sign-warning-dark);
-  border-style: solid;
-  border-width: 1px;
-  border-radius: 4px;
-}
-main .table > tbody > tr > td.num_alt_alleles .comment::before {
-  position: absolute;
-  top: 50%;
-  left: 6px;
-  margin-right: 4px;
-  font-family: "Font Awesome 7 Free";
-  color: var(--color-sign-warning-dark);
-  content: var(--icon-triangle-exclamation);
-  transform: translateY(-50%);
-}
-main .table > tbody > tr > td.num_alleles {
-  color: var(--color-black);
-  text-align: right;
-}
-main .table > tbody > tr > td.frequency {
-  box-sizing: content-box;
-  width: 58px;
-  padding-left: 20px;
-  text-align: left;
-}
-main .table > tbody > tr > td.num-td {
-  text-align: right;
-}
-main .table > tbody > tr > td.num_genotype_alt_homo {
-  border-left: 1px solid #dee2e6;
-}
-main .table > tbody > tr > td.num_genotype_alt_homo, main .table > tbody > tr > td.num_genotype_hemi_alt {
-  color: var(--color-mutation-alt);
-}
-main .table > tbody > tr > td.num_genotype_hetero {
-  color: var(--color-black);
-}
-main .table > tbody > tr > td.num_genotype_ref_homo, main .table > tbody > tr > td.num_genotype_hemi_ref {
-  color: var(--color-key-dark1);
-}
-main .table > tbody > tr > td.filter {
-  padding: 0 0 0 7px;
-  color: var(--color-sign-dangerous);
-  border-left: 1px solid #dee2e6;
-}
-main .table > tbody > tr > td.filter[data-filter=PASS] {
-  color: var(--color-sign-safe);
-}
-
-togostanza--menu {
-  width: 45px;
-  padding: 0;
-}
-togostanza--menu::after {
-  position: absolute;
-  top: 2px;
-  left: 26px;
-  font-family: "Font Awesome 7 Free";
-  font-size: 16px;
-  color: #000;
-  pointer-events: none;
-  content: "\f019";
 }

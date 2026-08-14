@@ -1,12 +1,16 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { u as unwrapValueFromBinding, g as grouping } from './utils-97dc77a0.js';
 import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-4313dcda.js';
+import { a as buildIdentifierQueryString } from './sparqlist-47ca0758.js';
 
 class VariantGene extends Stanza {
   async render() {
     this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
-    const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/variant_gene?tgv_id=${this.params.tgv_id}`);
+    // tgv_id が無いバリアント（TogoVar未登録）は variant(CHROM-POS-REF-ALT) で解決する。
+    // sparqlist側は tgv_id があれば優先し、無ければ variant を使う。
+    const queryString = buildIdentifierQueryString(this.params ?? {});
+    const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/variant_gene?${queryString}`);
 
     const r = await fetch(sparqlist, {
       method: "GET",
@@ -67,13 +71,19 @@ var metadata = {
 	"stanza:contributor": [
 ],
 	"stanza:created": "2019-04-22",
-	"stanza:updated": "2022-04-15",
+	"stanza:updated": "2026-07-27",
 	"stanza:parameter": [
 	{
 		"stanza:key": "tgv_id",
 		"stanza:example": "tgv219804",
-		"stanza:description": "TogoVar ID",
-		"stanza:required": true
+		"stanza:description": "TogoVar ID (required if variant is not given)",
+		"stanza:required": false
+	},
+	{
+		"stanza:key": "variant",
+		"stanza:example": "1-12345-A-T",
+		"stanza:description": "Variant in VCF notation CHROM-POS-REF-ALT (required if tgv_id is not given)",
+		"stanza:required": false
 	},
 	{
 		"stanza:key": "sparqlist",
@@ -107,7 +117,7 @@ var templates = [
         return undefined
     };
 
-  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"result") : depth0),{"name":"with","hash":{},"fn":container.program(2, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":4,"column":2},"end":{"line":31,"column":11}}})) != null ? stack1 : "");
+  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"result") : depth0),{"name":"with","hash":{},"fn":container.program(2, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":4,"column":2},"end":{"line":27,"column":11}}})) != null ? stack1 : "");
 },"2":function(container,depth0,helpers,partials,data) {
     var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
@@ -116,13 +126,13 @@ var templates = [
         return undefined
     };
 
-  return "    <table class=\"table gene\">\n      <tr>\n        <th>HGNC/Approved name</th>\n        <td>"
-    + container.escapeExpression(((helper = (helper = lookupProperty(helpers,"approved_name") || (depth0 != null ? lookupProperty(depth0,"approved_name") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(alias1,{"name":"approved_name","hash":{},"data":data,"loc":{"start":{"line":8,"column":12},"end":{"line":8,"column":29}}}) : helper)))
-    + "</td>\n      </tr>\n      <tr>\n        <th>HGNC/Approved symbol</th>\n        <td>\n          <ul class=\"no-bullet\">\n"
-    + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"symbol") : depth0),{"name":"each","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":14,"column":12},"end":{"line":16,"column":21}}})) != null ? stack1 : "")
-    + "          </ul>\n        </td>\n      </tr>\n      <tr>\n        <th>HGNC/Alias name</th>\n        <td>\n          <ul class=\"no-bullet\">\n"
-    + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"synonym") : depth0),{"name":"each","hash":{},"fn":container.program(4, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":24,"column":12},"end":{"line":26,"column":21}}})) != null ? stack1 : "")
-    + "          </ul>\n        </td>\n      </tr>\n    </table>\n";
+  return "    <dl class=\"variant-gene-list\">\n      <dt>HGNC/Approved name</dt>\n      <dd>"
+    + container.escapeExpression(((helper = (helper = lookupProperty(helpers,"approved_name") || (depth0 != null ? lookupProperty(depth0,"approved_name") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(alias1,{"name":"approved_name","hash":{},"data":data,"loc":{"start":{"line":7,"column":10},"end":{"line":7,"column":27}}}) : helper)))
+    + "</dd>\n\n      <dt>HGNC/Approved symbol</dt>\n      <dd>\n        <ul class=\"gene-values\">\n"
+    + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"symbol") : depth0),{"name":"each","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":12,"column":10},"end":{"line":14,"column":19}}})) != null ? stack1 : "")
+    + "        </ul>\n      </dd>\n\n      <dt>HGNC/Alias name</dt>\n      <dd>\n        <ul class=\"gene-values\">\n"
+    + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"synonym") : depth0),{"name":"each","hash":{},"fn":container.program(4, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":21,"column":10},"end":{"line":23,"column":19}}})) != null ? stack1 : "")
+    + "        </ul>\n      </dd>\n    </dl>\n";
 },"3":function(container,depth0,helpers,partials,data) {
     var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=container.hooks.helperMissing, alias3="function", alias4=container.escapeExpression, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
@@ -131,13 +141,13 @@ var templates = [
         return undefined
     };
 
-  return "              <li><a href=\""
-    + alias4(((helper = (helper = lookupProperty(helpers,"href") || (depth0 != null ? lookupProperty(depth0,"href") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"href","hash":{},"data":data,"loc":{"start":{"line":15,"column":27},"end":{"line":15,"column":35}}}) : helper)))
+  return "            <li><a href=\""
+    + alias4(((helper = (helper = lookupProperty(helpers,"href") || (depth0 != null ? lookupProperty(depth0,"href") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"href","hash":{},"data":data,"loc":{"start":{"line":13,"column":25},"end":{"line":13,"column":33}}}) : helper)))
     + "\">"
-    + alias4(((helper = (helper = lookupProperty(helpers,"value") || (depth0 != null ? lookupProperty(depth0,"value") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"value","hash":{},"data":data,"loc":{"start":{"line":15,"column":37},"end":{"line":15,"column":46}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"value") || (depth0 != null ? lookupProperty(depth0,"value") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"value","hash":{},"data":data,"loc":{"start":{"line":13,"column":35},"end":{"line":13,"column":44}}}) : helper)))
     + "</a></li>\n";
 },"4":function(container,depth0,helpers,partials,data) {
-    return "              <li>"
+    return "            <li>"
     + container.escapeExpression(container.lambda(depth0, depth0))
     + "</li>\n";
 },"compiler":[8,">= 4.3.0"],"main":function(container,depth0,helpers,partials,data) {
@@ -148,7 +158,7 @@ var templates = [
         return undefined
     };
 
-  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"error") : depth0),{"name":"with","hash":{},"fn":container.program(0, data, 0),"inverse":container.program(1, data, 0),"data":data,"loc":{"start":{"line":1,"column":0},"end":{"line":32,"column":9}}})) != null ? stack1 : "");
+  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"error") : depth0),{"name":"with","hash":{},"fn":container.program(0, data, 0),"inverse":container.program(1, data, 0),"data":data,"loc":{"start":{"line":1,"column":0},"end":{"line":28,"column":9}}})) != null ? stack1 : "");
 },"useData":true}]
 ];
 

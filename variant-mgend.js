@@ -2,6 +2,10 @@ import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { R as ROBOTO_CONDENSED_CSS_URL, C as CLINICAL_SIGNIFICANCE } from './constants-4313dcda.js';
 import { e as escapeHtml } from './html-18194d0e.js';
 import { r as rowSpanize } from './table-1f1dea97.js';
+import { d as describeVariantIdentifier } from './sparqlist-47ca0758.js';
+import { a as fetchVariantDataById, b as fetchVariantDataByLocation, r as requireVariantData } from './togovar-variant-0e8288d9.js';
+import { p as parseVariantParam, a as assertValidVariantIdentifier } from './variant-0dd96a22.js';
+import './utils-97dc77a0.js';
 
 // ============================================================
 // ヘルパー関数
@@ -31,7 +35,7 @@ function buildConditionHtml(condition) {
 function buildConditionRows(apiResponse) {
     const conditionRows = [];
     apiResponse.data.forEach((variantData) => {
-        const mgendLink = variantData.external_links.mgend?.[0];
+        const mgendLink = variantData.external_links?.mgend?.[0];
         if (!mgendLink)
             return;
         variantData.significance.forEach((significanceEntry) => {
@@ -103,25 +107,23 @@ function groupAndSortByInterpretation(conditionRows) {
 class VariantMGeND extends Stanza {
     async render() {
         this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
-        const { "data-url": dataUrl, tgv_id } = this.params;
+        const params = this.params;
+        const { "data-url": dataUrl, tgv_id } = params;
+        const parsedVariant = parseVariantParam(params.variant);
         try {
-            const response = await fetch(dataUrl, {
-                method: "POST",
-                headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ query: { id: [tgv_id] } }),
-            });
-            if (!response.ok) {
-                throw new Error(`${dataUrl} returned status ${response.status}`);
+            if (!dataUrl) {
+                throw new Error("data-url parameter is required");
             }
-            const apiResponse = await response.json();
+            assertValidVariantIdentifier(tgv_id, params.variant, parsedVariant);
+            const apiResponse = tgv_id
+                ? await fetchVariantDataById(dataUrl, tgv_id)
+                : await fetchVariantDataByLocation(dataUrl, parsedVariant);
+            const variantData = requireVariantData(apiResponse, tgv_id, parsedVariant, describeVariantIdentifier(params));
             this.renderTemplate({
                 template: "stanza.html.hbs",
                 parameters: {
                     params: this.params,
-                    result: buildConditionRows(apiResponse),
+                    result: buildConditionRows({ data: [variantData] }),
                 },
             });
         }
@@ -163,18 +165,25 @@ var metadata = {
 	"stanza:contributor": [
 ],
 	"stanza:created": "2024-11-14",
-	"stanza:updated": "2024-11-14",
+	"stanza:updated": "2026-08-12",
 	"stanza:parameter": [
 	{
 		"stanza:key": "tgv_id",
 		"stanza:example": "tgv6784522",
-		"stanza:description": "TogoVar ID",
-		"stanza:required": true
+		"stanza:description": "TogoVar ID (required if variant is not given)",
+		"stanza:required": false
+	},
+	{
+		"stanza:key": "variant",
+		"stanza:example": "1-12345-A-T",
+		"stanza:description": "Variant in VCF notation CHROM-POS-REF-ALT (required if tgv_id is not given)",
+		"stanza:required": false
 	},
 	{
 		"stanza:key": "data-url",
 		"stanza:example": "https://stg-grch38.togovar.org/api/search/variant",
-		"stanza:description": "URL"
+		"stanza:description": "TogoVar API base URL or variant search API URL",
+		"stanza:required": true
 	}
 ],
 	"stanza:about-link-placement": "bottom-right",

@@ -1,6 +1,6 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { R as ROBOTO_CONDENSED_CSS_URL, a as REVIEW_STATUS, C as CLINICAL_SIGNIFICANCE } from './constants-4313dcda.js';
-import { b as buildSparqlistApiUrl, f as fetchSparqlBindings } from './sparqlist-19d6bf99.js';
+import { b as buildSparqlistApiUrl, f as fetchSparqlBindings } from './sparqlist-47ca0758.js';
 import { r as rowSpanize } from './table-1f1dea97.js';
 import './utils-97dc77a0.js';
 
@@ -104,13 +104,19 @@ var metadata = {
 	"stanza:contributor": [
 ],
 	"stanza:created": "2019-04-22",
-	"stanza:updated": "2026-07-06",
+	"stanza:updated": "2026-07-27",
 	"stanza:parameter": [
 	{
 		"stanza:key": "tgv_id",
 		"stanza:example": "tgv219804",
-		"stanza:description": "TogoVar ID",
-		"stanza:required": true
+		"stanza:description": "TogoVar ID (required if variant is not given)",
+		"stanza:required": false
+	},
+	{
+		"stanza:key": "variant",
+		"stanza:example": "1-12345-A-T",
+		"stanza:description": "Variant in VCF notation CHROM-POS-REF-ALT (required if tgv_id is not given)",
+		"stanza:required": false
 	},
 	{
 		"stanza:key": "sparqlist",

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Variant / Links</title>
+
+    <script type="module" src="./variant-links.js" async></script>
+
+    <script type="module">
+      import createHelpApp from './-togostanza/help-app.js';
+
+      const metadata = {"@context":{"stanza":"http://togostanza.org/resource/stanza#"},"@id":"variant-links","stanza:label":"Variant / Links","stanza:definition":"","stanza:license":"MIT","stanza:author":"PENQE","stanza:contributor":[],"stanza:created":"2026-07-31","stanza:updated":"2026-08-13","stanza:parameter":[{"stanza:key":"tgv_id","stanza:example":"tgv167913213","stanza:description":"TogoVar ID (required if variant is not given)","stanza:required":false},{"stanza:key":"variant","stanza:example":"1-12345-A-T","stanza:description":"Variant in VCF notation CHROM-POS-REF-ALT (required if tgv_id is not given)","stanza:required":false},{"stanza:key":"data-url","stanza:example":"https://stg-grch38.togovar.org/api/search/variant","stanza:description":"TogoVar API base URL or variant search API URL","stanza:required":true},{"stanza:key":"assembly","stanza:example":"GRCh38","stanza:description":"Assembly of the TogoVar variant coordinates. MoG+ lookup is enabled only for GRCh38.","stanza:required":false},{"stanza:key":"sparqlist","stanza:example":"https://stg-grch38.togovar.org/sparqlist","stanza:description":"SPARQList URL for MoG+ cross species links","stanza:required":false},{"stanza:key":"mogplus_ver","stanza:example":"mogplus21","stanza:description":"MoG+ version","stanza:required":false}],"stanza:menu-placement":"bottom-right","stanza:style":[],"stanza:incomingEvent":[],"stanza:outgoingEvent":[]};
+      const readme   = "<h1 id=\"variant-links\">Variant links</h1>\n<p>指定したバリアントに紐づく外部データベースリンクをカテゴリ別に表示するstanzaです。</p>\n<h2 id=\"parameters\">Parameters</h2>\n<table class=\"table\">\n<thead>\n<tr>\n<th>Key</th>\n<th>Required</th>\n<th>Example</th>\n<th>Description</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>tgv_id</code></td>\n<td>No(<code>variant</code>未指定時は必須)</td>\n<td><code>tgv167913213</code></td>\n<td>TogoVar ID。</td>\n</tr>\n<tr>\n<td><code>variant</code></td>\n<td>No(<code>tgv_id</code>未指定時は必須)</td>\n<td><code>1-12345-A-T</code></td>\n<td>VCF表記(CHROM-POS-REF-ALT)のバリアント。TogoVar未登録で<code>tgv_id</code>を持たないバリアントを表示する場合に使う。両方指定時は<code>tgv_id</code>を優先する。</td>\n</tr>\n<tr>\n<td><code>data-url</code></td>\n<td>Yes</td>\n<td><code>https://stg-grch38.togovar.org/api/search/variant</code></td>\n<td>TogoVar API base URL または <code>/api/search/variant</code> endpoint。</td>\n</tr>\n<tr>\n<td><code>assembly</code></td>\n<td>No</td>\n<td><code>GRCh38</code></td>\n<td>TogoVar variant 座標の assembly。MoG+ は GRCh38 の場合だけ問い合わせます。未指定時は <code>data-url</code> / <code>sparqlist</code> から <code>GRCh38</code>/<code>GRCh37</code> を推定します。</td>\n</tr>\n<tr>\n<td><code>sparqlist</code></td>\n<td>No</td>\n<td><code>https://stg-grch38.togovar.org/sparqlist</code></td>\n<td>MoG+ cross species link を取得するSPARQList URL。未指定時は MoG+ を <code>N/A</code> と表示します。</td>\n</tr>\n<tr>\n<td><code>mogplus_ver</code></td>\n<td>No</td>\n<td><code>mogplus21</code></td>\n<td>MoG+ version。未指定時は <code>mogplus21</code> を使います。</td>\n</tr>\n</tbody></table>\n<h2 id=\"data-source\">Data Source</h2>\n<p>このstanzaは TogoVar variant search API の <code>external_links</code> を参照します。\n<code>tgv_id</code> 指定時は <code>id</code> クエリで直接引けますが、<code>variant</code> 指定時は\nTogoVar検索APIが variant 表記そのものでの検索に対応していないため、\n<code>location</code>(chromosome/position) クエリで同じ位置の候補を取得し、\nreference/alternate が一致するものをこのstanza側で絞り込みます\n(multi-allelicサイトでは同じ位置に複数バリアントが存在するため)。\nMoG+ cross species は TogoVar API の <code>external_links</code> ではなく、\nSPARQList の <code>variant_mogplus</code> endpoint から取得します。<code>variant_mogplus</code> へ渡す\n座標は GRCh38 として扱われるため、<code>assembly</code> が <code>GRCh38</code> と解決できる場合だけ\nMoG+ を問い合わせます。<code>GRCh37</code> または assembly が解決できない場合は MoG+ を\n<code>N/A</code> と表示します。</p>\n<pre><code class=\"language-txt\">tgv_id=tgv167913213\ndata-url=https://stg-grch38.togovar.org/api/search/variant\nsparqlist=https://stg-grch38.togovar.org/sparqlist\n</code></pre>\n";
+
+      createHelpApp({metadata, readme}).mount('body');
+    </script>
+  </head>
+
+  <body>
+  </body>
+</html>

@@ -2,6 +2,10 @@ import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { h as hierarchy } from './transform-ddf65f5a.js';
 import { R as ROBOTO_CONDENSED_CSS_URL, D as DATASETS } from './constants-4313dcda.js';
 import { b as buildFrequencyMarkerState, a as buildFrequencyDisplay, f as formatLocaleInteger } from './frequency-9d3406e7.js';
+import { d as describeVariantIdentifier } from './sparqlist-47ca0758.js';
+import { n as normalizeTogoVarApiBaseUrl, f as fetchVariantDataByIdentifier } from './togovar-variant-0e8288d9.js';
+import { p as parseVariantParam, a as assertValidVariantIdentifier } from './variant-0dd96a22.js';
+import './utils-97dc77a0.js';
 
 /**
  * Custom positioning reference element.
@@ -9482,6 +9486,14 @@ const isTruthyParam = (value) => {
 const isLocalhostHost = (hostname) => {
     return hostname === "localhost" || hostname === "127.0.0.1";
 };
+const findDbsnpIdentifier = (variantData) => variantData.external_links?.dbsnp?.find((link) => /^rs\d+$/iu.test(link.title))?.title;
+const buildFrequencySearchTerm = (variantData) => {
+    if (variantData.id) {
+        return variantData.id;
+    }
+    // /search は rsID でも頻度情報を引けるため、TogoVar未登録のvariantではdbSNPリンクを代替キーにする。
+    return findDbsnpIdentifier(variantData);
+};
 // ============================================================
 // メインクラス
 // ============================================================
@@ -9517,15 +9529,45 @@ class VariantFrequency extends Stanza {
         // フォントの読み込み
         this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
         // ---- stanzaパラメータの取得 ----
-        // data-url: APIのベースURL, assembly: GRCh37/GRCh38, tgv_id: バリアントID
+        // data-url: APIのベースURL, assembly: GRCh37/GRCh38, tgv_id/variant: バリアント識別子
         const { "data-url": urlBase, assembly, tgv_id, check_local_auth_status, } = this.params;
-        // バリアントIDでデータセット情報を展開して取得するAPIエンドポイント
-        const searchParams = new URLSearchParams({
-            quality: "0",
-            term: String(tgv_id),
-        });
-        searchParams.append("expand_dataset", "");
-        const dataURL = `${urlBase}/search?${searchParams.toString()}`;
+        const params = this.params;
+        const parsedVariant = parseVariantParam(params.variant);
+        if (!urlBase) {
+            this.data = [];
+            this.renderTemplate({
+                template: "stanza.html.hbs",
+                parameters: {
+                    params: this.params,
+                    error: { message: "data-url parameter is required" },
+                },
+            });
+            return;
+        }
+        const apiBase = normalizeTogoVarApiBaseUrl(urlBase);
+        const frequencySearchEndpoint = `${apiBase}/search`;
+        let frequencySearchTerm = tgv_id;
+        let resolvedVariantData;
+        try {
+            assertValidVariantIdentifier(frequencySearchTerm, params.variant, parsedVariant);
+            if (!frequencySearchTerm) {
+                const variantData = await fetchVariantDataByIdentifier(urlBase, frequencySearchTerm, parsedVariant, describeVariantIdentifier(params));
+                resolvedVariantData = variantData;
+                frequencySearchTerm = buildFrequencySearchTerm(variantData);
+            }
+        }
+        catch (e) {
+            const message = e instanceof Error ? e.message : String(e);
+            this.data = [];
+            this.renderTemplate({
+                template: "stanza.html.hbs",
+                parameters: {
+                    params: this.params,
+                    error: { message },
+                },
+            });
+            return;
+        }
         // ---- 変数の初期化 ----
         // テーブルに表示する行データを格納する配列
         let resultObject = [];
@@ -9571,14 +9613,32 @@ class VariantFrequency extends Stanza {
         }
         // ---- 頻度データの取得と処理 ----
         try {
-            const response = await fetch(dataURL, {
-                method: "GET",
-                headers: { Accept: "application/json" },
-            });
-            if (!response.ok) {
-                throw new Error(`${dataURL} returns status ${response.status}`);
+            let responseDatasets;
+            if (frequencySearchTerm) {
+                // tgv_id または rsID がある場合は、従来通り /search でデータセット展開済みの頻度情報を取得する。
+                const searchParams = new URLSearchParams({
+                    quality: "0",
+                    term: frequencySearchTerm,
+                });
+                searchParams.append("expand_dataset", "");
+                const dataURL = `${frequencySearchEndpoint}?${searchParams.toString()}`;
+                const response = await fetch(dataURL, {
+                    method: "GET",
+                    headers: { Accept: "application/json" },
+                });
+                if (!response.ok) {
+                    throw new Error(`${dataURL} returns status ${response.status}`);
+                }
+                responseDatasets = (await response.json());
             }
-            const responseDatasets = await response.json();
+            else if (resolvedVariantData) {
+                // TogoVar ID / rsID を持たないvariantでも、variant search APIの候補レコードにfrequenciesが含まれる場合がある。
+                // その場合は /search?term=undefined へ進まず、解決済みレコード内の頻度情報をそのまま表示に使う。
+                responseDatasets = { data: [resolvedVariantData] };
+            }
+            else {
+                responseDatasets = { data: [] };
+            }
             // APIレスポンスからバリアントの頻度データ配列を取り出す
             const frequenciesDatasets = responseDatasets.data[0]?.frequencies;
             // ----------------------------------------------------------
@@ -10039,13 +10099,19 @@ var metadata = {
 	"stanza:contributor": [
 ],
 	"stanza:created": "2019-04-22",
-	"stanza:updated": "2022-04-15",
+	"stanza:updated": "2026-08-13",
 	"stanza:parameter": [
 	{
 		"stanza:key": "tgv_id",
 		"stanza:example": "tgv66359566",
-		"stanza:description": "TogoVar ID",
-		"stanza:required": true
+		"stanza:description": "TogoVar ID (required if variant is not given)",
+		"stanza:required": false
+	},
+	{
+		"stanza:key": "variant",
+		"stanza:example": "1-12345-A-T",
+		"stanza:description": "Variant in VCF notation CHROM-POS-REF-ALT (required if tgv_id is not given)",
+		"stanza:required": false
 	},
 	{
 		"stanza:key": "assembly",
@@ -10056,7 +10122,7 @@ var metadata = {
 	{
 		"stanza:key": "data-url",
 		"stanza:example": "https://stg-grch38.togovar.org",
-		"stanza:description": "URL",
+		"stanza:description": "TogoVar API base URL. A variant search API URL is normalized to its base URL.",
 		"stanza:required": true
 	},
 	{
@@ -10095,7 +10161,7 @@ var templates = [
         return undefined
     };
 
-  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"result") : depth0),{"name":"with","hash":{},"fn":container.program(2, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":4,"column":2},"end":{"line":208,"column":11}}})) != null ? stack1 : "");
+  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"result") : depth0),{"name":"with","hash":{},"fn":container.program(2, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":4,"column":2},"end":{"line":211,"column":11}}})) != null ? stack1 : "");
 },"2":function(container,depth0,helpers,partials,data,blockParams,depths) {
     var stack1, alias1=depth0 != null ? depth0 : (container.nullContext || {}), lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
@@ -10111,8 +10177,10 @@ var templates = [
     + "              </span>\n            </span>\n          </th>\n          <th class='filter_status' rowspan='2'>\n            Filter status\n            <span class='filter-status-popover'>\n              <button\n                class='filter-status-popover-trigger'\n                type='button'\n                aria-label='Show filter status descriptions'\n                aria-describedby='filter-status-popover'\n              ></button>\n              <span\n                class='filter-status-popover-panel'\n                id='filter-status-popover'\n                role='tooltip'\n              >\n                <span class='filter-status-popover-arrow'></span>\n                <span class='filter-status-popover-content'>\n                  Variant quality filter status reported by the source dataset.<br>\n                  PASS indicates the variant passed all quality filters.<br>\n                  Other values indicate the variant failed one or more filters.\n                </span>\n              </span>\n            </span>\n          </th>\n          <th rowspan='2'>Quality score</th>\n        </tr>\n        <tr>\n          <th class='alt num-th'>Alt</th>\n          <th class='num-th'>Total</th>\n          <th class='frequency num-th'>Frequency</th>\n          <th></th>\n          <th class='num_genotype_alt_homo alt num-th'>Alt / Alt</th>\n          <th class='num_genotype_hetero num-th'>Alt / Ref</th>\n          <th class='num_genotype_alt_otheralts num-th'>Alt/OtherAlts</th>\n          <th class='num_genotype_ref_homo num-th'>Ref / Ref</th>\n          <th class='num_genotype_ref_otheralts num-th'>Ref/OtherAlts</th>\n          <th class='num_genotype_otheralts_otheralts num-th'>Other_Alts/Other_Alts</th>\n"
     + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depths[1] != null ? lookupProperty(depths[1],"hasHemizygote") : depths[1]),{"name":"if","hash":{},"fn":container.program(6, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":117,"column":10},"end":{"line":121,"column":17}}})) != null ? stack1 : "")
     + "        </tr>\n      </thead>\n      <tbody>\n"
-    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"resultObject") : depth0),{"name":"if","hash":{},"fn":container.program(7, data, 0, blockParams, depths),"inverse":container.program(16, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":125,"column":8},"end":{"line":204,"column":15}}})) != null ? stack1 : "")
-    + "      </tbody>\n      </table>\n    </div>\n";
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"resultObject") : depth0),{"name":"if","hash":{},"fn":container.program(7, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":125,"column":8},"end":{"line":202,"column":15}}})) != null ? stack1 : "")
+    + "      </tbody>\n      </table>\n"
+    + ((stack1 = lookupProperty(helpers,"unless").call(alias1,(depth0 != null ? lookupProperty(depth0,"resultObject") : depth0),{"name":"unless","hash":{},"fn":container.program(16, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":205,"column":6},"end":{"line":209,"column":17}}})) != null ? stack1 : "")
+    + "    </div>\n";
 },"3":function(container,depth0,helpers,partials,data) {
     return "9";
 },"4":function(container,depth0,helpers,partials,data) {
@@ -10247,9 +10315,20 @@ var templates = [
         return undefined
     };
 
-  return "          <tr><td colspan=\"11\" class=\"nodata-message\">"
-    + container.escapeExpression(container.lambda(((stack1 = (depths[1] != null ? lookupProperty(depths[1],"params") : depths[1])) != null ? lookupProperty(stack1,"no_data_message") : stack1), depth0))
-    + "</td></tr>\n";
+  return "        <div class=\"variant-frequency-no-data\">\n          "
+    + ((stack1 = lookupProperty(helpers,"if").call(depth0 != null ? depth0 : (container.nullContext || {}),((stack1 = (depths[1] != null ? lookupProperty(depths[1],"params") : depths[1])) != null ? lookupProperty(stack1,"no_data_message") : stack1),{"name":"if","hash":{},"fn":container.program(17, data, 0, blockParams, depths),"inverse":container.program(18, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":207,"column":10},"end":{"line":207,"column":94}}})) != null ? stack1 : "")
+    + "\n        </div>\n";
+},"17":function(container,depth0,helpers,partials,data,blockParams,depths) {
+    var stack1, lookupProperty = container.lookupProperty || function(parent, propertyName) {
+        if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
+          return parent[propertyName];
+        }
+        return undefined
+    };
+
+  return container.escapeExpression(container.lambda(((stack1 = (depths[1] != null ? lookupProperty(depths[1],"params") : depths[1])) != null ? lookupProperty(stack1,"no_data_message") : stack1), depth0));
+},"18":function(container,depth0,helpers,partials,data) {
+    return "No data";
 },"compiler":[8,">= 4.3.0"],"main":function(container,depth0,helpers,partials,data,blockParams,depths) {
     var stack1, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
@@ -10258,7 +10337,7 @@ var templates = [
         return undefined
     };
 
-  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"error") : depth0),{"name":"with","hash":{},"fn":container.program(0, data, 0, blockParams, depths),"inverse":container.program(1, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":1,"column":0},"end":{"line":209,"column":9}}})) != null ? stack1 : "");
+  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"error") : depth0),{"name":"with","hash":{},"fn":container.program(0, data, 0, blockParams, depths),"inverse":container.program(1, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":1,"column":0},"end":{"line":212,"column":9}}})) != null ? stack1 : "");
 },"useData":true,"useDepths":true}]
 ];
 

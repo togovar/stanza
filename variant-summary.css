@@ -1420,3 +1420,18 @@ main .variant-summary-list dd {
 main .variant-summary-list dd .chromosome {
   font-weight: bold;
 }
+main .variant-summary-list dd:nth-of-type(odd) {
+  border-right: 1px solid var(--color-table-border);
+}
+@media (width <= 580px) {
+  main .variant-summary-list {
+    grid-template-columns: max-content minmax(0, 1fr);
+  }
+  main .variant-summary-list dd {
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+  main .variant-summary-list dd:nth-of-type(odd) {
+    border-right: none;
+  }
+}

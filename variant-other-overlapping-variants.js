@@ -1,13 +1,35 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { t as transformRecord } from './display-a7e019c1.js';
 import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-4313dcda.js';
+import { a as buildIdentifierQueryString } from './sparqlist-47ca0758.js';
+import { p as parseVariantParam, n as normalizeChromosome } from './variant-0dd96a22.js';
 import './frequency-9d3406e7.js';
+import './utils-97dc77a0.js';
+
+const isInputVariant = (record, params) => {
+  if (params.tgv_id) {
+    return record.id === params.tgv_id;
+  }
+
+  const variant = parseVariantParam(params.variant);
+  if (!variant) {
+    return false;
+  }
+
+  return normalizeChromosome(record.chromosome) === normalizeChromosome(variant.chromosome) &&
+    String(record.position) === variant.position &&
+    String(record.reference).toUpperCase() === variant.reference &&
+    String(record.alternate).toUpperCase() === variant.alternate;
+};
 
 class VariantSummary extends Stanza {
   async render() {
     this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
-    const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/variant_other_alternative_alleles?tgv_id=${this.params.tgv_id}`);
+    // tgv_id が無いバリアント（TogoVar未登録）は variant(CHROM-POS-REF-ALT) で解決する。
+    // sparqlist側は tgv_id があれば優先し、無ければ variant を使う。
+    const queryString = buildIdentifierQueryString(this.params ?? {});
+    const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/variant_other_alternative_alleles?${queryString}`);
 
     const r = await fetch(sparqlist, {
       method: "GET",
@@ -20,7 +42,7 @@ class VariantSummary extends Stanza {
       }
       throw new Error(sparqlist + " returns status " + res.status);
     }).then(json => {
-      let records = json.data ? json.data.filter(x => x.id !== this.params.tgv_id) : [];
+      let records = json.data ? json.data.filter(x => !isInputVariant(x, this.params)) : [];
 
       records.forEach(record => transformRecord(record, this.params.assembly));
 
@@ -58,13 +80,19 @@ var metadata = {
 	"stanza:contributor": [
 ],
 	"stanza:created": "2019-04-22",
-	"stanza:updated": "2022-04-15",
+	"stanza:updated": "2026-07-27",
 	"stanza:parameter": [
 	{
 		"stanza:key": "tgv_id",
 		"stanza:example": "tgv122011872",
-		"stanza:description": "TogoVar ID",
-		"stanza:required": true
+		"stanza:description": "TogoVar ID (required if variant is not given)",
+		"stanza:required": false
+	},
+	{
+		"stanza:key": "variant",
+		"stanza:example": "1-12345-A-T",
+		"stanza:description": "Variant in VCF notation CHROM-POS-REF-ALT (required if tgv_id is not given)",
+		"stanza:required": false
 	},
 	{
 		"stanza:key": "assembly",
