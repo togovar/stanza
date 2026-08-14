@@ -32,7 +32,7 @@
     {
       "stanza:key": "assembly",
       "stanza:example": "GRCh38",
-      "stanza:description": "Assembly of the TogoVar variant coordinates. MoG+ lookup is enabled only for GRCh38.",
+      "stanza:description": "Assembly of the TogoVar variant coordinates. MoG+ lookup is enabled only for GRCh38, and JoGo links are hidden for GRCh37.",
       "stanza:required": false
     },
     {
