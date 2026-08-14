@@ -283,9 +283,35 @@ const buildLinkCategoryRows = (
   variantData: VariantData,
   mogplusEntry: MogplusEntry | undefined,
   mogplusVersion: string,
+  sourceAssembly: string | undefined,
 ): LinkCategoryRow[] => {
   const externalLinks = (variantData.external_links ??
     {}) as VariantExternalLinks;
+  const frequencySources = [
+    buildSourceFromExternalLink(
+      "dbSNP",
+      firstExternalLink(externalLinks, "dbsnp"),
+    ),
+    buildSourceFromExternalLink(
+      "ToMMo",
+      firstExternalLink(externalLinks, "tommo"),
+      "tommo",
+    ),
+    ...(sourceAssembly === "GRCh37"
+      ? []
+      : [
+          buildSourceFromExternalLink(
+            "JoGo",
+            firstExternalLink(externalLinks, "jogo"),
+            "jogo",
+          ),
+        ]),
+    buildSourceFromExternalLink(
+      "gnomAD",
+      firstExternalLink(externalLinks, "gnomad"),
+      "gnomad",
+    ),
+  ];
 
   const categories = new Map<string, LinkCategory>([
     [
@@ -318,27 +344,7 @@ const buildLinkCategoryRows = (
       {
         label: "Frequency",
         anchor: CATEGORY_ANCHORS.Frequency,
-        sources: [
-          buildSourceFromExternalLink(
-            "dbSNP",
-            firstExternalLink(externalLinks, "dbsnp"),
-          ),
-          buildSourceFromExternalLink(
-            "ToMMo",
-            firstExternalLink(externalLinks, "tommo"),
-            "tommo",
-          ),
-          buildSourceFromExternalLink(
-            "JoGo",
-            firstExternalLink(externalLinks, "jogo"),
-            "jogo",
-          ),
-          buildSourceFromExternalLink(
-            "gnomAD",
-            firstExternalLink(externalLinks, "gnomad"),
-            "gnomad",
-          ),
-        ],
+        sources: frequencySources,
       },
     ],
     [
@@ -416,6 +422,7 @@ export default class VariantLinks extends Stanza {
         variantData,
         mogplusEntry,
         mogplusVersion,
+        sourceAssembly,
       );
     } catch (reason) {
       console.error(reason);
