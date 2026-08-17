@@ -40,7 +40,7 @@ interface LinkCategory {
   sources: LinkSource[];
 }
 
-/** 表の1行。right が無い場合は右側2カラムを空セルにする(例: Splicing variantの行)。 */
+/** 表の1行。right が無い場合は右側2カラムを空セルにする(例: Splice-site creation variantの行)。 */
 interface LinkCategoryRow {
   left: LinkCategory;
   right?: LinkCategory;
@@ -90,7 +90,7 @@ const MOGPLUS_BASE_URL = "https://molossinus.brc.riken.jp";
 
 const CATEGORY_LAYOUT = [
   ["Clinical significance", "Cross species"],
-  ["Frequency", "Splicing variant"],
+  ["Frequency", "Splice-site creation variant"],
 ] as const;
 
 const CATEGORY_ANCHORS: Record<string, string> = {
@@ -348,9 +348,9 @@ const buildLinkCategoryRows = (
       },
     ],
     [
-      "Splicing variant",
+      "Splice-site creation variant",
       {
-        label: "Splicing variant",
+        label: "Splice-site creation variant",
         sources: [
           buildSourceFromExternalLink(
             "SSCVDB",
