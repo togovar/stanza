@@ -1,8 +1,10 @@
 @use "@/assets/css/common";
 
 main {
+  container-type: inline-size;
+
   // 外部DBリンクは表の交点ではなく「項目名と値」の一覧なので dl で表現する。
-  // 見た目は従来と同じく、各行を 4カラム(ラベル・値・ラベル・値)のグリッドにする。
+  // 各行を 4カラム(ラベル・値・ラベル・値)のグリッドにし、左右ペアの境界線を中央に揃える。
   .variant-links-list {
     width: 100%;
     margin: 0;
@@ -10,21 +12,24 @@ main {
 
     .category-row {
       display: grid;
+      grid-template-columns: 130px calc(50% - 130px) 145px calc(50% - 145px);
+    }
 
-      // variant-summary と同じ列幅にして、左右ペアの境界線を常に全体幅の50%に揃える。
-      grid-template-columns: 130px calc(50% - 130px) 120px calc(50% - 120px);
+    .category-label,
+    .category-value {
+      padding: 3px 0;
+      line-height: 1.2;
       border-bottom: 1px solid var(--color-table-border);
     }
 
     .category-label {
-      padding: 4px 10px;
+      padding-left: 10px;
       margin: 0;
       font-size: 12px;
       font-weight: bold;
-      line-height: 1.2;
       color: var(--color-black);
       text-align: left;
-      white-space: nowrap;
+      white-space: normal;
 
       &.category-label-left {
         grid-column: 1;
@@ -57,10 +62,10 @@ main {
     }
 
     .category-value {
-      padding: 4px 10px;
+      padding-right: 10px;
+      padding-left: 12px;
       margin: 0;
       font-size: 14px;
-      line-height: 1.2;
       color: var(--color-black);
       text-align: left;
       white-space: normal;
@@ -128,15 +133,12 @@ main {
       }
     }
 
-    @media (width <= 580px) {
+    @container (width <= 580px) {
       .category-row {
         grid-template-columns: 130px minmax(0, 1fr);
-        border-bottom: none;
       }
 
       .category-label {
-        border-bottom: 1px solid var(--color-table-border);
-
         &.category-label-left,
         &.category-label-right {
           grid-column: 1;
@@ -145,11 +147,13 @@ main {
 
       .category-value {
         overflow-wrap: anywhere;
-        border-bottom: 1px solid var(--color-table-border);
 
         &.category-value-left,
         &.category-value-right {
           grid-column: 2;
+        }
+
+        &.category-value-left {
           border-right: none;
         }
       }

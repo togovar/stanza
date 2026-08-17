@@ -1,19 +1,12 @@
 @use "@/assets/css/common";
 
 main {
-  // key-value ペアを2列グリッドで並べる説明リスト。
-  // dt が「項目名」、dd が「値」に対応し、4カラムのグリッドに配置される。
-  // 例: [Variant type] [SNV] [Ref / Alt] [A→T]
-  //     [Position]     [chr1:12345 (GRCh38)]
+  container-type: inline-size;
+
+  // dt/dd を直接4カラムに流し、左右ペアの境界線を常に中央に揃える。
   .variant-summary-list {
     display: grid;
-
-    // max-content で各 dt 列をラベルの最大幅に自動調整する。
-    // 固定px だと "HGNC/Approved symbol" のような長いラベルが溢れるため。
-    grid-template-columns: max-content 1fr max-content 1fr;
-
-    // column-gap を使うと列間が空白トラックになり border-bottom が途切れる。
-    // 代わりに dd の padding-right でペア間の空きを作り、border を全幅で連続させる。
+    grid-template-columns: 130px calc(50% - 130px) 130px calc(50% - 130px);
     width: 100%;
     margin: 0;
     font-family: "Roboto Condensed", sans-serif;
@@ -54,8 +47,8 @@ main {
       }
     }
 
-    @media (width <= 580px) {
-      grid-template-columns: max-content minmax(0, 1fr);
+    @container (width <= 580px) {
+      grid-template-columns: 130px minmax(0, 1fr);
 
       dd {
         overflow-wrap: anywhere;
