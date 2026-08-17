@@ -29,7 +29,7 @@ main {
       font-weight: bold;
       color: var(--color-black);
       text-align: left;
-      white-space: nowrap;
+      white-space: normal;
 
       &.category-label-left {
         grid-column: 1;
@@ -139,8 +139,6 @@ main {
       }
 
       .category-label {
-        white-space: normal;
-
         &.category-label-left,
         &.category-label-right {
           grid-column: 1;
