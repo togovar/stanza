@@ -10,7 +10,7 @@ const SUPPORTED_MOGPLUS_SOURCE = "GRCh38";
 const MOGPLUS_BASE_URL = "https://molossinus.brc.riken.jp";
 const CATEGORY_LAYOUT = [
     ["Clinical significance", "Cross species"],
-    ["Frequency", "Splicing variant"],
+    ["Frequency", "Splice-site creation variant"],
 ];
 const CATEGORY_ANCHORS = {
     "Clinical significance": "#clinical-significance-mgend",
@@ -181,9 +181,9 @@ const buildLinkCategoryRows = (variantData, mogplusEntry, mogplusVersion, source
             },
         ],
         [
-            "Splicing variant",
+            "Splice-site creation variant",
             {
-                label: "Splicing variant",
+                label: "Splice-site creation variant",
                 sources: [
                     buildSourceFromExternalLink("SSCVDB", firstExternalLink(externalLinks, "sscv_db")),
                 ],
@@ -281,7 +281,7 @@ var metadata = {
 },
 	"@id": "variant-links",
 	"stanza:label": "Variant / Links",
-	"stanza:definition": "",
+	"stanza:definition": "Display external database links related to the specified variant by category.",
 	"stanza:license": "MIT",
 	"stanza:author": "PENQE",
 	"stanza:contributor": [
@@ -432,7 +432,7 @@ var templates = [
     + "</span>\n"
     + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"url") : depth0),{"name":"if","hash":{},"fn":container.program(9, data, 0),"inverse":container.program(10, data, 0),"data":data,"loc":{"start":{"line":23,"column":18},"end":{"line":36,"column":25}}})) != null ? stack1 : "")
     + "                  "
-    + ((stack1 = lookupProperty(helpers,"unless").call(alias1,(data && lookupProperty(data,"last")),{"name":"unless","hash":{},"fn":container.program(13, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":37,"column":18},"end":{"line":37,"column":86}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"unless").call(alias1,(data && lookupProperty(data,"last")),{"name":"unless","hash":{},"fn":container.program(13, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":37,"column":18},"end":{"line":37,"column":93}}})) != null ? stack1 : "")
     + "\n                </span>\n";
 },"8":function(container,depth0,helpers,partials,data) {
     var helper, lookupProperty = container.lookupProperty || function(parent, propertyName) {
@@ -481,7 +481,7 @@ var templates = [
 },"12":function(container,depth0,helpers,partials,data) {
     return "                      <span class=\"not-available\">N/A</span>\n";
 },"13":function(container,depth0,helpers,partials,data) {
-    return "<span class=\"source-separator\">, </span>";
+    return "<span class=\"source-separator\">&#8288;, </span>";
 },"14":function(container,depth0,helpers,partials,data) {
     var stack1, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
@@ -543,7 +543,7 @@ var templates = [
     + "</span>\n"
     + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"url") : depth0),{"name":"if","hash":{},"fn":container.program(20, data, 0),"inverse":container.program(21, data, 0),"data":data,"loc":{"start":{"line":59,"column":20},"end":{"line":72,"column":27}}})) != null ? stack1 : "")
     + "                    "
-    + ((stack1 = lookupProperty(helpers,"unless").call(alias1,(data && lookupProperty(data,"last")),{"name":"unless","hash":{},"fn":container.program(13, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":73,"column":20},"end":{"line":73,"column":88}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"unless").call(alias1,(data && lookupProperty(data,"last")),{"name":"unless","hash":{},"fn":container.program(13, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":73,"column":20},"end":{"line":73,"column":95}}})) != null ? stack1 : "")
     + "\n                  </span>\n";
 },"19":function(container,depth0,helpers,partials,data) {
     var helper, lookupProperty = container.lookupProperty || function(parent, propertyName) {

@@ -4,7 +4,7 @@
   },
   "@id": "variant-links",
   "stanza:label": "Variant / Links",
-  "stanza:definition": "",
+  "stanza:definition": "Display external database links related to the specified variant by category.",
   "stanza:license": "MIT",
   "stanza:author": "PENQE",
   "stanza:contributor": [],

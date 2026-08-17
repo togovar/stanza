@@ -1388,6 +1388,9 @@ togostanza--menu {
   cursor: pointer;
 }
 
+main {
+  container-type: inline-size;
+}
 main .variant-links-list {
   width: 100%;
   margin: 0;
@@ -1395,18 +1398,22 @@ main .variant-links-list {
 }
 main .variant-links-list .category-row {
   display: grid;
-  grid-template-columns: 130px calc(50% - 130px) 120px calc(50% - 120px);
+  grid-template-columns: 130px calc(50% - 130px) 145px calc(50% - 145px);
+}
+main .variant-links-list .category-label,
+main .variant-links-list .category-value {
+  padding: 3px 0;
+  line-height: 1.2;
   border-bottom: 1px solid var(--color-table-border);
 }
 main .variant-links-list .category-label {
-  padding: 4px 10px;
+  padding-left: 10px;
   margin: 0;
   font-size: 12px;
   font-weight: bold;
-  line-height: 1.2;
   color: var(--color-black);
   text-align: left;
-  white-space: nowrap;
+  white-space: normal;
 }
 main .variant-links-list .category-label.category-label-left {
   grid-column: 1;
@@ -1432,10 +1439,10 @@ main .variant-links-list .category-label .caret-down::before {
   content: var(--icon-arrow-down);
 }
 main .variant-links-list .category-value {
-  padding: 4px 10px;
+  padding-right: 10px;
+  padding-left: 12px;
   margin: 0;
   font-size: 14px;
-  line-height: 1.2;
   color: var(--color-black);
   text-align: left;
   white-space: normal;
@@ -1489,23 +1496,20 @@ main .variant-links-list .category-value .not-available {
 main .variant-links-list .category-value .source-value {
   overflow-wrap: anywhere;
 }
-@media (width <= 580px) {
+@container (width <= 580px) {
   main .variant-links-list .category-row {
     grid-template-columns: 130px minmax(0, 1fr);
-    border-bottom: none;
-  }
-  main .variant-links-list .category-label {
-    border-bottom: 1px solid var(--color-table-border);
   }
   main .variant-links-list .category-label.category-label-left, main .variant-links-list .category-label.category-label-right {
     grid-column: 1;
   }
   main .variant-links-list .category-value {
     overflow-wrap: anywhere;
-    border-bottom: 1px solid var(--color-table-border);
   }
   main .variant-links-list .category-value.category-value-left, main .variant-links-list .category-value.category-value-right {
     grid-column: 2;
+  }
+  main .variant-links-list .category-value.category-value-left {
     border-right: none;
   }
 }
