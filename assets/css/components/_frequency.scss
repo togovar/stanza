@@ -44,7 +44,7 @@ $frequency-marker-gap: 1px;
     @include frequency-dataset-color(var(--color-dataset-jga));
   }
 
-  &[data-dataset="tommo"],
+  &[data-dataset^="tommo"],
   &[data-dataset="ToMMo"],
   &[data-dataset^="ToMMo"] {
     @include frequency-dataset-color(var(--color-dataset-tommo));
@@ -55,7 +55,7 @@ $frequency-marker-gap: 1px;
     @include frequency-dataset-color(var(--color-dataset-ncbn));
   }
 
-  &[data-dataset="bbj"],
+  &[data-dataset^="bbj"],
   &[data-dataset^="BBJ"] {
     @include frequency-dataset-color(var(--color-dataset-bbj));
   }
