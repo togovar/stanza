@@ -17,10 +17,10 @@
   --color-mutation-alt: #ff6682;
   --color-dataset-gemj: #dc2828;
   --color-dataset-jga: #62d5d9;
-  --color-dataset-bbj: #ff993f;
   --color-dataset-tommo: #ca678d;
   --color-dataset-hgvd: #005b80;
   --color-dataset-ncbn: #234b7c;
+  --color-dataset-bbj: #ff993f;
   --color-dataset-jogo: #83063f;
   --color-dataset-foreign: #94928d;
   --color-sign-safe: #04af58;
@@ -884,13 +884,13 @@ table.dataTable, table.dataTable th, table.dataTable td {
 .frequency-graph > .dataset[data-dataset=jga_wgs], .frequency-graph > .dataset[data-dataset=JGA-WGS], .frequency-graph > .dataset[data-dataset=jga_wes], .frequency-graph > .dataset[data-dataset=JGA-WES], .frequency-graph > .dataset[data-dataset=jga_snp], .frequency-graph > .dataset[data-dataset=JGA-SNP] {
   --frequency-dataset-color: var(--color-dataset-jga);
 }
-.frequency-graph > .dataset[data-dataset=tommo], .frequency-graph > .dataset[data-dataset=ToMMo], .frequency-graph > .dataset[data-dataset^=ToMMo] {
+.frequency-graph > .dataset[data-dataset^=tommo], .frequency-graph > .dataset[data-dataset=ToMMo], .frequency-graph > .dataset[data-dataset^=ToMMo] {
   --frequency-dataset-color: var(--color-dataset-tommo);
 }
 .frequency-graph > .dataset[data-dataset=ncbn], .frequency-graph > .dataset[data-dataset=NCBN] {
   --frequency-dataset-color: var(--color-dataset-ncbn);
 }
-.frequency-graph > .dataset[data-dataset=bbj], .frequency-graph > .dataset[data-dataset^=BBJ] {
+.frequency-graph > .dataset[data-dataset^=bbj], .frequency-graph > .dataset[data-dataset^=BBJ] {
   --frequency-dataset-color: var(--color-dataset-bbj);
 }
 .frequency-graph > .dataset[data-dataset=jogo], .frequency-graph > .dataset[data-dataset=JoGo] {
@@ -989,13 +989,13 @@ table.dataTable, table.dataTable th, table.dataTable td {
 .allele-frequency-graph > .dataset[data-dataset=jga_wgs], .allele-frequency-graph > .dataset[data-dataset=JGA-WGS], .allele-frequency-graph > .dataset[data-dataset=jga_wes], .allele-frequency-graph > .dataset[data-dataset=JGA-WES], .allele-frequency-graph > .dataset[data-dataset=jga_snp], .allele-frequency-graph > .dataset[data-dataset=JGA-SNP] {
   --frequency-dataset-color: var(--color-dataset-jga);
 }
-.allele-frequency-graph > .dataset[data-dataset=tommo], .allele-frequency-graph > .dataset[data-dataset=ToMMo], .allele-frequency-graph > .dataset[data-dataset^=ToMMo] {
+.allele-frequency-graph > .dataset[data-dataset^=tommo], .allele-frequency-graph > .dataset[data-dataset=ToMMo], .allele-frequency-graph > .dataset[data-dataset^=ToMMo] {
   --frequency-dataset-color: var(--color-dataset-tommo);
 }
 .allele-frequency-graph > .dataset[data-dataset=ncbn], .allele-frequency-graph > .dataset[data-dataset=NCBN] {
   --frequency-dataset-color: var(--color-dataset-ncbn);
 }
-.allele-frequency-graph > .dataset[data-dataset=bbj], .allele-frequency-graph > .dataset[data-dataset^=BBJ] {
+.allele-frequency-graph > .dataset[data-dataset^=bbj], .allele-frequency-graph > .dataset[data-dataset^=BBJ] {
   --frequency-dataset-color: var(--color-dataset-bbj);
 }
 .allele-frequency-graph > .dataset[data-dataset=jogo], .allele-frequency-graph > .dataset[data-dataset=JoGo] {

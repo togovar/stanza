@@ -9685,10 +9685,12 @@ class VariantFrequency extends Stanza {
                         "hgvd",
                         "bbj1k",
                         "bbj2k",
-                        "jogo",
                     ].includes(datum.value)) {
                         // 日本人単一集団データセット
                         frequencyData.label = "Japanese";
+                    }
+                    else if (datum.value === "jogo") {
+                        frequencyData.label = "Mixed";
                     }
                     else if ([
                         "jga_wgs",
