@@ -35,7 +35,7 @@ class VariantSummary extends Stanza {
 
       const src = (this.params.jbrowse ? this.params.jbrowse : "/jbrowse").concat(
         "/index.html?loc=", encodeURIComponent(`${chr}:${from - range}..${to + range}`),
-        "&highlight=", encodeURIComponent(`${chr}:${from}..${to}`));
+        "&highlight=", encodeURIComponent(`chr${chr}:${from}..${to}`));
 
       return {
         result: {
