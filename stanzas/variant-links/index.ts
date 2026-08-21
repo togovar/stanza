@@ -289,7 +289,11 @@ const buildLinkCategoryRows = (
   const externalLinks = (variantData.external_links ??
     {}) as VariantExternalLinks;
   const tommoLabel =
-    sourceAssembly === "GRCh37" ? "ToMMo 8.3KJPN" : "ToMMo 61KJPN";
+    sourceAssembly === "GRCh37"
+      ? "ToMMo 8.3KJPN"
+      : sourceAssembly === "GRCh38"
+        ? "ToMMo 61KJPN"
+        : "ToMMo";
   const tommoSources = [
     buildSourceFromExternalLink(
       tommoLabel,

@@ -76,7 +76,10 @@ const buildGenomicPositionFromBinding = (
 const buildGenomicPositionFromVariant = (
   parsedVariant: ParsedVariant,
 ): GenomicPosition => {
-  const from = Number.parseInt(parsedVariant.position, 10);
+  const from = Number(parsedVariant.position);
+  if (!Number.isSafeInteger(from) || from < 1) {
+    throw new Error("Failed to obtain genomic position");
+  }
 
   return {
     chr: normalizeChromosome(parsedVariant.chromosome),
