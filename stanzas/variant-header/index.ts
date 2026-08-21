@@ -7,7 +7,10 @@ import {
   fetchSparqlBindings,
 } from "@/lib/sparqlist";
 import { fetchVariantDataByIdentifier } from "@/lib/togovar-variant";
-import type { SparqlistStanzaParams } from "@/lib/types";
+import type {
+  SparqlistStanzaParams,
+  SparqlistTemplateRenderParams,
+} from "@/lib/types";
 import { assertValidVariantIdentifier, parseVariantParam } from "@/lib/variant";
 
 interface VariantHeaderParams extends SparqlistStanzaParams {
@@ -28,14 +31,9 @@ interface XrefGroup {
   refs: RefLink[];
 }
 
-interface TemplateRenderParams {
+interface TemplateRenderParams
+  extends SparqlistTemplateRenderParams<{ xrefs: XrefGroup[] }> {
   params: VariantHeaderParams;
-  result?: {
-    xrefs: XrefGroup[];
-  };
-  error?: {
-    message: string;
-  };
 }
 
 const buildEmptyResult = (): TemplateRenderParams["result"] => ({

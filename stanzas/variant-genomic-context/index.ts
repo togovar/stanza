@@ -6,7 +6,10 @@ import {
   describeVariantIdentifier,
   fetchSparqlBindings,
 } from "@/lib/sparqlist";
-import type { SparqlistStanzaParams } from "@/lib/types";
+import type {
+  SparqlistStanzaParams,
+  SparqlistTemplateRenderParams,
+} from "@/lib/types";
 import {
   assertValidVariantIdentifier,
   normalizeChromosome,
@@ -34,16 +37,15 @@ interface GenomicPosition {
   to: number;
 }
 
-interface TemplateRenderParams {
+interface JbrowseDisplayParams {
+  src: string;
+  width: string;
+  height: string;
+}
+
+interface TemplateRenderParams
+  extends SparqlistTemplateRenderParams<JbrowseDisplayParams> {
   params: VariantGenomicContextParams;
-  result?: {
-    src: string;
-    width: string;
-    height: string;
-  };
-  error?: {
-    message: string;
-  };
 }
 
 /**
@@ -81,8 +83,13 @@ const buildGenomicPositionFromVariant = (
     throw new Error("Failed to obtain genomic position");
   }
 
+  const chr = normalizeChromosome(parsedVariant.chromosome);
+  if (!chr) {
+    throw new Error("Failed to obtain genomic position");
+  }
+
   return {
-    chr: normalizeChromosome(parsedVariant.chromosome),
+    chr,
     from,
     to: from + Math.max(parsedVariant.reference.length - 1, 0),
   };
