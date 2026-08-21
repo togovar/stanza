@@ -1,79 +1,73 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
-import { u as unwrapValueFromBinding } from './utils-97dc77a0.js';
-import { u as uniq } from './uniq-f80b7f40.js';
 import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-4313dcda.js';
-import { a as buildIdentifierQueryString, d as describeVariantIdentifier } from './sparqlist-47ca0758.js';
+import { d as describeVariantIdentifier, a as buildIdentifierQueryString, f as fetchSparqlBindings } from './sparqlist-47ca0758.js';
 import { f as fetchVariantDataByIdentifier } from './togovar-variant-0e8288d9.js';
 import { p as parseVariantParam, a as assertValidVariantIdentifier } from './variant-0dd96a22.js';
+import './utils-97dc77a0.js';
 
-class VariantHeader extends Stanza {
-  async render() {
-    this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
-
-    const params = this.params ?? {};
-    const parsedVariant = parseVariantParam(params.variant);
-
-    const r = await Promise.resolve().then(async () => {
-      assertValidVariantIdentifier(params.tgv_id, params.variant, parsedVariant);
-
-      let tgvId = params.tgv_id;
-      if (!tgvId) {
-        if (!params["data-url"]) {
-          throw new Error("data-url parameter is required when variant is given without tgv_id");
-        }
-
-        const variantData = await fetchVariantDataByIdentifier(
-          params["data-url"],
-          tgvId,
-          parsedVariant,
-          describeVariantIdentifier(params),
-        );
-        tgvId = variantData.id;
-      }
-
-      // tgv2rs は variant を解釈しないため、必ず解決済みの tgv_id だけを渡す。
-      const queryString = buildIdentifierQueryString({ tgv_id: tgvId });
-      const sparqlist = (params.sparqlist || "/sparqlist").concat(`/api/tgv2rs?${queryString}`);
-
-      return fetch(sparqlist, {
-        method: "GET",
-        headers: {
-          "Accept": "application/json",
-        },
-      });
-    }).then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      throw new Error("tgv2rs returns status " + res.status);
-    }).then(data => {
-      const results = unwrapValueFromBinding(data);
-
-      if (!results?.length) {
-        return {result: {xrefs: {}}};
-      }
-
-      return {
-        result: {
-          xrefs: [
+const buildEmptyResult = () => ({
+    xrefs: [],
+});
+const buildResultFromTgv2rsBindings = (results) => {
+    const rsUrls = Array.from(new Set(results.map((result) => result.rs).filter(Boolean)));
+    if (rsUrls.length === 0) {
+        return buildEmptyResult();
+    }
+    return {
+        xrefs: [
             {
-              name: "RefSNP ID",
-              refs: uniq(results.map(x => x.rs).filter(x => x))
-                .map(x => ({label: x.split("/").slice(-1)[0], url: x})),
+                name: "RefSNP ID",
+                refs: rsUrls.map((rsUrl) => ({
+                    label: rsUrl.split("/").slice(-1)[0],
+                    url: rsUrl,
+                })),
             },
-          ],
-        },
-      };
-    }).catch(e => ({error: {message: e.message}}));
-
-    this.renderTemplate({
-      template: "stanza.html.hbs",
-      parameters: {
-        params: this.params,
-        ...r,
-      },
-    });
-  }
+        ],
+    };
+};
+class VariantHeader extends Stanza {
+    async render() {
+        this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
+        const params = (this.params ?? {});
+        const parsedVariant = parseVariantParam(params.variant);
+        const templateParams = { params };
+        try {
+            assertValidVariantIdentifier(params.tgv_id, params.variant, parsedVariant);
+            let tgvId = params.tgv_id;
+            if (!tgvId) {
+                if (!params["data-url"]) {
+                    throw new Error("data-url parameter is required when variant is given without tgv_id");
+                }
+                const variantData = await fetchVariantDataByIdentifier(params["data-url"], tgvId, parsedVariant, describeVariantIdentifier(params));
+                // TogoVar未登録variantは検索API上で見つかっても id が空のことがある。
+                // tgv2rs は空クエリだと endpoint 側のデフォルトIDへフォールバックし得るため、
+                // 解決済み tgv_id が無い場合は RefSNP なしとして終了する。
+                if (!variantData.id) {
+                    templateParams.result = buildEmptyResult();
+                    this.renderTemplate({
+                        template: "stanza.html.hbs",
+                        parameters: templateParams,
+                    });
+                    return;
+                }
+                tgvId = variantData.id;
+            }
+            // tgv2rs は variant を解釈しないため、必ず解決済みの tgv_id だけを渡す。
+            const queryString = buildIdentifierQueryString({ tgv_id: tgvId });
+            const sparqlist = (params.sparqlist || "/sparqlist").concat(`/api/tgv2rs?${queryString}`);
+            const bindings = await fetchSparqlBindings(sparqlist);
+            templateParams.result = buildResultFromTgv2rsBindings(bindings);
+        }
+        catch (reason) {
+            templateParams.error = {
+                message: reason instanceof Error ? reason.message : String(reason),
+            };
+        }
+        this.renderTemplate({
+            template: "stanza.html.hbs",
+            parameters: templateParams,
+        });
+    }
 }
 
 var stanzaModule = /*#__PURE__*/Object.freeze({

@@ -1,64 +1,128 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
-import { u as unwrapValueFromBinding } from './utils-97dc77a0.js';
 import { r as referenceToChrAssembly } from './display-a7e019c1.js';
-import { a as buildIdentifierQueryString, r as requireFirstBinding, d as describeVariantIdentifier } from './sparqlist-47ca0758.js';
+import { a as buildIdentifierQueryString, f as fetchSparqlBindings, d as describeVariantIdentifier } from './sparqlist-47ca0758.js';
+import { p as parseVariantParam, a as assertValidVariantIdentifier, n as normalizeChromosome } from './variant-0dd96a22.js';
 import './constants-4313dcda.js';
 import './frequency-9d3406e7.js';
+import './utils-97dc77a0.js';
 
-class VariantSummary extends Stanza {
-  async render() {
-    // tgv_id が無いバリアント（TogoVar未登録）は variant(CHROM-POS-REF-ALT) で解決する。
-    // sparqlist側は tgv_id があれば優先し、無ければ variant を使う。
-    const queryString = buildIdentifierQueryString(this.params ?? {});
-    const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/variant_summary?${queryString}`);
-
-    const r = await fetch(sparqlist, {
-      method: "GET",
-      headers: {
-        "Accept": "application/json",
-      },
-    }).then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      throw new Error(sparqlist + " returns status " + res.status);
-    }).then(data => {
-      const binding = requireFirstBinding(
-        unwrapValueFromBinding(data),
-        `Failed to obtain genomic position for ${describeVariantIdentifier(this.params ?? {})}`,
-      );
-
-      const { chr } = referenceToChrAssembly(binding.reference);
-      const from = parseInt(binding.position);
-      const to = from + Math.max(binding.ref.length - 1, 0);
-      const range = parseInt(this.params.margin) || 50;
-
-      const src = (this.params.jbrowse ? this.params.jbrowse : "/jbrowse").concat(
-        "/index.html?loc=", encodeURIComponent(`${chr}:${from - range}..${to + range}`),
-        "&highlight=", encodeURIComponent(`chr${chr}:${from}..${to}`));
-
-      return {
-        result: {
-          src: src,
-          width: this.params.width || "100%",
-          height: this.params.height || "600px",
-        },
-      };
-    }).catch(e => ({error: {message: e.message}}));
-
-    this.renderTemplate({
-      template: "stanza.html.hbs",
-      parameters: {
-        params: this.params,
-        ...r,
-      },
-    });
-  }
+/**
+ * variant_summary の binding から JBrowse 表示用の座標を取り出す。
+ * SPARQList 結果は reference URI と position/ref が分かれて返るため、
+ * reference URI を chr/assembly に分解し、Ref の長さからハイライト終端を計算する。
+ */
+const buildGenomicPositionFromBinding = (binding) => {
+    const { chr } = referenceToChrAssembly(binding.reference);
+    const from = Number(binding.position);
+    if (!chr || !Number.isSafeInteger(from) || from < 1 || !binding.ref) {
+        throw new Error("Failed to obtain genomic position");
+    }
+    return {
+        chr,
+        from,
+        to: from + Math.max(binding.ref.length - 1, 0),
+    };
+};
+/**
+ * SPARQList に summary 行が無い variant-only 入力向けの fallback。
+ * VCF表記の variant には CHROM/POS/REF/ALT が含まれるため、遺伝子情報などは無くても
+ * JBrowse の表示範囲とハイライト範囲だけは組み立てられる。
+ */
+const buildGenomicPositionFromVariant = (parsedVariant) => {
+    const from = Number(parsedVariant.position);
+    if (!Number.isSafeInteger(from) || from < 1) {
+        throw new Error("Failed to obtain genomic position");
+    }
+    const chr = normalizeChromosome(parsedVariant.chromosome);
+    if (!chr) {
+        throw new Error("Failed to obtain genomic position");
+    }
+    return {
+        chr,
+        from,
+        to: from + Math.max(parsedVariant.reference.length - 1, 0),
+    };
+};
+/**
+ * JBrowse iframe の src を組み立てる。
+ * loc は前後 margin を含む表示範囲、highlight は実際のvariant範囲として分けて渡す。
+ */
+const buildJbrowseSrc = (params, { chr, from, to }) => {
+    const parsedRange = Number(params.margin);
+    const range = Number.isSafeInteger(parsedRange) && parsedRange >= 0 ? parsedRange : 50;
+    const baseUrl = params.jbrowse || "/jbrowse";
+    const start = Math.max(from - range, 1);
+    return baseUrl.concat("/index.html?loc=", encodeURIComponent(`${chr}:${start}..${to + range}`), "&highlight=", encodeURIComponent(`chr${chr}:${from}..${to}`));
+};
+class VariantGenomicContext extends Stanza {
+    /**
+     * variant_summary を優先して座標を取得し、空結果の場合だけ variant 文字列から fallback する。
+     * tgv_id がある場合は SPARQList の解決結果を信頼し、別の variant 値へは fallback しない。
+     */
+    async render() {
+        const params = (this.params ?? {});
+        const parsedVariant = parseVariantParam(params.variant);
+        const templateParams = { params };
+        try {
+            assertValidVariantIdentifier(params.tgv_id, params.variant, parsedVariant);
+            const queryString = buildIdentifierQueryString(params);
+            const sparqlist = (params.sparqlist || "/sparqlist").concat(`/api/variant_summary?${queryString}`);
+            const bindings = await fetchSparqlBindings(sparqlist);
+            const binding = bindings[0];
+            const genomicPosition = this.buildGenomicPosition(params, parsedVariant, binding);
+            templateParams.result = {
+                src: buildJbrowseSrc(params, genomicPosition),
+                width: params.width || "100%",
+                height: params.height || "600px",
+            };
+        }
+        catch (reason) {
+            templateParams.error = {
+                message: reason instanceof Error ? reason.message : String(reason),
+            };
+        }
+        this.renderTemplate({
+            template: "stanza.html.hbs",
+            parameters: templateParams,
+        });
+    }
+    /**
+     * SPARQList のbindingを座標に変換し、空結果や不完全なbindingの場合は fallback を試す。
+     * staging/local のSPARQList差分や未登録variantでも、variant-onlyならJBrowse表示を維持するため。
+     */
+    buildGenomicPosition(params, parsedVariant, binding) {
+        if (!binding) {
+            return this.buildFallbackPosition(params, parsedVariant);
+        }
+        try {
+            return buildGenomicPositionFromBinding(binding);
+        }
+        catch (error) {
+            if (!params.tgv_id && parsedVariant) {
+                console.warn(error);
+                return this.buildFallbackPosition(params, parsedVariant);
+            }
+            throw error;
+        }
+    }
+    /**
+     * SPARQList が空結果だった場合の座標 fallback を判断する。
+     * tgv_id と variant が両方ある場合は tgv_id 優先という全体方針に合わせ、
+     * tgv_id 無しの variant-only 入力だけ variant 由来の座標を使う。
+     */
+    buildFallbackPosition(params, parsedVariant) {
+        if (!params.tgv_id && parsedVariant) {
+            // variant には座標とRef/Altが含まれるため、SPARQListにsummary行が無い未登録variantでも
+            // JBrowseの表示範囲だけは組み立てられる。
+            return buildGenomicPositionFromVariant(parsedVariant);
+        }
+        throw new Error(`Failed to obtain genomic position for ${describeVariantIdentifier(params)}`);
+    }
 }
 
 var stanzaModule = /*#__PURE__*/Object.freeze({
   __proto__: null,
-  'default': VariantSummary
+  'default': VariantGenomicContext
 });
 
 var metadata = {

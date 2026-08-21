@@ -1,7 +1,8 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
-import { u as uniq } from './uniq-f80b7f40.js';
 import { u as unwrapValueFromBinding } from './utils-97dc77a0.js';
 import { r as requireFirstBinding } from './sparqlist-47ca0758.js';
+
+var uniq = array => array.filter((elem, index, self) => self.indexOf(elem) === index);
 
 class GeneSummary extends Stanza {
   async render() {
