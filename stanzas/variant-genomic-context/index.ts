@@ -1,10 +1,10 @@
 import Stanza from "togostanza/stanza";
-import { unwrapValueFromBinding } from "togostanza/utils";
 
 import { referenceToChrAssembly } from "@/lib/display";
 import {
   buildIdentifierQueryString,
   describeVariantIdentifier,
+  fetchSparqlBindings,
 } from "@/lib/sparqlist";
 import type { SparqlistStanzaParams } from "@/lib/types";
 import {
@@ -126,25 +126,15 @@ export default class VariantGenomicContext extends Stanza {
         `/api/variant_summary?${queryString}`,
       );
 
-      const response = await fetch(sparqlist, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`${sparqlist} returns status ${response.status}`);
-      }
-
-      const bindings = unwrapValueFromBinding(
-        await response.json(),
-      ) as VariantSummaryBinding[];
+      const bindings =
+        await fetchSparqlBindings<VariantSummaryBinding>(sparqlist);
       const binding = bindings[0];
 
-      const genomicPosition = binding
-        ? buildGenomicPositionFromBinding(binding)
-        : this.buildFallbackPosition(params, parsedVariant);
+      const genomicPosition = this.buildGenomicPosition(
+        params,
+        parsedVariant,
+        binding,
+      );
 
       templateParams.result = {
         src: buildJbrowseSrc(params, genomicPosition),
@@ -161,6 +151,31 @@ export default class VariantGenomicContext extends Stanza {
       template: "stanza.html.hbs",
       parameters: templateParams,
     });
+  }
+
+  /**
+   * SPARQList のbindingを座標に変換し、空結果や不完全なbindingの場合は fallback を試す。
+   * staging/local のSPARQList差分や未登録variantでも、variant-onlyならJBrowse表示を維持するため。
+   */
+  private buildGenomicPosition(
+    params: VariantGenomicContextParams,
+    parsedVariant: ParsedVariant | undefined,
+    binding: VariantSummaryBinding | undefined,
+  ): GenomicPosition {
+    if (!binding) {
+      return this.buildFallbackPosition(params, parsedVariant);
+    }
+
+    try {
+      return buildGenomicPositionFromBinding(binding);
+    } catch (error) {
+      if (!params.tgv_id && parsedVariant) {
+        console.warn(error);
+        return this.buildFallbackPosition(params, parsedVariant);
+      }
+
+      throw error;
+    }
   }
 
   /**

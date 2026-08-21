@@ -1,10 +1,10 @@
 import Stanza from "togostanza/stanza";
-import { unwrapValueFromBinding } from "togostanza/utils";
 
 import { ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
 import {
   buildIdentifierQueryString,
   describeVariantIdentifier,
+  fetchSparqlBindings,
 } from "@/lib/sparqlist";
 import { fetchVariantDataByIdentifier } from "@/lib/togovar-variant";
 import type { SparqlistStanzaParams } from "@/lib/types";
@@ -42,10 +42,9 @@ const buildEmptyResult = (): TemplateRenderParams["result"] => ({
   xrefs: [],
 });
 
-const buildResultFromTgv2rsResponse = (
-  data: unknown,
+const buildResultFromTgv2rsBindings = (
+  results: Tgv2RsBinding[],
 ): TemplateRenderParams["result"] => {
-  const results = unwrapValueFromBinding(data) as Tgv2RsBinding[];
   const rsUrls = Array.from(
     new Set(results.map((result) => result.rs).filter(Boolean)),
   ) as string[];
@@ -118,20 +117,8 @@ export default class VariantHeader extends Stanza {
         `/api/tgv2rs?${queryString}`,
       );
 
-      const response = await fetch(sparqlist, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`tgv2rs returns status ${response.status}`);
-      }
-
-      templateParams.result = buildResultFromTgv2rsResponse(
-        await response.json(),
-      );
+      const bindings = await fetchSparqlBindings<Tgv2RsBinding>(sparqlist);
+      templateParams.result = buildResultFromTgv2rsBindings(bindings);
     } catch (reason) {
       templateParams.error = {
         message: reason instanceof Error ? reason.message : String(reason),

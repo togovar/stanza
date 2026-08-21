@@ -296,15 +296,15 @@ const buildLinkCategoryRows = (
       firstExternalLink(externalLinks, "tommo"),
       "tommo",
     ),
-    ...(sourceAssembly === "GRCh38"
-      ? [
+    ...(sourceAssembly === "GRCh37"
+      ? []
+      : [
           buildSourceFromExternalLink(
             "ToMMo JSV1",
             firstExternalLink(externalLinks, "tommo_jsv1"),
             "tommo_jsv1",
           ),
-        ]
-      : []),
+        ]),
   ];
   const frequencySources = [
     buildSourceFromExternalLink(
