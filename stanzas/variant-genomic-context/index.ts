@@ -57,9 +57,9 @@ const buildGenomicPositionFromBinding = (
   binding: VariantSummaryBinding,
 ): GenomicPosition => {
   const { chr } = referenceToChrAssembly(binding.reference);
-  const from = Number.parseInt(String(binding.position), 10);
+  const from = Number(binding.position);
 
-  if (!chr || !Number.isFinite(from) || !binding.ref) {
+  if (!chr || !Number.isSafeInteger(from) || from < 1 || !binding.ref) {
     throw new Error("Failed to obtain genomic position");
   }
 
@@ -105,10 +105,11 @@ const buildJbrowseSrc = (
 ): string => {
   const range = Number.parseInt(String(params.margin), 10) || 50;
   const baseUrl = params.jbrowse || "/jbrowse";
+  const start = Math.max(from - range, 1);
 
   return baseUrl.concat(
     "/index.html?loc=",
-    encodeURIComponent(`${chr}:${from - range}..${to + range}`),
+    encodeURIComponent(`${chr}:${start}..${to + range}`),
     "&highlight=",
     encodeURIComponent(`chr${chr}:${from}..${to}`),
   );
