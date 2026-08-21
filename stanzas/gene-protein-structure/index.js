@@ -14,6 +14,21 @@ export default class GeneStructure extends Stanza {
     const sparqlist = (this.params?.sparqlist || "/sparqlist").concat(`/api/gene_pdb_mapping?hgnc_id=${this.params.hgnc_id}&togovar_api=${togovar_api}`);
     
     const res = await fetch(sparqlist, {method: "get", headers: {"Accept": "application/json"}}).then(res => res.json());
+    res.structure = Array.isArray(res.structure) ? res.structure : [];
+    res.variant = Array.isArray(res.variant) ? res.variant : [];
+
+    if (!res.structure[0]) {
+      this.renderTemplate(
+        {
+          template: 'stanza.html.hbs',
+          parameters: {
+            params: this.params,
+            ...res,
+          }
+        }
+      );
+      return;
+    }
     
     const molmil = new URL("./assets/vendor/molmil/", import.meta.url) + "#";
     const colors = ["67,122,204", "204,67,149", "177,204,67", "67,204,204", "177,67,204", "204,149,67", "67,204,122", "94,67,204", "204,67,67", "95,204,67"];
@@ -156,8 +171,8 @@ export default class GeneStructure extends Stanza {
     change_tgv(res.structure[0]);
     pdb_refine_text(res.structure[0]);
 
-    this.root.querySelector("#pdb_select_" + this.params.hgnc_id).addEventListener("change", e => { change_view(true);})
-    this.root.querySelector("#variant_select_" + this.params.hgnc_id).addEventListener("change", e => { change_view(false); })
+    this.root.querySelector("#pdb_select_" + this.params.hgnc_id).addEventListener("change", () => { change_view(true);})
+    this.root.querySelector("#variant_select_" + this.params.hgnc_id).addEventListener("change", () => { change_view(false); })
     this.root.querySelector("#variant_checkbox_" + this.params.hgnc_id).addEventListener("change", e => { change_var_select(e); })
 
     // mouse event control
@@ -167,7 +182,7 @@ export default class GeneStructure extends Stanza {
     block_div.style.left = iframe.offsetLeft + "px";
     block_div.style.height = iframe.offsetHeight + "px";
     block_div.style.width = iframe.offsetWidth + "px";
-    block_div.addEventListener("click", e => {this.root.querySelector("#mouse_event_block").style.zIndex = "-1"});
-    this.root.querySelector("main").addEventListener("mouseleave", e => {this.root.querySelector("#mouse_event_block").style.zIndex = "0"});
+    block_div.addEventListener("click", () => {this.root.querySelector("#mouse_event_block").style.zIndex = "-1"});
+    this.root.querySelector("main").addEventListener("mouseleave", () => {this.root.querySelector("#mouse_event_block").style.zIndex = "0"});
   }
 }
