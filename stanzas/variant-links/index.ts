@@ -70,6 +70,7 @@ type ExternalLinkKey =
   | "dbsnp"
   | "gnomad"
   | "tommo"
+  | "tommo_jsv1"
   | "jogo"
   | "sscv_db";
 
@@ -287,16 +288,30 @@ const buildLinkCategoryRows = (
 ): LinkCategoryRow[] => {
   const externalLinks = (variantData.external_links ??
     {}) as VariantExternalLinks;
+  const tommoLabel =
+    sourceAssembly === "GRCh37" ? "ToMMo 8.3KJPN" : "ToMMo 61KJPN";
+  const tommoSources = [
+    buildSourceFromExternalLink(
+      tommoLabel,
+      firstExternalLink(externalLinks, "tommo"),
+      "tommo",
+    ),
+    ...(sourceAssembly === "GRCh38"
+      ? [
+          buildSourceFromExternalLink(
+            "ToMMo JSV1",
+            firstExternalLink(externalLinks, "tommo_jsv1"),
+            "tommo_jsv1",
+          ),
+        ]
+      : []),
+  ];
   const frequencySources = [
     buildSourceFromExternalLink(
       "dbSNP",
       firstExternalLink(externalLinks, "dbsnp"),
     ),
-    buildSourceFromExternalLink(
-      "ToMMo",
-      firstExternalLink(externalLinks, "tommo"),
-      "tommo",
-    ),
+    ...tommoSources,
     ...(sourceAssembly === "GRCh37"
       ? []
       : [
