@@ -103,7 +103,9 @@ const buildJbrowseSrc = (
   params: VariantGenomicContextParams,
   { chr, from, to }: GenomicPosition,
 ): string => {
-  const range = Number.parseInt(String(params.margin), 10) || 50;
+  const parsedRange = Number(params.margin);
+  const range =
+    Number.isSafeInteger(parsedRange) && parsedRange >= 0 ? parsedRange : 50;
   const baseUrl = params.jbrowse || "/jbrowse";
   const start = Math.max(from - range, 1);
 
