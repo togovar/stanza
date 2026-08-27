@@ -1,6 +1,10 @@
 import Stanza from "togostanza/stanza";
 import { hierarchy } from "d3-hierarchy";
-import { DATASETS, ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
+import {
+  DATASETS,
+  FONTAWESOME_FREE_SOLID_CSS_URL,
+  ROBOTO_CONDENSED_CSS_URL,
+} from "@/lib/constants";
 import {
   buildFrequencyDisplay,
   buildFrequencyMarkerState,
@@ -162,6 +166,7 @@ export default class VariantFrequency extends Stanza {
   async render() {
     // フォントの読み込み
     this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
+    this.importWebFontCSS(FONTAWESOME_FREE_SOLID_CSS_URL);
 
     // ---- stanzaパラメータの取得 ----
     // data-url: APIのベースURL, assembly: GRCh37/GRCh38, tgv_id/variant: バリアント識別子
