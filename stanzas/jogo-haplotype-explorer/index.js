@@ -402,10 +402,23 @@ export default class JogoHaplotypeExplorer extends Stanza {
     ////// main
     const jogo_json = await fetch(jogo_api, jogo_basic).then(res => res.json());
     // console.log(jogo_json);
-    const hgncid = jogo_json.maneinfo.hgncid;
-    const chr    = String(jogo_json.maneinfo?.chr || "").replace(/^chr/, "");
-    const strand = jogo_json.maneinfo.strand;
-    const region = jogo_json.maneinfo.regionname5000;
+    const maneinfo = jogo_json.maneinfo;
+    if (!maneinfo) {
+      this.renderTemplate({
+        template: "stanza.html.hbs",
+        parameters: {
+          error: {
+            message: "MANE information is not available for this gene or region.",
+          },
+        },
+      });
+      return;
+    }
+
+    const hgncid = maneinfo.hgncid;
+    const chr    = String(maneinfo.chr || "").replace(/^chr/, "");
+    const strand = maneinfo.strand;
+    const region = maneinfo.regionname5000;
     let variant = [];
     let scale = 1;
     
