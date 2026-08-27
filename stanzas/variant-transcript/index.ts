@@ -22,6 +22,10 @@ interface TranscriptSparqlBinding {
   transcript?: string;
   /** EnsemblトランスクリプトID。リンクURL生成に使う。transcript URIとは別フィールド。 */
   enst_id?: string;
+  /** VEP由来の MANE 情報。例: "MANE_Select" または ["MANE_Select"] */
+  mane?: string | string[];
+  /** MANE Select のRefSeq transcript ID。例: "NM_001005484.2" */
+  mane_select?: string;
   gene_xref?: string;
   gene_symbol?: string;
   /** 複数ある場合はカンマ区切りの単一文字列で返ってくる */
@@ -59,6 +63,9 @@ interface TranscriptDisplayRow
   > {
   /** URIではなくラベルとリンクURLに変換済み */
   transcript: EnsemblTranscriptLink;
+  /** MANE Select transcript の場合にバッジを表示する */
+  is_mane_select: boolean;
+  mane_url: string;
   /** カンマ区切り文字列から配列に変換済み（{{#each}} で扱いやすくするため） */
   consequence_label: string[];
   cadd_phred?: string;
@@ -80,6 +87,10 @@ type TemplateRenderParams = SparqlistTemplateRenderParams<
   TranscriptDisplayRow[]
 >;
 
+interface VariantTranscriptParams extends SparqlistStanzaParams {
+  assembly?: string;
+}
+
 // ============================================================
 // 定数
 // ============================================================
@@ -89,6 +100,7 @@ type TemplateRenderParams = SparqlistTemplateRenderParams<
  * `enst_id` と連結してトランスクリプトのリンクURLを生成する。
  */
 const ENSEMBL_IDENTIFIER_BASE_URL = "http://identifiers.org/ensembl/";
+const MANE_URL = "https://www.ncbi.nlm.nih.gov/refseq/MANE/";
 
 // ============================================================
 // データ変換（バインディング → 表示行）
@@ -114,6 +126,49 @@ const createEnsemblTranscriptLink = (
   return { label, url };
 };
 
+const normalizeVersionlessTranscriptId = (value: string | undefined): string =>
+  String(value ?? "").replace(/\.\d+$/, "");
+
+const isGrch38 = ({ assembly, sparqlist }: VariantTranscriptParams): boolean =>
+  /^grch38$/i.test(String(assembly ?? "")) || /grch38/i.test(sparqlist ?? "");
+
+const includesManeSelect = (mane: string | string[] | undefined): boolean =>
+  Array.isArray(mane)
+    ? mane.some((value) => /MANE_Select/i.test(value))
+    : /MANE_Select/i.test(mane ?? "");
+
+/**
+ * MANE Select transcript かどうかを判定する。
+ * 現行SPARQListにMANE列が無い環境でも、transcript URIに mane-select が含まれる既存データ形を拾えるようにし、
+ * 将来 `mane` / `mane_select` が返る場合も同じ表示ロジックで扱う。
+ */
+const isManeSelectTranscript = (
+  binding: TranscriptSparqlBinding,
+  transcript: EnsemblTranscriptLink,
+  params: VariantTranscriptParams,
+): boolean => {
+  if (!isGrch38(params)) {
+    return false;
+  }
+
+  if (/mane[_-]select/i.test(binding.transcript ?? "")) {
+    return true;
+  }
+
+  if (includesManeSelect(binding.mane)) {
+    return true;
+  }
+
+  const maneSelectId = normalizeVersionlessTranscriptId(binding.mane_select);
+  if (!maneSelectId) {
+    return false;
+  }
+
+  return [transcript.label, binding.enst_id]
+    .map(normalizeVersionlessTranscriptId)
+    .includes(maneSelectId);
+};
+
 /**
  * SPARQL バインディング1行をテンプレート表示行へ変換する。
  *
@@ -128,6 +183,7 @@ const createEnsemblTranscriptLink = (
  */
 const convertBindingToDisplayRow = (
   binding: TranscriptSparqlBinding,
+  params: VariantTranscriptParams,
 ): TranscriptDisplayRow => {
   // テンプレート向けに型が変わるフィールドを分離し、残りはそのまま引き継ぐ
   const {
@@ -140,9 +196,12 @@ const convertBindingToDisplayRow = (
     ...sharedFields
   } = binding;
 
+  const transcript = createEnsemblTranscriptLink(binding);
   const displayRow: TranscriptDisplayRow = {
     ...sharedFields,
-    transcript: createEnsemblTranscriptLink(binding),
+    transcript,
+    is_mane_select: isManeSelectTranscript(binding, transcript, params),
+    mane_url: MANE_URL,
     consequence_label: rawConsequenceLabel
       ? rawConsequenceLabel.split(",")
       : [],
@@ -171,7 +230,7 @@ export default class VariantTranscript extends Stanza {
     // フォントは描画前に非同期ロード開始しておく（ロード完了を待たず続行する）
     this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
-    const params = this.params as SparqlistStanzaParams;
+    const params = this.params as VariantTranscriptParams;
 
     // 初期状態は params のみ。取得成功時に result、失敗時に error を追加する
     const templateParams: TemplateRenderParams = { params };
@@ -180,7 +239,9 @@ export default class VariantTranscript extends Stanza {
       const apiUrl = buildSparqlistApiUrl("variant_transcript", params);
       const sparqlBindings =
         await fetchSparqlBindings<TranscriptSparqlBinding>(apiUrl);
-      templateParams.result = sparqlBindings.map(convertBindingToDisplayRow);
+      templateParams.result = sparqlBindings.map((binding) =>
+        convertBindingToDisplayRow(binding, params),
+      );
     } catch (error) {
       templateParams.error = {
         message: error instanceof Error ? error.message : String(error),

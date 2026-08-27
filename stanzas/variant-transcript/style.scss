@@ -13,4 +13,23 @@ main {
       font-size: 12px;
     }
   }
+
+  .mane-badge {
+    display: inline-block;
+    padding: 1px 7px 2px;
+    margin-left: 8px;
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 1.2;
+    vertical-align: middle;
+    color: #fff;
+    text-decoration: none;
+    background-color: #20558a;
+    border-radius: 3px;
+
+    &:hover {
+      color: #fff;
+      text-decoration: none;
+    }
+  }
 }

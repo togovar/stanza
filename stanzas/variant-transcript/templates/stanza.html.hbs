@@ -25,6 +25,14 @@
             {{else}}
               {{transcript.label}}
             {{/if}}
+            {{#if is_mane_select}}
+              <a
+                class="mane-badge"
+                href="{{mane_url}}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >MANE</a>
+            {{/if}}
           </td>
           <td><a href="{{gene_xref}}">{{gene_symbol}}</a></td>
           <td>
