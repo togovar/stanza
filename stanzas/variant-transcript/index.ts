@@ -126,9 +126,6 @@ const createEnsemblTranscriptLink = (
   return { label, url };
 };
 
-const normalizeVersionlessTranscriptId = (value: string | undefined): string =>
-  String(value ?? "").replace(/\.\d+$/, "");
-
 const isGrch38 = ({ assembly, sparqlist }: VariantTranscriptParams): boolean =>
   /^grch38$/i.test(String(assembly ?? "")) || /grch38/i.test(sparqlist ?? "");
 
@@ -139,12 +136,12 @@ const includesManeSelect = (mane: string | string[] | undefined): boolean =>
 
 /**
  * MANE Select transcript かどうかを判定する。
- * 表示には SPARQList 側から `mane` または `mane_select` が返る必要がある。
+ * 表示には SPARQList 側から `mane` が返る必要がある。
  * transcript URI に mane-select が含まれるデータ形にも対応しているが、通常のEnsembl URIだけでは判定できない。
+ * `mane_select` は RefSeq ID(NM_...)のため、Ensembl transcript ID(ENST...)との比較には使わない。
  */
 const isManeSelectTranscript = (
   binding: TranscriptSparqlBinding,
-  transcript: EnsemblTranscriptLink,
   params: VariantTranscriptParams,
 ): boolean => {
   if (!isGrch38(params)) {
@@ -159,14 +156,7 @@ const isManeSelectTranscript = (
     return true;
   }
 
-  const maneSelectId = normalizeVersionlessTranscriptId(binding.mane_select);
-  if (!maneSelectId) {
-    return false;
-  }
-
-  return [transcript.label, binding.enst_id]
-    .map(normalizeVersionlessTranscriptId)
-    .includes(maneSelectId);
+  return false;
 };
 
 /**
@@ -200,7 +190,7 @@ const convertBindingToDisplayRow = (
   const displayRow: TranscriptDisplayRow = {
     ...sharedFields,
     transcript,
-    is_mane_select: isManeSelectTranscript(binding, transcript, params),
+    is_mane_select: isManeSelectTranscript(binding, params),
     mane_url: MANE_URL,
     consequence_label: rawConsequenceLabel
       ? rawConsequenceLabel.split(",")
