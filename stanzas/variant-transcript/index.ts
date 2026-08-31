@@ -137,7 +137,6 @@ const includesManeSelect = (mane: string | string[] | undefined): boolean =>
 /**
  * MANE Select transcript かどうかを判定する。
  * 表示には SPARQList 側から `mane` が返る必要がある。
- * transcript URI に mane-select が含まれるデータ形にも対応しているが、通常のEnsembl URIだけでは判定できない。
  * `mane_select` は RefSeq ID(NM_...)のため、Ensembl transcript ID(ENST...)との比較には使わない。
  */
 const isManeSelectTranscript = (
@@ -146,10 +145,6 @@ const isManeSelectTranscript = (
 ): boolean => {
   if (!isGrch38(params)) {
     return false;
-  }
-
-  if (/mane[_-]select/i.test(binding.transcript ?? "")) {
-    return true;
   }
 
   if (includesManeSelect(binding.mane)) {
