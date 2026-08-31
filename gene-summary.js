@@ -121,7 +121,7 @@ var templates = [
         return undefined
     };
 
-  return "    <dl class=\"gene-info\">\n      <dt>HGNC/Approved name</dt>\n      <dd>\n"
+  return "    <dl class=\"gene-summary-list\">\n      <dt>HGNC/Approved name</dt>\n      <dd>\n"
     + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"hgnc_url") : depth0),{"name":"if","hash":{},"fn":container.program(3, data, 0),"inverse":container.program(4, data, 0),"data":data,"loc":{"start":{"line":8,"column":8},"end":{"line":12,"column":15}}})) != null ? stack1 : "")
     + "      </dd>\n      <dt>Ensembl</dt>\n      <dd>\n"
     + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"ensembl_url") : depth0),{"name":"if","hash":{},"fn":container.program(5, data, 0),"inverse":container.program(6, data, 0),"data":data,"loc":{"start":{"line":16,"column":8},"end":{"line":20,"column":15}}})) != null ? stack1 : "")

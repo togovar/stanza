@@ -1,5 +1,7 @@
 // TogoVar標準フォント。複数stanzaでimportWebFontCSSに渡す共通URL。
 const ROBOTO_CONDENSED_CSS_URL = "https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900";
+// Font Awesome の疑似要素アイコンを単体stanza表示でも使えるように読み込む。
+const FONTAWESOME_FREE_SOLID_CSS_URL = "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/solid.min.css";
 const DATASETS = [
     {
         value: "gem_j_wga",
@@ -1435,5 +1437,5 @@ const CADD = {
     },
 };
 
-export { ALPHAMISSENSE as A, CLINICAL_SIGNIFICANCE as C, DATASETS as D, POLYPHEN as P, ROBOTO_CONDENSED_CSS_URL as R, SO as S, REVIEW_STATUS as a, CONSEQUENCE as b, CADD as c, SIFT as d, ensureAllDatasets as e };
-//# sourceMappingURL=constants-4313dcda.js.map
+export { ALPHAMISSENSE as A, CLINICAL_SIGNIFICANCE as C, DATASETS as D, FONTAWESOME_FREE_SOLID_CSS_URL as F, POLYPHEN as P, ROBOTO_CONDENSED_CSS_URL as R, SO as S, REVIEW_STATUS as a, CONSEQUENCE as b, CADD as c, SIFT as d, ensureAllDatasets as e };
+//# sourceMappingURL=constants-c005a6eb.js.map

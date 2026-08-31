@@ -1,6 +1,6 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import './stanza-644a6e8e.js';
-import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-4313dcda.js';
+import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-c005a6eb.js';
 
 class GenePublication extends Stanza {
   async render() {

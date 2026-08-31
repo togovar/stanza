@@ -1388,40 +1388,54 @@ togostanza--menu {
   cursor: pointer;
 }
 
-main .gene-info {
-  display: grid;
-  grid-template-columns: auto 1fr auto 1fr;
-  min-width: 600px;
-  margin: 0;
+main {
+  container-type: inline-size;
 }
-main .gene-info dt,
-main .gene-info dd {
-  padding: 3px 0;
+main .gene-summary-list {
+  display: grid;
+  grid-template-columns: 130px calc(50% - 130px) 70px calc(50% - 70px);
+  width: 100%;
   margin: 0;
+  font-family: "Roboto Condensed", sans-serif;
+}
+main .gene-summary-list dt,
+main .gene-summary-list dd {
+  display: flex;
+  align-items: flex-start;
+  padding: 3px 0;
   line-height: 1.2;
-  vertical-align: middle;
   border-bottom: 1px solid var(--color-table-border);
 }
-main .gene-info dt {
-  padding-right: 12px;
-  padding-left: 8px;
+main .gene-summary-list dt {
+  padding-left: 10px;
   font-size: 12px;
   font-weight: bold;
   color: var(--color-black);
-  text-align: right;
 }
-main .gene-info dt:nth-child(4n+3) {
-  padding-left: 20px;
-}
-main .gene-info dd {
+main .gene-summary-list dd {
+  padding-right: 10px;
+  padding-left: 12px;
+  margin: 0;
   font-size: 14px;
   color: var(--color-black);
-  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
-main .gene-info dd a {
+main .gene-summary-list dd a {
   color: var(--color-key-dark2);
 }
-main .gene-info dt:nth-last-child(-n+4),
-main .gene-info dd:nth-last-child(-n+4) {
-  border-bottom: none;
+main .gene-summary-list dd:nth-of-type(odd) {
+  border-right: 1px solid var(--color-table-border);
+}
+@container (width <= 580px) {
+  main .gene-summary-list {
+    grid-template-columns: 130px minmax(0, 1fr);
+  }
+  main .gene-summary-list dd {
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+  main .gene-summary-list dd:nth-of-type(odd) {
+    border-right: none;
+  }
 }

@@ -1,5 +1,5 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
-import { R as ROBOTO_CONDENSED_CSS_URL, C as CLINICAL_SIGNIFICANCE } from './constants-4313dcda.js';
+import { R as ROBOTO_CONDENSED_CSS_URL, C as CLINICAL_SIGNIFICANCE } from './constants-c005a6eb.js';
 import { e as escapeHtml } from './html-18194d0e.js';
 import { r as rowSpanize } from './table-1f1dea97.js';
 import { d as describeVariantIdentifier } from './sparqlist-47ca0758.js';

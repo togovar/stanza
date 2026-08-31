@@ -1,5 +1,5 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
-import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-4313dcda.js';
+import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-c005a6eb.js';
 import { d as describeVariantIdentifier } from './sparqlist-47ca0758.js';
 import { a as fetchVariantDataById, b as fetchVariantDataByLocation, r as requireVariantData } from './togovar-variant-0e8288d9.js';
 import { p as parseVariantParam, a as assertValidVariantIdentifier } from './variant-0dd96a22.js';

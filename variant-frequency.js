@@ -1,6 +1,6 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { h as hierarchy } from './transform-ddf65f5a.js';
-import { R as ROBOTO_CONDENSED_CSS_URL, D as DATASETS } from './constants-4313dcda.js';
+import { R as ROBOTO_CONDENSED_CSS_URL, F as FONTAWESOME_FREE_SOLID_CSS_URL, D as DATASETS } from './constants-c005a6eb.js';
 import { b as buildFrequencyMarkerState, a as buildFrequencyDisplay, f as formatLocaleInteger } from './frequency-9d3406e7.js';
 import { d as describeVariantIdentifier } from './sparqlist-47ca0758.js';
 import { n as normalizeTogoVarApiBaseUrl, f as fetchVariantDataByIdentifier } from './togovar-variant-0e8288d9.js';
@@ -9486,6 +9486,10 @@ const isTruthyParam = (value) => {
 const isLocalhostHost = (hostname) => {
     return hostname === "localhost" || hostname === "127.0.0.1";
 };
+const JGA_WGS_PUBLIC_CHILD_SOURCES = new Set([
+    "jga_wgs.jgad000758",
+    "jga_wgs.jgad000868",
+]);
 const findDbsnpIdentifier = (variantData) => variantData.external_links?.dbsnp?.find((link) => /^rs\d+$/iu.test(link.title))?.title;
 const buildFrequencySearchTerm = (variantData) => {
     if (variantData.id) {
@@ -9528,6 +9532,7 @@ class VariantFrequency extends Stanza {
     async render() {
         // フォントの読み込み
         this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
+        this.importWebFontCSS(FONTAWESOME_FREE_SOLID_CSS_URL);
         // ---- stanzaパラメータの取得 ----
         // data-url: APIのベースURL, assembly: GRCh37/GRCh38, tgv_id/variant: バリアント識別子
         const { "data-url": urlBase, assembly, tgv_id, check_local_auth_status, } = this.params;
@@ -9757,9 +9762,13 @@ class VariantFrequency extends Stanza {
                     resultObject = [...resultObject, frequencyData];
                     // ---- 未ログイン時: JGA-WGSのダミー行を準備 ----
                     // 未ログインだとJGA-WGSの個別集団データがAPIから返ってこないため、
-                    // ログインを促すプレースホルダー行を表示する
+                    // ログインを促すプレースホルダー行を表示する。
+                    // BBJ1K/BBJ2K は公開データセットとして扱うため、実データが無い場合も鍵付きの
+                    // ログイン誘導行は出さない。
                     if (!isLogin && frequencyData.source === "jga_wgs") {
-                        jgawgsChildren.forEach((child) => {
+                        jgawgsChildren
+                            .filter((child) => !JGA_WGS_PUBLIC_CHILD_SOURCES.has(child.value))
+                            .forEach((child) => {
                             const dummyRow = {
                                 dataset: frequencyData.dataset,
                                 depth: 1,
@@ -9910,13 +9919,13 @@ class VariantFrequency extends Stanza {
                 return;
             }
             let insertIndex = parentIndex + 1;
-            jgawgsChildren.forEach((child, index) => {
+            jgawgsChildren.forEach((child) => {
                 const existingChildIndex = resultObject.findIndex((data) => data.source === child.value);
                 if (existingChildIndex !== -1) {
                     insertIndex = existingChildIndex + 1;
                     return;
                 }
-                const dummyRow = jgawgsData[index];
+                const dummyRow = jgawgsData.find((data) => data.source === child.value);
                 if (dummyRow) {
                     resultObject.splice(insertIndex, 0, dummyRow);
                     insertIndex += 1;
