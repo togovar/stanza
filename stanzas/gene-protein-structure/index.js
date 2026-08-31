@@ -23,7 +23,7 @@ export default class GeneStructure extends Stanza {
           template: 'stanza.html.hbs',
           parameters: {
             params: this.params,
-            ...res,
+            error: { message: "No PDB structure is available for this gene." },
           }
         }
       );
