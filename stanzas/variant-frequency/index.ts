@@ -1,6 +1,10 @@
 import Stanza from "togostanza/stanza";
 import { hierarchy } from "d3-hierarchy";
-import { DATASETS, ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
+import {
+  DATASETS,
+  FONTAWESOME_FREE_SOLID_CSS_URL,
+  ROBOTO_CONDENSED_CSS_URL,
+} from "@/lib/constants";
 import {
   buildFrequencyDisplay,
   buildFrequencyMarkerState,
@@ -98,6 +102,11 @@ const isLocalhostHost = (hostname: string): boolean => {
   return hostname === "localhost" || hostname === "127.0.0.1";
 };
 
+const JGA_WGS_PUBLIC_CHILD_SOURCES = new Set([
+  "jga_wgs.jgad000758",
+  "jga_wgs.jgad000868",
+]);
+
 const findDbsnpIdentifier = (variantData: VariantData): string | undefined =>
   variantData.external_links?.dbsnp?.find((link) =>
     /^rs\d+$/iu.test(link.title),
@@ -157,6 +166,7 @@ export default class VariantFrequency extends Stanza {
   async render() {
     // フォントの読み込み
     this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
+    this.importWebFontCSS(FONTAWESOME_FREE_SOLID_CSS_URL);
 
     // ---- stanzaパラメータの取得 ----
     // data-url: APIのベースURL, assembly: GRCh37/GRCh38, tgv_id/variant: バリアント識別子
@@ -455,19 +465,23 @@ export default class VariantFrequency extends Stanza {
 
           // ---- 未ログイン時: JGA-WGSのダミー行を準備 ----
           // 未ログインだとJGA-WGSの個別集団データがAPIから返ってこないため、
-          // ログインを促すプレースホルダー行を表示する
+          // ログインを促すプレースホルダー行を表示する。
+          // BBJ1K/BBJ2K は公開データセットとして扱うため、実データが無い場合も鍵付きの
+          // ログイン誘導行は出さない。
           if (!isLogin && frequencyData.source === "jga_wgs") {
-            jgawgsChildren.forEach((child) => {
-              const dummyRow: FrequencyData = {
-                dataset: frequencyData.dataset,
-                depth: 1,
-                label: child.label,
-                source: child.value,
-                id: child.id,
-                need_loading: true,
-              };
-              jgawgsData = [...jgawgsData, dummyRow];
-            });
+            jgawgsChildren
+              .filter((child) => !JGA_WGS_PUBLIC_CHILD_SOURCES.has(child.value))
+              .forEach((child) => {
+                const dummyRow: FrequencyData = {
+                  dataset: frequencyData.dataset,
+                  depth: 1,
+                  label: child.label,
+                  source: child.value,
+                  id: child.id,
+                  need_loading: true,
+                };
+                jgawgsData = [...jgawgsData, dummyRow];
+              });
           }
         }
 
@@ -649,7 +663,7 @@ export default class VariantFrequency extends Stanza {
 
       let insertIndex = parentIndex + 1;
 
-      jgawgsChildren.forEach((child, index) => {
+      jgawgsChildren.forEach((child) => {
         const existingChildIndex = resultObject.findIndex(
           (data) => data.source === child.value,
         );
@@ -659,7 +673,7 @@ export default class VariantFrequency extends Stanza {
           return;
         }
 
-        const dummyRow = jgawgsData[index];
+        const dummyRow = jgawgsData.find((data) => data.source === child.value);
         if (dummyRow) {
           resultObject.splice(insertIndex, 0, dummyRow);
           insertIndex += 1;

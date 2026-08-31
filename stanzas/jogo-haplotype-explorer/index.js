@@ -5,16 +5,30 @@ export default class JogoHaplotypeExplorer extends Stanza {
 
     //// variables
     const aa = {Gly: "G", Ala: "A", Leu: "L", Met: "M", Phe: "F", Trp: "W", Lys: "K", Gln: "Q", Glu: "E", Ser: "S", Pro: "P", Val: "V", Ile: "I", Cys: "C", Tyr: "Y", His: "H", Arg: "R", Asn: "N", Asp: "D", Thr: "T", Ter: "X"};
+    const symbol = this.params?.symbol || "";
+    const regionName = this.params?.region_name || "";
+
+    if (!symbol && !regionName) {
+      this.renderTemplate({
+        template: "stanza.html.hbs",
+        parameters: {
+          error: {
+            message: "symbol or region_name parameter is required",
+          },
+        },
+      });
+      return;
+    }
     
     const tgv_api = this.params.togovar_api + "?formatter=jogo";
     const tgv_bdy = '{"offset":#offset,"limit":#limit,"query":{"and":[{"gene":{"relation":"eq","terms":[#hgncid]}},{"or":[{"significance":{"relation":"eq","source":["mgend"],"terms":["P","LP","US","LB","B","DR","O","NP"]}},{"significance":{"relation":"eq","source":["clinvar"],"terms":["P","LP","PLP","LPLP","ERA","LRA","URA","US","LB","B","CI","DR","CS","RF","A","PR","AF","O","NP","AN"]}}]}]}}';
     let tgv_opt = {method: 'POST', headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}}
 
-    let jogo_api = "https://jogo.csml.org/gene?format=json&&genename=" + this.params.symbol;
-    let stanza_title = this.params.symbol;
-    if (this.params.region_name.match(/chr.+_\d+_\d+/)) {
-      jogo_api = "https://jogo.csml.org/genicregion?format=json&regionname=" + this.params.region_name;
-      stanza_title = this.params.region_name;
+    let jogo_api = "https://jogo.csml.org/gene?format=json&&genename=" + symbol;
+    let stanza_title = symbol;
+    if (regionName.match(/chr.+_\d+_\d+/)) {
+      jogo_api = "https://jogo.csml.org/genicregion?format=json&regionname=" + regionName;
+      stanza_title = regionName;
     }
     if (this.params.hide_header == 1) stanza_title = false;
     const jogo_basic = {
@@ -54,7 +68,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
 
     // make variant title html
     const make_var_title = (v) => {
-      const chr_tmp = v.chr.replace(/^chr/, "");
+      const chr_tmp = String(v.chr || "").replace(/^chr/, "");
       let ref_tmp = v.ref;
       let alt_tmp = v.alt;
       if (v.ref.length > 4) ref_tmp = v.ref[0] + v.ref[1] + v.ref[2] + "...";
@@ -100,7 +114,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	];
 	for (const d of id_list.g) {
 	  if (v.ghapids.match(d.id)) {
-	    for (const [i ,p] of d.pop.entries()) {
+	    for (const [i] of d.pop.entries()) {
 	      pop[i].count += d.pop[i].count;
 	    }
 	  }
@@ -221,7 +235,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	  popup_el.style.left = (parseInt((e.target.offsetLeft - popup_el.offsetWidth) * scale) - 20) + "px"; // popup on the left
 	}
       })
-      el.addEventListener("mouseout", (e) => {
+      el.addEventListener("mouseout", () => {
 	this.root.querySelector("#popup").style.display = "none";
       })
       el.addEventListener("click", async (e) => {
@@ -306,7 +320,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
     }
 
     // sort animation
-    const sort_animation = (list, id_sub) => {
+    const sort_animation = (list) => {
       const sort_div = this.root.querySelector("#sort_ul");
       sort_div.querySelectorAll("li").forEach((el) => {
 	el.style.position = "relative";
@@ -327,14 +341,14 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	    el.style.top = prev_order.dom[id].top + "px";
 	  }
 	  if (count == frame + 1) {
-	    sort_li(list, id_sub);
+	      sort_li(list);
 	    clearInterval(intervalID);
 	  }
 	}, 20);
     }
 
     // sort same level haplotype (viewer)
-    const sort_li = (list, id_sub) => {
+    const sort_li = (list) => {
       let sort_div = this.root.querySelector("#sort_ul");
       sort_div.innerHTML = "";
       for (const d of list) {
@@ -357,7 +371,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	  const mode = this.root.querySelector("input:checked[name=mode]").value;
 	  const id_sub = e.target.id.replace(/_button/, "");
 	  const list = sort_hapid(mode, id_sub);
-	  sort_animation(list, id_sub);
+	  sort_animation(list);
 	})
 	el.id = el.id + "_clone";
       })
@@ -388,10 +402,23 @@ export default class JogoHaplotypeExplorer extends Stanza {
     ////// main
     const jogo_json = await fetch(jogo_api, jogo_basic).then(res => res.json());
     // console.log(jogo_json);
-    const hgncid = jogo_json.maneinfo.hgncid;
-    const chr    = jogo_json.maneinfo.chr.replace(/^chr/, "");
-    const strand = jogo_json.maneinfo.strand;
-    const region = jogo_json.maneinfo.regionname5000;
+    const maneinfo = jogo_json.maneinfo;
+    if (!maneinfo) {
+      this.renderTemplate({
+        template: "stanza.html.hbs",
+        parameters: {
+          error: {
+            message: "MANE information is not available for this gene or region.",
+          },
+        },
+      });
+      return;
+    }
+
+    const hgncid = maneinfo.hgncid;
+    const chr    = String(maneinfo.chr || "").replace(/^chr/, "");
+    const strand = maneinfo.strand;
+    const region = maneinfo.regionname5000;
     let variant = [];
     let scale = 1;
     
@@ -549,7 +576,6 @@ export default class JogoHaplotypeExplorer extends Stanza {
       el.setAttribute("title", "open");
       el.addEventListener("click", (e) => {
 	const id_sub = e.target.id.replace(/_button/, "");
-	const mode = this.root.querySelector("input:checked[name=mode]").value;
 	const child = this.root.querySelector("#" + id_sub + "_chld");
 	if (child.style.display == "block") child.style.display = "none";
 	else child.style.display = "block";
@@ -585,14 +611,14 @@ export default class JogoHaplotypeExplorer extends Stanza {
       this.root.querySelector("#r_a").checked = true;
       const mode = this.root.querySelector("input:checked[name=mode]").value;
       const list = sort_hapid(mode, false);
-      sort_li(list, false);
+      sort_li(list);
     });
     this.root.querySelector("#show_c").addEventListener("click", () => {
       if (this.root.querySelector("#r_c").disabled != true) {
 	this.root.querySelector("#r_c").checked = true;
 	const mode = this.root.querySelector("input:checked[name=mode]").value;
 	const list = sort_hapid(mode, false);
-	sort_li(list, false);
+	sort_li(list);
       }
     });
     this.root.querySelector("#show_t").addEventListener("click", () => {
@@ -600,7 +626,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	this.root.querySelector("#r_t").checked = true;
 	const mode = this.root.querySelector("input:checked[name=mode]").value;
 	const list = sort_hapid(mode, false);
-	sort_li(list, false);
+	sort_li(list);
       }
     });
     this.root.querySelector("#show_g").addEventListener("click", () => {
@@ -608,7 +634,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	this.root.querySelector("#r_g").checked = true;
 	const mode = this.root.querySelector("input:checked[name=mode]").value;
 	const list = sort_hapid(mode, false);
-	sort_li(list, false);
+	sort_li(list);
       }
     });
     // open all level
@@ -662,7 +688,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
     let button_left = mv_width;
     const min_scale = 0.2;
     scale_button.style.left = button_left + "px";
-    scale_button.addEventListener("mousedown", e => {
+    scale_button.addEventListener("mousedown", () => {
       button_flag = true;
     });
     main_div.addEventListener("mousemove", e => {
@@ -673,7 +699,7 @@ export default class JogoHaplotypeExplorer extends Stanza {
 	scale_button.style.left = button_left + "px";
       }
     });
-    main_div.addEventListener("mouseup", e => {
+    main_div.addEventListener("mouseup", () => {
       button_flag = false;
       if (button_left >= 0 && button_left <= mv_width) {
 	scale = (mv_width / (1 - min_scale) - (mv_width - button_left)) / (mv_width / (1 - min_scale));
