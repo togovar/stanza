@@ -40,15 +40,17 @@ const includesManeSelect = (mane) => Array.isArray(mane)
  * MANE Select transcript かどうかを判定する。
  * 表示には SPARQList 側から `mane` が返る必要がある。
  * `mane_select` は RefSeq ID(NM_...)のため、Ensembl transcript ID(ENST...)との比較には使わない。
+ *
+ * `mane` と `transcript`/`enst_id` はSPARQL上で別々のOPTIONAL節から取得されるため、
+ * transcriptへのリンクを持たない（RefSeq側のみに紐づくなど）consequenceリソースにも
+ * `mane` が付くことがある。これは正当なMANE Select情報のため、Transcript IDの有無に
+ * かかわらずバッジを表示する。
  */
 const isManeSelectTranscript = (binding, params) => {
     if (!isGrch38(params)) {
         return false;
     }
-    if (includesManeSelect(binding.mane)) {
-        return true;
-    }
-    return false;
+    return includesManeSelect(binding.mane);
 };
 /**
  * SPARQL バインディング1行をテンプレート表示行へ変換する。
@@ -194,7 +196,7 @@ var templates = [
     };
 
   return "  <table class=\"table\">\n    <thead>\n      <tr>\n        <th>Transcript ID</th>\n        <th>Gene symbol</th>\n        <th>Consequence type</th>\n        <th>HGVS(cDNA)</th>\n        <th>HGVS(Amino acid seq.)</th>\n        <th>CADD (PHRED score)</th>\n        <th>AlphaMissense</th>\n        <th>SIFT</th>\n        <th>PolyPhen</th>\n      </tr>\n    </thead>\n\n    <tbody>\n"
-    + ((stack1 = lookupProperty(helpers,"each").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"result") : depth0),{"name":"each","hash":{},"fn":container.program(2, data, 0),"inverse":container.program(7, data, 0),"data":data,"loc":{"start":{"line":20,"column":6},"end":{"line":79,"column":15}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"each").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"result") : depth0),{"name":"each","hash":{},"fn":container.program(2, data, 0),"inverse":container.program(8, data, 0),"data":data,"loc":{"start":{"line":20,"column":6},"end":{"line":79,"column":15}}})) != null ? stack1 : "")
     + "    </tbody>\n  </table>\n";
 },"2":function(container,depth0,helpers,partials,data) {
     var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=container.hooks.helperMissing, alias3="function", alias4=container.escapeExpression, lookupProperty = container.lookupProperty || function(parent, propertyName) {
@@ -212,7 +214,7 @@ var templates = [
     + "\">"
     + alias4(((helper = (helper = lookupProperty(helpers,"gene_symbol") || (depth0 != null ? lookupProperty(depth0,"gene_symbol") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"gene_symbol","hash":{},"data":data,"loc":{"start":{"line":37,"column":38},"end":{"line":37,"column":53}}}) : helper)))
     + "</a></td>\n          <td>\n            <ul class=\"no-bullet\">\n"
-    + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"consequence_label") : depth0),{"name":"each","hash":{},"fn":container.program(6, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":40,"column":14},"end":{"line":42,"column":23}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"consequence_label") : depth0),{"name":"each","hash":{},"fn":container.program(7, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":40,"column":14},"end":{"line":42,"column":23}}})) != null ? stack1 : "")
     + "            </ul>\n          </td>\n          <td>"
     + alias4(((helper = (helper = lookupProperty(helpers,"hgvs_c") || (depth0 != null ? lookupProperty(depth0,"hgvs_c") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"hgvs_c","hash":{},"data":data,"loc":{"start":{"line":45,"column":14},"end":{"line":45,"column":24}}}) : helper)))
     + "</td>\n          <td>"
@@ -265,21 +267,25 @@ var templates = [
     + container.escapeExpression(container.lambda(((stack1 = (depth0 != null ? lookupProperty(depth0,"transcript") : depth0)) != null ? lookupProperty(stack1,"label") : stack1), depth0))
     + "\n";
 },"5":function(container,depth0,helpers,partials,data) {
-    var helper, lookupProperty = container.lookupProperty || function(parent, propertyName) {
+    var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
         }
         return undefined
     };
 
-  return "              <a\n                class=\"mane-badge\"\n                href=\""
-    + container.escapeExpression(((helper = (helper = lookupProperty(helpers,"mane_url") || (depth0 != null ? lookupProperty(depth0,"mane_url") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : (container.nullContext || {}),{"name":"mane_url","hash":{},"data":data,"loc":{"start":{"line":31,"column":22},"end":{"line":31,"column":34}}}) : helper)))
+  return "              <a\n                class=\"mane-badge"
+    + ((stack1 = lookupProperty(helpers,"unless").call(alias1,((stack1 = (depth0 != null ? lookupProperty(depth0,"transcript") : depth0)) != null ? lookupProperty(stack1,"label") : stack1),{"name":"unless","hash":{},"fn":container.program(6, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":30,"column":33},"end":{"line":30,"column":90}}})) != null ? stack1 : "")
+    + "\"\n                href=\""
+    + container.escapeExpression(((helper = (helper = lookupProperty(helpers,"mane_url") || (depth0 != null ? lookupProperty(depth0,"mane_url") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(alias1,{"name":"mane_url","hash":{},"data":data,"loc":{"start":{"line":31,"column":22},"end":{"line":31,"column":34}}}) : helper)))
     + "\"\n                target=\"_blank\"\n                rel=\"noopener noreferrer\"\n              >MANE</a>\n";
 },"6":function(container,depth0,helpers,partials,data) {
+    return " -no-transcript-id";
+},"7":function(container,depth0,helpers,partials,data) {
     return "                <li>"
     + container.escapeExpression(container.lambda(depth0, depth0))
     + "</li>\n";
-},"7":function(container,depth0,helpers,partials,data) {
+},"8":function(container,depth0,helpers,partials,data) {
     return "        <tr>\n          <td colspan=\"9\" class=\"text-center\">No data</td>\n        </tr>\n";
 },"compiler":[8,">= 4.3.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1, lookupProperty = container.lookupProperty || function(parent, propertyName) {
