@@ -70,7 +70,6 @@ type ExternalLinkKey =
   | "dbsnp"
   | "gnomad"
   | "tommo"
-  | "tommo_jsv1"
   | "jogo"
   | "sscv_db";
 
@@ -300,15 +299,6 @@ const buildLinkCategoryRows = (
       firstExternalLink(externalLinks, "tommo"),
       "tommo",
     ),
-    ...(sourceAssembly === "GRCh38"
-      ? [
-          buildSourceFromExternalLink(
-            "ToMMo JSV1",
-            firstExternalLink(externalLinks, "tommo_jsv1"),
-            "tommo_jsv1",
-          ),
-        ]
-      : []),
   ];
   const frequencySources = [
     buildSourceFromExternalLink(

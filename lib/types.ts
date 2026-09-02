@@ -51,7 +51,6 @@ export interface ExternalLinks {
   dbsnp?: ExternalLink[];
   gnomad?: ExternalLink[];
   tommo?: ExternalLink[];
-  tommo_jsv1?: ExternalLink[];
   jogo?: ExternalLink[];
   sscv_db?: ExternalLink[];
 }
