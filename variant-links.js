@@ -149,11 +149,6 @@ const buildLinkCategoryRows = (variantData, mogplusEntry, mogplusVersion, source
             : "ToMMo";
     const tommoSources = [
         buildSourceFromExternalLink(tommoLabel, firstExternalLink(externalLinks, "tommo"), "tommo"),
-        ...(sourceAssembly === "GRCh38"
-            ? [
-                buildSourceFromExternalLink("ToMMo JSV1", firstExternalLink(externalLinks, "tommo_jsv1"), "tommo_jsv1"),
-            ]
-            : []),
     ];
     const frequencySources = [
         buildSourceFromExternalLink("dbSNP", firstExternalLink(externalLinks, "dbsnp")),
