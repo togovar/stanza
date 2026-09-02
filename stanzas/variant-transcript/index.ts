@@ -138,6 +138,11 @@ const includesManeSelect = (mane: string | string[] | undefined): boolean =>
  * MANE Select transcript かどうかを判定する。
  * 表示には SPARQList 側から `mane` が返る必要がある。
  * `mane_select` は RefSeq ID(NM_...)のため、Ensembl transcript ID(ENST...)との比較には使わない。
+ *
+ * `mane` と `transcript`/`enst_id` はSPARQL上で別々のOPTIONAL節から取得されるため、
+ * transcriptへのリンクを持たない（RefSeq側のみに紐づくなど）consequenceリソースにも
+ * `mane` が付くことがある。これは正当なMANE Select情報のため、Transcript IDの有無に
+ * かかわらずバッジを表示する。
  */
 const isManeSelectTranscript = (
   binding: TranscriptSparqlBinding,
@@ -147,11 +152,7 @@ const isManeSelectTranscript = (
     return false;
   }
 
-  if (includesManeSelect(binding.mane)) {
-    return true;
-  }
-
-  return false;
+  return includesManeSelect(binding.mane);
 };
 
 /**

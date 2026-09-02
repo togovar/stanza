@@ -27,7 +27,7 @@
             {{/if}}
             {{#if is_mane_select}}
               <a
-                class="mane-badge"
+                class="mane-badge{{#unless transcript.label}} -no-transcript-id{{/unless}}"
                 href="{{mane_url}}"
                 target="_blank"
                 rel="noopener noreferrer"
