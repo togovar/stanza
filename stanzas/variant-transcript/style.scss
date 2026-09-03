@@ -9,7 +9,7 @@ main {
     border-spacing: 0;
     border-collapse: separate;
 
-    > thead {
+    > thead > tr > th {
       position: sticky;
       top: 0;
       z-index: var(--z-index-sticky-table-header);
