@@ -7,11 +7,13 @@
   font-display: swap;
 }
 :host {
+  --color-key: #62d5d9;
   --color-key-light: rgb(159.5923076923, 229.4769230769, 231.9076923077);
   --color-key-dark1: #117f93;
   --color-key-dark2: #0f6272;
   --color-black: #444;
   --color-gray: #94928d;
+  --color-gray-light: rgb(172.6923076923, 171.1538461538, 167.3076923077);
   --color-singleton: rgb(255, 244.8, 178.5);
   --color-mutation-ref: #249eb3;
   --color-mutation-alt: #ff6682;
@@ -874,6 +876,22 @@ table.dataTable, table.dataTable th, table.dataTable td {
   caption-side: bottom;
 }
 
+.external-link-icon {
+  display: inline-block;
+  margin-left: 3px;
+  font-family: "Font Awesome 7 Free";
+  font-size: 10px;
+  color: var(--color-gray-light);
+}
+.external-link-icon::before {
+  content: var(--icon-arrow-up-right-from-square);
+}
+
+a:hover > .external-link-icon,
+a:focus-visible > .external-link-icon {
+  color: var(--color-key);
+}
+
 .frequency-graph {
   font-size: 0;
   white-space: nowrap;
@@ -1480,15 +1498,6 @@ main .variant-links-list .category-value .source-link {
 }
 main .variant-links-list .category-value .source-link:hover {
   color: var(--color-key-dark1);
-}
-main .variant-links-list .category-value .external-link-icon {
-  display: inline-block;
-  margin-left: 3px;
-  font-family: "Font Awesome 7 Free";
-  font-size: 10px;
-}
-main .variant-links-list .category-value .external-link-icon::before {
-  content: var(--icon-arrow-up-right-from-square);
 }
 main .variant-links-list .category-value .not-available {
   color: var(--color-gray);
