@@ -19,8 +19,8 @@ import type {
  */
 interface TranscriptSparqlBinding {
   /**
-   * トランスクリプトを識別するURI（末尾パスセグメントが表示用IDになる）。
-   * リンクURLとしては使わない（stanza側で enst_id を基に組み立てる）。
+   * トランスクリプトを識別するURI（末尾パスセグメントが表示用IDの候補になる）。
+   * enst_id が未束縛の行では、この末尾パスセグメントをIDとして使う。
    */
   transcript?: string;
   /**
@@ -46,7 +46,7 @@ interface TranscriptSparqlBinding {
 
 /** テンプレートが直接描画できるトランスクリプトのリンク情報。 */
 interface EnsemblTranscriptLink {
-  /** URIから取り出したIDラベル文字列 */
+  /** enst_id または transcript から取り出したID文字列（表示ラベルを兼ねる） */
   label: string;
   /** transcript/enst_id がどちらも無い場合はリンクなし（null） */
   url: string | null;
@@ -105,7 +105,7 @@ interface VariantTranscriptParams extends SparqlistStanzaParams {
  * Ensembl Identifiers.org の URI プレフィックス。
  * `enst_id` と連結してトランスクリプトのリンクURLを生成する。
  */
-const ENSEMBL_IDENTIFIER_BASE_URL = "http://identifiers.org/ensembl/";
+const ENSEMBL_IDENTIFIER_BASE_URL = "https://identifiers.org/ensembl/";
 const MANE_URL = "https://www.ncbi.nlm.nih.gov/refseq/MANE/";
 
 /**
@@ -124,32 +124,37 @@ const ENSEMBL_TRANSCRIPT_ID_PATTERN = /^ENST\d/i;
 
 /**
  * URI形式の transcript フィールドと enst_id から、テンプレートが使えるリンク情報を組み立てる。
- * ラベルは transcript の末尾パスセグメントから取り出す。
+ * enst_id と、transcript の末尾パスセグメントは同じトランスクリプトを指す想定だが、
+ * どちらか一方しか束縛されない行があるため、束縛されている方を優先してIDとして採用する
+ * （enst_id を優先。無ければ transcript 由来のラベルを使う）。
+ * ラベルとリンク先の判定は、常にこの単一のIDを基準に行うことで、
+ * 「transcript側だけENST形式なのにNCBIへ誤ってリンクする」「enst_idはあるがラベルが空になる」
+ * といった不整合を防ぐ。
  * sparqlist側はリンクを返さない方針のため、リンクURLは常にstanza側で組み立てる。
  *
- * - enst_id がEnsembl transcript ID(ENST...)の場合: identifiers.org 経由でEnsembl公式ページへ。
- * - それ以外（NM_...など。sparqlist側でtranscriptにEnsembl transcriptが無い行では
- *   enst_id自体が未束縛になるため、ラベルから取り出したIDを使う）: NCBI Nuccoreへ直接リンクする。
+ * - IDがEnsembl transcript ID(ENST...)の場合: identifiers.org 経由でEnsembl公式ページへ。
+ * - それ以外（NM_...など）: NCBI Nuccoreへ直接リンクする。
  */
 const createEnsemblTranscriptLink = (
   binding: TranscriptSparqlBinding,
 ): EnsemblTranscriptLink => {
   // 例: "http://rdf.ebi.ac.uk/resource/ensembl.transcript/ENST00000123456" → "ENST00000123456"
   //     "https://www.ncbi.nlm.nih.gov/nuccore/NM_000690.4" → "NM_000690.4"
-  const label = binding.transcript
+  const transcriptLabel = binding.transcript
     ? binding.transcript.split("/").pop() || ""
     : "";
 
-  const isEnsemblTranscriptId = ENSEMBL_TRANSCRIPT_ID_PATTERN.test(
-    binding.enst_id ?? "",
-  );
-  const url = isEnsemblTranscriptId
-    ? `${ENSEMBL_IDENTIFIER_BASE_URL}${binding.enst_id}`
-    : label
-      ? `${NCBI_NUCCORE_BASE_URL}${label}`
-      : null;
+  const id = binding.enst_id || transcriptLabel;
 
-  return { label, url };
+  if (!id) {
+    return { label: "", url: null };
+  }
+
+  const url = ENSEMBL_TRANSCRIPT_ID_PATTERN.test(id)
+    ? `${ENSEMBL_IDENTIFIER_BASE_URL}${id}`
+    : `${NCBI_NUCCORE_BASE_URL}${id}`;
+
+  return { label: id, url };
 };
 
 const isGrch38 = ({ assembly, sparqlist }: VariantTranscriptParams): boolean =>
