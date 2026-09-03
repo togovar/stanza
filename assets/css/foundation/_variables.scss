@@ -2,7 +2,7 @@
 @use "sass:color";
 
 :host {
-  // stanza固有、TogoVarフロント側の変数一覧には対応するトークンなし(focusのoutline用)
+  // stanza固有、TogoVarフロント側の変数一覧には対応するトークンなし(focus outlineや外部リンクアイコンのhover色などに使用)
   --color-key: #62d5d9;
   --color-key-light: #{color.adjust(#62d5d9, $lightness: 15%)};
   --color-key-dark1: #117f93;

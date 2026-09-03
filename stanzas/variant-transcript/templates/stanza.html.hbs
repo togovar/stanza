@@ -25,7 +25,10 @@
                 href="{{transcript.url}}"
                 target="_blank"
                 rel="noopener noreferrer"
-              >{{transcript.label}}<span class="external-link-icon"></span></a>
+              >{{transcript.label}}<span
+                  class="external-link-icon"
+                  aria-hidden="true"
+                ></span></a>
             {{else}}
               {{transcript.label}}
             {{/if}}
@@ -44,7 +47,10 @@
                 href="{{gene_xref}}"
                 target="_blank"
                 rel="noopener noreferrer"
-              >{{gene_symbol}}<span class="external-link-icon"></span></a>
+              >{{gene_symbol}}<span
+                  class="external-link-icon"
+                  aria-hidden="true"
+                ></span></a>
             {{else}}
               {{gene_symbol}}
             {{/if}}

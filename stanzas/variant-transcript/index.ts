@@ -45,7 +45,7 @@ interface TranscriptSparqlBinding {
 }
 
 /** テンプレートが直接描画できるトランスクリプトのリンク情報。 */
-interface EnsemblTranscriptLink {
+interface TranscriptLink {
   /** enst_id または transcript から取り出したID文字列（表示ラベルを兼ねる） */
   label: string;
   /** transcript/enst_id がどちらも無い場合はリンクなし（null） */
@@ -68,7 +68,7 @@ interface TranscriptDisplayRow
     | "polyphen"
   > {
   /** URIではなくラベルとリンクURLに変換済み */
-  transcript: EnsemblTranscriptLink;
+  transcript: TranscriptLink;
   /** MANE Select transcript の場合にバッジを表示する */
   is_mane_select: boolean;
   mane_url: string;
@@ -135,9 +135,9 @@ const ENSEMBL_TRANSCRIPT_ID_PATTERN = /^ENST\d/i;
  * - IDがEnsembl transcript ID(ENST...)の場合: identifiers.org 経由でEnsembl公式ページへ。
  * - それ以外（NM_...など）: NCBI Nuccoreへ直接リンクする。
  */
-const createEnsemblTranscriptLink = (
+const createTranscriptLink = (
   binding: TranscriptSparqlBinding,
-): EnsemblTranscriptLink => {
+): TranscriptLink => {
   // 例: "http://rdf.ebi.ac.uk/resource/ensembl.transcript/ENST00000123456" → "ENST00000123456"
   //     "https://www.ncbi.nlm.nih.gov/nuccore/NM_000690.4" → "NM_000690.4"
   const transcriptLabel = binding.transcript
@@ -190,7 +190,7 @@ const isManeSelectTranscript = (
  * SPARQL バインディング1行をテンプレート表示行へ変換する。
  *
  * 変換内容:
- * - transcript URI → EnsemblTranscriptLink（ラベル + URL）
+ * - transcript URI → TranscriptLink（ラベル + URL）
  * - consequence_label カンマ区切り文字列 → string 配列
  * - CADD (PHRED score) / AlphaMissense / SIFT / PolyPhen 生スコア
  *   → 表示文字列 + CSS クラス + ラベル
@@ -213,7 +213,7 @@ const convertBindingToDisplayRow = (
     ...sharedFields
   } = binding;
 
-  const transcript = createEnsemblTranscriptLink(binding);
+  const transcript = createTranscriptLink(binding);
   const displayRow: TranscriptDisplayRow = {
     ...sharedFields,
     transcript,
