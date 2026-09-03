@@ -113,17 +113,6 @@ main {
         }
       }
 
-      .external-link-icon {
-        display: inline-block;
-        margin-left: 3px;
-        font-family: "Font Awesome 7 Free";
-        font-size: 10px;
-
-        &::before {
-          content: var(--icon-arrow-up-right-from-square);
-        }
-      }
-
       .not-available {
         color: var(--color-gray);
       }
