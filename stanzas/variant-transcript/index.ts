@@ -18,9 +18,15 @@ import type {
  * URI形式・カンマ区切り文字列・数値スコアが混在しており、表示前に個別変換が必要。
  */
 interface TranscriptSparqlBinding {
-  /** EnsemblトランスクリプトのURI（末尾パスセグメントがIDになる） */
+  /**
+   * トランスクリプトを識別するURI（末尾パスセグメントが表示用IDになる）。
+   * リンクURLとしては使わない（stanza側で enst_id を基に組み立てる）。
+   */
   transcript?: string;
-  /** EnsemblトランスクリプトID。リンクURL生成に使う。transcript URIとは別フィールド。 */
+  /**
+   * Ensembl transcript ID("ENST...")。Ensembl transcriptに紐づく行でのみ束縛される。
+   * それ以外の行（RefSeq側のみに紐づくconsequenceなど）では未束縛になる。
+   */
   enst_id?: string;
   /** VEP由来の MANE 情報。例: "MANE_Select" または ["MANE_Select"] */
   mane?: string | string[];
@@ -42,7 +48,7 @@ interface TranscriptSparqlBinding {
 interface EnsemblTranscriptLink {
   /** URIから取り出したIDラベル文字列 */
   label: string;
-  /** enst_id がない場合はリンクなし（null） */
+  /** transcript/enst_id がどちらも無い場合はリンクなし（null） */
   url: string | null;
 }
 
@@ -102,26 +108,46 @@ interface VariantTranscriptParams extends SparqlistStanzaParams {
 const ENSEMBL_IDENTIFIER_BASE_URL = "http://identifiers.org/ensembl/";
 const MANE_URL = "https://www.ncbi.nlm.nih.gov/refseq/MANE/";
 
+/**
+ * NCBI Nucleotide(Nuccore) の URI プレフィックス。
+ * RefSeq transcript ID(NM_...)と連結してリンクURLを生成する。
+ * identifiers.org の `refseq` 名前空間は NM_... を誤って protein DB へ解決するため使わない。
+ */
+const NCBI_NUCCORE_BASE_URL = "https://www.ncbi.nlm.nih.gov/nuccore/";
+
+/** `enst_id` がEnsembl transcript ID(ENST...)かどうかの判定に使う。 */
+const ENSEMBL_TRANSCRIPT_ID_PATTERN = /^ENST\d/i;
+
 // ============================================================
 // データ変換（バインディング → 表示行）
 // ============================================================
 
 /**
  * URI形式の transcript フィールドと enst_id から、テンプレートが使えるリンク情報を組み立てる。
- * URI の末尾パスセグメントをラベルとして使い、enst_id がない場合は url を null にする。
+ * ラベルは transcript の末尾パスセグメントから取り出す。
+ * sparqlist側はリンクを返さない方針のため、リンクURLは常にstanza側で組み立てる。
+ *
+ * - enst_id がEnsembl transcript ID(ENST...)の場合: identifiers.org 経由でEnsembl公式ページへ。
+ * - それ以外（NM_...など。sparqlist側でtranscriptにEnsembl transcriptが無い行では
+ *   enst_id自体が未束縛になるため、ラベルから取り出したIDを使う）: NCBI Nuccoreへ直接リンクする。
  */
 const createEnsemblTranscriptLink = (
   binding: TranscriptSparqlBinding,
 ): EnsemblTranscriptLink => {
-  // "http://identifiers.org/ensembl/ENST00000123456" → "ENST00000123456"
+  // 例: "http://rdf.ebi.ac.uk/resource/ensembl.transcript/ENST00000123456" → "ENST00000123456"
+  //     "https://www.ncbi.nlm.nih.gov/nuccore/NM_000690.4" → "NM_000690.4"
   const label = binding.transcript
     ? binding.transcript.split("/").pop() || ""
     : "";
 
-  // enst_id が欠落しているバインディングではリンクを表示しない
-  const url = binding.enst_id
+  const isEnsemblTranscriptId = ENSEMBL_TRANSCRIPT_ID_PATTERN.test(
+    binding.enst_id ?? "",
+  );
+  const url = isEnsemblTranscriptId
     ? `${ENSEMBL_IDENTIFIER_BASE_URL}${binding.enst_id}`
-    : null;
+    : label
+      ? `${NCBI_NUCCORE_BASE_URL}${label}`
+      : null;
 
   return { label, url };
 };

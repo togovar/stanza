@@ -3,6 +3,7 @@
 
 :host {
   // stanza固有、TogoVarフロント側の変数一覧には対応するトークンなし(focusのoutline用)
+  --color-key: #62d5d9;
   --color-key-light: #{color.adjust(#62d5d9, $lightness: 15%)};
   --color-key-dark1: #117f93;
   --color-key-dark2: #0f6272;
@@ -10,6 +11,7 @@
   // color: base
   --color-black: #444;
   --color-gray: #94928d;
+  --color-gray-light: #{color.adjust(#94928d, $lightness: 10%)};
 
   // color: selection / states
   --color-singleton: #{color.adjust(#fd0, $lightness: 35%)};

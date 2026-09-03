@@ -1,0 +1,16 @@
+// 外部リンク(別タブで開くリンク)に添える矢印アイコン。
+.external-link-icon {
+  display: inline-block;
+  margin-left: 3px;
+  font-family: "Font Awesome 7 Free";
+  font-size: 10px;
+  color: var(--color-gray-light);
+
+  &::before {
+    content: var(--icon-arrow-up-right-from-square);
+  }
+}
+
+a:hover > .external-link-icon {
+  color: var(--color-key);
+}

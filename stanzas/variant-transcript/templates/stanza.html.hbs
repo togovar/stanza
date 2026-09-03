@@ -21,7 +21,11 @@
         <tr>
           <td>
             {{#if transcript.url}}
-              <a href="{{transcript.url}}">{{transcript.label}}</a>
+              <a
+                href="{{transcript.url}}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >{{transcript.label}}<span class="external-link-icon"></span></a>
             {{else}}
               {{transcript.label}}
             {{/if}}
@@ -34,7 +38,17 @@
               >MANE</a>
             {{/if}}
           </td>
-          <td><a href="{{gene_xref}}">{{gene_symbol}}</a></td>
+          <td>
+            {{#if gene_xref}}
+              <a
+                href="{{gene_xref}}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >{{gene_symbol}}<span class="external-link-icon"></span></a>
+            {{else}}
+              {{gene_symbol}}
+            {{/if}}
+          </td>
           <td>
             <ul class="no-bullet">
               {{#each consequence_label}}
