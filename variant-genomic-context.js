@@ -56,7 +56,7 @@ const buildJbrowseSrc = (params, { chr, from, to, reference, alternate }) => {
     const range = Number.isSafeInteger(parsedRange) && parsedRange >= 0 ? parsedRange : 50;
     const baseUrl = params.jbrowse || "/jbrowse";
     const start = Math.max(from - range, 1);
-    return baseUrl.concat("/index.html?loc=", encodeURIComponent(`${chr}:${start}..${to + range}`), "&highlight=", encodeURIComponent(`chr${chr}:${from}..${to}`), "&highlightVariant=", encodeURIComponent(`${chr}-${from}-${reference}-${alternate}`));
+    return baseUrl.concat("/index.html?loc=", encodeURIComponent(`${chr}:${start}..${to + range}`), "&highlight=", encodeURIComponent(`chr${chr}:${from}..${to}`), "&variant=", encodeURIComponent(`${chr}-${from}-${reference}-${alternate}`));
 };
 class VariantGenomicContext extends Stanza {
     /**
