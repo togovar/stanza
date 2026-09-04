@@ -29,12 +29,15 @@ interface VariantSummaryBinding {
   reference?: string;
   position?: string;
   ref?: string;
+  alt?: string;
 }
 
 interface GenomicPosition {
   chr: string;
   from: number;
   to: number;
+  reference: string;
+  alternate: string;
 }
 
 interface JbrowseDisplayParams {
@@ -67,6 +70,8 @@ const buildGenomicPositionFromBinding = (
     chr,
     from,
     to: from + Math.max(binding.ref.length - 1, 0),
+    reference: binding.ref,
+    alternate: binding.alt,
   };
 };
 
@@ -92,6 +97,8 @@ const buildGenomicPositionFromVariant = (
     chr,
     from,
     to: from + Math.max(parsedVariant.reference.length - 1, 0),
+    reference: parsedVariant.reference,
+    alternate: parsedVariant.alternate,
   };
 };
 
@@ -101,7 +108,7 @@ const buildGenomicPositionFromVariant = (
  */
 const buildJbrowseSrc = (
   params: VariantGenomicContextParams,
-  { chr, from, to }: GenomicPosition,
+  { chr, from, to, reference, alternate }: GenomicPosition,
 ): string => {
   const parsedRange = Number(params.margin);
   const range =
@@ -114,6 +121,8 @@ const buildJbrowseSrc = (
     encodeURIComponent(`${chr}:${start}..${to + range}`),
     "&highlight=",
     encodeURIComponent(`chr${chr}:${from}..${to}`),
+    "&highlightVariant=",
+    encodeURIComponent(`${chr}-${from}-${reference}-${alternate}`),
   );
 };
 
