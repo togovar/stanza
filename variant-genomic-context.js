@@ -1,6 +1,6 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { r as referenceToChrAssembly } from './display-3a18fc32.js';
-import { a as buildIdentifierQueryString, f as fetchSparqlBindings, d as describeVariantIdentifier } from './sparqlist-47ca0758.js';
+import { a as buildIdentifierQueryString, f as fetchSparqlBindings, d as describeVariantIdentifier } from './sparqlist-0870b0c9.js';
 import { p as parseVariantParam, a as assertValidVariantIdentifier, n as normalizeChromosome } from './variant-0dd96a22.js';
 import './constants-c005a6eb.js';
 import './frequency-9d3406e7.js';

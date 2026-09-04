@@ -38,11 +38,15 @@ const describeVariantIdentifier = ({ tgv_id, variant, }) => tgv_id || variant ||
  * SPARQList エンドポイントから SPARQL バインディングを取得し、
  * `{ value: "..." }` ラッパーを剥がしたプレーンオブジェクト配列として返す。
  * HTTP エラーは Error を throw し、呼び出し元の render() でまとめてハンドリングする。
+ *
+ * Accept は `application/sparql-results+json` を指定する。`application/json` だと
+ * ALTが長い挿入変異など一部のクエリでSPARQList側が空の bindings を返すことがあるため
+ * （レスポンスの形式自体は同じSPARQL結果JSON）、標準のMIMEタイプで明示的にリクエストする。
  */
 const fetchSparqlBindings = async (apiUrl) => {
     const response = await fetch(apiUrl, {
         method: "GET",
-        headers: { Accept: "application/json" },
+        headers: { Accept: "application/sparql-results+json" },
     });
     if (!response.ok) {
         throw new Error(`${apiUrl} returns status ${response.status}`);
@@ -65,4 +69,4 @@ const requireFirstBinding = (bindings, notFoundMessage) => {
 };
 
 export { buildIdentifierQueryString as a, buildSparqlistApiUrl as b, describeVariantIdentifier as d, fetchSparqlBindings as f, requireFirstBinding as r };
-//# sourceMappingURL=sparqlist-47ca0758.js.map
+//# sourceMappingURL=sparqlist-0870b0c9.js.map

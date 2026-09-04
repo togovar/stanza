@@ -2,7 +2,7 @@ import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { R as ROBOTO_CONDENSED_CSS_URL, C as CLINICAL_SIGNIFICANCE } from './constants-c005a6eb.js';
 import { e as escapeHtml } from './html-18194d0e.js';
 import { r as rowSpanize } from './table-1f1dea97.js';
-import { d as describeVariantIdentifier } from './sparqlist-47ca0758.js';
+import { d as describeVariantIdentifier } from './sparqlist-0870b0c9.js';
 import { a as fetchVariantDataById, b as fetchVariantDataByLocation, r as requireVariantData } from './togovar-variant-0e8288d9.js';
 import { p as parseVariantParam, a as assertValidVariantIdentifier } from './variant-0dd96a22.js';
 import './utils-97dc77a0.js';

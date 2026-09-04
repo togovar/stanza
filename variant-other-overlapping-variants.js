@@ -1,7 +1,7 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { t as transformRecord } from './display-3a18fc32.js';
 import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-c005a6eb.js';
-import { a as buildIdentifierQueryString } from './sparqlist-47ca0758.js';
+import { a as buildIdentifierQueryString } from './sparqlist-0870b0c9.js';
 import { p as parseVariantParam, n as normalizeChromosome } from './variant-0dd96a22.js';
 import './frequency-9d3406e7.js';
 import './utils-97dc77a0.js';

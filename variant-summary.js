@@ -1,7 +1,7 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { r as referenceToChrAssembly, a as refAlt } from './display-3a18fc32.js';
 import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-c005a6eb.js';
-import { b as buildSparqlistApiUrl, f as fetchSparqlBindings } from './sparqlist-47ca0758.js';
+import { b as buildSparqlistApiUrl, f as fetchSparqlBindings } from './sparqlist-0870b0c9.js';
 import './frequency-9d3406e7.js';
 import './utils-97dc77a0.js';
 

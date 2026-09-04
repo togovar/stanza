@@ -1,6 +1,6 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { R as ROBOTO_CONDENSED_CSS_URL, a as REVIEW_STATUS, C as CLINICAL_SIGNIFICANCE } from './constants-c005a6eb.js';
-import { b as buildSparqlistApiUrl, f as fetchSparqlBindings } from './sparqlist-47ca0758.js';
+import { b as buildSparqlistApiUrl, f as fetchSparqlBindings } from './sparqlist-0870b0c9.js';
 import { r as rowSpanize } from './table-1f1dea97.js';
 import './utils-97dc77a0.js';
 
