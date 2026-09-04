@@ -58,11 +58,15 @@ export const describeVariantIdentifier = ({
  * SPARQList エンドポイントから SPARQL バインディングを取得し、
  * `{ value: "..." }` ラッパーを剥がしたプレーンオブジェクト配列として返す。
  * HTTP エラーは Error を throw し、呼び出し元の render() でまとめてハンドリングする。
+ *
+ * Accept は `application/sparql-results+json` を指定する。`application/json` だと
+ * ALTが長い挿入変異など一部のクエリでSPARQList側が空の bindings を返すことがあるため
+ * （レスポンスの形式自体は同じSPARQL結果JSON）、標準のMIMEタイプで明示的にリクエストする。
  */
 export const fetchSparqlBindings = async <T>(apiUrl: string): Promise<T[]> => {
   const response = await fetch(apiUrl, {
     method: "GET",
-    headers: { Accept: "application/json" },
+    headers: { Accept: "application/sparql-results+json" },
   });
 
   if (!response.ok) {
