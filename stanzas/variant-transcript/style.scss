@@ -2,6 +2,21 @@
 
 main {
   max-height: calc(var(--togostanza-canvas-height) * 1px);
+  background-color: white;
+
+  .table {
+    position: relative;
+    border-spacing: 0;
+    border-collapse: separate;
+
+    > thead > tr > th {
+      position: sticky;
+      top: 0;
+      z-index: var(--z-index-sticky-table-header);
+      background-color: white;
+      border-bottom: var(--border-table-bottom);
+    }
+  }
 
   .table > tbody > tr > td {
     height: 26px;
