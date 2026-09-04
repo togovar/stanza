@@ -1408,6 +1408,19 @@ togostanza--menu {
 
 main {
   max-height: calc(var(--togostanza-canvas-height) * 1px);
+  background-color: white;
+}
+main .table {
+  position: relative;
+  border-spacing: 0;
+  border-collapse: separate;
+}
+main .table > thead > tr > th {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-index-sticky-table-header);
+  background-color: white;
+  border-bottom: var(--border-table-bottom);
 }
 main .table > tbody > tr > td {
   height: 26px;
