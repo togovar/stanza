@@ -121,7 +121,7 @@ const buildJbrowseSrc = (
     encodeURIComponent(`${chr}:${start}..${to + range}`),
     "&highlight=",
     encodeURIComponent(`chr${chr}:${from}..${to}`),
-    "&highlightVariant=",
+    "&variant=",
     encodeURIComponent(`${chr}-${from}-${reference}-${alternate}`),
   );
 };
