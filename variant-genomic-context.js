@@ -21,6 +21,8 @@ const buildGenomicPositionFromBinding = (binding) => {
         chr,
         from,
         to: from + Math.max(binding.ref.length - 1, 0),
+        reference: binding.ref,
+        alternate: binding.alt,
     };
 };
 /**
@@ -41,18 +43,20 @@ const buildGenomicPositionFromVariant = (parsedVariant) => {
         chr,
         from,
         to: from + Math.max(parsedVariant.reference.length - 1, 0),
+        reference: parsedVariant.reference,
+        alternate: parsedVariant.alternate,
     };
 };
 /**
  * JBrowse iframe の src を組み立てる。
  * loc は前後 margin を含む表示範囲、highlight は実際のvariant範囲として分けて渡す。
  */
-const buildJbrowseSrc = (params, { chr, from, to }) => {
+const buildJbrowseSrc = (params, { chr, from, to, reference, alternate }) => {
     const parsedRange = Number(params.margin);
     const range = Number.isSafeInteger(parsedRange) && parsedRange >= 0 ? parsedRange : 50;
     const baseUrl = params.jbrowse || "/jbrowse";
     const start = Math.max(from - range, 1);
-    return baseUrl.concat("/index.html?loc=", encodeURIComponent(`${chr}:${start}..${to + range}`), "&highlight=", encodeURIComponent(`chr${chr}:${from}..${to}`));
+    return baseUrl.concat("/index.html?loc=", encodeURIComponent(`${chr}:${start}..${to + range}`), "&highlight=", encodeURIComponent(`chr${chr}:${from}..${to}`), "&highlightVariant=", encodeURIComponent(`${chr}-${from}-${reference}-${alternate}`));
 };
 class VariantGenomicContext extends Stanza {
     /**
