@@ -6,6 +6,7 @@ import {
   buildSparqlistApiUrl,
   fetchSparqlBindings,
 } from "@/lib/sparqlist";
+import type { NumericInput } from "@/lib/frequency";
 import type {
   SparqlistStanzaParams,
   SparqlistTemplateRenderParams,
@@ -30,6 +31,8 @@ interface VariantSummarySparqlBinding {
   hgnc?: string; // "http://identifiers.org/hgnc/{id}" 形式のURI。リンクに直接使える。
   symbol?: string; // HGNC 承認シンボル（例: "PLEKHG5"）
   approved_name?: string; // HGNC 承認名（例: "pleckstrin homology and RhoGEF..."）
+  /** バリアント単位のCADD PHRED score。annotationが無い場合は未束縛。 */
+  cadd_phred?: NumericInput;
 }
 
 /**
@@ -40,7 +43,7 @@ interface VariantSummarySparqlBinding {
  */
 interface VariantSummaryDisplayData extends Omit<
   VariantSummarySparqlBinding,
-  "reference" | "gene" | "hgnc" | "symbol" | "approved_name"
+  "reference" | "gene" | "hgnc" | "symbol" | "approved_name" | "cadd_phred"
 > {
   chr?: string;
   assembly?: string;
@@ -49,6 +52,10 @@ interface VariantSummaryDisplayData extends Omit<
   alt?: string;
   ref_length?: number;
   alt_length?: number;
+  /** display.caddPhred() が展開する表示用フィールド群 */
+  cadd_phred?: string;
+  cadd_phred_class?: string;
+  cadd_phred_label?: string;
 }
 
 /**
@@ -79,11 +86,12 @@ interface TemplateRenderParams
  * 変換内容:
  * - reference URI → chr / assembly の分離
  * - ref / alt → display.refAlt() で表示文字列・長さフィールドに展開
+ * - cadd_phred 生スコア → 表示文字列 + CSS クラス + ラベル
  */
 const convertSummaryBindingToDisplayData = (
   binding: VariantSummarySparqlBinding,
 ): VariantSummaryDisplayData => {
-  const { reference, ...sharedFields } = binding;
+  const { reference, cadd_phred: caddPhredScore, ...sharedFields } = binding;
 
   const displayData: VariantSummaryDisplayData = {
     ...sharedFields,
@@ -92,6 +100,7 @@ const convertSummaryBindingToDisplayData = (
 
   // ref / alt の長さが4文字を超える場合は "ACGT..." に省略する（display.refAlt の仕様）
   Object.assign(displayData, display.refAlt(binding.ref, binding.alt));
+  Object.assign(displayData, display.caddPhred(caddPhredScore));
 
   return displayData;
 };
