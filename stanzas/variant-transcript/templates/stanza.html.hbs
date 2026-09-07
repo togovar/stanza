@@ -9,7 +9,6 @@
         <th>Consequence type</th>
         <th>HGVS(cDNA)</th>
         <th>HGVS(Amino acid seq.)</th>
-        <th>CADD (PHRED score)</th>
         <th>AlphaMissense</th>
         <th>SIFT</th>
         <th>PolyPhen</th>
@@ -64,12 +63,6 @@
           </td>
           <td>{{hgvs_c}}</td>
           <td>{{hgvs_p}}</td>
-          <td class="cadd">
-            <span
-              class="variant-function"
-              data-function="{{cadd_phred_class}}"
-            >{{cadd_phred}}</span>
-          </td>
           <td class="alphamissense">
             <span
               class="variant-function"
@@ -94,7 +87,7 @@
         </tr>
       {{else}}
         <tr>
-          <td colspan="9" class="text-center">No data</td>
+          <td colspan="8" class="text-center">No data</td>
         </tr>
       {{/each}}
     </tbody>

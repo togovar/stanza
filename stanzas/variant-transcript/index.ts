@@ -1,6 +1,6 @@
 import Stanza from "togostanza/stanza";
 
-import { alphaMissense, caddPhred, polyphen, sift } from "@/lib/display";
+import { alphaMissense, polyphen, sift } from "@/lib/display";
 import { ROBOTO_CONDENSED_CSS_URL } from "@/lib/constants";
 import { buildSparqlistApiUrl, fetchSparqlBindings } from "@/lib/sparqlist";
 import type { NumericInput } from "@/lib/frequency";
@@ -38,7 +38,6 @@ interface TranscriptSparqlBinding {
   consequence_label?: string;
   hgvs_c?: string;
   hgvs_p?: string;
-  cadd_phred?: NumericInput;
   alpha_missense?: NumericInput;
   sift?: NumericInput;
   polyphen?: NumericInput;
@@ -62,7 +61,6 @@ interface TranscriptDisplayRow
     TranscriptSparqlBinding,
     | "transcript"
     | "consequence_label"
-    | "cadd_phred"
     | "alpha_missense"
     | "sift"
     | "polyphen"
@@ -74,9 +72,6 @@ interface TranscriptDisplayRow
   mane_url: string;
   /** カンマ区切り文字列から配列に変換済み（{{#each}} で扱いやすくするため） */
   consequence_label: string[];
-  cadd_phred?: string;
-  cadd_phred_class?: string;
-  cadd_phred_label?: string;
   alpha_missense?: string;
   alpha_missense_class?: string;
   alpha_missense_label?: string;
@@ -192,8 +187,7 @@ const isManeSelectTranscript = (
  * 変換内容:
  * - transcript URI → TranscriptLink（ラベル + URL）
  * - consequence_label カンマ区切り文字列 → string 配列
- * - CADD (PHRED score) / AlphaMissense / SIFT / PolyPhen 生スコア
- *   → 表示文字列 + CSS クラス + ラベル
+ * - AlphaMissense / SIFT / PolyPhen 生スコア → 表示文字列 + CSS クラス + ラベル
  *
  * スコアの変換ロジックは lib/display に集約されているため、ここでは変換の順番と
  * Object.assign によるフィールド合成だけを担う。
@@ -206,7 +200,6 @@ const convertBindingToDisplayRow = (
   const {
     transcript: _transcriptUri,
     consequence_label: rawConsequenceLabel,
-    cadd_phred: caddPhredScore,
     alpha_missense: alphaMissenseScore,
     sift: siftScore,
     polyphen: polyphenScore,
@@ -225,7 +218,6 @@ const convertBindingToDisplayRow = (
   };
 
   // lib/display の共通関数でスコアを表示用フィールドへ展開する
-  Object.assign(displayRow, caddPhred(caddPhredScore));
   Object.assign(displayRow, alphaMissense(alphaMissenseScore));
   Object.assign(displayRow, sift(siftScore));
   Object.assign(displayRow, polyphen(polyphenScore));
