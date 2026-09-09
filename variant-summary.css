@@ -1444,6 +1444,13 @@ main .variant-summary-list dd .chromosome {
 main .variant-summary-list dd:nth-of-type(odd) {
   border-right: 1px solid var(--color-table-border);
 }
+main .variant-summary-list .cadd-value .not-available {
+  font-weight: normal;
+  color: var(--color-gray);
+}
+main .variant-summary-list .cadd-filler {
+  grid-column: 3/-1;
+}
 @container (width <= 580px) {
   main .variant-summary-list {
     grid-template-columns: 130px minmax(0, 1fr);
@@ -1454,5 +1461,8 @@ main .variant-summary-list dd:nth-of-type(odd) {
   }
   main .variant-summary-list dd:nth-of-type(odd) {
     border-right: none;
+  }
+  main .variant-summary-list .cadd-filler {
+    display: none;
   }
 }

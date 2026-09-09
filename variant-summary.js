@@ -1,5 +1,5 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
-import { r as referenceToChrAssembly, a as refAlt } from './display-3a18fc32.js';
+import { r as referenceToChrAssembly, a as refAlt, c as caddPhred } from './display-3a18fc32.js';
 import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-c005a6eb.js';
 import { b as buildSparqlistApiUrl, f as fetchSparqlBindings } from './sparqlist-0870b0c9.js';
 import './frequency-9d3406e7.js';
@@ -14,15 +14,17 @@ import './utils-97dc77a0.js';
  * 変換内容:
  * - reference URI → chr / assembly の分離
  * - ref / alt → display.refAlt() で表示文字列・長さフィールドに展開
+ * - cadd_phred 生スコア → 表示文字列 + CSS クラス + ラベル
  */
 const convertSummaryBindingToDisplayData = (binding) => {
-    const { reference, ...sharedFields } = binding;
+    const { reference, cadd_phred: caddPhredScore, ...sharedFields } = binding;
     const displayData = {
         ...sharedFields,
         ...referenceToChrAssembly(reference),
     };
     // ref / alt の長さが4文字を超える場合は "ACGT..." に省略する（display.refAlt の仕様）
     Object.assign(displayData, refAlt(binding.ref, binding.alt));
+    Object.assign(displayData, caddPhred(caddPhredScore));
     return displayData;
 };
 /**
@@ -104,7 +106,7 @@ var metadata = {
 	"stanza:contributor": [
 ],
 	"stanza:created": "2019-04-22",
-	"stanza:updated": "2026-07-27",
+	"stanza:updated": "2026-09-07",
 	"stanza:parameter": [
 	{
 		"stanza:key": "tgv_id",
@@ -156,6 +158,8 @@ var templates = [
     + ((stack1 = lookupProperty(helpers,"with").call(alias1,(depth0 != null ? lookupProperty(depth0,"result") : depth0),{"name":"with","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":16,"column":8},"end":{"line":21,"column":17}}})) != null ? stack1 : "")
     + "      </dd>\n\n"
     + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"gene") : depth0),{"name":"if","hash":{},"fn":container.program(4, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":24,"column":6},"end":{"line":36,"column":13}}})) != null ? stack1 : "")
+    + "\n"
+    + ((stack1 = lookupProperty(helpers,"with").call(alias1,(depth0 != null ? lookupProperty(depth0,"result") : depth0),{"name":"with","hash":{},"fn":container.program(7, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":38,"column":6},"end":{"line":51,"column":15}}})) != null ? stack1 : "")
     + "    </dl>\n  </div>\n";
 },"2":function(container,depth0,helpers,partials,data) {
     var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=container.hooks.helperMissing, alias3="function", alias4=container.escapeExpression, lookupProperty = container.lookupProperty || function(parent, propertyName) {
@@ -226,6 +230,32 @@ var templates = [
   return "            "
     + container.escapeExpression(container.lambda(((stack1 = (depth0 != null ? lookupProperty(depth0,"gene") : depth0)) != null ? lookupProperty(stack1,"symbol") : stack1), depth0))
     + "\n";
+},"7":function(container,depth0,helpers,partials,data) {
+    var stack1, lookupProperty = container.lookupProperty || function(parent, propertyName) {
+        if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
+          return parent[propertyName];
+        }
+        return undefined
+    };
+
+  return "        <dt>CADD (PHRED score)</dt>\n        <dd class=\"cadd-value\">\n"
+    + ((stack1 = lookupProperty(helpers,"if").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"cadd_phred") : depth0),{"name":"if","hash":{},"fn":container.program(8, data, 0),"inverse":container.program(9, data, 0),"data":data,"loc":{"start":{"line":41,"column":10},"end":{"line":48,"column":17}}})) != null ? stack1 : "")
+    + "        </dd>\n        <dd class=\"cadd-filler\" aria-hidden=\"true\"></dd>\n";
+},"8":function(container,depth0,helpers,partials,data) {
+    var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=container.hooks.helperMissing, alias3="function", alias4=container.escapeExpression, lookupProperty = container.lookupProperty || function(parent, propertyName) {
+        if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
+          return parent[propertyName];
+        }
+        return undefined
+    };
+
+  return "            <span\n              class=\"variant-function\"\n              data-function=\""
+    + alias4(((helper = (helper = lookupProperty(helpers,"cadd_phred_class") || (depth0 != null ? lookupProperty(depth0,"cadd_phred_class") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"cadd_phred_class","hash":{},"data":data,"loc":{"start":{"line":44,"column":29},"end":{"line":44,"column":49}}}) : helper)))
+    + "\"\n            >"
+    + alias4(((helper = (helper = lookupProperty(helpers,"cadd_phred") || (depth0 != null ? lookupProperty(depth0,"cadd_phred") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"cadd_phred","hash":{},"data":data,"loc":{"start":{"line":45,"column":13},"end":{"line":45,"column":27}}}) : helper)))
+    + "</span>\n";
+},"9":function(container,depth0,helpers,partials,data) {
+    return "            <span class=\"not-available\">N/A</span>\n";
 },"compiler":[8,">= 4.3.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
@@ -234,7 +264,7 @@ var templates = [
         return undefined
     };
 
-  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"error") : depth0),{"name":"with","hash":{},"fn":container.program(0, data, 0),"inverse":container.program(1, data, 0),"data":data,"loc":{"start":{"line":1,"column":0},"end":{"line":39,"column":9}}})) != null ? stack1 : "");
+  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"error") : depth0),{"name":"with","hash":{},"fn":container.program(0, data, 0),"inverse":container.program(1, data, 0),"data":data,"loc":{"start":{"line":1,"column":0},"end":{"line":54,"column":9}}})) != null ? stack1 : "");
 },"useData":true}]
 ];
 
