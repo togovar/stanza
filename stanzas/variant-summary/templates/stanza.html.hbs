@@ -34,6 +34,21 @@
         <dt>HGNC/Approved name</dt>
         <dd>{{gene.approved_name}}</dd>
       {{/if}}
+
+      {{#with result}}
+        <dt>CADD (PHRED score)</dt>
+        <dd class="cadd-value">
+          {{#if cadd_phred}}
+            <span
+              class="variant-function"
+              data-function="{{cadd_phred_class}}"
+            >{{cadd_phred}}</span>
+          {{else}}
+            <span class="not-available">N/A</span>
+          {{/if}}
+        </dd>
+        <dd class="cadd-filler" aria-hidden="true"></dd>
+      {{/with}}
     </dl>
   </div>
 {{/with}}
