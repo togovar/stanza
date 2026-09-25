@@ -341,6 +341,17 @@ export default class VariantFrequency extends Stanza {
       // 原因が異なるため、メッセージを分けて「別のアリルかもしれない」という
       // 誤解を招かないようにする。
       const candidateCount = responseDatasets.data.length;
+
+      // 候補が0件の場合、matchedVariantDataがundefinedのままテーブルも空になり、
+      // 何も表示されない状態になってしまう。バリアント自体は解決できていても
+      // 頻度インデックス側にレコードが無いだけの場合があるため、
+      // 「見つからない」ではなく「頻度データが無い」旨を明示するエラーにする。
+      if (candidateCount === 0) {
+        throw new Error(
+          `No frequency data found for ${describeVariantIdentifier(params)}`,
+        );
+      }
+
       const hasMultipleCandidateAmbiguity =
         isExactMatchApplicable && !exactMatchVariantData && candidateCount > 1;
       const hasSingleCandidateMismatch =
