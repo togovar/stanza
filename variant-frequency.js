@@ -3,7 +3,7 @@ import { h as hierarchy } from './transform-ddf65f5a.js';
 import { R as ROBOTO_CONDENSED_CSS_URL, F as FONTAWESOME_FREE_SOLID_CSS_URL, D as DATASETS } from './constants-c005a6eb.js';
 import { b as buildFrequencyMarkerState, a as buildFrequencyDisplay, f as formatLocaleInteger } from './frequency-9d3406e7.js';
 import { d as describeVariantIdentifier } from './sparqlist-0870b0c9.js';
-import { n as normalizeTogoVarApiBaseUrl, f as fetchVariantDataByIdentifier } from './togovar-variant-0e8288d9.js';
+import { n as normalizeTogoVarApiBaseUrl, f as fetchVariantDataByIdentifier, s as sameVariantAllele } from './togovar-variant-a2898d42.js';
 import { p as parseVariantParam, a as assertValidVariantIdentifier } from './variant-0dd96a22.js';
 import './utils-97dc77a0.js';
 
@@ -9644,8 +9644,35 @@ class VariantFrequency extends Stanza {
             else {
                 responseDatasets = { data: [] };
             }
+            // rsIDで検索すると、同じrsIDが複数アリル(例: 1-10141-C-A と 1-10141-C-G)に
+            // 付与されているケースで複数件返ってくることがある。parsedVariantがあれば
+            // Ref/Altが完全一致するレコードを優先し、無ければ従来通り先頭を採用する。
+            // tgv_idが指定されている場合は、togovar-variant.tsのrequireVariantDataと同じく
+            // tgv_id解決結果をRef/Altの一致有無に関わらず優先するため、この判定自体を行わない
+            // (variantパラメータが併記されていても、古い/無関係な値であり得るため)。
+            const isExactMatchApplicable = !tgv_id && Boolean(parsedVariant);
+            const exactMatchVariantData = !tgv_id && parsedVariant
+                ? responseDatasets.data.find((data) => sameVariantAllele(data, parsedVariant))
+                : undefined;
+            // Ref/Alt表記のゆれなどで完全一致が見つからず先頭にフォールバックした場合、
+            // 誤ったバリアントのデータを黙って表示してしまう恐れがあるため、
+            // コンソールへの記録に加えて画面上にも警告バナーを出す。
+            // 候補が2件以上ある場合(=複数アリルの中から選べなかった)と、
+            // 候補が1件しかない場合(=その唯一の候補がたまたまRef/Alt不一致だった)とでは
+            // 原因が異なるため、メッセージを分けて「別のアリルかもしれない」という
+            // 誤解を招かないようにする。
+            const candidateCount = responseDatasets.data.length;
+            const hasMultipleCandidateAmbiguity = isExactMatchApplicable && !exactMatchVariantData && candidateCount > 1;
+            const hasSingleCandidateMismatch = isExactMatchApplicable && !exactMatchVariantData && candidateCount === 1;
+            if (hasMultipleCandidateAmbiguity) {
+                console.warn(`variant-frequency: no exact Ref/Alt match for "${params.variant}" among ${candidateCount} candidates returned by /search; falling back to the first result, which may correspond to a different allele.`);
+            }
+            else if (hasSingleCandidateMismatch) {
+                console.warn(`variant-frequency: the single record returned by /search for "${params.variant}" does not have an exact Ref/Alt match; showing it anyway.`);
+            }
+            const matchedVariantData = exactMatchVariantData ?? responseDatasets.data[0];
             // APIレスポンスからバリアントの頻度データ配列を取り出す
-            const frequenciesDatasets = responseDatasets.data[0]?.frequencies;
+            const frequenciesDatasets = matchedVariantData?.frequencies;
             // ----------------------------------------------------------
             // searchData() — ツリー構造を再帰的に走査して行データを構築
             // ----------------------------------------------------------
@@ -9795,7 +9822,7 @@ class VariantFrequency extends Stanza {
             // has_child フラグを更新（開閉トグルの制御に使用）
             updateHasChild(preparedDatasets, resultObject);
             // ダウンロード用データを保存
-            this.data = this.createDownloadData(resultObject, responseDatasets.data[0], hasHemizygote);
+            this.data = this.createDownloadData(resultObject, matchedVariantData, hasHemizygote);
             // HTMLテンプレートに渡してレンダリング
             this.cleanupRenderedPopovers();
             this.renderTemplate({
@@ -9804,6 +9831,16 @@ class VariantFrequency extends Stanza {
                     params: this.params,
                     result: { resultObject },
                     hasHemizygote,
+                    ...(hasMultipleCandidateAmbiguity && {
+                        warning: {
+                            message: `Requested variant "${params.variant}" could not be matched exactly to a Ref/Alt returned by the search; showing data for the first candidate instead, which may correspond to a different allele.`,
+                        },
+                    }),
+                    ...(hasSingleCandidateMismatch && {
+                        warning: {
+                            message: `The record returned for "${params.variant}" does not have an exact Ref/Alt match; showing it anyway.`,
+                        },
+                    }),
                 },
             });
             this.cleanupFrequencyPopovers = [
@@ -10139,7 +10176,7 @@ var metadata = {
 	{
 		"stanza:key": "no_data_message",
 		"stanza:example": "No data found.",
-		"stanza:description": "Message displayed when there are zero data"
+		"stanza:description": "Message displayed when there are zero data. Defaults to \"No data\" when not set."
 	},
 	{
 		"stanza:key": "check_local_auth_status",
@@ -10165,15 +10202,27 @@ var templates = [
     + container.escapeExpression(((helper = (helper = lookupProperty(helpers,"message") || (depth0 != null ? lookupProperty(depth0,"message") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : (container.nullContext || {}),{"name":"message","hash":{},"data":data,"loc":{"start":{"line":2,"column":34},"end":{"line":2,"column":45}}}) : helper)))
     + "</div>\n";
 },"1":function(container,depth0,helpers,partials,data,blockParams,depths) {
-    var stack1, lookupProperty = container.lookupProperty || function(parent, propertyName) {
+    var stack1, alias1=depth0 != null ? depth0 : (container.nullContext || {}), lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
         }
         return undefined
     };
 
-  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"result") : depth0),{"name":"with","hash":{},"fn":container.program(2, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":4,"column":2},"end":{"line":211,"column":11}}})) != null ? stack1 : "");
-},"2":function(container,depth0,helpers,partials,data,blockParams,depths) {
+  return ((stack1 = lookupProperty(helpers,"with").call(alias1,(depth0 != null ? lookupProperty(depth0,"warning") : depth0),{"name":"with","hash":{},"fn":container.program(2, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":4,"column":2},"end":{"line":6,"column":11}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"with").call(alias1,(depth0 != null ? lookupProperty(depth0,"result") : depth0),{"name":"with","hash":{},"fn":container.program(3, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":7,"column":2},"end":{"line":214,"column":11}}})) != null ? stack1 : "");
+},"2":function(container,depth0,helpers,partials,data) {
+    var helper, lookupProperty = container.lookupProperty || function(parent, propertyName) {
+        if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
+          return parent[propertyName];
+        }
+        return undefined
+    };
+
+  return "    <div class='alert alert-warning'>"
+    + container.escapeExpression(((helper = (helper = lookupProperty(helpers,"message") || (depth0 != null ? lookupProperty(depth0,"message") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : (container.nullContext || {}),{"name":"message","hash":{},"data":data,"loc":{"start":{"line":5,"column":37},"end":{"line":5,"column":48}}}) : helper)))
+    + "</div>\n";
+},"3":function(container,depth0,helpers,partials,data,blockParams,depths) {
     var stack1, alias1=depth0 != null ? depth0 : (container.nullContext || {}), lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
@@ -10182,25 +10231,25 @@ var templates = [
     };
 
   return "    <div class='variant-frequency-scroll'>\n      <table class='table frequency-detail'>\n      <thead>\n        <tr>\n          <th rowspan='2'>Dataset</th>\n          <th rowspan='2'>Population</th>\n          <th colspan='4'>Allele count</th>\n          <th class='genotype-count-heading' colspan='"
-    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depths[1] != null ? lookupProperty(depths[1],"hasHemizygote") : depths[1]),{"name":"if","hash":{},"fn":container.program(3, data, 0, blockParams, depths),"inverse":container.program(4, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":12,"column":54},"end":{"line":12,"column":95}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depths[1] != null ? lookupProperty(depths[1],"hasHemizygote") : depths[1]),{"name":"if","hash":{},"fn":container.program(4, data, 0, blockParams, depths),"inverse":container.program(5, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":15,"column":54},"end":{"line":15,"column":95}}})) != null ? stack1 : "")
     + "'>\n            Genotype count\n            <span class='frequency-popover'>\n              <button\n                class='frequency-popover-trigger'\n                type='button'\n                aria-label='Show genotype count descriptions'\n                aria-describedby='genotype-count-popover'\n              ></button>\n              <span\n                class='frequency-popover-panel'\n                id='genotype-count-popover'\n                role='tooltip'\n              >\n                <span class='frequency-popover-arrow'></span>\n                <span class='frequency-popover-title'>\n                  <span class='frequency-popover-title-main'>Diploid regions in autosomes and chrX</span>\n                  <span class='frequency-popover-title-sub'>all chrX regions in females and pseudoautosomal regions (PARs) in males</span>\n                </span>\n                <span class='frequency-popover-list'>\n                  <span class='frequency-popover-item'>\n                    <span class='frequency-popover-term'>Alt/Alt</span>\n                    <span class='frequency-popover-description'>Homozygous for the target alternate allele</span>\n                  </span>\n                  <span class='frequency-popover-item'>\n                    <span class='frequency-popover-term'>Alt/Ref</span>\n                    <span class='frequency-popover-description'>Heterozygous for the target alternate allele and the reference allele</span>\n                  </span>\n                  <span class='frequency-popover-item'>\n                    <span class='frequency-popover-term'>Alt/OtherAlts</span>\n                    <span class='frequency-popover-description'>Heterozygous for the target alternate allele and another alternate allele</span>\n                  </span>\n                  <span class='frequency-popover-item'>\n                    <span class='frequency-popover-term'>Ref/Ref</span>\n                    <span class='frequency-popover-description'>Homozygous for the reference allele</span>\n                  </span>\n                  <span class='frequency-popover-item'>\n                    <span class='frequency-popover-term'>Ref/OtherAlts</span>\n                    <span class='frequency-popover-description'>Heterozygous for the reference allele and another alternate allele</span>\n                  </span>\n                  <span class='frequency-popover-item'>\n                    <span class='frequency-popover-term'>Other_Alts/Other_Alts</span>\n                    <span class='frequency-popover-description'>Homozygous or heterozygous for other alternate allele(s)</span>\n                  </span>\n                </span>\n"
-    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depths[1] != null ? lookupProperty(depths[1],"hasHemizygote") : depths[1]),{"name":"if","hash":{},"fn":container.program(5, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":57,"column":16},"end":{"line":77,"column":23}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depths[1] != null ? lookupProperty(depths[1],"hasHemizygote") : depths[1]),{"name":"if","hash":{},"fn":container.program(6, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":60,"column":16},"end":{"line":80,"column":23}}})) != null ? stack1 : "")
     + "              </span>\n            </span>\n          </th>\n          <th class='filter_status' rowspan='2'>\n            Filter status\n            <span class='filter-status-popover'>\n              <button\n                class='filter-status-popover-trigger'\n                type='button'\n                aria-label='Show filter status descriptions'\n                aria-describedby='filter-status-popover'\n              ></button>\n              <span\n                class='filter-status-popover-panel'\n                id='filter-status-popover'\n                role='tooltip'\n              >\n                <span class='filter-status-popover-arrow'></span>\n                <span class='filter-status-popover-content'>\n                  Variant quality filter status reported by the source dataset.<br>\n                  PASS indicates the variant passed all quality filters.<br>\n                  Other values indicate the variant failed one or more filters.\n                </span>\n              </span>\n            </span>\n          </th>\n          <th rowspan='2'>Quality score</th>\n        </tr>\n        <tr>\n          <th class='alt num-th'>Alt</th>\n          <th class='num-th'>Total</th>\n          <th class='frequency num-th'>Frequency</th>\n          <th></th>\n          <th class='num_genotype_alt_homo alt num-th'>Alt / Alt</th>\n          <th class='num_genotype_hetero num-th'>Alt / Ref</th>\n          <th class='num_genotype_alt_otheralts num-th'>Alt/OtherAlts</th>\n          <th class='num_genotype_ref_homo num-th'>Ref / Ref</th>\n          <th class='num_genotype_ref_otheralts num-th'>Ref/OtherAlts</th>\n          <th class='num_genotype_otheralts_otheralts num-th'>Other_Alts/Other_Alts</th>\n"
-    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depths[1] != null ? lookupProperty(depths[1],"hasHemizygote") : depths[1]),{"name":"if","hash":{},"fn":container.program(6, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":117,"column":10},"end":{"line":121,"column":17}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depths[1] != null ? lookupProperty(depths[1],"hasHemizygote") : depths[1]),{"name":"if","hash":{},"fn":container.program(7, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":120,"column":10},"end":{"line":124,"column":17}}})) != null ? stack1 : "")
     + "        </tr>\n      </thead>\n      <tbody>\n"
-    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"resultObject") : depth0),{"name":"if","hash":{},"fn":container.program(7, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":125,"column":8},"end":{"line":202,"column":15}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"resultObject") : depth0),{"name":"if","hash":{},"fn":container.program(8, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":128,"column":8},"end":{"line":205,"column":15}}})) != null ? stack1 : "")
     + "      </tbody>\n      </table>\n"
-    + ((stack1 = lookupProperty(helpers,"unless").call(alias1,(depth0 != null ? lookupProperty(depth0,"resultObject") : depth0),{"name":"unless","hash":{},"fn":container.program(16, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":205,"column":6},"end":{"line":209,"column":17}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"unless").call(alias1,(depth0 != null ? lookupProperty(depth0,"resultObject") : depth0),{"name":"unless","hash":{},"fn":container.program(17, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":208,"column":6},"end":{"line":212,"column":17}}})) != null ? stack1 : "")
     + "    </div>\n";
-},"3":function(container,depth0,helpers,partials,data) {
-    return "9";
 },"4":function(container,depth0,helpers,partials,data) {
-    return "6";
+    return "9";
 },"5":function(container,depth0,helpers,partials,data) {
-    return "                  <span class='frequency-popover-section'>\n                    <span class='frequency-popover-title'>\n                      <span class='frequency-popover-title-main'>Haploid regions in non-pseudoautosomal regions of chrX and chrY in males</span>\n                    </span>\n                    <span class='frequency-popover-list'>\n                      <span class='frequency-popover-item'>\n                        <span class='frequency-popover-term'>Hemi_Alt</span>\n                        <span class='frequency-popover-description'>Hemizygous for the target alternate allele</span>\n                      </span>\n                      <span class='frequency-popover-item'>\n                        <span class='frequency-popover-term'>Hemi_Ref</span>\n                        <span class='frequency-popover-description'>Hemizygous for the reference allele</span>\n                      </span>\n                      <span class='frequency-popover-item'>\n                        <span class='frequency-popover-term'>Hemi_Other_Alts</span>\n                        <span class='frequency-popover-description'>Hemizygous for another alternate allele</span>\n                      </span>\n                    </span>\n                  </span>\n";
+    return "6";
 },"6":function(container,depth0,helpers,partials,data) {
+    return "                  <span class='frequency-popover-section'>\n                    <span class='frequency-popover-title'>\n                      <span class='frequency-popover-title-main'>Haploid regions in non-pseudoautosomal regions of chrX and chrY in males</span>\n                    </span>\n                    <span class='frequency-popover-list'>\n                      <span class='frequency-popover-item'>\n                        <span class='frequency-popover-term'>Hemi_Alt</span>\n                        <span class='frequency-popover-description'>Hemizygous for the target alternate allele</span>\n                      </span>\n                      <span class='frequency-popover-item'>\n                        <span class='frequency-popover-term'>Hemi_Ref</span>\n                        <span class='frequency-popover-description'>Hemizygous for the reference allele</span>\n                      </span>\n                      <span class='frequency-popover-item'>\n                        <span class='frequency-popover-term'>Hemi_Other_Alts</span>\n                        <span class='frequency-popover-description'>Hemizygous for another alternate allele</span>\n                      </span>\n                    </span>\n                  </span>\n";
+},"7":function(container,depth0,helpers,partials,data) {
     return "            <th class='num_genotype_hemi_alt num-th'>Hemi_Alt</th>\n            <th class='num_genotype_hemi_ref num-th'>Hemi_Ref</th>\n            <th class='num_genotype_hemi_otheralts num-th'>Hemi_Other_Alts</th>\n";
-},"7":function(container,depth0,helpers,partials,data,blockParams,depths) {
+},"8":function(container,depth0,helpers,partials,data,blockParams,depths) {
     var stack1, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
@@ -10208,8 +10257,8 @@ var templates = [
         return undefined
     };
 
-  return ((stack1 = lookupProperty(helpers,"each").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"resultObject") : depth0),{"name":"each","hash":{},"fn":container.program(8, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":126,"column":10},"end":{"line":201,"column":19}}})) != null ? stack1 : "");
-},"8":function(container,depth0,helpers,partials,data,blockParams,depths) {
+  return ((stack1 = lookupProperty(helpers,"each").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"resultObject") : depth0),{"name":"each","hash":{},"fn":container.program(9, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":129,"column":10},"end":{"line":204,"column":19}}})) != null ? stack1 : "");
+},"9":function(container,depth0,helpers,partials,data,blockParams,depths) {
     var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=container.hooks.helperMissing, alias3="function", alias4=container.escapeExpression, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
@@ -10218,70 +10267,70 @@ var templates = [
     };
 
   return "            <tr data-depth='"
-    + alias4(((helper = (helper = lookupProperty(helpers,"depth") || (depth0 != null ? lookupProperty(depth0,"depth") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"depth","hash":{},"data":data,"loc":{"start":{"line":127,"column":28},"end":{"line":127,"column":37}}}) : helper)))
-    + "'>\n              <td\n                class='dataset'\n                data-depth='"
     + alias4(((helper = (helper = lookupProperty(helpers,"depth") || (depth0 != null ? lookupProperty(depth0,"depth") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"depth","hash":{},"data":data,"loc":{"start":{"line":130,"column":28},"end":{"line":130,"column":37}}}) : helper)))
+    + "'>\n              <td\n                class='dataset'\n                data-depth='"
+    + alias4(((helper = (helper = lookupProperty(helpers,"depth") || (depth0 != null ? lookupProperty(depth0,"depth") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"depth","hash":{},"data":data,"loc":{"start":{"line":133,"column":28},"end":{"line":133,"column":37}}}) : helper)))
     + "'\n                data-has-child='"
-    + alias4(((helper = (helper = lookupProperty(helpers,"has_child") || (depth0 != null ? lookupProperty(depth0,"has_child") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"has_child","hash":{},"data":data,"loc":{"start":{"line":131,"column":32},"end":{"line":131,"column":45}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"has_child") || (depth0 != null ? lookupProperty(depth0,"has_child") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"has_child","hash":{},"data":data,"loc":{"start":{"line":134,"column":32},"end":{"line":134,"column":45}}}) : helper)))
     + "'\n              >\n                <div\n                  class='dataset-icon'\n                  data-dataset='"
-    + alias4(((helper = (helper = lookupProperty(helpers,"source") || (depth0 != null ? lookupProperty(depth0,"source") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"source","hash":{},"data":data,"loc":{"start":{"line":135,"column":32},"end":{"line":135,"column":42}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"source") || (depth0 != null ? lookupProperty(depth0,"source") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"source","hash":{},"data":data,"loc":{"start":{"line":138,"column":32},"end":{"line":138,"column":42}}}) : helper)))
     + "'\n                >\n                </div>\n                  "
-    + alias4(((helper = (helper = lookupProperty(helpers,"dataset") || (depth0 != null ? lookupProperty(depth0,"dataset") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"dataset","hash":{},"data":data,"loc":{"start":{"line":138,"column":18},"end":{"line":138,"column":29}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"dataset") || (depth0 != null ? lookupProperty(depth0,"dataset") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"dataset","hash":{},"data":data,"loc":{"start":{"line":141,"column":18},"end":{"line":141,"column":29}}}) : helper)))
     + "\n              </td>\n              <td\n                class='population'\n                data-dataset='"
-    + alias4(((helper = (helper = lookupProperty(helpers,"dataset") || (depth0 != null ? lookupProperty(depth0,"dataset") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"dataset","hash":{},"data":data,"loc":{"start":{"line":142,"column":30},"end":{"line":142,"column":41}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"dataset") || (depth0 != null ? lookupProperty(depth0,"dataset") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"dataset","hash":{},"data":data,"loc":{"start":{"line":145,"column":30},"end":{"line":145,"column":41}}}) : helper)))
     + "'\n                data-id='"
-    + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":143,"column":25},"end":{"line":143,"column":31}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":146,"column":25},"end":{"line":146,"column":31}}}) : helper)))
     + "'\n                data-parent-id='"
-    + alias4(((helper = (helper = lookupProperty(helpers,"parent_id") || (depth0 != null ? lookupProperty(depth0,"parent_id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"parent_id","hash":{},"data":data,"loc":{"start":{"line":144,"column":32},"end":{"line":144,"column":45}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"parent_id") || (depth0 != null ? lookupProperty(depth0,"parent_id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"parent_id","hash":{},"data":data,"loc":{"start":{"line":147,"column":32},"end":{"line":147,"column":45}}}) : helper)))
     + "'\n                data-grandparent-id='"
-    + alias4(((helper = (helper = lookupProperty(helpers,"grandparent_id") || (depth0 != null ? lookupProperty(depth0,"grandparent_id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"grandparent_id","hash":{},"data":data,"loc":{"start":{"line":145,"column":37},"end":{"line":145,"column":55}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"grandparent_id") || (depth0 != null ? lookupProperty(depth0,"grandparent_id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"grandparent_id","hash":{},"data":data,"loc":{"start":{"line":148,"column":37},"end":{"line":148,"column":55}}}) : helper)))
     + "'\n                data-depth='"
-    + alias4(((helper = (helper = lookupProperty(helpers,"depth") || (depth0 != null ? lookupProperty(depth0,"depth") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"depth","hash":{},"data":data,"loc":{"start":{"line":146,"column":28},"end":{"line":146,"column":37}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"depth") || (depth0 != null ? lookupProperty(depth0,"depth") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"depth","hash":{},"data":data,"loc":{"start":{"line":149,"column":28},"end":{"line":149,"column":37}}}) : helper)))
     + "'\n                data-has-child='"
-    + alias4(((helper = (helper = lookupProperty(helpers,"has_child") || (depth0 != null ? lookupProperty(depth0,"has_child") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"has_child","hash":{},"data":data,"loc":{"start":{"line":147,"column":32},"end":{"line":147,"column":45}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"has_child") || (depth0 != null ? lookupProperty(depth0,"has_child") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"has_child","hash":{},"data":data,"loc":{"start":{"line":150,"column":32},"end":{"line":150,"column":45}}}) : helper)))
     + "'\n              >\n"
-    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"need_loading") : depth0),{"name":"if","hash":{},"fn":container.program(9, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":149,"column":14},"end":{"line":151,"column":21}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"need_loading") : depth0),{"name":"if","hash":{},"fn":container.program(10, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":152,"column":14},"end":{"line":154,"column":21}}})) != null ? stack1 : "")
     + "                "
-    + alias4(((helper = (helper = lookupProperty(helpers,"label") || (depth0 != null ? lookupProperty(depth0,"label") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"label","hash":{},"data":data,"loc":{"start":{"line":152,"column":16},"end":{"line":152,"column":25}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"label") || (depth0 != null ? lookupProperty(depth0,"label") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"label","hash":{},"data":data,"loc":{"start":{"line":155,"column":16},"end":{"line":155,"column":25}}}) : helper)))
     + "\n              </td>\n              <td class='num_alt_alleles'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"ac") || (depth0 != null ? lookupProperty(depth0,"ac") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"ac","hash":{},"data":data,"loc":{"start":{"line":154,"column":42},"end":{"line":154,"column":48}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"ac") || (depth0 != null ? lookupProperty(depth0,"ac") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"ac","hash":{},"data":data,"loc":{"start":{"line":157,"column":42},"end":{"line":157,"column":48}}}) : helper)))
     + "\n"
-    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"ac") : depth0),{"name":"if","hash":{},"fn":container.program(10, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":155,"column":16},"end":{"line":159,"column":23}}})) != null ? stack1 : "")
-    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"need_loading") : depth0),{"name":"if","hash":{},"fn":container.program(11, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":160,"column":16},"end":{"line":164,"column":23}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"ac") : depth0),{"name":"if","hash":{},"fn":container.program(11, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":158,"column":16},"end":{"line":162,"column":23}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"need_loading") : depth0),{"name":"if","hash":{},"fn":container.program(12, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":163,"column":16},"end":{"line":167,"column":23}}})) != null ? stack1 : "")
     + "              </td>\n              <td class='num_alleles'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"an") || (depth0 != null ? lookupProperty(depth0,"an") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"an","hash":{},"data":data,"loc":{"start":{"line":166,"column":38},"end":{"line":166,"column":44}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"an") || (depth0 != null ? lookupProperty(depth0,"an") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"an","hash":{},"data":data,"loc":{"start":{"line":169,"column":38},"end":{"line":169,"column":44}}}) : helper)))
     + "</td>\n              <td class='frequency'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"frequency") || (depth0 != null ? lookupProperty(depth0,"frequency") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"frequency","hash":{},"data":data,"loc":{"start":{"line":167,"column":36},"end":{"line":167,"column":49}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"frequency") || (depth0 != null ? lookupProperty(depth0,"frequency") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"frequency","hash":{},"data":data,"loc":{"start":{"line":170,"column":36},"end":{"line":170,"column":49}}}) : helper)))
     + "</td>\n              <td class='frequency-graph'>\n"
-    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"level") : depth0),{"name":"if","hash":{},"fn":container.program(12, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":169,"column":16},"end":{"line":185,"column":23}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"level") : depth0),{"name":"if","hash":{},"fn":container.program(13, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":172,"column":16},"end":{"line":188,"column":23}}})) != null ? stack1 : "")
     + "              </td>\n              <td class='num_genotype_alt_homo num-td'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"aac") || (depth0 != null ? lookupProperty(depth0,"aac") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"aac","hash":{},"data":data,"loc":{"start":{"line":187,"column":55},"end":{"line":187,"column":62}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"aac") || (depth0 != null ? lookupProperty(depth0,"aac") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"aac","hash":{},"data":data,"loc":{"start":{"line":190,"column":55},"end":{"line":190,"column":62}}}) : helper)))
     + "</td>\n              <td class='num_genotype_hetero num-td'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"arc") || (depth0 != null ? lookupProperty(depth0,"arc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"arc","hash":{},"data":data,"loc":{"start":{"line":188,"column":53},"end":{"line":188,"column":60}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"arc") || (depth0 != null ? lookupProperty(depth0,"arc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"arc","hash":{},"data":data,"loc":{"start":{"line":191,"column":53},"end":{"line":191,"column":60}}}) : helper)))
     + "</td>\n              <td class='num_genotype_alt_otheralts num-td'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"aoc") || (depth0 != null ? lookupProperty(depth0,"aoc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"aoc","hash":{},"data":data,"loc":{"start":{"line":189,"column":60},"end":{"line":189,"column":67}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"aoc") || (depth0 != null ? lookupProperty(depth0,"aoc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"aoc","hash":{},"data":data,"loc":{"start":{"line":192,"column":60},"end":{"line":192,"column":67}}}) : helper)))
     + "</td>\n              <td class='num_genotype_ref_homo num-td'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"rrc") || (depth0 != null ? lookupProperty(depth0,"rrc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"rrc","hash":{},"data":data,"loc":{"start":{"line":190,"column":55},"end":{"line":190,"column":62}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"rrc") || (depth0 != null ? lookupProperty(depth0,"rrc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"rrc","hash":{},"data":data,"loc":{"start":{"line":193,"column":55},"end":{"line":193,"column":62}}}) : helper)))
     + "</td>\n              <td class='num_genotype_ref_otheralts num-td'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"roc") || (depth0 != null ? lookupProperty(depth0,"roc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"roc","hash":{},"data":data,"loc":{"start":{"line":191,"column":60},"end":{"line":191,"column":67}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"roc") || (depth0 != null ? lookupProperty(depth0,"roc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"roc","hash":{},"data":data,"loc":{"start":{"line":194,"column":60},"end":{"line":194,"column":67}}}) : helper)))
     + "</td>\n              <td class='num_genotype_otheralts_otheralts num-td'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"ooc") || (depth0 != null ? lookupProperty(depth0,"ooc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"ooc","hash":{},"data":data,"loc":{"start":{"line":192,"column":66},"end":{"line":192,"column":73}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"ooc") || (depth0 != null ? lookupProperty(depth0,"ooc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"ooc","hash":{},"data":data,"loc":{"start":{"line":195,"column":66},"end":{"line":195,"column":73}}}) : helper)))
     + "</td>\n"
-    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depths[2] != null ? lookupProperty(depths[2],"hasHemizygote") : depths[2]),{"name":"if","hash":{},"fn":container.program(15, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":193,"column":14},"end":{"line":197,"column":21}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depths[2] != null ? lookupProperty(depths[2],"hasHemizygote") : depths[2]),{"name":"if","hash":{},"fn":container.program(16, data, 0, blockParams, depths),"inverse":container.noop,"data":data,"loc":{"start":{"line":196,"column":14},"end":{"line":200,"column":21}}})) != null ? stack1 : "")
     + "              <td class='filter' data-filter='"
-    + alias4(((helper = (helper = lookupProperty(helpers,"filter") || (depth0 != null ? lookupProperty(depth0,"filter") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"filter","hash":{},"data":data,"loc":{"start":{"line":198,"column":46},"end":{"line":198,"column":56}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"filter") || (depth0 != null ? lookupProperty(depth0,"filter") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"filter","hash":{},"data":data,"loc":{"start":{"line":201,"column":46},"end":{"line":201,"column":56}}}) : helper)))
     + "'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"filter") || (depth0 != null ? lookupProperty(depth0,"filter") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"filter","hash":{},"data":data,"loc":{"start":{"line":198,"column":58},"end":{"line":198,"column":68}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"filter") || (depth0 != null ? lookupProperty(depth0,"filter") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"filter","hash":{},"data":data,"loc":{"start":{"line":201,"column":58},"end":{"line":201,"column":68}}}) : helper)))
     + "</td>\n              <td class='quality'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"quality") || (depth0 != null ? lookupProperty(depth0,"quality") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"quality","hash":{},"data":data,"loc":{"start":{"line":199,"column":34},"end":{"line":199,"column":45}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"quality") || (depth0 != null ? lookupProperty(depth0,"quality") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"quality","hash":{},"data":data,"loc":{"start":{"line":202,"column":34},"end":{"line":202,"column":45}}}) : helper)))
     + "</td>\n            </tr>\n";
-},"9":function(container,depth0,helpers,partials,data) {
-    return "                <span class=\"lock\"></span>\n";
 },"10":function(container,depth0,helpers,partials,data) {
-    return "                  <span class='slash'>\n                    /\n                  </span>\n";
+    return "                <span class=\"lock\"></span>\n";
 },"11":function(container,depth0,helpers,partials,data) {
-    return "                  <span class='comment'>\n                    <a href=\"/auth/login\">Login</a> to view allele and genotype counts\n                  </span>\n";
+    return "                  <span class='slash'>\n                    /\n                  </span>\n";
 },"12":function(container,depth0,helpers,partials,data) {
+    return "                  <span class='comment'>\n                    <a href=\"/auth/login\">Login</a> to view allele and genotype counts\n                  </span>\n";
+},"13":function(container,depth0,helpers,partials,data) {
     var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=container.hooks.helperMissing, alias3="function", alias4=container.escapeExpression, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
@@ -10290,20 +10339,20 @@ var templates = [
     };
 
   return "                  <div class='allele-frequency-graph'>\n                    <span\n                      class='dataset'\n                      data-frequency='"
-    + alias4(((helper = (helper = lookupProperty(helpers,"level") || (depth0 != null ? lookupProperty(depth0,"level") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"level","hash":{},"data":data,"loc":{"start":{"line":173,"column":38},"end":{"line":173,"column":47}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"level") || (depth0 != null ? lookupProperty(depth0,"level") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"level","hash":{},"data":data,"loc":{"start":{"line":176,"column":38},"end":{"line":176,"column":47}}}) : helper)))
     + "'\n                      data-allele-count='"
-    + alias4(((helper = (helper = lookupProperty(helpers,"count") || (depth0 != null ? lookupProperty(depth0,"count") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"count","hash":{},"data":data,"loc":{"start":{"line":174,"column":41},"end":{"line":174,"column":50}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"count") || (depth0 != null ? lookupProperty(depth0,"count") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"count","hash":{},"data":data,"loc":{"start":{"line":177,"column":41},"end":{"line":177,"column":50}}}) : helper)))
     + "'\n                      data-dataset='"
-    + alias4(((helper = (helper = lookupProperty(helpers,"dataset") || (depth0 != null ? lookupProperty(depth0,"dataset") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"dataset","hash":{},"data":data,"loc":{"start":{"line":175,"column":36},"end":{"line":175,"column":47}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"dataset") || (depth0 != null ? lookupProperty(depth0,"dataset") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"dataset","hash":{},"data":data,"loc":{"start":{"line":178,"column":36},"end":{"line":178,"column":47}}}) : helper)))
     + "'\n                    >\n"
-    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"has_homozygote_marker") : depth0),{"name":"if","hash":{},"fn":container.program(13, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":177,"column":22},"end":{"line":179,"column":29}}})) != null ? stack1 : "")
-    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"has_hemizygote_marker") : depth0),{"name":"if","hash":{},"fn":container.program(14, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":180,"column":22},"end":{"line":182,"column":29}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"has_homozygote_marker") : depth0),{"name":"if","hash":{},"fn":container.program(14, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":180,"column":22},"end":{"line":182,"column":29}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"has_hemizygote_marker") : depth0),{"name":"if","hash":{},"fn":container.program(15, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":183,"column":22},"end":{"line":185,"column":29}}})) != null ? stack1 : "")
     + "                    </span>\n                  </div>\n";
-},"13":function(container,depth0,helpers,partials,data) {
-    return "                        <span class='marker homozygote-marker'></span>\n";
 },"14":function(container,depth0,helpers,partials,data) {
-    return "                        <span class='marker hemizygote-marker'></span>\n";
+    return "                        <span class='marker homozygote-marker'></span>\n";
 },"15":function(container,depth0,helpers,partials,data) {
+    return "                        <span class='marker hemizygote-marker'></span>\n";
+},"16":function(container,depth0,helpers,partials,data) {
     var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=container.hooks.helperMissing, alias3="function", alias4=container.escapeExpression, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
@@ -10312,23 +10361,12 @@ var templates = [
     };
 
   return "                <td class='num_genotype_hemi_alt num-td'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"hac") || (depth0 != null ? lookupProperty(depth0,"hac") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"hac","hash":{},"data":data,"loc":{"start":{"line":194,"column":57},"end":{"line":194,"column":64}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"hac") || (depth0 != null ? lookupProperty(depth0,"hac") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"hac","hash":{},"data":data,"loc":{"start":{"line":197,"column":57},"end":{"line":197,"column":64}}}) : helper)))
     + "</td>\n                <td class='num_genotype_hemi_ref num-td'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"hrc") || (depth0 != null ? lookupProperty(depth0,"hrc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"hrc","hash":{},"data":data,"loc":{"start":{"line":195,"column":57},"end":{"line":195,"column":64}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"hrc") || (depth0 != null ? lookupProperty(depth0,"hrc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"hrc","hash":{},"data":data,"loc":{"start":{"line":198,"column":57},"end":{"line":198,"column":64}}}) : helper)))
     + "</td>\n                <td class='num_genotype_hemi_otheralts num-td'>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"hoc") || (depth0 != null ? lookupProperty(depth0,"hoc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"hoc","hash":{},"data":data,"loc":{"start":{"line":196,"column":63},"end":{"line":196,"column":70}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"hoc") || (depth0 != null ? lookupProperty(depth0,"hoc") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"hoc","hash":{},"data":data,"loc":{"start":{"line":199,"column":63},"end":{"line":199,"column":70}}}) : helper)))
     + "</td>\n";
-},"16":function(container,depth0,helpers,partials,data,blockParams,depths) {
-    var stack1, lookupProperty = container.lookupProperty || function(parent, propertyName) {
-        if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
-          return parent[propertyName];
-        }
-        return undefined
-    };
-
-  return "        <div class=\"variant-frequency-no-data\">\n          "
-    + ((stack1 = lookupProperty(helpers,"if").call(depth0 != null ? depth0 : (container.nullContext || {}),((stack1 = (depths[1] != null ? lookupProperty(depths[1],"params") : depths[1])) != null ? lookupProperty(stack1,"no_data_message") : stack1),{"name":"if","hash":{},"fn":container.program(17, data, 0, blockParams, depths),"inverse":container.program(18, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":207,"column":10},"end":{"line":207,"column":94}}})) != null ? stack1 : "")
-    + "\n        </div>\n";
 },"17":function(container,depth0,helpers,partials,data,blockParams,depths) {
     var stack1, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
@@ -10337,8 +10375,19 @@ var templates = [
         return undefined
     };
 
+  return "        <div class=\"variant-frequency-no-data\">\n          "
+    + ((stack1 = lookupProperty(helpers,"if").call(depth0 != null ? depth0 : (container.nullContext || {}),((stack1 = (depths[1] != null ? lookupProperty(depths[1],"params") : depths[1])) != null ? lookupProperty(stack1,"no_data_message") : stack1),{"name":"if","hash":{},"fn":container.program(18, data, 0, blockParams, depths),"inverse":container.program(19, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":210,"column":10},"end":{"line":210,"column":94}}})) != null ? stack1 : "")
+    + "\n        </div>\n";
+},"18":function(container,depth0,helpers,partials,data,blockParams,depths) {
+    var stack1, lookupProperty = container.lookupProperty || function(parent, propertyName) {
+        if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
+          return parent[propertyName];
+        }
+        return undefined
+    };
+
   return container.escapeExpression(container.lambda(((stack1 = (depths[1] != null ? lookupProperty(depths[1],"params") : depths[1])) != null ? lookupProperty(stack1,"no_data_message") : stack1), depth0));
-},"18":function(container,depth0,helpers,partials,data) {
+},"19":function(container,depth0,helpers,partials,data) {
     return "No data";
 },"compiler":[8,">= 4.3.0"],"main":function(container,depth0,helpers,partials,data,blockParams,depths) {
     var stack1, lookupProperty = container.lookupProperty || function(parent, propertyName) {
@@ -10348,7 +10397,7 @@ var templates = [
         return undefined
     };
 
-  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"error") : depth0),{"name":"with","hash":{},"fn":container.program(0, data, 0, blockParams, depths),"inverse":container.program(1, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":1,"column":0},"end":{"line":212,"column":9}}})) != null ? stack1 : "");
+  return ((stack1 = lookupProperty(helpers,"with").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"error") : depth0),{"name":"with","hash":{},"fn":container.program(0, data, 0, blockParams, depths),"inverse":container.program(1, data, 0, blockParams, depths),"data":data,"loc":{"start":{"line":1,"column":0},"end":{"line":215,"column":9}}})) != null ? stack1 : "");
 },"useData":true,"useDepths":true}]
 ];
 

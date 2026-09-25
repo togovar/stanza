@@ -12,6 +12,7 @@ const buildVariantSearchApiUrl = (dataUrl) => `${normalizeTogoVarApiBaseUrl(data
 /**
  * location クエリは同一座標の複数アリルを返し得るため、
  * chromosome/position だけで取得した候補を Ref/Alt で厳密に絞り込む。
+ * rsIDでの検索など、同一識別子が複数アリルに紐づく場合の絞り込みにも共通で使う。
  */
 const sameVariantAllele = (variantData, parsedVariant) => normalizeChromosome(variantData.chromosome) ===
     normalizeChromosome(parsedVariant.chromosome) &&
@@ -78,5 +79,5 @@ const fetchVariantDataByIdentifier = async (dataUrl, tgvId, parsedVariant, ident
     return requireVariantData(apiResponse, tgvId, parsedVariant, identifier);
 };
 
-export { fetchVariantDataById as a, fetchVariantDataByLocation as b, fetchVariantDataByIdentifier as f, normalizeTogoVarApiBaseUrl as n, requireVariantData as r };
-//# sourceMappingURL=togovar-variant-0e8288d9.js.map
+export { fetchVariantDataById as a, fetchVariantDataByLocation as b, fetchVariantDataByIdentifier as f, normalizeTogoVarApiBaseUrl as n, requireVariantData as r, sameVariantAllele as s };
+//# sourceMappingURL=togovar-variant-a2898d42.js.map

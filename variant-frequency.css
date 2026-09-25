@@ -1665,6 +1665,9 @@ main .filter-status-popover-panel .filter-status-popover-content {
   margin: 0;
 }
 
+main .alert-warning {
+  margin-bottom: 8px;
+}
 main .variant-frequency-scroll {
   overflow: auto;
   resize: vertical;

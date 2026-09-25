@@ -1,7 +1,7 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
 import { r as referenceToChrAssembly, a as refAlt, c as caddPhred } from './display-3a18fc32.js';
 import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-c005a6eb.js';
-import { b as buildSparqlistApiUrl, f as fetchSparqlBindings } from './sparqlist-0870b0c9.js';
+import { b as buildSparqlistApiUrl, f as fetchSparqlBindings, r as requireFirstBinding, d as describeVariantIdentifier } from './sparqlist-0870b0c9.js';
 import './frequency-9d3406e7.js';
 import './utils-97dc77a0.js';
 
@@ -60,14 +60,7 @@ class VariantSummary extends Stanza {
         try {
             const summaryApiUrl = buildSparqlistApiUrl("variant_summary", params);
             const bindings = await fetchSparqlBindings(summaryApiUrl);
-            const firstBinding = bindings[0];
-            if (!firstBinding) {
-                this.renderTemplate({
-                    template: "stanza.html.hbs",
-                    parameters: templateParams,
-                });
-                return;
-            }
+            const firstBinding = requireFirstBinding(bindings, `Variant not found for ${describeVariantIdentifier(params)}`);
             templateParams.result =
                 convertSummaryBindingToDisplayData(firstBinding);
             templateParams.gene =
