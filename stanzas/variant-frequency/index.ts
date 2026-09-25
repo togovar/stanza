@@ -322,11 +322,16 @@ export default class VariantFrequency extends Stanza {
       // rsIDで検索すると、同じrsIDが複数アリル(例: 1-10141-C-A と 1-10141-C-G)に
       // 付与されているケースで複数件返ってくることがある。parsedVariantがあれば
       // Ref/Altが完全一致するレコードを優先し、無ければ従来通り先頭を採用する。
-      const exactMatchVariantData = parsedVariant
-        ? responseDatasets.data.find((data) =>
-            sameVariantAllele(data, parsedVariant),
-          )
-        : undefined;
+      // tgv_idが指定されている場合は、togovar-variant.tsのrequireVariantDataと同じく
+      // tgv_id解決結果をRef/Altの一致有無に関わらず優先するため、この判定自体を行わない
+      // (variantパラメータが併記されていても、古い/無関係な値であり得るため)。
+      const isExactMatchApplicable = !tgv_id && Boolean(parsedVariant);
+      const exactMatchVariantData =
+        !tgv_id && parsedVariant
+          ? responseDatasets.data.find((data) =>
+              sameVariantAllele(data, parsedVariant),
+            )
+          : undefined;
 
       // Ref/Alt表記のゆれなどで完全一致が見つからず先頭にフォールバックした場合、
       // 誤ったバリアントのデータを黙って表示してしまう恐れがあるため、
@@ -337,9 +342,9 @@ export default class VariantFrequency extends Stanza {
       // 誤解を招かないようにする。
       const candidateCount = responseDatasets.data.length;
       const hasMultipleCandidateAmbiguity =
-        Boolean(parsedVariant) && !exactMatchVariantData && candidateCount > 1;
+        isExactMatchApplicable && !exactMatchVariantData && candidateCount > 1;
       const hasSingleCandidateMismatch =
-        Boolean(parsedVariant) && !exactMatchVariantData && candidateCount === 1;
+        isExactMatchApplicable && !exactMatchVariantData && candidateCount === 1;
 
       if (hasMultipleCandidateAmbiguity) {
         console.warn(
