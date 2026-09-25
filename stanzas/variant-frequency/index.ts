@@ -20,6 +20,7 @@ import { describeVariantIdentifier } from "@/lib/sparqlist";
 import {
   fetchVariantDataByIdentifier,
   normalizeTogoVarApiBaseUrl,
+  sameVariantAllele,
 } from "@/lib/togovar-variant";
 import { assertValidVariantIdentifier, parseVariantParam } from "@/lib/variant";
 import type { VariantData } from "@/lib/types";
@@ -318,9 +319,28 @@ export default class VariantFrequency extends Stanza {
         responseDatasets = { data: [] };
       }
 
+      // rsIDで検索すると、同じrsIDが複数アリル(例: 1-10141-C-A と 1-10141-C-G)に
+      // 付与されているケースで複数件返ってくることがある。parsedVariantがあれば
+      // Ref/Altが完全一致するレコードを優先し、無ければ従来通り先頭を採用する。
+      const exactMatchVariantData = parsedVariant
+        ? responseDatasets.data.find((data) =>
+            sameVariantAllele(data, parsedVariant),
+          )
+        : undefined;
+
+      // Ref/Alt表記のゆれなどで完全一致が見つからず先頭にフォールバックした場合、
+      // 誤ったバリアントのデータを黙って表示してしまう恐れがあるため記録しておく。
+      if (parsedVariant && !exactMatchVariantData && responseDatasets.data.length > 0) {
+        console.warn(
+          `variant-frequency: no exact Ref/Alt match for "${params.variant}" among ${responseDatasets.data.length} candidate(s) returned by /search; falling back to the first result.`,
+        );
+      }
+
+      const matchedVariantData = exactMatchVariantData ?? responseDatasets.data[0];
+
       // APIレスポンスからバリアントの頻度データ配列を取り出す
       const frequenciesDatasets: FrequencyData[] | undefined =
-        responseDatasets.data[0]?.frequencies;
+        matchedVariantData?.frequencies;
 
       // ----------------------------------------------------------
       // searchData() — ツリー構造を再帰的に走査して行データを構築
@@ -505,7 +525,7 @@ export default class VariantFrequency extends Stanza {
       // ダウンロード用データを保存
       this.data = this.createDownloadData(
         resultObject,
-        responseDatasets.data[0],
+        matchedVariantData,
         hasHemizygote,
       );
 

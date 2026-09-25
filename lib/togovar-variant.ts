@@ -19,8 +19,9 @@ export const buildVariantSearchApiUrl = (dataUrl: string): string =>
 /**
  * location クエリは同一座標の複数アリルを返し得るため、
  * chromosome/position だけで取得した候補を Ref/Alt で厳密に絞り込む。
+ * rsIDでの検索など、同一識別子が複数アリルに紐づく場合の絞り込みにも共通で使う。
  */
-const sameVariantAllele = (
+export const sameVariantAllele = (
   variantData: VariantData,
   parsedVariant: ParsedVariant,
 ): boolean =>
