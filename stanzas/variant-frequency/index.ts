@@ -331,14 +331,23 @@ export default class VariantFrequency extends Stanza {
       // Ref/Alt表記のゆれなどで完全一致が見つからず先頭にフォールバックした場合、
       // 誤ったバリアントのデータを黙って表示してしまう恐れがあるため、
       // コンソールへの記録に加えて画面上にも警告バナーを出す。
-      const hasAmbiguousMatch =
-        Boolean(parsedVariant) &&
-        !exactMatchVariantData &&
-        responseDatasets.data.length > 0;
+      // 候補が2件以上ある場合(=複数アリルの中から選べなかった)と、
+      // 候補が1件しかない場合(=その唯一の候補がたまたまRef/Alt不一致だった)とでは
+      // 原因が異なるため、メッセージを分けて「別のアリルかもしれない」という
+      // 誤解を招かないようにする。
+      const candidateCount = responseDatasets.data.length;
+      const hasMultipleCandidateAmbiguity =
+        Boolean(parsedVariant) && !exactMatchVariantData && candidateCount > 1;
+      const hasSingleCandidateMismatch =
+        Boolean(parsedVariant) && !exactMatchVariantData && candidateCount === 1;
 
-      if (hasAmbiguousMatch) {
+      if (hasMultipleCandidateAmbiguity) {
         console.warn(
-          `variant-frequency: no exact Ref/Alt match for "${params.variant}" among ${responseDatasets.data.length} candidate(s) returned by /search; falling back to the first result.`,
+          `variant-frequency: no exact Ref/Alt match for "${params.variant}" among ${candidateCount} candidates returned by /search; falling back to the first result, which may correspond to a different allele.`,
+        );
+      } else if (hasSingleCandidateMismatch) {
+        console.warn(
+          `variant-frequency: the single record returned by /search for "${params.variant}" does not have an exact Ref/Alt match; showing it anyway.`,
         );
       }
 
@@ -543,9 +552,14 @@ export default class VariantFrequency extends Stanza {
           params: this.params,
           result: { resultObject },
           hasHemizygote,
-          ...(hasAmbiguousMatch && {
+          ...(hasMultipleCandidateAmbiguity && {
             warning: {
               message: `Requested variant "${params.variant}" could not be matched exactly to a Ref/Alt returned by the search; showing data for the first candidate instead, which may correspond to a different allele.`,
+            },
+          }),
+          ...(hasSingleCandidateMismatch && {
+            warning: {
+              message: `The record returned for "${params.variant}" does not have an exact Ref/Alt match; showing it anyway.`,
             },
           }),
         },
