@@ -20,6 +20,7 @@ import { describeVariantIdentifier } from "@/lib/sparqlist";
 import {
   fetchVariantDataByIdentifier,
   normalizeTogoVarApiBaseUrl,
+  sameVariantAllele,
 } from "@/lib/togovar-variant";
 import { assertValidVariantIdentifier, parseVariantParam } from "@/lib/variant";
 import type { VariantData } from "@/lib/types";
@@ -318,9 +319,48 @@ export default class VariantFrequency extends Stanza {
         responseDatasets = { data: [] };
       }
 
+      // rsIDで検索すると、同じrsIDが複数アリル(例: 1-10141-C-A と 1-10141-C-G)に
+      // 付与されているケースで複数件返ってくることがある。parsedVariantがあれば
+      // Ref/Altが完全一致するレコードを優先し、無ければ従来通り先頭を採用する。
+      // tgv_idが指定されている場合は、togovar-variant.tsのrequireVariantDataと同じく
+      // tgv_id解決結果をRef/Altの一致有無に関わらず優先するため、この判定自体を行わない
+      // (variantパラメータが併記されていても、古い/無関係な値であり得るため)。
+      const isExactMatchApplicable = !tgv_id && Boolean(parsedVariant);
+      const exactMatchVariantData =
+        !tgv_id && parsedVariant
+          ? responseDatasets.data.find((data) =>
+              sameVariantAllele(data, parsedVariant),
+            )
+          : undefined;
+
+      // Ref/Alt表記のゆれなどで完全一致が見つからず先頭にフォールバックした場合、
+      // 誤ったバリアントのデータを黙って表示してしまう恐れがあるため、
+      // コンソールへの記録に加えて画面上にも警告バナーを出す。
+      // 候補が2件以上ある場合(=複数アリルの中から選べなかった)と、
+      // 候補が1件しかない場合(=その唯一の候補がたまたまRef/Alt不一致だった)とでは
+      // 原因が異なるため、メッセージを分けて「別のアリルかもしれない」という
+      // 誤解を招かないようにする。
+      const candidateCount = responseDatasets.data.length;
+      const hasMultipleCandidateAmbiguity =
+        isExactMatchApplicable && !exactMatchVariantData && candidateCount > 1;
+      const hasSingleCandidateMismatch =
+        isExactMatchApplicable && !exactMatchVariantData && candidateCount === 1;
+
+      if (hasMultipleCandidateAmbiguity) {
+        console.warn(
+          `variant-frequency: no exact Ref/Alt match for "${params.variant}" among ${candidateCount} candidates returned by /search; falling back to the first result, which may correspond to a different allele.`,
+        );
+      } else if (hasSingleCandidateMismatch) {
+        console.warn(
+          `variant-frequency: the single record returned by /search for "${params.variant}" does not have an exact Ref/Alt match; showing it anyway.`,
+        );
+      }
+
+      const matchedVariantData = exactMatchVariantData ?? responseDatasets.data[0];
+
       // APIレスポンスからバリアントの頻度データ配列を取り出す
       const frequenciesDatasets: FrequencyData[] | undefined =
-        responseDatasets.data[0]?.frequencies;
+        matchedVariantData?.frequencies;
 
       // ----------------------------------------------------------
       // searchData() — ツリー構造を再帰的に走査して行データを構築
@@ -505,7 +545,7 @@ export default class VariantFrequency extends Stanza {
       // ダウンロード用データを保存
       this.data = this.createDownloadData(
         resultObject,
-        responseDatasets.data[0],
+        matchedVariantData,
         hasHemizygote,
       );
 
@@ -517,6 +557,16 @@ export default class VariantFrequency extends Stanza {
           params: this.params,
           result: { resultObject },
           hasHemizygote,
+          ...(hasMultipleCandidateAmbiguity && {
+            warning: {
+              message: `Requested variant "${params.variant}" could not be matched exactly to a Ref/Alt returned by the search; showing data for the first candidate instead, which may correspond to a different allele.`,
+            },
+          }),
+          ...(hasSingleCandidateMismatch && {
+            warning: {
+              message: `The record returned for "${params.variant}" does not have an exact Ref/Alt match; showing it anyway.`,
+            },
+          }),
         },
       });
       this.cleanupFrequencyPopovers = [

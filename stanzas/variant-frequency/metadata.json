@@ -42,7 +42,7 @@
     {
       "stanza:key": "no_data_message",
       "stanza:example": "No data found.",
-      "stanza:description": "Message displayed when there are zero data"
+      "stanza:description": "Message displayed when there are zero data. Defaults to \"No data\" when not set."
     },
     {
       "stanza:key": "check_local_auth_status",

@@ -2,6 +2,10 @@
 @use "@/assets/css/components/frequency-popover";
 
 main {
+  .alert-warning {
+    margin-bottom: 8px;
+  }
+
   .variant-frequency-scroll {
     overflow: auto;
     resize: vertical;
