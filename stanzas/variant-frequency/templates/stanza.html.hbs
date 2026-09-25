@@ -1,6 +1,9 @@
 {{#with error}}
   <div class='alert alert-danger'>{{message}}</div>
 {{else}}
+  {{#with warning}}
+    <div class='alert alert-warning'>{{message}}</div>
+  {{/with}}
   {{#with result}}
     <div class='variant-frequency-scroll'>
       <table class='table frequency-detail'>

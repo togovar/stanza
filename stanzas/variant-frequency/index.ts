@@ -329,8 +329,14 @@ export default class VariantFrequency extends Stanza {
         : undefined;
 
       // Ref/Alt表記のゆれなどで完全一致が見つからず先頭にフォールバックした場合、
-      // 誤ったバリアントのデータを黙って表示してしまう恐れがあるため記録しておく。
-      if (parsedVariant && !exactMatchVariantData && responseDatasets.data.length > 0) {
+      // 誤ったバリアントのデータを黙って表示してしまう恐れがあるため、
+      // コンソールへの記録に加えて画面上にも警告バナーを出す。
+      const hasAmbiguousMatch =
+        Boolean(parsedVariant) &&
+        !exactMatchVariantData &&
+        responseDatasets.data.length > 0;
+
+      if (hasAmbiguousMatch) {
         console.warn(
           `variant-frequency: no exact Ref/Alt match for "${params.variant}" among ${responseDatasets.data.length} candidate(s) returned by /search; falling back to the first result.`,
         );
@@ -537,6 +543,11 @@ export default class VariantFrequency extends Stanza {
           params: this.params,
           result: { resultObject },
           hasHemizygote,
+          ...(hasAmbiguousMatch && {
+            warning: {
+              message: `Requested variant "${params.variant}" could not be matched exactly to a Ref/Alt returned by the search; showing data for the first candidate instead, which may correspond to a different allele.`,
+            },
+          }),
         },
       });
       this.cleanupFrequencyPopovers = [
