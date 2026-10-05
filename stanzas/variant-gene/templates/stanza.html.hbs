@@ -2,31 +2,27 @@
   <div class="alert alert-danger">{{message}}</div>
 {{else}}
   {{#with result}}
-    <table class="table gene">
-      <tr>
-        <th>HGNC/Approved name</th>
-        <td>{{approved_name}}</td>
-      </tr>
-      <tr>
-        <th>HGNC/Approved symbol</th>
-        <td>
-          <ul class="no-bullet">
-            {{#each symbol}}
-              <li><a href="{{href}}">{{value}}</a></li>
-            {{/each}}
-          </ul>
-        </td>
-      </tr>
-      <tr>
-        <th>HGNC/Alias name</th>
-        <td>
-          <ul class="no-bullet">
-            {{#each synonym}}
-              <li>{{this}}</li>
-            {{/each}}
-          </ul>
-        </td>
-      </tr>
-    </table>
+    <dl class="variant-gene-list">
+      <dt>HGNC/Approved name</dt>
+      <dd>{{approved_name}}</dd>
+
+      <dt>HGNC/Approved symbol</dt>
+      <dd>
+        <ul class="gene-values">
+          {{#each symbol}}
+            <li><a href="{{href}}">{{value}}</a></li>
+          {{/each}}
+        </ul>
+      </dd>
+
+      <dt>HGNC/Alias name</dt>
+      <dd>
+        <ul class="gene-values">
+          {{#each synonym}}
+            <li>{{this}}</li>
+          {{/each}}
+        </ul>
+      </dd>
+    </dl>
   {{/with}}
 {{/with}}

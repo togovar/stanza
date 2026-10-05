@@ -1,9 +1,11 @@
 import Stanza from "togostanza/stanza";
 import {grouping, unwrapValueFromBinding} from "togostanza/utils";
 
+import {ROBOTO_CONDENSED_CSS_URL} from "@/lib/constants";
+
 export default class GeneHeader extends Stanza {
   async render() {
-    this.importWebFontCSS("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900");
+    this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
 
     const sparqlist = (this.params.sparqlist || "/sparqlist").concat(`/api/gene_header?hgnc_id=${this.params.hgnc_id}`);
 

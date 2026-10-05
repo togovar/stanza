@@ -1,6 +1,10 @@
 import Stanza from "togostanza/stanza";
 import { hierarchy } from "d3-hierarchy";
-import { DATASETS } from "@/lib/constants";
+import {
+  DATASETS,
+  FONTAWESOME_FREE_SOLID_CSS_URL,
+  ROBOTO_CONDENSED_CSS_URL,
+} from "@/lib/constants";
 import {
   buildFrequencyDisplay,
   buildFrequencyMarkerState,
@@ -12,6 +16,14 @@ import {
   downloadJSONMenuItem,
   downloadTSVMenuItem,
 } from "togostanza-utils";
+import { describeVariantIdentifier } from "@/lib/sparqlist";
+import {
+  fetchVariantDataByIdentifier,
+  normalizeTogoVarApiBaseUrl,
+  sameVariantAllele,
+} from "@/lib/togovar-variant";
+import { assertValidVariantIdentifier, parseVariantParam } from "@/lib/variant";
+import type { VariantData } from "@/lib/types";
 
 // ============================================================
 // 型定義
@@ -53,6 +65,11 @@ interface FrequencyData {
   has_hemizygote_marker?: boolean;
 }
 
+type FrequencyVariantData = VariantData & {
+  frequencies?: FrequencyData[];
+  existing_variations?: string[];
+};
+
 /** DATASETSの各ノード（ツリー構造）に ID・depth を付加したもの */
 interface DataNode {
   id: string;
@@ -60,6 +77,14 @@ interface DataNode {
   value: string;
   label: string;
   children?: DataNode[];
+}
+
+interface VariantFrequencyParams {
+  "data-url"?: string;
+  assembly?: string;
+  tgv_id?: string;
+  variant?: string;
+  check_local_auth_status?: unknown;
 }
 
 const isTruthyParam = (value: unknown): boolean => {
@@ -76,6 +101,27 @@ const isTruthyParam = (value: unknown): boolean => {
 
 const isLocalhostHost = (hostname: string): boolean => {
   return hostname === "localhost" || hostname === "127.0.0.1";
+};
+
+const JGA_WGS_PUBLIC_CHILD_SOURCES = new Set([
+  "jga_wgs.jgad000758",
+  "jga_wgs.jgad000868",
+]);
+
+const findDbsnpIdentifier = (variantData: VariantData): string | undefined =>
+  variantData.external_links?.dbsnp?.find((link) =>
+    /^rs\d+$/iu.test(link.title),
+  )?.title;
+
+const buildFrequencySearchTerm = (
+  variantData: VariantData,
+): string | undefined => {
+  if (variantData.id) {
+    return variantData.id;
+  }
+
+  // /search は rsID でも頻度情報を引けるため、TogoVar未登録のvariantではdbSNPリンクを代替キーにする。
+  return findDbsnpIdentifier(variantData);
 };
 
 // ============================================================
@@ -120,30 +166,66 @@ export default class VariantFrequency extends Stanza {
 
   async render() {
     // フォントの読み込み
-    this.importWebFontCSS(
-      "https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700,900",
-    );
-    // データセットアイコン用フォント
-    this.importWebFontCSS(
-      new URL("./assets/fontello.css", import.meta.url).href,
-    );
+    this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
+    this.importWebFontCSS(FONTAWESOME_FREE_SOLID_CSS_URL);
 
     // ---- stanzaパラメータの取得 ----
-    // data-url: APIのベースURL, assembly: GRCh37/GRCh38, tgv_id: バリアントID
+    // data-url: APIのベースURL, assembly: GRCh37/GRCh38, tgv_id/variant: バリアント識別子
     const {
       "data-url": urlBase,
       assembly,
       tgv_id,
       check_local_auth_status,
-    } = this.params;
+    } = this.params as VariantFrequencyParams;
+    const params = this.params as VariantFrequencyParams;
+    const parsedVariant = parseVariantParam(params.variant);
 
-    // バリアントIDでデータセット情報を展開して取得するAPIエンドポイント
-    const searchParams = new URLSearchParams({
-      quality: "0",
-      term: String(tgv_id),
-    });
-    searchParams.append("expand_dataset", "");
-    const dataURL = `${urlBase}/search?${searchParams.toString()}`;
+    if (!urlBase) {
+      this.data = [];
+      this.renderTemplate({
+        template: "stanza.html.hbs",
+        parameters: {
+          params: this.params,
+          error: { message: "data-url parameter is required" },
+        },
+      });
+      return;
+    }
+
+    const apiBase = normalizeTogoVarApiBaseUrl(urlBase);
+    const frequencySearchEndpoint = `${apiBase}/search`;
+    let frequencySearchTerm = tgv_id;
+    let resolvedVariantData: FrequencyVariantData | undefined;
+    try {
+      assertValidVariantIdentifier(
+        frequencySearchTerm,
+        params.variant,
+        parsedVariant,
+      );
+
+      if (!frequencySearchTerm) {
+        const variantData = await fetchVariantDataByIdentifier(
+          urlBase,
+          frequencySearchTerm,
+          parsedVariant,
+          describeVariantIdentifier(params),
+        );
+        resolvedVariantData = variantData as FrequencyVariantData;
+        frequencySearchTerm = buildFrequencySearchTerm(variantData);
+      }
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
+
+      this.data = [];
+      this.renderTemplate({
+        template: "stanza.html.hbs",
+        parameters: {
+          params: this.params,
+          error: { message },
+        },
+      });
+      return;
+    }
 
     // ---- 変数の初期化 ----
 
@@ -206,19 +288,79 @@ export default class VariantFrequency extends Stanza {
     // ---- 頻度データの取得と処理 ----
 
     try {
-      const response = await fetch(dataURL, {
-        method: "GET",
-        headers: { Accept: "application/json" },
-      });
+      let responseDatasets: { data: FrequencyVariantData[] };
 
-      if (!response.ok) {
-        throw new Error(`${dataURL} returns status ${response.status}`);
+      if (frequencySearchTerm) {
+        // tgv_id または rsID がある場合は、従来通り /search でデータセット展開済みの頻度情報を取得する。
+        const searchParams = new URLSearchParams({
+          quality: "0",
+          term: frequencySearchTerm,
+        });
+        searchParams.append("expand_dataset", "");
+        const dataURL = `${frequencySearchEndpoint}?${searchParams.toString()}`;
+
+        const response = await fetch(dataURL, {
+          method: "GET",
+          headers: { Accept: "application/json" },
+        });
+
+        if (!response.ok) {
+          throw new Error(`${dataURL} returns status ${response.status}`);
+        }
+
+        responseDatasets = (await response.json()) as {
+          data: FrequencyVariantData[];
+        };
+      } else if (resolvedVariantData) {
+        // TogoVar ID / rsID を持たないvariantでも、variant search APIの候補レコードにfrequenciesが含まれる場合がある。
+        // その場合は /search?term=undefined へ進まず、解決済みレコード内の頻度情報をそのまま表示に使う。
+        responseDatasets = { data: [resolvedVariantData] };
+      } else {
+        responseDatasets = { data: [] };
       }
 
-      const responseDatasets = await response.json();
+      // rsIDで検索すると、同じrsIDが複数アリル(例: 1-10141-C-A と 1-10141-C-G)に
+      // 付与されているケースで複数件返ってくることがある。parsedVariantがあれば
+      // Ref/Altが完全一致するレコードを優先し、無ければ従来通り先頭を採用する。
+      // tgv_idが指定されている場合は、togovar-variant.tsのrequireVariantDataと同じく
+      // tgv_id解決結果をRef/Altの一致有無に関わらず優先するため、この判定自体を行わない
+      // (variantパラメータが併記されていても、古い/無関係な値であり得るため)。
+      const isExactMatchApplicable = !tgv_id && Boolean(parsedVariant);
+      const exactMatchVariantData =
+        !tgv_id && parsedVariant
+          ? responseDatasets.data.find((data) =>
+              sameVariantAllele(data, parsedVariant),
+            )
+          : undefined;
+
+      // Ref/Alt表記のゆれなどで完全一致が見つからず先頭にフォールバックした場合、
+      // 誤ったバリアントのデータを黙って表示してしまう恐れがあるため、
+      // コンソールへの記録に加えて画面上にも警告バナーを出す。
+      // 候補が2件以上ある場合(=複数アリルの中から選べなかった)と、
+      // 候補が1件しかない場合(=その唯一の候補がたまたまRef/Alt不一致だった)とでは
+      // 原因が異なるため、メッセージを分けて「別のアリルかもしれない」という
+      // 誤解を招かないようにする。
+      const candidateCount = responseDatasets.data.length;
+      const hasMultipleCandidateAmbiguity =
+        isExactMatchApplicable && !exactMatchVariantData && candidateCount > 1;
+      const hasSingleCandidateMismatch =
+        isExactMatchApplicable && !exactMatchVariantData && candidateCount === 1;
+
+      if (hasMultipleCandidateAmbiguity) {
+        console.warn(
+          `variant-frequency: no exact Ref/Alt match for "${params.variant}" among ${candidateCount} candidates returned by /search; falling back to the first result, which may correspond to a different allele.`,
+        );
+      } else if (hasSingleCandidateMismatch) {
+        console.warn(
+          `variant-frequency: the single record returned by /search for "${params.variant}" does not have an exact Ref/Alt match; showing it anyway.`,
+        );
+      }
+
+      const matchedVariantData = exactMatchVariantData ?? responseDatasets.data[0];
+
       // APIレスポンスからバリアントの頻度データ配列を取り出す
       const frequenciesDatasets: FrequencyData[] | undefined =
-        responseDatasets.data[0]?.frequencies;
+        matchedVariantData?.frequencies;
 
       // ----------------------------------------------------------
       // searchData() — ツリー構造を再帰的に走査して行データを構築
@@ -247,14 +389,16 @@ export default class VariantFrequency extends Stanza {
           }
 
           // ---- データセット名の設定 ----
-          // ToMMoはアセンブリに応じて表示名が変わる
-          if (datum.value === "tommo") {
+          // ToMMoはアセンブリやデータセット種別に応じて表示名が変わる
+          if (datum.value === "tommo_jsv1") {
+            frequencyData.dataset = "ToMMo JSV1";
+          } else if (datum.value === "tommo") {
             switch (assembly) {
               case "GRCh37":
                 frequencyData.dataset = "ToMMo 8.3KJPN";
                 break;
               case "GRCh38":
-                frequencyData.dataset = "ToMMo 54KJPN";
+                frequencyData.dataset = "ToMMo 61KJPN";
                 break;
             }
           } else {
@@ -266,9 +410,21 @@ export default class VariantFrequency extends Stanza {
           }
 
           // ---- 集団ラベルの設定 ----
-          if (["gem_j_wga", "jga_wes", "tommo", "hgvd"].includes(datum.value)) {
+          if (
+            [
+              "gem_j_wga",
+              "jga_wes",
+              "tommo",
+              "tommo_jsv1",
+              "hgvd",
+              "bbj1k",
+              "bbj2k",
+            ].includes(datum.value)
+          ) {
             // 日本人単一集団データセット
             frequencyData.label = "Japanese";
+          } else if (datum.value === "jogo") {
+            frequencyData.label = "Mixed";
           } else if (
             [
               "jga_wgs",
@@ -349,19 +505,23 @@ export default class VariantFrequency extends Stanza {
 
           // ---- 未ログイン時: JGA-WGSのダミー行を準備 ----
           // 未ログインだとJGA-WGSの個別集団データがAPIから返ってこないため、
-          // ログインを促すプレースホルダー行を表示する
+          // ログインを促すプレースホルダー行を表示する。
+          // BBJ1K/BBJ2K は公開データセットとして扱うため、実データが無い場合も鍵付きの
+          // ログイン誘導行は出さない。
           if (!isLogin && frequencyData.source === "jga_wgs") {
-            jgawgsChildren.forEach((child) => {
-              const dummyRow: FrequencyData = {
-                dataset: frequencyData.dataset,
-                depth: 1,
-                label: child.label,
-                source: child.value,
-                id: child.id,
-                need_loading: true,
-              };
-              jgawgsData = [...jgawgsData, dummyRow];
-            });
+            jgawgsChildren
+              .filter((child) => !JGA_WGS_PUBLIC_CHILD_SOURCES.has(child.value))
+              .forEach((child) => {
+                const dummyRow: FrequencyData = {
+                  dataset: frequencyData.dataset,
+                  depth: 1,
+                  label: child.label,
+                  source: child.value,
+                  id: child.id,
+                  need_loading: true,
+                };
+                jgawgsData = [...jgawgsData, dummyRow];
+              });
           }
         }
 
@@ -385,7 +545,7 @@ export default class VariantFrequency extends Stanza {
       // ダウンロード用データを保存
       this.data = this.createDownloadData(
         resultObject,
-        responseDatasets.data[0],
+        matchedVariantData,
         hasHemizygote,
       );
 
@@ -397,6 +557,16 @@ export default class VariantFrequency extends Stanza {
           params: this.params,
           result: { resultObject },
           hasHemizygote,
+          ...(hasMultipleCandidateAmbiguity && {
+            warning: {
+              message: `Requested variant "${params.variant}" could not be matched exactly to a Ref/Alt returned by the search; showing data for the first candidate instead, which may correspond to a different allele.`,
+            },
+          }),
+          ...(hasSingleCandidateMismatch && {
+            warning: {
+              message: `The record returned for "${params.variant}" does not have an exact Ref/Alt match; showing it anyway.`,
+            },
+          }),
         },
       });
       this.cleanupFrequencyPopovers = [
@@ -543,7 +713,7 @@ export default class VariantFrequency extends Stanza {
 
       let insertIndex = parentIndex + 1;
 
-      jgawgsChildren.forEach((child, index) => {
+      jgawgsChildren.forEach((child) => {
         const existingChildIndex = resultObject.findIndex(
           (data) => data.source === child.value,
         );
@@ -553,7 +723,7 @@ export default class VariantFrequency extends Stanza {
           return;
         }
 
-        const dummyRow = jgawgsData[index];
+        const dummyRow = jgawgsData.find((data) => data.source === child.value);
         if (dummyRow) {
           resultObject.splice(insertIndex, 0, dummyRow);
           insertIndex += 1;

@@ -1,0 +1,152 @@
+import Stanza from "togostanza/stanza";
+
+import {
+  CLINICAL_SIGNIFICANCE,
+  REVIEW_STATUS,
+  ROBOTO_CONDENSED_CSS_URL,
+} from "@/lib/constants";
+import { buildSparqlistApiUrl, fetchSparqlBindings } from "@/lib/sparqlist";
+import { rowSpanize } from "@/lib/table";
+import type {
+  SparqlistStanzaParams,
+  SparqlistTemplateRenderParams,
+} from "@/lib/types";
+
+// ============================================================
+// 型定義
+// ============================================================
+
+/**
+ * unwrapValueFromBinding後の生バインディング。
+ * 各フィールドはSPARQLバインディングの value を取り出した文字列。
+ */
+interface ClinVarRawBinding {
+  title?: string;
+  /** ClinVar変異ページURL */
+  clinvar?: string;
+  vcv_review_status?: string;
+  rcv_review_status?: string;
+  /** 臨床解釈ラベル（例: "Pathogenic"） */
+  interpretation?: string;
+  last_evaluated?: string;
+  /** 疾患名（condition オブジェクト生成前の文字列） */
+  condition?: string;
+  /** MedGenコード（疾患ページURLの生成に使用） */
+  medgen?: string;
+}
+
+/** テンプレートへ渡す1行分の表示データ */
+interface ClinVarRow {
+  title: string | undefined;
+  clinvar: string | undefined;
+  vcv_review_status: string | undefined;
+  /** VCVレビューステータスに対応する星の数（0〜4） */
+  vcv_stars: number;
+  rcv_review_status: string | undefined;
+  /** RCVレビューステータスに対応する星の数（0〜4） */
+  rcv_stars: number;
+  interpretation: string | undefined;
+  /** 臨床有意性の分類コード（`data-sign` 属性に使用） */
+  significance_class: string | undefined;
+  last_evaluated: string | undefined;
+  condition: {
+    label: string | undefined;
+    url: string | undefined;
+  };
+}
+
+/** renderTemplate に渡すパラメータ全体。エラー時は result を持たない。 */
+type TemplateRenderParams = SparqlistTemplateRenderParams<ClinVarRow[]>;
+
+// ============================================================
+// ヘルパー関数
+// ============================================================
+
+/**
+ * 大文字小文字と、区切り文字（アンダースコア/スペース）の揺れを吸収して比較できる形に正規化する。
+ * ClinVarの解釈テキストには "association_not found" のようにアンダースコアと
+ * スペースが混在する値があり、単純な toLowerCase() 比較だと label 側の
+ * "Association not found" と一致しないため、区切り文字も揃える。
+ */
+function normalizeInterpretationText(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[_\s]+/g, " ")
+    .trim();
+}
+
+/**
+ * ClinVarの解釈ラベル（例: "Pathogenic"）からCLINICAL_SIGNIFICANCEの
+ * 短いコード（例: "P"）を逆引きする。
+ */
+function findSignificanceClass(
+  interpretation: string | undefined,
+): string | undefined {
+  if (!interpretation) return undefined;
+
+  const normalizedInterpretation = normalizeInterpretationText(interpretation);
+  const matchedEntry = Object.entries(CLINICAL_SIGNIFICANCE).find(
+    ([, value]) =>
+      normalizeInterpretationText(value.label) === normalizedInterpretation,
+  );
+  return matchedEntry?.[0];
+}
+
+/**
+ * 生バインディングをテンプレート用の表示行に変換する。
+ * 元のコードはバインディングを直接書き換えていたが、
+ * 元データを保ちつつ新しいオブジェクトを返す形に改めた。
+ */
+function buildClinVarRow(rawBinding: ClinVarRawBinding): ClinVarRow {
+  return {
+    title: rawBinding.title,
+    clinvar: rawBinding.clinvar,
+    vcv_review_status: rawBinding.vcv_review_status,
+    vcv_stars: REVIEW_STATUS[rawBinding.vcv_review_status ?? ""]?.stars ?? 0,
+    rcv_review_status: rawBinding.rcv_review_status,
+    rcv_stars: REVIEW_STATUS[rawBinding.rcv_review_status ?? ""]?.stars ?? 0,
+    interpretation: rawBinding.interpretation,
+    significance_class: findSignificanceClass(rawBinding.interpretation),
+    last_evaluated: rawBinding.last_evaluated,
+    condition: {
+      label: rawBinding.condition,
+      // TogoVar内部の疾患ページへのリンク。medgen が無い疾患名ではリンクを生成しない。
+      url: rawBinding.medgen
+        ? `/disease/${encodeURIComponent(rawBinding.medgen)}`
+        : undefined,
+    },
+  };
+}
+
+// ============================================================
+// Stanza本体
+// ============================================================
+
+export default class VariantClinVar extends Stanza {
+  async render(): Promise<void> {
+    this.importWebFontCSS(ROBOTO_CONDENSED_CSS_URL);
+
+    const params = this.params as SparqlistStanzaParams;
+    const templateParams: TemplateRenderParams = { params };
+
+    try {
+      const apiUrl = buildSparqlistApiUrl("variant_clinvar", params);
+      const rawBindings = await fetchSparqlBindings<ClinVarRawBinding>(apiUrl);
+
+      templateParams.result = rawBindings.map(buildClinVarRow);
+    } catch (e) {
+      console.error(e);
+      templateParams.error = {
+        message: e instanceof Error ? e.message : String(e),
+      };
+    }
+
+    this.renderTemplate({
+      template: "stanza.html.hbs",
+      parameters: templateParams,
+    });
+
+    // テーブルの連続する同一セルを結合（rowspan処理）
+    rowSpanize(this.root.querySelector("#target"));
+  }
+}

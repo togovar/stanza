@@ -62,17 +62,4 @@
     }
   }
 
-  &.-horizontalkeyvalue {
-    > tbody {
-      > tr {
-        th {
-          text-align: right;
-        }
-
-        td {
-          padding-left: 12px;
-        }
-      }
-    }
-  }
 }

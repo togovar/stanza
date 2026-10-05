@@ -1,3 +1,6 @@
+{{#with error}}
+  <div class="alert alert-danger">{{message}}</div>
+{{else}}
 <div id="main">
   {{#if title}}<h1 class="header">{{title}}</h1>{{/if}}
   <div id="popup">
@@ -48,4 +51,5 @@
     </ul>
   </div>
 </div>
+{{/with}}
   

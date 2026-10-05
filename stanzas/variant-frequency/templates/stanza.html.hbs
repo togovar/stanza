@@ -1,6 +1,9 @@
 {{#with error}}
   <div class='alert alert-danger'>{{message}}</div>
 {{else}}
+  {{#with warning}}
+    <div class='alert alert-warning'>{{message}}</div>
+  {{/with}}
   {{#with result}}
     <div class='variant-frequency-scroll'>
       <table class='table frequency-detail'>
@@ -199,11 +202,14 @@
               <td class='quality'>{{quality}}</td>
             </tr>
           {{/each}}
-        {{else}}
-          <tr><td colspan="11" class="nodata-message">{{../params.no_data_message}}</td></tr>
         {{/if}}
       </tbody>
       </table>
+      {{#unless resultObject}}
+        <div class="variant-frequency-no-data">
+          {{#if ../params.no_data_message}}{{../params.no_data_message}}{{else}}No data{{/if}}
+        </div>
+      {{/unless}}
     </div>
   {{/with}}
 {{/with}}

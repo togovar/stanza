@@ -1,24 +1,80 @@
 @use "@/assets/css/common";
 
 main {
-  .table {
+  container-type: inline-size;
+
+  // dt/dd を直接4カラムに流し、左右ペアの境界線を常に中央に揃える。
+  .variant-summary-list {
+    display: grid;
+    grid-template-columns: 130px calc(50% - 130px) 130px calc(50% - 130px);
     width: 100%;
-    table-layout: fixed;
+    margin: 0;
+    font-family: "Roboto Condensed", sans-serif;
 
-    > tbody > tr {
-      > {
-        th {
-          width: 77px;
-          text-align: right;
+    dt,
+    dd {
+      // align-self はデフォルトの stretch のままにして、セルをロー全体の高さに引き伸ばす。
+      // align-self: center にすると各セルが内容高さで縮み、border-bottom がバラバラな位置に引かれる。
+      display: flex;
+      align-items: center;
+      padding: 3px 0;
+      line-height: 1.2;
+      border-bottom: 1px solid var(--color-table-border);
+    }
+
+    dt {
+      padding-left: 10px;
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--color-black);
+    }
+
+    dd {
+      // ブラウザデフォルトの margin-left をリセットする
+      padding-right: 10px;
+      padding-left: 12px;
+      margin: 0;
+      font-size: 14px;
+      color: var(--color-black);
+      white-space: nowrap;
+
+      .chromosome {
+        font-weight: bold;
+      }
+
+      &:nth-of-type(odd) {
+        border-right: 1px solid var(--color-table-border);
+      }
+    }
+
+    .cadd-value {
+      .not-available {
+        font-weight: normal;
+        color: var(--color-gray);
+      }
+    }
+
+    // CADD行は右側にペアとなるdt/ddが無いため、空セルで残りの列を埋めて
+    // 中央の仕切り線(cadd-valueのborder-right)と行全体のborder-bottomを両立させる。
+    .cadd-filler {
+      grid-column: 3 / -1;
+    }
+
+    @container (width <= 580px) {
+      grid-template-columns: 130px minmax(0, 1fr);
+
+      dd {
+        overflow-wrap: anywhere;
+        white-space: normal;
+
+        &:nth-of-type(odd) {
+          border-right: none;
         }
+      }
 
-        td {
-          padding-left: 12px;
-
-          .chromosome {
-            font-weight: bold;
-          }
-        }
+      // 1カラムレイアウトでは各dt/ddが自然に行全体を占めるため、埋め用セルは不要
+      .cadd-filler {
+        display: none;
       }
     }
   }

@@ -2,15 +2,54 @@
 
 main {
   max-height: calc(var(--togostanza-canvas-height) * 1px);
+  background-color: white;
+
+  .table {
+    position: relative;
+    border-spacing: 0;
+    border-collapse: separate;
+
+    > thead > tr > th {
+      position: sticky;
+      top: 0;
+      z-index: var(--z-index-sticky-table-header);
+      background-color: white;
+      border-bottom: var(--border-table-bottom);
+    }
+  }
 
   .table > tbody > tr > td {
-  height: 26px;
+    height: 26px;
 
     > .alphamissense-label,
     > .sift-label,
     > .polyphen-label {
       margin-left: 5px;
       font-size: 12px;
+    }
+  }
+
+  .mane-badge {
+    display: inline-block;
+    padding: 1px 7px 2px;
+    margin-left: 8px;
+    font-size: 10px;
+    font-weight: bold;
+    line-height: 1.2;
+    vertical-align: middle;
+    color: #fff;
+    text-decoration: none;
+    background-color: #20558a;
+    border-radius: 3px;
+
+    &:hover {
+      color: #fff;
+      text-decoration: none;
+    }
+
+    // Transcript IDが無い行では、ID分の余白を埋めるための左マージンが不要
+    &.-no-transcript-id {
+      margin-left: 0;
     }
   }
 }

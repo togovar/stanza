@@ -1,5 +1,6 @@
 import {
   ALPHAMISSENSE,
+  CADD,
   CONSEQUENCE,
   POLYPHEN,
   SIFT,
@@ -82,6 +83,21 @@ export const refAlt = (
   };
 };
 
+/**
+ * reference URI の末尾2セグメントから染色体名とアセンブリ名を取り出す。
+ * 例: "http://identifiers.org/hco/1/GRCh38" → { chr: "1", assembly: "GRCh38" }
+ */
+export const referenceToChrAssembly = (
+  referenceUri?: string,
+): { chr?: string; assembly?: string } => {
+  if (!referenceUri) {
+    return {};
+  }
+
+  const [chr, assembly] = referenceUri.split("/").slice(-2);
+  return { chr, assembly };
+};
+
 export const variantType = (accession?: string): { type: string } => ({
   type: (SO as LabelMap)[String(accession)]?.label || "Unknown",
 });
@@ -92,6 +108,29 @@ export const consequence = (
   most_severe_consequence:
     (CONSEQUENCE as LabelMap)[String(accession)]?.label || "",
 });
+
+/**
+ * CADD (PHRED score) をフィルタUIと同じ閾値（>= 20 / >= 10 / < 10）で分類する。
+ */
+export const caddPhred = (value: NumericInput): Record<string, string> => {
+  const numericValue = toNumericValue(value);
+  if (Number.isNaN(numericValue)) {
+    return {};
+  }
+
+  const rank =
+    numericValue >= 20
+      ? CADD.high
+      : numericValue >= 10
+        ? CADD.moderate
+        : CADD.low;
+
+  return {
+    cadd_phred: fractionDigits3.format(numericValue),
+    cadd_phred_class: rank?.key,
+    cadd_phred_label: rank?.label,
+  };
+};
 
 export const alphaMissense = (value: NumericInput): Record<string, string> => {
   const numericValue = toNumericValue(value);

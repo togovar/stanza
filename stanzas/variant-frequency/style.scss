@@ -1,9 +1,11 @@
 @use "@/assets/css/common";
 @use "@/assets/css/components/frequency-popover";
-@use "@/assets/css/foundation/variables" as *;
-@use "sass:color";
 
 main {
+  .alert-warning {
+    margin-bottom: 8px;
+  }
+
   .variant-frequency-scroll {
     overflow: auto;
     resize: vertical;
@@ -19,6 +21,16 @@ main {
         z-index: var(--z-index-sticky-table-header);
         background-color: white;
       }
+    }
+
+    .variant-frequency-no-data {
+      position: sticky;
+      left: 0;
+      width: 100%;
+      padding: 14px 0 16px;
+      font-size: 14px;
+      color: var(--color-black);
+      text-align: center;
     }
   }
 
@@ -43,12 +55,12 @@ main {
 
       &.alt {
         font-weight: bold;
-        color: $COLOR_ALT;
+        color: var(--color-mutation-alt);
 
         &::after {
           margin-left: 0.5em;
           font-size: 10px;
-          color: $COLOR_BLACK;
+          color: var(--color-black);
           content: "/";
         }
       }
@@ -74,7 +86,7 @@ main {
           padding-bottom: 0;
           padding-left: 7px;
           font-size: 10px;
-          color: $COLOR_BLACK;
+          color: var(--color-black);
           border: none;
           border-left: 1px solid #dee2e6;
         }
@@ -175,8 +187,8 @@ main {
                 width: 6px;
                 height: 6px;
                 content: "";
-                border-right: 1px solid $COLOR_BLACK;
-                border-bottom: 1px solid $COLOR_BLACK;
+                border-right: 1px solid var(--color-black);
+                border-bottom: 1px solid var(--color-black);
                 transform: rotate(-45deg);
               }
 
@@ -193,17 +205,17 @@ main {
             > .lock {
               &::before {
                 margin-right: 3px;
-                font-family: FontAwesome;
+                font-family: "Font Awesome 7 Free";
                 font-size: 14px;
-                color: $COLOR_BLACK;
-                content: var(--char-lock);
+                color: var(--color-black);
+                content: var(--icon-lock);
                 opacity: 0.4;
               }
             }
           }
 
           &.num_alt_alleles {
-            color: $COLOR_ALT;
+            color: var(--color-mutation-alt);
             text-align: right;
             border-left: 1px solid #dee2e6;
 
@@ -211,7 +223,7 @@ main {
               margin-right: 4px;
               margin-left: 7px;
               font-size: 10px;
-              color: $COLOR_BLACK;
+              color: var(--color-black);
             }
 
             .comment {
@@ -219,12 +231,9 @@ main {
               padding: 3px 6px 3px 23px;
               margin-bottom: 4px;
               font-size: 12px;
-              color: $COLOR_BLACK;
-              background-color: color.adjust(
-                $COLOR_SIGN_WARNING,
-                $lightness: 45%
-              );
-              border-color: color.adjust($COLOR_SIGN_WARNING, $lightness: -2%);
+              color: var(--color-black);
+              background-color: var(--color-sign-warning-light);
+              border-color: var(--color-sign-warning-dark);
               border-style: solid;
               border-width: 1px;
               border-radius: 4px;
@@ -234,16 +243,16 @@ main {
                 top: 50%;
                 left: 6px;
                 margin-right: 4px;
-                font-family: FontAwesome;
-                color: color.adjust($COLOR_SIGN_WARNING, $lightness: -2%);
-                content: var(--char-excramation-triangle);
+                font-family: "Font Awesome 7 Free";
+                color: var(--color-sign-warning-dark);
+                content: var(--icon-triangle-exclamation);
                 transform: translateY(-50%);
               }
             }
           }
 
           &.num_alleles {
-            color: $COLOR_BLACK;
+            color: var(--color-black);
             text-align: right;
           }
 
@@ -264,30 +273,26 @@ main {
 
           &.num_genotype_alt_homo,
           &.num_genotype_hemi_alt {
-            color: $COLOR_ALT;
+            color: var(--color-mutation-alt);
           }
 
           &.num_genotype_hetero {
-            color: $COLOR_BLACK;
+            color: var(--color-black);
           }
 
           &.num_genotype_ref_homo,
           &.num_genotype_hemi_ref {
-            color: $COLOR_KEY_DEEP;
+            color: var(--color-key-dark1);
           }
 
           &.filter {
             padding: 0 0 0 7px;
-            color: $COLOR_SIGN_DANGEROUS;
+            color: var(--color-sign-dangerous);
             border-left: 1px solid #dee2e6;
 
             &[data-filter="PASS"] {
-              color: $COLOR_SIGN_SAFE;
+              color: var(--color-sign-safe);
             }
-          }
-
-          &.nodata-message {
-            text-align: center;
           }
         }
       }
@@ -303,7 +308,7 @@ togostanza--menu {
     position: absolute;
     top: 2px;
     left: 26px;
-    font-family: FontAwesome;
+    font-family: "Font Awesome 7 Free";
     font-size: 16px;
     color: #000;
     pointer-events: none;
