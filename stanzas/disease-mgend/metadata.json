@@ -23,7 +23,7 @@
     },
     {
       "stanza:key": "data-url",
-      "stanza:example": "https://stg-grch38.togovar.org/api/search/variant",
+      "stanza:example": "https://grch38.togovar.org/api/search/variant",
       "stanza:description": "URL"
     }
   ],
