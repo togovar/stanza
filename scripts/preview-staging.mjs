@@ -34,11 +34,30 @@ const readEnvLocal = (key) => {
   return line?.slice(line.indexOf("=") + 1).trim().replace(/^["']|["']$/g, "");
 };
 
+// 置換後に "<origin>/api/..." の形になるため、パス・クエリ・フラグメント・認証情報を含まない http/https のオリジンだけを受け付ける
+const parseOrigin = (value) => {
+  try {
+    const url = new URL(value);
+    const isOriginOnly =
+      ["http:", "https:"].includes(url.protocol) &&
+      !url.username &&
+      !url.password &&
+      url.pathname === "/" &&
+      !url.search &&
+      !url.hash;
+    return isOriginOnly ? url.origin : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
 const resolveStagingOrigin = () => {
-  const origin = (process.env[ORIGIN_ENV_KEY] || readEnvLocal(ORIGIN_ENV_KEY) || "").replace(/\/+$/, "");
-  if (!/^https?:\/\/[^/]+$/.test(origin)) {
+  const value = (process.env[ORIGIN_ENV_KEY] || readEnvLocal(ORIGIN_ENV_KEY) || "").replace(/\/+$/, "");
+  const origin = parseOrigin(value);
+  if (!origin) {
     console.error(
       `${ORIGIN_ENV_KEY} にステージングのオリジン(例: https://<staging-host>)を指定してください。\n` +
+        "パス・クエリ(?)・フラグメント(#)・ユーザー名/パスワードは含めないでください。\n" +
         "環境変数で渡すか、.env.local に記述します(.env.local はGit管理外)。",
     );
     process.exit(1);
@@ -76,12 +95,11 @@ const rewriteDist = async (stagingOrigin) => {
 
 const serveDist = (port) => {
   createServer(async (req, res) => {
-    const { pathname } = new URL(req.url, "http://localhost");
     let decodedPath;
     try {
-      decodedPath = decodeURIComponent(pathname);
+      decodedPath = decodeURIComponent(new URL(req.url, "http://localhost").pathname);
     } catch {
-      // 不正なパーセントエンコーディング(例: /%E0)でサーバーごと落ちないようにする
+      // 不正なリクエストURL(例: http://[bad)やパーセントエンコーディング(例: /%E0)でサーバーごと落ちないようにする
       res.writeHead(400).end("Bad Request");
       return;
     }
