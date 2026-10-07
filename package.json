@@ -12,6 +12,7 @@
     "start": "npx togostanza serve",
     "generate": "npx togostanza generate stanza",
     "build": "npx togostanza build",
+    "preview:staging": "node scripts/preview-staging.mjs",
     "lint": "npm run lint:js && npm run lint:css",
     "lint:js": "npm run lint:eslint lib stanzas",
     "lint:eslint": "eslint --ignore-path .gitignore",

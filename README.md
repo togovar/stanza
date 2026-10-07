@@ -42,6 +42,21 @@ npm run generate -- <stanza-id>
 npm run build
 ```
 
+### ステージング環境のデータで確認する
+
+`metadata.json` の `stanza:example` などは本番URLで書き、ステージング向けビルドでは `.github/workflows/publish.yml` が本番URLをステージングURLへ置換します。ローカルで同じ状態を確認する場合は、ソースを書き換えずに以下を使います。
+
+```bash
+# .env.local(Git管理外)にステージングのオリジンを書く
+echo 'TOGOVAR_STAGING_ORIGIN=https://<staging-host>' > .env.local
+
+npm run preview:staging
+```
+
+`dist/` にビルドし、`*.html` / `*.js` / `*.json` 内の `https://grch38.togovar.org` をステージングURLへ置換してから `http://localhost:8081/` で配信します(使用中の場合は `PORT=8082 npm run preview:staging` のように変更するか、`.env.local` に `PORT=8082` を追記)。ステージングのホスト名はリポジトリに書かないでください。
+
+一時的にパラメータだけ変えて試す場合は、`npm run dev` のstanzaページにあるパラメータ入力欄の値を書き換えても確認できます(再読み込みで `stanza:example` の値に戻ります)。
+
 ## 検証
 
 JavaScript/TypeScriptとSCSSを確認します。
