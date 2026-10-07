@@ -77,7 +77,15 @@ const rewriteDist = async (stagingOrigin) => {
 const serveDist = (port) => {
   createServer(async (req, res) => {
     const { pathname } = new URL(req.url, "http://localhost");
-    const filePath = path.join(DIST_DIR, decodeURIComponent(pathname));
+    let decodedPath;
+    try {
+      decodedPath = decodeURIComponent(pathname);
+    } catch {
+      // 不正なパーセントエンコーディング(例: /%E0)でサーバーごと落ちないようにする
+      res.writeHead(400).end("Bad Request");
+      return;
+    }
+    const filePath = path.join(DIST_DIR, decodedPath);
     // dist の外を読ませない
     if (filePath !== DIST_DIR && !filePath.startsWith(DIST_DIR + path.sep)) {
       res.writeHead(403).end();
@@ -93,7 +101,9 @@ const serveDist = (port) => {
     res.writeHead(200, {
       "Content-Type": CONTENT_TYPES[path.extname(target)] || "application/octet-stream",
     });
-    createReadStream(target).pipe(res);
+    createReadStream(target)
+      .on("error", () => res.destroy())
+      .pipe(res);
   })
     .on("error", (error) => {
       if (error.code === "EADDRINUSE") {
@@ -104,7 +114,8 @@ const serveDist = (port) => {
       }
       throw error;
     })
-    .listen(port, () => {
+    // ステージングURLを含むビルドを同一ネットワークの他端末へ公開しないよう、ループバックのみで待ち受ける
+    .listen(port, "127.0.0.1", () => {
       console.warn(`ステージング向けビルドを配信中: http://localhost:${port}/`);
     });
 };

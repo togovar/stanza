@@ -14,7 +14,7 @@
     "build": "npx togostanza build",
     "preview:staging": "node scripts/preview-staging.mjs",
     "lint": "npm run lint:js && npm run lint:css",
-    "lint:js": "npm run lint:eslint lib stanzas",
+    "lint:js": "npm run lint:eslint lib stanzas scripts/*.mjs",
     "lint:eslint": "eslint --ignore-path .gitignore",
     "lint:css": "stylelint \"**/*.scss\" --ignore-path .gitignore",
     "lint:css:fix": "stylelint \"**/*.scss\" --ignore-path .gitignore --fix",
