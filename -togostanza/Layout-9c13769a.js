@@ -26099,8 +26099,9 @@ var scripts = {
 	start: "npx togostanza serve",
 	generate: "npx togostanza generate stanza",
 	build: "npx togostanza build",
+	"preview:staging": "node scripts/preview-staging.mjs",
 	lint: "npm run lint:js && npm run lint:css",
-	"lint:js": "npm run lint:eslint lib stanzas",
+	"lint:js": "npm run lint:eslint lib stanzas scripts/*.mjs",
 	"lint:eslint": "eslint --ignore-path .gitignore",
 	"lint:css": "stylelint \"**/*.scss\" --ignore-path .gitignore",
 	"lint:css:fix": "stylelint \"**/*.scss\" --ignore-path .gitignore --fix",
@@ -26201,4 +26202,4 @@ script.render = render;
 script.__file = "node_modules/togostanza/src/components/Layout.vue";
 
 export { Fragment as F, createBaseVNode as a, createElementBlock as b, createBlock as c, defineComponent as d, renderList as e, createCommentVNode as f, createApp as g, ref as h, octicons as i, createTextVNode as j, computed as k, watch as l, mergeProps as m, normalizeProps as n, openBlock as o, guardReactiveProps as p, resolveDynamicComponent as q, resolveComponent as r, script as s, toDisplayString as t, createVNode as u, n as v, withCtx as w, normalizeClass as x, unref as y, normalizeStyle as z };
-//# sourceMappingURL=Layout-4eec415d.js.map
+//# sourceMappingURL=Layout-9c13769a.js.map
