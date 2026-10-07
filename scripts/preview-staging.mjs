@@ -3,8 +3,8 @@
 // .github/workflows/publish.yml と同じく dist 内の本番URLをステージングURLへ置換してから配信する。
 // ステージングのホスト名は公開しない方針なので、リポジトリには書かず環境変数か .env.local から読む。
 import { spawnSync } from "node:child_process";
-import { createReadStream, existsSync, readFileSync } from "node:fs";
-import { readdir, readFile, stat, writeFile } from "node:fs/promises";
+import { createReadStream, existsSync, readFileSync, realpathSync } from "node:fs";
+import { readdir, readFile, realpath, stat, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import path from "node:path";
 
@@ -70,7 +70,11 @@ const listFiles = async (dir) => {
   const nested = await Promise.all(
     entries.map((entry) => {
       const fullPath = path.join(dir, entry.name);
-      return entry.isDirectory() ? listFiles(fullPath) : [fullPath];
+      if (entry.isDirectory()) {
+        return listFiles(fullPath);
+      }
+      // シンボリックリンクは対象外にし、置換で dist の外のファイルを読み書きしないようにする
+      return entry.isFile() ? [fullPath] : [];
     }),
   );
   return nested.flat();
@@ -93,7 +97,10 @@ const rewriteDist = async (stagingOrigin) => {
   return rewrittenCount;
 };
 
+const isInside = (filePath, dir) => filePath === dir || filePath.startsWith(dir + path.sep);
+
 const serveDist = (port) => {
+  const realDistDir = realpathSync(DIST_DIR);
   createServer(async (req, res) => {
     let decodedPath;
     try {
@@ -105,21 +112,27 @@ const serveDist = (port) => {
     }
     const filePath = path.join(DIST_DIR, decodedPath);
     // dist の外を読ませない
-    if (filePath !== DIST_DIR && !filePath.startsWith(DIST_DIR + path.sep)) {
+    if (!isInside(filePath, DIST_DIR)) {
       res.writeHead(403).end();
       return;
     }
     const target = (await stat(filePath).catch(() => null))?.isDirectory()
       ? path.join(filePath, "index.html")
       : filePath;
-    if (!existsSync(target)) {
+    // シンボリックリンクを解決した実体パスでも dist の中にあることを確認する
+    const realTarget = await realpath(target).catch(() => null);
+    if (!realTarget) {
       res.writeHead(404).end("Not Found");
       return;
     }
+    if (!isInside(realTarget, realDistDir)) {
+      res.writeHead(403).end();
+      return;
+    }
     res.writeHead(200, {
-      "Content-Type": CONTENT_TYPES[path.extname(target)] || "application/octet-stream",
+      "Content-Type": CONTENT_TYPES[path.extname(realTarget)] || "application/octet-stream",
     });
-    createReadStream(target)
+    createReadStream(realTarget)
       .on("error", () => res.destroy())
       .pipe(res);
   })
