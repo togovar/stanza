@@ -1,0 +1,4 @@
+<div id="draw_area">
+  <svg id="gene_cre_svg" height="0px"></svg>
+  <div id="popup_info"></div>
+</div>

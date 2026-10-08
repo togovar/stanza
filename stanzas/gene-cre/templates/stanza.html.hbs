@@ -1,0 +1,48 @@
+<div id="draw_area">
+  <header class="stanza-header">
+    <h2 class="stanza-title">
+      CREs of {{primary_species}} <span class="gene">{{primary_symbol}}</span>
+      and {{secondary_species}} <span class="gene">{{secondary_symbol}}</span>
+    </h2>
+    <p class="stanza-summary">
+      <span class="count entry">from {{entry_species}} <b>{{entry_symbol}}</b> ({{entry_id}})</span>
+      <span class="count human">{{human_count}} human CREs</span>
+      <span class="count mouse">{{mouse_count}} mouse CREs</span>
+      <span class="count pair">{{pair_count}} pairs sharing an orthologous TF</span>
+    </p>
+  </header>
+
+  <div class="stanza-legend">
+    <span class="legend-item"><span class="legend-swatch human"></span>Human CRE</span>
+    <span class="legend-item"><span class="legend-swatch mouse"></span>Mouse CRE</span>
+    <span class="legend-item"><span class="legend-line"></span>Shared orthologous TFs (thicker&nbsp;=&nbsp;more)</span>
+    <span class="legend-item"><span class="legend-ribbon"></span>Orthologous position (on hover)</span>
+    <span class="legend-item"><span class="legend-swatch no-tf"></span>No ChIP-Atlas antigen (track only)</span>
+    <span class="legend-item"><span class="legend-badge">n</span>Variants a mouse strain matches</span>
+    <span class="legend-source">Coordinates: {{coordinate_source}}</span>
+  </div>
+
+  <div class="stanza-controls">
+    <p class="stanza-hint">Hover to preview &middot; click a CRE, a connection or a variant to pin it below</p>
+    <div id="axis_switch" class="axis-switch"></div>
+  </div>
+
+  <div class="svg-scroll">
+    <svg id="gene_cre_svg" height="0"></svg>
+  </div>
+
+  <div id="popup_info" class="hidden"></div>
+
+  <div id="focus_panel" class="focus-panel"></div>
+
+  <div id="detail_panel" class="detail-panel is-empty"></div>
+
+  <h3 id="variant_caption" class="variant-caption hidden"></h3>
+  <style>
+    togostanza-pagination-table {
+      --togostanza-canvas-height: ;
+      --togostanza-fonts-font_size_default: 13;
+    }
+  </style>
+  <togostanza-pagination-table class="hidden" id="togovar_mogplus_table" data-url="" data-type="json" custom-css-url="" padding="0" page-size-option="5,10,20,50,100" page-slider="false" data-unavailable_message="No data" columns="[{&quot;id&quot;:&quot;allele_grcm39&quot;,&quot;label&quot;:&quot;Link to MoG+&quot;,&quot;link&quot;:&quot;mogplus_url&quot;},{&quot;id&quot;:&quot;mouse_strains&quot;,&quot;link&quot;:&quot;mogplus_table&quot;,&quot;label&quot;:&quot;Mouse strains&quot;,&quot;escape&quot;:false,&quot;line-clamp&quot;:1},{&quot;id&quot;:&quot;alt_match&quot;,&quot;label&quot;:&quot;ALT match&quot;},{&quot;id&quot;:&quot;tgv_id&quot;,&quot;link&quot;:&quot;tgv_link&quot;,&quot;label&quot;:&quot;TogoVar ID&quot;},{&quot;id&quot;:&quot;rs&quot;,&quot;link&quot;:&quot;rs_link&quot;,&quot;label&quot;:&quot;rs#&quot;},{&quot;id&quot;:&quot;allele_grch38&quot;,&quot;label&quot;:&quot;Chr-pos-ref-alt&quot;},{&quot;id&quot;:&quot;consequence&quot;,&quot;label&quot;:&quot;Consequence&quot;,&quot;line-clamp&quot;:1,&quot;escape&quot;:false}]"></togostanza-pagination-table>
+</div>

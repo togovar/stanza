@@ -1,0 +1,85 @@
+{
+  "@context": {
+    "stanza": "http://togostanza.org/resource/stanza#"
+  },
+  "@id": "gene-cre",
+  "stanza:label": "Gene / CREs",
+  "stanza:definition": "Compare the CREs of a gene and its ortholog in the other species: their positions, the orthologous TFs they share, the mouse strains carrying the same variants and the human variants those strains model. Entered from a human or a mouse gene. (data integration of fanta.bio, ChIP-Atlas, NCBI Orthologs, TogoCoord, TogoID/HomoloGene, MoG+ and TogoVar)",
+  "stanza:license": "MIT",
+  "stanza:author": "moriya_dbcls",
+  "stanza:contributor": [],
+  "stanza:created": "2025-09-18",
+  "stanza:updated": "2026-09-20",
+  "stanza:parameter": [
+    {
+      "stanza:key": "hgnc_id",
+      "stanza:type": "string",
+      "stanza:example": "404",
+      "stanza:description": "HGNC ID of the human gene. Give one of hgnc_id, mgi_id or ncbigene_id. (e.g. 404)",
+      "stanza:required": false
+    },
+    {
+      "stanza:key": "mgi_id",
+      "stanza:type": "string",
+      "stanza:example": "",
+      "stanza:description": "MGI ID of the mouse gene; carried to its human ortholog through TogoID (e.g. MGI:99600)",
+      "stanza:required": false
+    },
+    {
+      "stanza:key": "ncbigene_id",
+      "stanza:type": "string",
+      "stanza:example": "",
+      "stanza:description": "NCBI Gene ID of a human or mouse gene; the species is decided by whether it has an HGNC ID (e.g. 11669)",
+      "stanza:required": false
+    },
+    {
+      "stanza:key": "sparqlist",
+      "stanza:type": "string",
+      "stanza:example": "https://sparql-support.dbcls.jp/sparqlist",
+      "stanza:description": "Base URL of the SPARQList that serves gene_cre and gene_cre_mogp",
+      "stanza:required": false
+    },
+    {
+      "stanza:key": "togovar",
+      "stanza:type": "string",
+      "stanza:example": "https://grch38.togovar.org",
+      "stanza:description": "TogoVar base URL; togovar_cre_mogplus returns site-relative variant links, which are resolved against it. Set it to an empty string to keep them relative.",
+      "stanza:required": false
+    },
+    {
+      "stanza:key": "mogplus_version",
+      "stanza:type": "string",
+      "stanza:example": "mogplus21",
+      "stanza:description": "MoG+ version queried for the variant table (mogplus21, mogplus3)",
+      "stanza:required": false
+    },
+    {
+      "stanza:key": "axis",
+      "stanza:type": "single-choice",
+      "stanza:choice": [
+        "genome",
+        "gene"
+      ],
+      "stanza:example": "genome",
+      "stanza:description": "Which way the two genome tracks run. genome: both along the plus strand. gene: each follows its own gene 5' to 3', so a gene pair on opposite strands stops its liftOver ribbons crossing.",
+      "stanza:required": false
+    }
+  ],
+  "stanza:menu-placement": "bottom-right",
+  "stanza:style": [
+    {
+      "stanza:key": "--togostanza-cre-human-color",
+      "stanza:type": "color",
+      "stanza:default": "#249eb3",
+      "stanza:description": "accent color of the human track"
+    },
+    {
+      "stanza:key": "--togostanza-cre-mouse-color",
+      "stanza:type": "color",
+      "stanza:default": "#ca678d",
+      "stanza:description": "accent color of the mouse track"
+    }
+  ],
+  "stanza:incomingEvent": [],
+  "stanza:outgoingEvent": []
+}
