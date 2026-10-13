@@ -349,5 +349,5 @@ export async function collect(sparqlist, mogplusVersion, creEntries) {
     })
   );
 
-  return aggregate(targets.map(({ seen, ...t }) => t));
+  return aggregate(targets.map(({ seen: _seen, ...t }) => t));
 }
