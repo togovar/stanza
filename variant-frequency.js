@@ -1,5 +1,5 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
-import { h as hierarchy } from './transform-ddf65f5a.js';
+import { l as hierarchy } from './transform-64d6d8bf.js';
 import { R as ROBOTO_CONDENSED_CSS_URL, F as FONTAWESOME_FREE_SOLID_CSS_URL, D as DATASETS } from './constants-c005a6eb.js';
 import { b as buildFrequencyMarkerState, a as buildFrequencyDisplay, f as formatLocaleInteger } from './frequency-9d3406e7.js';
 import { d as describeVariantIdentifier } from './sparqlist-0870b0c9.js';

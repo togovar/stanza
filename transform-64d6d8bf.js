@@ -68,7 +68,8 @@ function number(x) {
   return x === null ? NaN : +x;
 }
 
-bisector(ascending$1);
+const ascendingBisect = bisector(ascending$1);
+const bisectRight = ascendingBisect.right;
 bisector(number).center;
 
 var noop$1 = {value: () => {}};
@@ -4025,6 +4026,8 @@ function formatLocale$1(locale) {
 }
 
 var locale$1;
+var format;
+var formatPrefix;
 
 defaultLocale$1({
   thousands: ",",
@@ -4034,8 +4037,8 @@ defaultLocale$1({
 
 function defaultLocale$1(definition) {
   locale$1 = formatLocale$1(definition);
-  locale$1.format;
-  locale$1.formatPrefix;
+  format = locale$1.format;
+  formatPrefix = locale$1.formatPrefix;
   return locale$1;
 }
 
@@ -6814,5 +6817,5 @@ new Transform(1, 0, 0);
 
 Transform.prototype;
 
-export { Selection$1 as S, hierarchy as h, root as r };
-//# sourceMappingURL=transform-ddf65f5a.js.map
+export { Selection$1 as S, array as a, color as b, constant as c, interpolateRgb as d, interpolateString as e, exponent as f, bisectRight as g, formatSpecifier as h, interpolateNumber as i, formatPrefix as j, format as k, hierarchy as l, root as r };
+//# sourceMappingURL=transform-64d6d8bf.js.map

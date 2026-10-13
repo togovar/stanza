@@ -1,12 +1,7 @@
 import { S as Stanza, d as defineStanzaElement } from './stanza-a61f9e15.js';
-import { S as Selection, r as root } from './transform-ddf65f5a.js';
+import './transform-64d6d8bf.js';
+import { s as select } from './select-66661cfd.js';
 import { R as ROBOTO_CONDENSED_CSS_URL } from './constants-c005a6eb.js';
-
-function select(selector) {
-  return typeof selector === "string"
-      ? new Selection([[document.querySelector(selector)]], [document.documentElement])
-      : new Selection([[selector]], root);
-}
 
 class GeneProteinBrowser extends Stanza {
   async render() {
@@ -715,8 +710,8 @@ class GeneProteinBrowser extends Stanza {
 }
 
 var stanzaModule = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  'default': GeneProteinBrowser
+	__proto__: null,
+	'default': GeneProteinBrowser
 });
 
 var metadata = {
