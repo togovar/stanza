@@ -1,0 +1,947 @@
+@use "@/assets/css/common";
+@use "sass:color";
+
+// TogoVar key palette (assets/css/foundation/_variables.scss of togovar/stanza)
+$COLOR_KEY: #46b9cc;
+$COLOR_KEY_DEEP: #249eb3;
+$COLOR_KEY_DARK: #256d80;
+$COLOR_SELECTED: #fd0;
+$COLOR_BLACK: #444;
+$COLOR_GRAY: #94928d;
+$COLOR_LIGHT_GRAY: #dfdedd;
+$COLOR_HUMAN: #249eb3;
+$COLOR_HUMAN_LIGHT: #d8f0f4;
+$COLOR_MOUSE: #ca678d;
+$COLOR_MOUSE_LIGHT: #fbe3ec;
+$COLOR_VARIANT: #d2691e;
+
+// The species colours come from the stanza style parameters, which togostanza
+// sets on :host; they are only referenced with a fallback here so that a value
+// set on the host is not shadowed by a declaration on a descendant.
+main {
+    box-shadow: none;
+    background-color: #ffffff;
+    font-family: 'Roboto Condensed', sans-serif;
+    color: $COLOR_BLACK;
+
+    .hidden {
+	display: none;
+    }
+
+    #draw_area {
+	position: relative;
+    }
+
+    //// header
+    .stanza-header {
+	padding: 0 2px 6px;
+	border-bottom: 1px solid $COLOR_LIGHT_GRAY;
+    }
+    .stanza-title {
+	margin: 0;
+	font-size: 18px;
+	font-weight: 500;
+	line-height: 1.3;
+	color: $COLOR_BLACK;
+
+	.gene {
+	    font-weight: 700;
+	    font-style: italic;
+	    color: $COLOR_KEY_DARK;
+	}
+    }
+    .stanza-summary {
+	margin: 4px 0 0;
+	font-size: 12px;
+	color: $COLOR_GRAY;
+
+	.count {
+	    &::after {
+		content: '·';
+		margin: 0 6px;
+		color: $COLOR_LIGHT_GRAY;
+	    }
+	    &:last-child::after {
+		content: none;
+	    }
+	}
+	.human { color: var(--togostanza-cre-human-color, #{$COLOR_HUMAN}); }
+	.mouse { color: var(--togostanza-cre-mouse-color, #{$COLOR_MOUSE}); }
+    }
+
+    //// legend
+    .stanza-legend {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px 16px;
+	padding: 8px 2px;
+	font-size: 11px;
+	color: $COLOR_GRAY;
+    }
+    .legend-item {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	white-space: nowrap;
+    }
+    .legend-swatch {
+	width: 18px;
+	height: 10px;
+	border-radius: 2px;
+	border: 1px solid;
+
+	&.human {
+	    background-color: $COLOR_HUMAN_LIGHT;
+	    border-color: var(--togostanza-cre-human-color, #{$COLOR_HUMAN});
+	}
+	&.mouse {
+	    background-color: $COLOR_MOUSE_LIGHT;
+	    border-color: var(--togostanza-cre-mouse-color, #{$COLOR_MOUSE});
+	}
+	&.no-tf {
+	    background-color: #ffffff;
+	    border-style: dashed;
+	    border-color: $COLOR_GRAY;
+	}
+    }
+    .legend-line {
+	width: 18px;
+	height: 4px;
+	border-radius: 2px;
+	background: linear-gradient(90deg, var(--togostanza-cre-human-color, #{$COLOR_HUMAN}), var(--togostanza-cre-mouse-color, #{$COLOR_MOUSE}));
+    }
+    .legend-ribbon {
+	width: 18px;
+	height: 10px;
+	background-color: rgba(255 178 13 / 0.45);
+	border: 1px solid #ffb20d;
+    }
+    .legend-badge {
+	min-width: 16px;
+	padding: 0 4px;
+	font-size: 9px;
+	font-weight: 700;
+	line-height: 13px;
+	color: #ffffff;
+	text-align: center;
+	background-color: $COLOR_VARIANT;
+	border-radius: 7px;
+    }
+    .legend-source {
+	margin-left: auto;
+	font-size: 10px;
+	color: $COLOR_GRAY;
+    }
+
+    .svg-scroll {
+	overflow-x: auto;
+	overflow-y: hidden;
+    }
+
+    //// the drawing
+    svg#gene_cre_svg {
+	display: block;
+	user-select: none;
+	font-family: 'Roboto Condensed', sans-serif;
+
+	g.cre_card_g,
+	g.cre_block_g,
+	path.cre_pair_path {
+	    cursor: pointer;
+	}
+
+	text.track_label_species {
+	    font-size: 13px;
+	    font-weight: 500;
+	    fill: $COLOR_BLACK;
+	}
+	text.track_label_locus {
+	    font-size: 10px;
+	    fill: $COLOR_GRAY;
+	}
+
+	// the gene on the baseline, and where it starts being transcribed
+	line.gene_body {
+	    stroke-width: 5px;
+	    stroke-linecap: round;
+	    opacity: 0.35;
+	}
+	path.gene_chevron {
+	    fill: none;
+	    stroke-width: 1.5px;
+	    stroke-linecap: round;
+	    stroke-linejoin: round;
+	    opacity: 0.8;
+	}
+	line.tss_tick {
+	    stroke-width: 1.5px;
+	}
+	text.tss_label {
+	    font-size: 10px;
+	    font-weight: 500;
+	}
+
+	line.sequence {
+	    stroke: $COLOR_LIGHT_GRAY;
+	    stroke-width: 3px;
+	    stroke-linecap: round;
+	}
+
+	g.ruler {
+	    line {
+		stroke: $COLOR_LIGHT_GRAY;
+		stroke-width: 1px;
+	    }
+	    text {
+		font-size: 10px;
+		fill: $COLOR_GRAY;
+		text-anchor: middle;
+	    }
+	}
+
+	rect.backdrop {
+	    fill: transparent;
+	}
+
+	rect.cre_block {
+	    stroke-width: 1.5px;
+	    rx: 2px;
+	    ry: 2px;
+
+	    &.no_lift {
+		stroke-dasharray: 3 2;
+	    }
+	}
+
+	rect.cre_card {
+	    stroke-width: 1.5px;
+	}
+	// No ChIP-Atlas antigen: it cannot join a link, so it has no card and
+	// appears on the track only. It still carries variants.
+	rect.cre_block.no_tf {
+	    fill: #ffffff;
+	    stroke-dasharray: 4 2.5;
+	}
+
+	// hover: a light cue that the element is live and where its twin is
+	rect.is-hover {
+	    stroke-width: 2.5px;
+	    filter: drop-shadow(0 1px 3px rgb(0 0 0 / 25%));
+	}
+
+	// pinned: a gold ring, the TogoVar colour for "selected"
+	g.is-selected rect.cre_card,
+	g.is-selected rect.cre_block {
+	    stroke: #c9a800;
+	    stroke-width: 3px;
+	}
+	g.is-selected text.cre_card_id {
+	    font-weight: 700;
+	}
+
+	// everything the pinned thing does not concern steps back
+	g.is-dim,
+	path.is-dim {
+	    opacity: 0.18;
+	}
+	g.cre_card_g,
+	g.cre_block_g,
+	path.cre_pair_path {
+	    transition: opacity 0.12s;
+	}
+
+	// how many variants in this CRE a mouse strain carries the same allele for
+	g.match_badge {
+	    rect {
+		fill: $COLOR_VARIANT;
+		stroke: #ffffff;
+		stroke-width: 1.5px;
+	    }
+	    text {
+		font-size: 10px;
+		font-weight: 700;
+		fill: #ffffff;
+		text-anchor: middle;
+	    }
+	    &.is-strain rect {
+		fill: #a0490a;
+	    }
+	}
+
+	// the CREs binding the highlighted TF
+	circle.tf_marker {
+	    display: none;
+	    fill: $COLOR_SELECTED;
+	    stroke: #c9a800;
+	    stroke-width: 1px;
+	}
+	g.is-tf-hit circle.tf_marker {
+	    display: block;
+	}
+	text.cre_card_id {
+	    font-weight: 500;
+	    text-anchor: middle;
+	}
+	text.cre_card_name {
+	    font-size: 11px;
+	    fill: $COLOR_GRAY;
+	    text-anchor: middle;
+	}
+
+	rect.active_box {
+	    fill: $COLOR_SELECTED !important;
+	    stroke: #c9a800 !important;
+	}
+
+	path.cre_pair_path {
+	    stroke: url(#cre-link-gradient);
+	    stroke-opacity: 0.45;
+	    stroke-linecap: round;
+	    fill: none;
+
+	    &.is-hover,
+	    &.is-selected {
+		stroke-opacity: 1;
+	    }
+	    &.is-tf-hit {
+		stroke: $COLOR_SELECTED;
+		stroke-opacity: 1;
+	    }
+	    &.is-selected {
+		stroke: none;
+		stroke: url(#cre-link-gradient);
+		filter: drop-shadow(0 0 3px rgb(201 168 0 / 90%));
+	    }
+	}
+
+	polygon.liftover_poly {
+	    fill: #ffb20d;
+	    fill-opacity: 0.35;
+	    stroke: none;
+	}
+
+	text.empty_note {
+	    font-size: 13px;
+	    fill: $COLOR_LIGHT_GRAY;
+	    text-anchor: middle;
+	}
+    }
+
+    //// floating info box
+    #popup_info {
+	position: absolute;
+	z-index: 100;
+	max-width: 340px;
+	padding: 8px 10px;
+	font-size: 12px;
+	line-height: 1.45;
+	color: $COLOR_BLACK;
+	background-color: #ffffff;
+	border: 1px solid $COLOR_LIGHT_GRAY;
+	border-radius: 6px;
+	box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+	pointer-events: none;
+
+	h4 {
+	    display: flex;
+	    align-items: center;
+	    gap: 6px;
+	    margin: 0 0 6px;
+	    font-size: 13px;
+	    font-weight: 500;
+	    color: $COLOR_KEY_DARK;
+	}
+	.swatch {
+	    display: inline-block;
+	    width: 10px;
+	    height: 10px;
+	    border-radius: 2px;
+	}
+	dl {
+	    display: grid;
+	    grid-template-columns: auto 1fr;
+	    gap: 2px 8px;
+	    margin: 0;
+	}
+	dt {
+	    font-weight: 500;
+	    color: $COLOR_GRAY;
+	    white-space: nowrap;
+	}
+	dd {
+	    margin: 0;
+	    overflow-wrap: anywhere;
+	}
+	.tf_list {
+	    display: -webkit-box;
+	    -webkit-line-clamp: 4;
+	    -webkit-box-orient: vertical;
+	    overflow: hidden;
+	}
+	.muted {
+	    color: $COLOR_GRAY;
+	}
+	.hint {
+	    margin: 6px 0 0;
+	    font-size: 10px;
+	    color: $COLOR_GRAY;
+	}
+    }
+
+    //// hint line and the axis switch
+    .stanza-controls {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px 16px;
+	margin-bottom: 6px;
+    }
+    .stanza-hint {
+	margin: 0 2px;
+	font-size: 11px;
+	color: $COLOR_GRAY;
+    }
+    .axis-switch {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+	margin-left: auto;
+	font-size: 11px;
+    }
+    .orient-label {
+	color: $COLOR_GRAY;
+    }
+    .orient-tabs {
+	display: flex;
+	border: 1px solid $COLOR_LIGHT_GRAY;
+	border-radius: 10px;
+	overflow: hidden;
+	background-color: #ffffff;
+    }
+    .orient-tab {
+	padding: 1px 10px;
+	font-family: inherit;
+	font-size: 11px;
+	color: $COLOR_GRAY;
+	cursor: pointer;
+	background: none;
+	border: none;
+
+	&:hover {
+	    color: $COLOR_KEY_DARK;
+	}
+	&.is-selected {
+	    color: #ffffff;
+	    background-color: $COLOR_KEY_DEEP;
+	}
+    }
+    .orient-note {
+	color: $COLOR_GRAY;
+    }
+
+    //// gene-level ranking, either direction
+    .focus-panel {
+	margin-top: 10px;
+	padding: 10px 12px;
+	font-size: 12px;
+	border: 1px solid $COLOR_LIGHT_GRAY;
+	border-radius: 6px;
+	background-color: #fffaf6;
+    }
+    .rank-list {
+	margin: 4px 0 6px;
+	padding: 0;
+	list-style: none;
+
+	> li {
+	    display: flex;
+	    align-items: center;
+	    gap: 8px;
+	}
+    }
+    .rank-row {
+	display: grid;
+	grid-template-columns: minmax(96px, 168px) minmax(60px, 1fr) 172px minmax(58px, 170px);
+	align-items: center;
+	gap: 10px;
+	flex: 1;
+	padding: 3px 6px;
+	font-family: inherit;
+	font-size: 12px;
+	text-align: left;
+	cursor: pointer;
+	background: none;
+	border: 1px solid transparent;
+	border-radius: 4px;
+
+	&:hover {
+	    background-color: #fff2e6;
+	    border-color: color.adjust($COLOR_VARIANT, $lightness: 35%);
+	}
+	&.is-selected {
+	    background-color: #fff2e6;
+	    border-color: $COLOR_VARIANT;
+	}
+
+	@media (max-width: 640px) {
+	    grid-template-columns: 1fr auto;
+	    .rank-bar { display: none; }
+	}
+    }
+    .rank-name {
+	font-weight: 500;
+	color: $COLOR_BLACK;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+
+	code {
+	    font-size: 11px;
+	    font-weight: 400;
+	}
+    }
+    .rank-bar {
+	height: 8px;
+	background-color: #f0e4da;
+	border-radius: 4px;
+	overflow: hidden;
+
+	> i {
+	    display: block;
+	    height: 100%;
+	    background-color: $COLOR_VARIANT;
+	}
+    }
+    .rank-count {
+	color: $COLOR_GRAY;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+
+	b { color: $COLOR_BLACK; }
+	.tgv {
+	    padding: 0 5px;
+	    font-size: 10px;
+	    color: $COLOR_KEY_DARK;
+	    background-color: #e3f3f6;
+	    border-radius: 7px;
+	}
+    }
+    .rank-extra {
+	color: $COLOR_GRAY;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+
+	.more {
+	    padding: 0 4px;
+	    font-size: 10px;
+	    background-color: #f0eeeb;
+	    border-radius: 6px;
+	}
+    }
+
+    //// which side the ranking lands on
+    .focus-tabs {
+	display: flex;
+	margin-left: auto;
+	border: 1px solid $COLOR_LIGHT_GRAY;
+	border-radius: 11px;
+	overflow: hidden;
+	background-color: #ffffff;
+    }
+    .focus-tab {
+	padding: 2px 11px;
+	font-family: inherit;
+	font-size: 11px;
+	color: $COLOR_GRAY;
+	cursor: pointer;
+	background: none;
+	border: none;
+
+	&:hover {
+	    color: $COLOR_KEY_DARK;
+	}
+	&.is-selected {
+	    color: #ffffff;
+	    background-color: $COLOR_KEY_DEEP;
+	}
+    }
+    .panel-badge.human {
+	background-color: var(--togostanza-cre-human-color, #{$COLOR_HUMAN});
+    }
+    .stanza-error {
+	margin: 12px 2px;
+	padding: 8px 12px;
+	font-size: 13px;
+	color: #8a5a00;
+	background-color: #fff4e0;
+	border-left: 3px solid #e8a400;
+    }
+    .stanza-summary .entry b {
+	color: $COLOR_BLACK;
+    }
+    .rank-links {
+	display: flex;
+	gap: 8px;
+	font-size: 10px;
+	white-space: nowrap;
+
+	.src {
+	    color: $COLOR_GRAY;
+	}
+	.alias {
+	    color: $COLOR_GRAY;
+	}
+    }
+    .strain-hits {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+
+	> li {
+	    margin-bottom: 8px;
+	}
+    }
+    .variant-list {
+	margin: 3px 0 0;
+	padding: 0 0 0 14px;
+	list-style: none;
+	font-size: 11px;
+	color: $COLOR_GRAY;
+
+	code {
+	    color: $COLOR_BLACK;
+	    font-size: 11px;
+	}
+	> li {
+	    padding: 1px 0;
+	}
+    }
+    .partner-chip.strain {
+	color: $COLOR_VARIANT;
+
+	em {
+	    color: #7a3c06;
+	    background-color: #ffe9d6;
+	}
+    }
+    .panel-badge.strain {
+	background-color: $COLOR_VARIANT;
+    }
+
+    //// details panel
+    .detail-panel {
+	margin-top: 10px;
+	padding: 10px 12px;
+	font-size: 12px;
+	border: 1px solid $COLOR_LIGHT_GRAY;
+	border-radius: 6px;
+	background-color: #fcfcfb;
+
+	&.is-empty {
+	    background-color: #ffffff;
+	    border-style: dashed;
+	}
+    }
+    .panel-empty {
+	margin: 0;
+	color: $COLOR_GRAY;
+	text-align: center;
+
+	b {
+	    color: $COLOR_BLACK;
+	}
+    }
+    .panel-head {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 6px;
+
+	h3 {
+	    margin: 0;
+	    font-size: 15px;
+	    font-weight: 500;
+	    color: $COLOR_KEY_DARK;
+	}
+    }
+    .panel-sub {
+	font-size: 12px;
+	font-weight: 400;
+	color: $COLOR_GRAY;
+    }
+    .panel-badge {
+	padding: 1px 8px;
+	font-size: 10px;
+	color: #ffffff;
+	white-space: nowrap;
+	border-radius: 8px;
+	background-color: $COLOR_GRAY;
+
+	&.human { background-color: var(--togostanza-cre-human-color, #{$COLOR_HUMAN}); }
+	&.mouse { background-color: var(--togostanza-cre-mouse-color, #{$COLOR_MOUSE}); }
+	&.pair  { background-color: $COLOR_KEY_DARK; }
+    }
+    .panel-clear {
+	margin-left: auto;
+	padding: 2px 9px;
+	font-family: inherit;
+	font-size: 11px;
+	color: $COLOR_GRAY;
+	cursor: pointer;
+	background-color: #ffffff;
+	border: 1px solid $COLOR_LIGHT_GRAY;
+	border-radius: 9px;
+
+	&:hover {
+	    color: $COLOR_KEY_DARK;
+	    border-color: $COLOR_KEY;
+	}
+    }
+    .panel-meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 3px 14px;
+	margin: 0 0 8px;
+	color: $COLOR_BLACK;
+
+	.muted {
+	    color: $COLOR_GRAY;
+	}
+	.warn {
+	    color: #8a5a00;
+	}
+    }
+    a.ext {
+	color: $COLOR_KEY_DARK;
+
+	&::after {
+	    content: ' ↗';
+	    font-size: 10px;
+	}
+    }
+    .panel-section {
+	margin-top: 10px;
+
+	h4 {
+	    display: flex;
+	    align-items: baseline;
+	    gap: 8px;
+	    margin: 0 0 5px;
+	    font-size: 12px;
+	    font-weight: 500;
+	    color: $COLOR_BLACK;
+
+	    .muted {
+		font-weight: 400;
+		font-size: 11px;
+		color: $COLOR_GRAY;
+	    }
+	}
+    }
+    .panel-none {
+	margin: 0;
+	font-size: 11px;
+	color: $COLOR_GRAY;
+    }
+    .panel-warn {
+	margin: 8px 0 0;
+	padding: 4px 9px;
+	font-size: 11px;
+	color: #8a5a00;
+	background-color: #fff4e0;
+	border-left: 3px solid #e8a400;
+    }
+    .panel-hint {
+	margin: 8px 0 0;
+	font-size: 11px;
+	color: $COLOR_GRAY;
+    }
+
+    //// TF chips
+    .chip-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	max-height: 112px;
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: $COLOR_LIGHT_GRAY transparent;
+
+	&::-webkit-scrollbar {
+	    width: 7px;
+	}
+	&::-webkit-scrollbar-thumb {
+	    background-color: $COLOR_LIGHT_GRAY;
+	    border-radius: 4px;
+	}
+    }
+    .tf-chip {
+	padding: 1px 8px;
+	font-family: inherit;
+	font-size: 11px;
+	line-height: 17px;
+	color: $COLOR_BLACK;
+	cursor: pointer;
+	background-color: #ffffff;
+	border: 1px solid $COLOR_LIGHT_GRAY;
+	border-radius: 9px;
+
+	&.human {
+	    color: $COLOR_KEY_DARK;
+	    border-color: color.adjust($COLOR_HUMAN, $lightness: 35%);
+	}
+	&.mouse {
+	    color: #8e3f5c;
+	    border-color: color.adjust($COLOR_MOUSE, $lightness: 28%);
+	}
+	// a shared orthologous TF: the thing this stanza is about
+	&.is-shared {
+	    font-weight: 700;
+	    color: #6b5a00;
+	    background-color: #fff8d6;
+	    border-color: #e8c400;
+	}
+	&:hover {
+	    border-color: $COLOR_KEY_DEEP;
+	}
+	// bound on both sides, yet absent from the shared set the API returned
+	&.is-both {
+	    border-style: dashed;
+	    border-color: #e8a400;
+	}
+	&.is-active {
+	    color: #ffffff;
+	    background-color: $COLOR_KEY_DEEP;
+	    border-color: $COLOR_KEY_DARK;
+	}
+    }
+    .partner-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 1px 4px 1px 9px;
+	font-family: inherit;
+	font-size: 11px;
+	line-height: 18px;
+	cursor: pointer;
+	background-color: #ffffff;
+	border: 1px solid $COLOR_LIGHT_GRAY;
+	border-radius: 10px;
+
+	&.human { color: $COLOR_KEY_DARK; }
+	&.mouse { color: #8e3f5c; }
+
+	em {
+	    padding: 0 6px;
+	    font-style: normal;
+	    font-weight: 700;
+	    color: #6b5a00;
+	    background-color: #fff8d6;
+	    border-radius: 8px;
+	}
+	&:hover {
+	    border-color: $COLOR_KEY_DEEP;
+	}
+    }
+
+    //// the three-column TF comparison
+    .tf-compare {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	gap: 12px;
+
+	@media (max-width: 640px) {
+	    grid-template-columns: 1fr;
+	}
+    }
+    .tf-col {
+	padding: 7px 8px;
+	border-radius: 5px;
+	background-color: #ffffff;
+	border: 1px solid $COLOR_LIGHT_GRAY;
+
+	h4 {
+	    display: flex;
+	    align-items: baseline;
+	    gap: 6px;
+	    margin: 0 0 6px;
+	    font-size: 11px;
+	    font-weight: 500;
+	    color: $COLOR_GRAY;
+
+	    em {
+		font-style: normal;
+		font-weight: 700;
+		color: $COLOR_BLACK;
+	    }
+	}
+	&.human h4 { color: var(--togostanza-cre-human-color, #{$COLOR_HUMAN}); }
+	&.mouse h4 { color: var(--togostanza-cre-mouse-color, #{$COLOR_MOUSE}); }
+	&.is-shared {
+	    background-color: #fffdf2;
+	    border-color: #e8c400;
+
+	    h4 { color: #6b5a00; }
+	}
+    }
+
+    .tf-banner {
+	margin: 0 0 8px;
+	padding: 4px 9px;
+	font-size: 11px;
+	color: #6b5a00;
+	background-color: #fff8d6;
+	border-radius: 4px;
+    }
+    .tf-dot {
+	display: inline-block;
+	width: 9px;
+	height: 9px;
+	vertical-align: -1px;
+	background-color: $COLOR_SELECTED;
+	border: 1px solid #c9a800;
+	border-radius: 50%;
+    }
+    .link-button {
+	padding: 0;
+	font-family: inherit;
+	font-size: 11px;
+	color: $COLOR_KEY_DARK;
+	text-decoration: underline;
+	cursor: pointer;
+	background: none;
+	border: none;
+    }
+
+    .variant-caption {
+	margin: 14px 0 0;
+	font-size: 13px;
+	font-weight: 500;
+	color: $COLOR_BLACK;
+
+	.muted {
+	    font-weight: 400;
+	    font-size: 11px;
+	    color: $COLOR_GRAY;
+	}
+    }
+
+    togostanza-pagination-table {
+	display: block;
+	margin-top: 6px;
+    }
+
+    #togovar_loading_icon {
+	background-image: url("data:image/gif;base64,R0lGODlhPAAUAPQGAKLc5aje59zy9bnl7LTi6vP7/Pn9/b/n7ej2+dHt8uL09+74+svr8a7g6dbw9N/z9pnZ49nw9KDb5fj9/eb1+LPi6tPu86be56zg6MDn7v///wAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh/wtYTVAgRGF0YVhNUDw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowMTgwMTE3NDA3MjA2ODExODcxRkIwQUU2Mjk1Q0NDRSIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo4QzM5QjBEQzkwNjMxMUUzOTQyOTlENEM0NjEzRDEwQSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo4QzM5QjBEQjkwNjMxMUUzOTQyOTlENEM0NjEzRDEwQSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjAyODAxMTc0MDcyMDY4MTE4NzFGQjBBRTYyOTVDQ0NFIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjAxODAxMTc0MDcyMDY4MTE4NzFGQjBBRTYyOTVDQ0NFIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+Af/+/fz7+vn49/b19PPy8fDv7u3s6+rp6Ofm5eTj4uHg397d3Nva2djX1tXU09LR0M/OzczLysnIx8bFxMPCwcC/vr28u7q5uLe2tbSzsrGwr66trKuqqainpqWko6KhoJ+enZybmpmYl5aVlJOSkZCPjo2Mi4qJiIeGhYSDgoGAf359fHt6eXh3dnV0c3JxcG9ubWxramloZ2ZlZGNiYWBfXl1cW1pZWFdWVVRTUlFQT05NTEtKSUhHRkVEQ0JBQD8+PTw7Ojk4NzY1NDMyMTAvLi0sKyopKCcmJSQjIiEgHx4dHBsaGRgXFhUUExIREA8ODQwLCgkIBwYFBAMCAQAAIfkEBQoABgAsAAAAADwAFAAABWKgIY5kaZ5oqq5s676wKgxADQxCrL8FYf8AQmFHRBUCQGBgWGyKfEkgwdkURKM56o52BQ60u24UrBMnyTEzEA1T/9gvrvoLb1nd2ToLKp7qW0diS38uPVdChDAzPziJjo+QIQAh+QQJCgABACwIAAgABAAEAAAFCqBxHCIAjCY5GiEAIfkECQoAAwAsCgAGAAgACAAABR7gMBgIYoiDEABAIIwr25KyXNasGbPBqfIvEckkCgEAIfkECQoAAgAsDQAEAAsADAAABSmgII7kIiJHEBwKkgRCAsw0jdQ4cOR1wNO+n04IuAljRwFKxXLBSNBFCAAh+QQJCgABACwPAAIAEAARAAAFO2AgjuTikKQhJMnQAKhoMEBtxyJh3zi91zjDj4cSDIGxxBGWXOKMx6CzFw3qfriRb5eVrVqvbswk7hpCACH5BAkKAAAALBIAAQAXABIAAAVWICCOUYZBUlVJEJZFYyxSF2TfuH1RMhDlwBxs9Agabw/RhHU0SiYAS7NpAZymRgwA25xwj95vcCsGWss4rRRtqy7ZT1ERnSSVhzEadtcjmVAqLC54IiEAIfkECQoABwAsFQACABgAEAAABVLgIYrCAJzA4Cxj6x4Fgc5nMySJYLxFQP80hksGLJ4Iu4PAyAQID6amcSdl6qrGhAFbTBy4QAEUTNstyafngQgmtHpgRnIUM9pwuteoNFOx9CIhACH5BAkKAAwALBUAAgAaABAAAAVZICOKwgCcwCCMbMsWBCoDROHeRTDPwXK3sR0vgVAcAoEDYiQQOoUJkelJRS2rWMDBkK0GuN1ngBF+HhjT8mzZVMuioiA1QDQilS+d2Pd7yWc1fTclMiqCIyEAIfkECQoABwAsFgACABwAEAAABWbgIR7CAJzAIIxs6xYEKgNE4d5iEcxzYOOtGG9GALIEw+GqZUAgDCJTcjZoCXaAwGo6ZBmwp4CBy2MheGeyzIxWr0dfmViqrh6xWpIbsPQ6oSJCXEVGIzpcPoUsMEk1ii4lMiqPIyEAIfkEBQoACAAsFgACAB4AEAAABVQgIiLCAJzAIIxs64oFgc4AUbw4HNB0cOcuGY9GALYEw+HKKDIlaQOm6DkEGg4HA5UHPJy821n3GxbnrllnOCpFlpdSIbUo1VF99VEsacsf1SlweSEAOw==");
+	display: block;
+	width: 60px;
+	height: 20px;
+	background-repeat: no-repeat;
+	margin: 50px auto;
+    }
+}
