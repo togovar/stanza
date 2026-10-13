@@ -34,6 +34,10 @@ Either species can be the entry. Give exactly one of:
 | `mgi_id` | `MGI:99600` | mouse gene |
 | `ncbigene_id` | `217` or `11669` | human or mouse gene |
 
+If more than one is given, only one is used, in the order `mgi_id`,
+`ncbigene_id`, `hgnc_id`. On the demo page `hgnc_id` is prefilled with `404`,
+so an `mgi_id` or `ncbigene_id` entered there takes precedence over it.
+
 `gene_cre` takes any of the three and resolves the pair with **one ortholog
 source**, the NCBI Orthologs RDF endpoint, queried from whichever end was given:
 
@@ -64,7 +68,7 @@ The other views are always one click away.
 
 | Key | Default | Description |
 |---|---|---|
-| `hgnc_id` | `404` | HGNC ID of the human gene |
+| `hgnc_id` | | HGNC ID of the human gene |
 | `mgi_id` | | MGI ID of the mouse gene |
 | `ncbigene_id` | | NCBI Gene ID of either species |
 | `sparqlist` | `https://sparql-support.dbcls.jp/sparqlist` | SPARQList base URL |

@@ -53,6 +53,9 @@ export default class GeneCre extends Stanza {
     // through the NCBI Orthologs endpoint and returns both species' CREs with
     // their positions, liftOver, GRCm39 coordinates and gene models already
     // worked out, so nothing is looked up here.
+    // gene_cre names its parameters without "_id" (hgnc, mgi, ncbigene) and
+    // ignores unknown ones, falling back to its default hgnc=404 (ALDH2), so
+    // the "_id" suffix of the stanza parameters has to be dropped here.
     const query = ['hgnc_id', 'mgi_id', 'ncbigene_id']
       .map((key) => [key.replace(/_id$/, ''), this.params[key]])
       .filter(([, value]) => value != null && String(value).trim() !== '')
@@ -68,8 +71,17 @@ export default class GeneCre extends Stanza {
 
     let cre;
     try {
-      cre = await fetch(sparqlist + '/api/gene_cre?' + query.join('&')).then((res) => res.json());
+      const response = await fetch(sparqlist + '/api/gene_cre?' + query.join('&'));
+      if (!response.ok) throw new Error(`gene_cre returned status ${response.status}`);
+      cre = await response.json();
       if (typeof cre === 'string') throw new Error(cre);
+      // Everything read below must be there, or the stanza would stay on its
+      // loading view instead of showing the error.
+      if (!cre?.entry?.species || !cre?.orth?.human || !cre?.orth?.mouse ||
+          !Array.isArray(cre.human_cre) || !Array.isArray(cre.mouse_cre) ||
+          !Array.isArray(cre.cre_comparison) || !cre?.gene) {
+        throw new Error('gene_cre returned an invalid response');
+      }
     } catch (e) {
       this.renderTemplate({ template: 'error.html.hbs', parameters: { message: String(e.message || e) } });
       return;

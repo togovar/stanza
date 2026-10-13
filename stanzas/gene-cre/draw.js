@@ -1504,7 +1504,7 @@ export function draw({
     }
     table.setAttribute(
       'data-url',
-      links.sparqlist + '/api/gene_cre_mogp?mogplus_ver=' + links.mogplusVersion +
+      links.sparqlist + '/api/gene_cre_mogp?mogplus_ver=' + encodeURIComponent(links.mogplusVersion) +
         '&' + range.param + '=' + encodeURIComponent(range.value)
     );
     table.classList.remove('hidden');

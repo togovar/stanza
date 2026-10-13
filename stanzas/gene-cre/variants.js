@@ -20,7 +20,8 @@ const NOT_FOUND = /^\s*(MoG\+ variant not found|Liftover position not found)/i;
 
 /**
  * Rows for a batch of ranges; an empty array when there is nothing. Each row
- * carries `in_range`, the requested ranges it belongs to.
+ * carries `in_range`, the requested ranges it belongs to. A failed request or
+ * an unexpected answer throws, so it is not mistaken for "no variants".
  */
 export async function fetchRanges(sparqlist, mogplusVersion, human, mouse) {
   if (!human.length && !mouse.length) return [];
@@ -28,15 +29,14 @@ export async function fetchRanges(sparqlist, mogplusVersion, human, mouse) {
     sparqlist + '/api/gene_cre_mogp?mogplus_ver=' + encodeURIComponent(mogplusVersion) +
     (human.length ? '&ranges=' + encodeURIComponent(human.join(',')) : '') +
     (mouse.length ? '&mmu_ranges=' + encodeURIComponent(mouse.join(',')) : '');
-  const text = await fetch(url).then((res) => res.text());
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`gene_cre_mogp returned status ${res.status}`);
+  const text = await res.text();
   // The API answers with plain text, not JSON, when there is nothing to show.
   if (!text || NOT_FOUND.test(text)) return [];
-  try {
-    const parsed = JSON.parse(text);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
+  const parsed = JSON.parse(text);
+  if (!Array.isArray(parsed)) throw new Error('gene_cre_mogp returned an invalid response');
+  return parsed;
 }
 
 /**
@@ -172,9 +172,13 @@ export function aggregate(entries) {
         // Every human allele this mouse allele was compared against, and
         // whether that comparison was an exact match.
         if (id) {
+          // As for the human variants above, the first row that carries an ID
+          // keeps it with its link; a later row without one does not erase it.
           const prev = mv.human.get(id);
-          mv.human.set(id, { id, tgv_id: row.tgv_id || '', tgv_link: row.tgv_link || '', rs: row.rs || '',
-            rs_link: row.rs_link || '', match: row.alt_match === 'Yes' || (prev && prev.match) || false });
+          const tgv = prev?.tgv_id ? prev : row;
+          const rs = prev?.rs ? prev : row;
+          mv.human.set(id, { id, tgv_id: tgv.tgv_id || '', tgv_link: tgv.tgv_link || '', rs: rs.rs || '',
+            rs_link: rs.rs_link || '', match: row.alt_match === 'Yes' || (prev && prev.match) || false });
         }
         if (row.alt_match === 'Yes') mv.matched = true;
         for (const st of parseStrains(row.mouse_strains))
@@ -193,12 +197,15 @@ export function aggregate(entries) {
   }
 
   // The names that carry a RIKEN version suffix, used to decide what may merge.
+  // Mouse alleles without an exact human match carry strains too, so both maps
+  // are read; otherwise a JAX name seen only there would never be merged.
   const versioned = new Set();
-  for (const v of variants.values())
-    for (const name of v.strains.keys()) {
-      const m = /^(.+?)v\d+$/.exec(name);
-      if (m) versioned.add(m[1]);
-    }
+  for (const collection of [variants, mouseVariants])
+    for (const variant of collection.values())
+      for (const name of variant.strains.keys()) {
+        const m = /^(.+?)v\d+$/.exec(name);
+        if (m) versioned.add(m[1]);
+      }
 
   const strains = new Map();
   for (const v of variants.values()) {
@@ -323,15 +330,11 @@ export async function collect(sparqlist, mogplusVersion, creEntries) {
   for (let i = 0; i < Math.max(humanChunks.length, mouseChunks.length, 1); i++)
     batches.push([humanChunks[i] || [], mouseChunks[i] || []]);
 
+  // A failed batch rejects the whole collection, so index.js shows the variants
+  // as unavailable instead of drawing a partial result as if it were complete.
   await Promise.all(
     batches.map(async ([h, m]) => {
-      let rows = [];
-      try {
-        rows = await fetchRanges(sparqlist, mogplusVersion, h, m);
-      } catch (e) {
-        console.warn('gene-cre: variants could not be fetched', e);
-        return;
-      }
+      const rows = await fetchRanges(sparqlist, mogplusVersion, h, m);
       for (const row of rows) {
         const key = rowKey(row);
         for (const value of row.in_range || []) {
