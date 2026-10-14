@@ -35,7 +35,7 @@
     {
       "stanza:key": "sparqlist",
       "stanza:type": "string",
-      "stanza:example": "https://sparql-support.dbcls.jp/sparqlist",
+      "stanza:example": "https://grch38.togovar.org/sparqlist",
       "stanza:description": "Base URL of the SPARQList that serves gene_cre and gene_cre_mogp",
       "stanza:required": false
     },

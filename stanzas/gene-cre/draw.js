@@ -1165,11 +1165,14 @@ export function draw({
   /**
    * TogoVar takes an allele string on the same route as a TogoVar ID, so a
    * variant without an ID still gets a link — it lands on the search result
-   * for that allele instead of on a variant report.
+   * for that allele instead of on a variant report. The allele is written
+   * `12-111767031-T-C` there, while the API gives it as `12:111767031-T-C`.
    */
   const togovarVariantHref = (v) => {
     if (v.tgv_id) return togovarHref(v.tgv_link || '/variant/' + v.tgv_id);
-    return /^[\w.]+:\d+-\S+$/.test(v.id || '') ? (links.togovar || '') + '/variant/' + v.id : null;
+    // The `?-?` placeholder a mouse-only row carries is not an allele.
+    if (!/^[\w.]+:\d+-[^?\s]+-[^?\s]+$/.test(v.id || '')) return null;
+    return (links.togovar || '') + '/variant/' + v.id.replace(':', '-');
   };
 
   const togovarLink = (v, fallbackLabel) => {
