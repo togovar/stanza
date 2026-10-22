@@ -5,7 +5,7 @@
   "repository": "https://github.com/togovar/stanza.git",
   "private": true,
   "engines": {
-    "node": "20.19.x"
+    "node": "^24.22.1"
   },
   "scripts": {
     "dev": "npx togostanza serve",

@@ -8,7 +8,7 @@ TogoVarで利用する [Togostanza](https://togostanza.github.io/) 用stanza集�
 
 ## 必要環境
 
-- Node.js: `20.19.x`
+- Node.js: `24.22.1` 以上の24系(`^24.22.1`。それより前の24系には脆弱性があるため)
 - npm: `package-lock.json` に合わせて利用します
 - yarn: `1.22+`（Togostanza標準の手順を使う場合）
 
