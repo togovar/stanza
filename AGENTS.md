@@ -32,7 +32,7 @@
 | 共通処理       | `lib/` と `assets/css/`                  |
 | パッケージ     | npm / yarn                               |
 
-- Node.js は `package.json` の `engines.node` に従い、現在は `20.19.x` 前提。
+- Node.js は `package.json` の `engines.node` に従い、現在は `^24.22.1`(24系の 24.22.1 以上)前提。24.22.1 未満には脆弱性があるため使わない。
 - READMEでは yarn が案内されているが、`package-lock.json` と npm scripts も存在する。作業時は既存のロックファイルとユーザー指定を優先する。
 - `tsconfig.json` は `strict: false`、`allowJs: true`。既存JSとTSが共存しているため、周辺ファイルの粒度に合わせて変更する。
 - `@/` はリポジトリルートを指すパスエイリアス。例: `@/lib/display`, `@/assets/css/common`。
