@@ -25,7 +25,7 @@
     },
     {
       "stanza:key": "data-url",
-      "stanza:example": "https://stg-grch38.togovar.org/api/search/variant",
+      "stanza:example": "https://grch38.togovar.org/api/search/variant",
       "stanza:description": "TogoVar API base URL or variant search API URL",
       "stanza:required": true
     },
@@ -37,7 +37,7 @@
     },
     {
       "stanza:key": "sparqlist",
-      "stanza:example": "https://stg-grch38.togovar.org/sparqlist",
+      "stanza:example": "https://grch38.togovar.org/sparqlist",
       "stanza:description": "SPARQList URL for MoG+ cross species links",
       "stanza:required": false
     },

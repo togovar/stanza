@@ -25,7 +25,7 @@
     },
     {
       "stanza:key": "togovar_api",
-      "stanza:example": "https://stg-grch38.togovar.org/api/search/variant",
+      "stanza:example": "https://grch38.togovar.org/api/search/variant",
       "stanza:description": "TogoVar API",
       "stanza:required": true
     },

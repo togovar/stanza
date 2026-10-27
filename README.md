@@ -8,7 +8,7 @@ TogoVarで利用する [Togostanza](https://togostanza.github.io/) 用stanza集�
 
 ## 必要環境
 
-- Node.js: `20.19.x`
+- Node.js: `24.22.1` 以上の24系(`^24.22.1`。それより前の24系には脆弱性があるため)
 - npm: `package-lock.json` に合わせて利用します
 - yarn: `1.22+`（Togostanza標準の手順を使う場合）
 
@@ -41,6 +41,21 @@ npm run generate -- <stanza-id>
 ```bash
 npm run build
 ```
+
+### ステージング環境のデータで確認する
+
+`metadata.json` の `stanza:example` などは本番URLで書き、ステージング向けビルドでは `.github/workflows/publish.yml` が本番URLをステージングURLへ置換します。ローカルで同じ状態を確認する場合は、ソースを書き換えずに以下を使います。
+
+```bash
+# .env.local(Git管理外)にステージングのオリジンを書く
+echo 'TOGOVAR_STAGING_ORIGIN=https://<staging-host>' > .env.local
+
+npm run preview:staging
+```
+
+`dist/` にビルドし、`*.html` / `*.js` / `*.json` 内の `https://grch38.togovar.org` をステージングURLへ置換してから `http://localhost:8081/` で配信します(使用中の場合は `PORT=8082 npm run preview:staging` のように変更するか、`.env.local` に `PORT=8082` を追記)。ステージングのホスト名はリポジトリに書かないでください。
+
+一時的にパラメータだけ変えて試す場合は、`npm run dev` のstanzaページにあるパラメータ入力欄の値を書き換えても確認できます(再読み込みで `stanza:example` の値に戻ります)。
 
 ## 検証
 
